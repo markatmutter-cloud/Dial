@@ -1707,6 +1707,31 @@ export default function Watchlist() {
     if (otherTotal > 0) visible.push("Other");
     return visible;
   }, [brandCounts]);
+  // Source counts mirror brandCounts — keyed on the same per-sub-tab
+  // pool so a zero-listing source chip drops out of the rail entirely
+  // (Mark feedback 2026-05-19: "ensure the filters only show listings
+  // available"). Without this, e.g. an auction-house chip stays in the
+  // rail on Listings > Live listings even though that sub-tab has no
+  // auction-format items. Pool dispatch matches brandCounts exactly.
+  const sourceCounts = useMemo(() => {
+    let pool;
+    if (tab === "listings" && listingsSubTab === "auctions") {
+      pool = mainFeedItems.filter(i =>
+        !i.sold && (!!i._isAuctionFormat || !!i._isTrackedLot)
+      );
+    } else if (tab === "listings" && listingsSubTab === "sold") {
+      pool = mainFeedItems.filter(i => i.sold && !hidden[i.id]);
+    } else {
+      pool = items.filter(i => !i.sold && !hidden[i.id]);
+    }
+    const c = {};
+    pool.forEach(i => {
+      const k = i.source;
+      if (!k) return;
+      c[k] = (c[k] || 0) + 1;
+    });
+    return c;
+  }, [items, hidden, mainFeedItems, tab, listingsSubTab]);
   // Reference chips aggregate digit sequences (3-6 digits, optional .NNN)
   // found in listing titles. Years (1900-2099) are filtered out so a 4-digit
   // year doesn't pose as a ref. Refs are **scoped to the current brand
@@ -2353,7 +2378,11 @@ export default function Watchlist() {
   // (resetFilters now provided by useFilters.)
 
   const visibleBrands = brandsExpanded ? BRANDS : BRANDS.slice(0, BRANDS_SHOW);
-  const visibleSources = sourcesExpanded ? SOURCES : SOURCES.slice(0, SOURCES_SHOW);
+  // Drop sources with zero listings in the current sub-tab pool before
+  // slicing — keeps the rail honest (Mark feedback 2026-05-19). Active
+  // filter chips stay visible regardless so the user can untoggle.
+  const effectiveSources = SOURCES.filter(s => (sourceCounts[s] || 0) > 0 || filterSources.includes(s));
+  const visibleSources = sourcesExpanded ? effectiveSources : effectiveSources.slice(0, SOURCES_SHOW);
   const REFS_SHOW = 12;
   const visibleRefs = refsExpanded ? REFS : REFS.slice(0, REFS_SHOW);
   const NEW_OPTS = [{ label: "Today", days: 1 }, { label: "3 days", days: 3 }, { label: "This week", days: 7 }];
