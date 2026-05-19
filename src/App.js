@@ -1419,10 +1419,10 @@ export default function Watchlist() {
   // as hairspringFindsItems above. The shop closed Feb 2023, so every
   // record is sold=true. Brand / reference / model / etc. come from
   // the structured Fine Print fields the scraper parses out of
-  // body_html. Source = "Hodinkee Shop" so it pools as its own
-  // filter chip distinct from Hodinkee editorial (BAL / Reference
-  // Points), which carry source_type=editorial_column and don't
-  // project into the sold archive.
+  // body_html. Source = "Hodinkee" (Mark spec 2026-05-19: drop the
+  // "Shop" suffix — Editorial surfaces BAL / Reference Points by
+  // column name, so there's no collision in Listings where this
+  // projection lives).
   const hodinkeeShopItems = useMemo(() => {
     const arr = [];
     const records = hodinkeeShopState || {};
@@ -1441,7 +1441,7 @@ export default function Watchlist() {
         savedPrice: price,
         savedCurrency: data.currency || "USD",
         savedPriceUSD: price,
-        source: "Hodinkee Shop",
+        source: "Hodinkee",
         url,
         img: data.image || "",
         sold: isSold,
