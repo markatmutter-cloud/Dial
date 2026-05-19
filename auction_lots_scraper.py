@@ -1039,6 +1039,17 @@ def enumerate_sothebys(sale_url, sale=None):
         # the og:image hash). For lots NOT in algoliaJson (i.e. past
         # the SSR's first 48), we additionally need estimate +
         # description from the lot's own LotV2.
+        # Essay fields (catalogueNote / provenance / literature /
+        # exhibition) only populate via _scrape_sothebys_lot_full,
+        # which is the heavier per-lot fetch path. The lighter "just
+        # the og:image" path skips them — that's fine, since the
+        # heavier path triggers for any lot beyond algoliaJson's
+        # 48-cap (i.e. most lots on larger sales). When we DO have
+        # essays, we forward them through to the output record below.
+        catalogue_note = ""
+        provenance     = ""
+        literature     = ""
+        exhibition     = ""
         try:
             time.sleep(PER_LOT_SLEEP_SECONDS)
             if hit is None or low is None:
@@ -1051,7 +1062,11 @@ def enumerate_sothebys(sale_url, sale=None):
                     img_url = lot_data.get("image")
                     if not auction_end:   auction_end   = lot_data.get("auction_end")
                     # auction_start intentionally left null (see comment above).
-                    description = lot_data.get("description") or title
+                    description    = lot_data.get("description") or title
+                    catalogue_note = lot_data.get("catalogue_note", "")
+                    provenance     = lot_data.get("provenance", "")
+                    literature     = lot_data.get("literature", "")
+                    exhibition     = lot_data.get("exhibition", "")
                 else:
                     description = title
             else:
@@ -1088,7 +1103,17 @@ def enumerate_sothebys(sale_url, sale=None):
             "lot_number": lot_display,
             "title": display_title,
             "maker": creator or None,
-            "description": (description or "")[:2000],
+            # Description cap lifted 2000 → 4000 (2026-05-19) — the
+            # spec block alone can run ~900 chars and essays add to it.
+            "description": (description or "")[:4000],
+            # Essay fields surfaced 2026-05-19 (Mark feedback). Empty
+            # strings on most lots — Sotheby's only populates these
+            # on essay-worthy pieces — but kept as explicit keys so
+            # downstream readers can rely on the schema shape.
+            "catalogue_note": catalogue_note or "",
+            "provenance":     provenance or "",
+            "literature":     literature or "",
+            "exhibition":     exhibition or "",
             "currency": currency,
             "estimate_low": low,
             "estimate_high": high,
@@ -1112,11 +1137,26 @@ def enumerate_sothebys(sale_url, sale=None):
     return out
 
 
+def _strip_html(s):
+    """Strip HTML tags, collapse whitespace. Used for Sotheby's essay
+    fields which arrive as HTML-formatted prose."""
+    if not s:
+        return ""
+    s = re.sub(r"<br\s*/?>", "\n", s, flags=re.IGNORECASE)
+    s = re.sub(r"</p\s*>", "\n\n", s, flags=re.IGNORECASE)
+    s = re.sub(r"<[^>]+>", "", s)
+    s = s.replace("&nbsp;", " ").replace("&amp;", "&").replace("&quot;", '"').replace("&#39;", "'").replace("&lt;", "<").replace("&gt;", ">")
+    s = re.sub(r"\n{3,}", "\n\n", s)
+    s = re.sub(r"[ \t]+", " ", s)
+    return s.strip()
+
+
 def _scrape_sothebys_lot_full(lot_url):
     """Pull the full lot data from the lot page's apolloCache LotV2.
 
     Returns a dict with keys: low, high, sold, image, auction_start,
-    auction_end, description. Or None on parse failure.
+    auction_end, description, catalogue_note, provenance, literature,
+    exhibition. Or None on parse failure.
     """
     try:
         r = requests.get(lot_url, headers=HEADERS, timeout=20)
@@ -1183,8 +1223,21 @@ def _scrape_sothebys_lot_full(lot_url):
         # og:image fallback uses the same code path the prior scraper
         # used — keep behaviour consistent.
         image = scrape_sothebys_lot_image(lot_url)
-    description = (lot.get("description") or "").strip()
-    description = re.sub(r"<[^>]+>", " ", description)
+    # Spec block (dial/calibre/case/etc.) AND the essay fields are
+    # all on LotV2. Lift them all. CLAUDE.md notes catalogueNote +
+    # provenance + literature were "discarded" by the prior parser
+    # (Mark feedback 2026-05-19: "why are we discarding the sothebys
+    # essays?"). Most lots fill only catalogueNote — provenance +
+    # literature are typically populated only on important pieces —
+    # but we extract all four so the downstream recommender + Epic 0
+    # reference encyclopedia can read them when present.
+    description    = _strip_html(lot.get("description"))
+    catalogue_note = _strip_html(lot.get("catalogueNote"))
+    provenance     = _strip_html(lot.get("provenance"))
+    literature     = _strip_html(lot.get("literature"))
+    # `exhibition` field is sometimes called `exhibited` on older lots;
+    # check both. Single-string in either case.
+    exhibition = _strip_html(lot.get("exhibition") or lot.get("exhibited"))
     auction_start = None
     auction_end = None
     if auction:
@@ -1199,7 +1252,11 @@ def _scrape_sothebys_lot_full(lot_url):
         "image": image,
         "auction_start": auction_start,
         "auction_end": auction_end,
-        "description": description[:600],
+        "description":    description[:4000],
+        "catalogue_note": catalogue_note[:4000],
+        "provenance":     provenance[:4000],
+        "literature":     literature[:4000],
+        "exhibition":     exhibition[:2000],
     }
 
 
