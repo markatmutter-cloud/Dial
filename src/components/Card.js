@@ -340,7 +340,28 @@ export const Card = memo(function Card({
           {/* Always reserve 2 lines' worth of height so cards in a grid row
               line up regardless of whether the title wraps. Empty title gets
               a space so the line-height still renders. */}
-          <div style={{ fontSize: compact ? 10 : 12, fontWeight: 500, lineHeight: 1.3, marginBottom: 4, color: "var(--text1)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", minHeight: compact ? 26 : 32 }}>{item.ref || " "}</div>
+          {/* Brand is prepended in bold when (a) it's set + not "Other"
+              AND (b) the source-emitted title doesn't already mention it
+              (Mark spec 2026-05-19 items 6+7: "could brand be included
+              in all cards at the start"). Hairspring titles like
+              "6238, Black Galvanic Dial, 'Pre-Daytona' Chronograph,
+              Steel" don't contain "Rolex" — without the prefix users
+              had to recognise the ref by sight to identify the brand. */}
+          {(() => {
+            const title = item.ref || " ";
+            const brand = item.brand;
+            const showBrandPrefix = brand
+              && brand !== "Other"
+              // Lowercase substring check (no regex escape needed for
+              // the brand → handles multi-word brands like
+              // "Patek Philippe").
+              && !title.toLowerCase().includes(brand.toLowerCase());
+            return (
+              <div style={{ fontSize: compact ? 10 : 12, fontWeight: 500, lineHeight: 1.3, marginBottom: 4, color: "var(--text1)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", minHeight: compact ? 26 : 32 }}>
+                {showBrandPrefix ? <><b style={{ fontWeight: 700 }}>{brand}</b> {title}</> : title}
+              </div>
+            );
+          })()}
           {isLot ? (
             <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
               <span style={{ fontSize: 10, color: "var(--text3)", letterSpacing: "0.05em", fontWeight: 600 }}>
