@@ -84,6 +84,28 @@ function loadListings() {
       });
     }
   }
+  // 3. Editorial-corpus projections that surface in Listings (sold-
+  //    archive view) — Hairspring (Finds) + Hodinkee. Same id =
+  //    shortHash(url) keying as the frontend projections in App.js
+  //    (`hairspringFindsItems`, `hodinkeeShopItems`). Without these,
+  //    shares of those listings fell through to the site-wide
+  //    fallback OG card. Bug surfaced 2026-05-19.
+  for (const fname of ['hairspring_finds.json', 'hodinkee_shop.json']) {
+    const blob = readJson(path.join(process.cwd(), 'public', fname));
+    if (!blob || typeof blob !== 'object') continue;
+    for (const url of Object.keys(blob)) {
+      const data = blob[url] || {};
+      out.push({
+        id: shortHash(url),
+        url,
+        brand: data.brand || '',
+        ref: data.reference_no || data.title || '',
+        title: data.title || '',
+        img: data.image || '',
+        source: data.source || '',
+      });
+    }
+  }
   listingsCache = out;
   listingsCacheTime = now;
   return listingsCache;
@@ -99,10 +121,13 @@ function escapeHtml(s) {
   }[c]));
 }
 
-// Mirrors PROXIED_IMG_HOSTS in src/utils.js — keep in sync. Image
-// hosts that hot-link-protect won't render in the OG card unless we
-// route them through /api/img which strips Referer + Accept.
-const PROXIED_IMG_HOSTS = ['watchfid.com'];
+// Mirrors PROXIED_IMG_HOSTS in src/utils.js (and ALLOWED_HOSTS in
+// api/img.js) — keep ALL THREE in sync. Image hosts that hot-link-
+// protect won't render in the OG card unless we route them through
+// /api/img which strips Referer + Accept. When adding a new
+// hot-linked host, update this list, src/utils.js, and api/img.js
+// (ALLOWED_HOSTS + REFERER_BY_HOST) together.
+const PROXIED_IMG_HOSTS = ['watchfid.com', 'watchesoflancashire.com'];
 
 function resolveOgImage(rawUrl, siteUrl) {
   if (!rawUrl) return `${siteUrl}/apple-touch-icon.png`;
