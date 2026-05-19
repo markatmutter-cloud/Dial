@@ -249,7 +249,7 @@ def parse_product(p: dict) -> dict | None:
         "title": title,
         # Hodinkee Shop doesn't carry per-product author bylines on
         # the writeups; the entire collection reads as house copy.
-        "author": "Hodinkee Shop",
+        "author": "Hodinkee",
         "published_at": published_at,
         "updated_at":   updated_at,
         "image": image,
