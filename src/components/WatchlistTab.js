@@ -52,6 +52,10 @@ export function WatchlistTab(props) {
     // empty state can offer a "Clear filters" CTA when filters
     // are active.
     hasFilters, resetFilters,
+    // Pre-built JSX for the active-filters chip strip (built in
+    // App.js so the same instance + handlers feed Listings tab and
+    // here, Mark spec 2026-05-19 item 4 — cohesive across surfaces).
+    activeFiltersStripJSX,
   } = props;
 
   // (eBay source-search read-only block removed 2026-05-06 — see
@@ -465,6 +469,7 @@ export function WatchlistTab(props) {
               + the strip render. */}
 
           {(watchTopTab === "listings" || watchTopTab === "auctions" || watchTopTab === "sold") && (<>
+          {activeFiltersStripJSX}
           {/* (Saved auctions intro banner removed 2026-05-05 per Mark.
               Was a SubTabIntro pitching the +Track eBay item flow
               alongside auction-house hearts from the Listings feed;

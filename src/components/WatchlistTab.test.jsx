@@ -55,6 +55,7 @@ function buildProps(overrides = {}) {
     handleShare: noop,
     observeCard: noop,
     onClickListing: noop,
+    activeFiltersStripJSX: null,
     ...overrides,
   };
 }
