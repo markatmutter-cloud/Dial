@@ -1644,35 +1644,37 @@ export default function Watchlist() {
   // listing of the same brand appears. Mark set this to 2 on
   // 2026-04-29 — adjustable later if the chip rail feels sparse.
   const BRAND_CHIP_MIN = 2;
-  // Brand counts power both the filter-chip rail (BRANDS below) and
-  // the singleton-collapse decision in displayBrand. Pool depends on
-  // the active view: pre-2026-05-05 this read every live dealer item
-  // regardless of tab, so on Listings > Live auctions the user could
-  // tap a brand and find no matches (chip rail was built from dealer
-  // inventory, not auction lots). Now scoped per-sub-tab.
-  const brandCounts = useMemo(() => {
-    let pool;
+  // Per-sub-tab pool — shared base for chip-rail counts. Live
+  // listings + Auction calendar + Watchlist + References all fall
+  // through to the live dealer pool (Watchlist's sub-tab scoping
+  // isn't wired in here yet — refine when a complaint surfaces).
+  // Pre-2026-05-05 the brand chip rail read every live dealer item
+  // regardless of tab; sub-tab scoping fixed that.
+  const currentPool = useMemo(() => {
     if (tab === "listings" && listingsSubTab === "auctions") {
-      pool = mainFeedItems.filter(i =>
+      return mainFeedItems.filter(i =>
         !i.sold && (!!i._isAuctionFormat || !!i._isTrackedLot)
       );
     } else if (tab === "listings" && listingsSubTab === "sold") {
-      pool = mainFeedItems.filter(i => i.sold && !hidden[i.id]);
-    } else {
-      // Live listings + Auction calendar + Watchlist + References all
-      // fall through to the live dealer pool. Watchlist is technically
-      // imperfect (its sub-tab scoping isn't wired in here yet) but
-      // matches the long-standing behavior; refine when a Watchlist
-      // brand-filter complaint surfaces.
-      pool = items.filter(i => !i.sold && !hidden[i.id]);
+      return mainFeedItems.filter(i => i.sold && !hidden[i.id]);
     }
+    return items.filter(i => !i.sold && !hidden[i.id]);
+  }, [items, hidden, mainFeedItems, tab, listingsSubTab]);
+  // Brand counts power both the filter-chip rail (BRANDS below) and
+  // the singleton-collapse decision in displayBrand. Pool depends on
+  // the active sub-tab, NOT on filterSources — keep brandCounts as
+  // the canonical brand-bucket source-of-truth so displayBrand /
+  // "Other" assignment stays stable across source-filter toggles.
+  // (Reactive cross-axis filtering lives in brandsAvailableInPool
+  // below — that drives chip *visibility*, not bucket *identity*.)
+  const brandCounts = useMemo(() => {
     const c = {};
-    pool.forEach(i => {
+    currentPool.forEach(i => {
       const k = i.brand || "Other";
       c[k] = (c[k] || 0) + 1;
     });
     return c;
-  }, [items, hidden, mainFeedItems, tab, listingsSubTab]);
+  }, [currentPool]);
   // Bucket label for one item under singleton-collapse rules.
   // "Other" + any brand below the chip threshold all funnel into one
   // "Other" bucket for filter + group-by purposes.
@@ -1707,23 +1709,15 @@ export default function Watchlist() {
     if (otherTotal > 0) visible.push("Other");
     return visible;
   }, [brandCounts]);
-  // Source counts mirror brandCounts — keyed on the same per-sub-tab
-  // pool so a zero-listing source chip drops out of the rail entirely
-  // (Mark feedback 2026-05-19: "ensure the filters only show listings
-  // available"). Without this, e.g. an auction-house chip stays in the
-  // rail on Listings > Live listings even though that sub-tab has no
-  // auction-format items. Pool dispatch matches brandCounts exactly.
+  // Source counts reactively respect the active brand filter
+  // (Mark feedback 2026-05-19 item 3): "if I select source Tropical
+  // Watch and there are no omegas, the brand list shouldn't show
+  // Omega" — and vice versa. So a chip with zero remaining items
+  // after the OTHER axis's filter applies drops out of the rail.
   const sourceCounts = useMemo(() => {
-    let pool;
-    if (tab === "listings" && listingsSubTab === "auctions") {
-      pool = mainFeedItems.filter(i =>
-        !i.sold && (!!i._isAuctionFormat || !!i._isTrackedLot)
-      );
-    } else if (tab === "listings" && listingsSubTab === "sold") {
-      pool = mainFeedItems.filter(i => i.sold && !hidden[i.id]);
-    } else {
-      pool = items.filter(i => !i.sold && !hidden[i.id]);
-    }
+    const pool = filterBrands.length > 0
+      ? currentPool.filter(i => filterBrands.includes(displayBrand(i)))
+      : currentPool;
     const c = {};
     pool.forEach(i => {
       const k = i.source;
@@ -1731,7 +1725,17 @@ export default function Watchlist() {
       c[k] = (c[k] || 0) + 1;
     });
     return c;
-  }, [items, hidden, mainFeedItems, tab, listingsSubTab]);
+  }, [currentPool, filterBrands, displayBrand]);
+  // Symmetric — brands available in pool after filterSources applies.
+  // Set rather than counts because BRANDS list is already ordered by
+  // global brandCounts (kept stable so display ordering doesn't jump
+  // around when source filter toggles).
+  const brandsAvailableInPool = useMemo(() => {
+    const pool = filterSources.length > 0
+      ? currentPool.filter(i => filterSources.includes(i.source))
+      : currentPool;
+    return new Set(pool.map(displayBrand));
+  }, [currentPool, filterSources, displayBrand]);
   // Reference chips aggregate digit sequences (3-6 digits, optional .NNN)
   // found in listing titles. Years (1900-2099) are filtered out so a 4-digit
   // year doesn't pose as a ref. Refs are **scoped to the current brand
@@ -2377,10 +2381,12 @@ export default function Watchlist() {
 
   // (resetFilters now provided by useFilters.)
 
-  const visibleBrands = brandsExpanded ? BRANDS : BRANDS.slice(0, BRANDS_SHOW);
-  // Drop sources with zero listings in the current sub-tab pool before
-  // slicing — keeps the rail honest (Mark feedback 2026-05-19). Active
-  // filter chips stay visible regardless so the user can untoggle.
+  // Cross-axis reactive filtering (Mark feedback 2026-05-19 item 3):
+  // when one filter axis is active, the OTHER axis's chips shrink to
+  // only show what's actually reachable. Active filter chips stay
+  // visible regardless so the user can always untoggle.
+  const effectiveBrands = BRANDS.filter(b => brandsAvailableInPool.has(b) || filterBrands.includes(b));
+  const visibleBrands = brandsExpanded ? effectiveBrands : effectiveBrands.slice(0, BRANDS_SHOW);
   const effectiveSources = SOURCES.filter(s => (sourceCounts[s] || 0) > 0 || filterSources.includes(s));
   const visibleSources = sourcesExpanded ? effectiveSources : effectiveSources.slice(0, SOURCES_SHOW);
   const REFS_SHOW = 12;
