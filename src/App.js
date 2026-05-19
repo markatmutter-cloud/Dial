@@ -2634,7 +2634,7 @@ export default function Watchlist() {
   const homeRecentAdded = useMemo(() => {
     const live = items.filter(i => !i.sold && !hidden[i.id] && !adminHidden.has(i.id) && !homeHidden.has(i.id));
     const sortKey = (i) => i.firstSeen || i.scrapedAt || "";
-    return [...live].sort((a, b) => (sortKey(b) || "").localeCompare(sortKey(a) || "")).slice(0, 12);
+    return [...live].sort((a, b) => (sortKey(b) || "").localeCompare(sortKey(a) || "")).slice(0, 20);
   }, [items, hidden, adminHidden, homeHidden]);
   // User's most-recently hearted items — second row on Home for
   // signed-in users only. Mark spec 2026-05-11. Pulls from
@@ -2651,7 +2651,7 @@ export default function Watchlist() {
       return true;
     });
     const k = (it) => it.savedAt || "";
-    return arr.sort((a, b) => (k(b) || "").localeCompare(k(a) || "")).slice(0, 12);
+    return arr.sort((a, b) => (k(b) || "").localeCompare(k(a) || "")).slice(0, 20);
   }, [user, watchlist, hidden, adminHidden, homeHidden]);
   const homeEndingNext = useMemo(() => {
     // auctionLotItems is the PROJECTED shape — `sold` is the
@@ -2670,7 +2670,7 @@ export default function Watchlist() {
       const end = i.auction_end ? Date.parse(i.auction_end) : NaN;
       return !Number.isNaN(end) && end > now;
     });
-    return active.sort((a, b) => Date.parse(a.auction_end) - Date.parse(b.auction_end)).slice(0, 12);
+    return active.sort((a, b) => Date.parse(a.auction_end) - Date.parse(b.auction_end)).slice(0, 20);
   }, [auctionLotItems, hidden, adminHidden, homeHidden]);
   const homeRecentSold = useMemo(() => {
     const merged = [...items, ...auctionLotItems].filter(i => {
@@ -2678,7 +2678,7 @@ export default function Watchlist() {
       return i.sold || i.status === "ended" || i.sold_price;
     });
     const soldKey = (i) => i.soldAt || i.auction_end || i.lastSeen || "";
-    return merged.sort((a, b) => (soldKey(b) || "").localeCompare(soldKey(a) || "")).slice(0, 12);
+    return merged.sort((a, b) => (soldKey(b) || "").localeCompare(soldKey(a) || "")).slice(0, 20);
   }, [items, auctionLotItems, hidden, adminHidden, homeHidden]);
 
   if (loading) return <div style={{ ...baseStyle, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, color: "var(--text2)" }}>Pulling the latest listings…</div>;
