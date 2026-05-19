@@ -39,6 +39,7 @@ export function buildMockShellProps(overrides = {}) {
     filterSources: [],
     listingsSubTab: "live",
     hasFilters: false,
+    activeFiltersStripJSX: null,
     hiddenItems: [],
     maxPriceText: "",
     minPriceText: "",

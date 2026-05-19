@@ -20,6 +20,7 @@ import { useHomeHidden } from "./hooks/useHomeHidden";
 import { useLastVisit } from "./hooks/useLastVisit";
 import { ListReviewMode } from "./components/ListReviewMode";
 import { Card } from "./components/Card";
+import { ActiveFiltersStrip } from "./components/ActiveFiltersStrip";
 // AuctionsTab retired 2026-04-30 — Tracked lots merged into Watchlist
 // Listings; calendar moved to Watchlist > Auction Calendar sub-tab via
 // the new AuctionCalendar component (AuctionsTab.js deleted 2026-04-30).
@@ -2933,8 +2934,27 @@ export default function Watchlist() {
   // every <img> — making all tiles flash white on heart toggles, page
   // bumps, and any other state change. As a JSX expression, the same
   // grid instance is reused and only changed cards re-render.
+  // Shared active-filters strip. Same instance is rendered above the
+  // listings grid AND threaded through to WatchlistTab so the Saved
+  // sub-tabs (which use the same useFilters state) get a consistent
+  // affordance for "what's currently filtered + clear it". Mark spec
+  // 2026-05-19 item 4.
+  const activeFiltersStripJSX = (
+    <ActiveFiltersStrip
+      filterSources={filterSources} toggleSource={toggleSource}
+      filterBrands={filterBrands}   toggleBrand={toggleBrand}
+      filterRefs={filterRefs}       toggleFilterRef={toggleFilterRef}
+      search={search}               setSearch={setSearch}
+      newDays={newDays}             setNewDays={setNewDays}
+      minPriceText={minPriceText}   setMinPriceText={setMinPriceText}
+      maxPriceText={maxPriceText}   setMaxPriceText={setMaxPriceText}
+      filterHearted={filterHearted} setFilterHearted={setFilterHearted}
+      resetFilters={resetFilters}
+    />
+  );
   const listingsGridJSX = (
     <>
+      {activeFiltersStripJSX}
       <div style={{ ...gridStyle, borderRadius: 10, overflow: "hidden" }}>
         {visibleWithDividers.map((entry, idx) => (
           entry.kind === "divider" ? (
@@ -3113,6 +3133,7 @@ export default function Watchlist() {
       legacyKeys={{ watchlist: LEGACY_WATCHLIST_KEY, hidden: LEGACY_HIDDEN_KEY }}
       setTab={setTab}
       setPage={setPage}
+      activeFiltersStripJSX={activeFiltersStripJSX}
       collectionsApi={collectionsApi}
       setEditingCollection={setEditingCollection}
       openCollectionPicker={openCollectionPicker}
