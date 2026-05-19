@@ -29,10 +29,12 @@ import { SearchIcon } from "./icons";
 
 // Both mobile and desktop now use a horizontal slider strip (Mark
 // spec 2026-05-12: "I meant slider for desktop browser like mobile").
-// 14 items per section — about two screens' worth of swipe depth on
-// either viewport. No lazy-loading; the full set is rendered and the
-// browser virtualises with its own scroll-paint optimisations.
-const CARDS_PER_SECTION = 14;
+// Desktop bumped 14 → 20 (2026-05-19) — at wide viewports a 14-card
+// strip ran out of tiles before the right edge, leaving an empty
+// gradient gap. Mobile stays at 14 (tile widths are flex-percentage,
+// so the strip extends as far as the user can swipe regardless).
+const CARDS_PER_SECTION_MOBILE = 14;
+const CARDS_PER_SECTION_DESKTOP = 20;
 
 // Editorial hero — phase 4c (2026-05-11). Restraint dial-up per
 // Mark feedback after #228: drop the weight and tracking a notch,
@@ -276,15 +278,15 @@ function HomeSearchBar({ onSubmit, isMobile, dealerSources, onJumpToDealer }) {
 
 // One-row horizontal section. Desktop renders 7 cards in a CSS grid;
 // mobile flips to a horizontal scroll with snap so cards 4-7 slide in
-// from the right. The strip surfaces 7 — App.js still caps the slice
-// at 12 so future grid changes don't require a data plumbing change.
+// from the right. App.js caps the data slice at 20; this strip then
+// renders 14 (mobile) or 20 (desktop) of those.
 // Eyebrow labels removed 2026-05-11 — Mark feedback: they
 // duplicated the heading text below ("ON THE FEED" + "Recently
 // added"). Heading + descriptor carry the editorial signal on
 // their own.
 function SectionStrip({ heading, descriptor, items, onViewAll, onScreen, screenCount, isMobile, watchlist, hidden, handleWish, toggleHide, toggleHomeHide, primaryCurrency, onShare, onView, onClickListing, openCollectionPicker, isAdmin, user, compact, inverted, shellPad }) {
   if (!items || items.length === 0) return null;
-  const slice = items.slice(0, CARDS_PER_SECTION);
+  const slice = items.slice(0, isMobile ? CARDS_PER_SECTION_MOBILE : CARDS_PER_SECTION_DESKTOP);
   // Inverted bleed (phase 4c, 2026-05-11): one section gets a dark
   // band that runs edge-to-edge of the viewport, breaking the
   // visual rhythm of the page (editorial trick — Mark's v0.5
