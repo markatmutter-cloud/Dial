@@ -340,25 +340,41 @@ export const Card = memo(function Card({
           {/* Always reserve 2 lines' worth of height so cards in a grid row
               line up regardless of whether the title wraps. Empty title gets
               a space so the line-height still renders. */}
-          {/* Brand is prepended in bold when (a) it's set + not "Other"
-              AND (b) the source-emitted title doesn't already mention it
-              (Mark spec 2026-05-19 items 6+7: "could brand be included
-              in all cards at the start"). Hairspring titles like
-              "6238, Black Galvanic Dial, 'Pre-Daytona' Chronograph,
-              Steel" don't contain "Rolex" — without the prefix users
-              had to recognise the ref by sight to identify the brand. */}
+          {/* Brand + model prepended in bold when set + not "Other"
+              AND not already in the source-emitted title (Mark spec
+              2026-05-19 items 6+7: "could brand be included in all
+              cards at the start" / "build in model names into the
+              titles Tudor 'Submariner' as a step before going to
+              references"). Hairspring titles like "6238, Black
+              Galvanic Dial, 'Pre-Daytona' Chronograph, Steel" don't
+              mention "Rolex Daytona" — the bold prefix makes the
+              brand+model legible at a glance.
+
+              Model lives on items already (Epic 0 matcher populates
+              model + sub_model + model_line on auction lots + the
+              editorial projections — Hairspring Finds, Hodinkee
+              Shop). Dealer listings.json doesn't yet — that needs
+              merge.py + reference_index_match wiring (Epic 0 slice
+              B, pending). Until then, dealer items degrade to
+              brand-only prefix. */}
           {(() => {
             const title = item.ref || " ";
             const brand = item.brand;
-            const showBrandPrefix = brand
+            const model = item.model;
+            const lowerTitle = title.toLowerCase();
+            const showBrand = brand
               && brand !== "Other"
-              // Lowercase substring check (no regex escape needed for
-              // the brand → handles multi-word brands like
-              // "Patek Philippe").
-              && !title.toLowerCase().includes(brand.toLowerCase());
+              && !lowerTitle.includes(brand.toLowerCase());
+            // Skip model when it's already in the title OR already
+            // contained in the brand string (avoids "Cartier Tank"
+            // when the brand string was "Cartier Tank" itself).
+            const showModel = model
+              && !lowerTitle.includes(model.toLowerCase())
+              && !(brand && brand.toLowerCase().includes(model.toLowerCase()));
+            const prefix = [showBrand && brand, showModel && model].filter(Boolean).join(" ");
             return (
               <div style={{ fontSize: compact ? 10 : 12, fontWeight: 500, lineHeight: 1.3, marginBottom: 4, color: "var(--text1)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", minHeight: compact ? 26 : 32 }}>
-                {showBrandPrefix ? <><b style={{ fontWeight: 700 }}>{brand}</b> {title}</> : title}
+                {prefix ? <><b style={{ fontWeight: 700 }}>{prefix}</b> {title}</> : title}
               </div>
             );
           })()}
