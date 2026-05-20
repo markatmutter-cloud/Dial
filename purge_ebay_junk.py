@@ -122,15 +122,18 @@ def main():
         and not item_passes_any_search(a.get("ref", ""), searches)
     )]
     with LISTINGS.open("w") as f:
-        json.dump(keep_listings, f, ensure_ascii=False, indent=0)
-        f.write("\n")
+        # Match merge.py's compact format (separators=(',', ':') for
+        # minified writes) so the git diff shows only the real
+        # content change, not a whole-file re-indent.
+        json.dump(keep_listings, f, separators=(",", ":"))
     print(f"  Wrote {LISTINGS}: dropped {len(arr) - len(keep_listings)} item(s).")
 
     for k in purge_state_keys:
         del state[k]
     with STATE.open("w") as f:
-        json.dump(state, f, ensure_ascii=False, indent=0)
-        f.write("\n")
+        # state.json is written by merge.py with sort_keys=True; match
+        # exactly so we don't reorder unrelated entries.
+        json.dump(state, f, separators=(",", ":"), sort_keys=True)
     print(f"  Wrote {STATE}: dropped {len(purge_state_keys)} record(s).")
 
 
