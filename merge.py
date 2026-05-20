@@ -680,7 +680,7 @@ def update_state(items, state):
         if archive_brand in EXCLUDED_BRANDS:
             continue
 
-        enriched.append({
+        ghost = {
             'id':            sid,
             'brand':         archive_brand,
             'ref':           entry.get('lastTitle', ''),
@@ -698,7 +698,17 @@ def update_state(items, state):
             'lastSeen':      entry.get('lastSeen', ''),
             'priceHistory':  history,
             'priceChange':   0,
-        })
+        }
+        # Re-run the reference-index matcher on ghost-sold rows too.
+        # Mark feedback 2026-05-20: 9 sold Tudor Submariners had
+        # model_line=null because they were last scraped before
+        # enrich_with_reference_match was wired into merge.py (#378,
+        # 2026-05-19). The dealer scraper doesn't re-emit them (they're
+        # gone from the dealer's site), so the in-CSV enrichment never
+        # runs for them. This second pass catches them via the
+        # archived title + cached brand. Cheap (in-process, no API).
+        enrich_with_reference_match(ghost)
+        enriched.append(ghost)
         archived_count += 1
 
     if disappeared_this_run:
