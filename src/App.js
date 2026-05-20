@@ -1717,14 +1717,28 @@ export default function Watchlist() {
     return (brandCounts[b] || 0) >= BRAND_CHIP_MIN ? b : "Other";
   }, [brandCounts]);
   const BRANDS = useMemo(() => {
-    const visible = Object.entries(brandCounts)
+    const entries = Object.entries(brandCounts)
       .filter(([b, n]) =>
         n >= BRAND_CHIP_MIN
         && b !== "Other"
         && !FORCE_OTHER_BRANDS.has(b)
-      )
-      .sort((a, b) => b[1] - a[1])
-      .map(([b]) => b);
+      );
+    // Mark feedback 2026-05-20: "could you have the first row be the
+    // most listed as a popular section (Rolex, Omega, Patek, Cartier,
+    // Heuer...), then all the brands listed alphabetically (hard to
+    // find say Doxa as it's near the end and not alphabetically
+    // listed)". Split the rail: top POPULAR_BRAND_COUNT by frequency,
+    // then the remaining brands alphabetically. "Other" chip stays
+    // appended last as the catch-all.
+    const POPULAR_BRAND_COUNT = 12;
+    const byFreq = [...entries].sort((a, b) => b[1] - a[1]).map(([b]) => b);
+    const popular = byFreq.slice(0, POPULAR_BRAND_COUNT);
+    const popularSet = new Set(popular);
+    const alphaRest = entries
+      .map(([b]) => b)
+      .filter(b => !popularSet.has(b))
+      .sort((a, b) => a.localeCompare(b, "en", { sensitivity: "base" }));
+    const visible = [...popular, ...alphaRest];
     // If any singleton, genuinely-Other, or force-Other items exist,
     // expose an "Other" chip so they remain reachable from the brand
     // filter UI.
