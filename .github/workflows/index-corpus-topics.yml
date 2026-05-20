@@ -1,0 +1,112 @@
+# Editorial-corpus topic indexer (Mark feedback 2026-05-20).
+#
+# Runs `corpus_topic_indexer.py` against the 8 editorial-corpus JSON
+# files and writes back theme tags via Claude Haiku 4.5. Idempotent —
+# articles with a non-empty `themes` field are skipped, so weekly
+# cron runs only spend tokens on newly-scraped articles.
+#
+# COST EXPECTATIONS
+#   - First full corpus run: ~$9 (Haiku rates, 8,556 articles)
+#   - Weekly incremental: pennies (typically 5-50 new articles)
+#
+# Schedule fires Sunday 17:00 UTC — one hour after the editorial-
+# corpus scrape (Sunday 16:00 UTC) so the data layer is fresh by
+# the time we tag. Manual `workflow_dispatch` trigger exposes
+# limit / source / retag inputs for ad-hoc runs.
+#
+# Secrets required: ANTHROPIC_API_KEY (Anthropic Console → API Keys).
+name: Index editorial corpus topics
+
+on:
+  schedule:
+    - cron: '0 17 * * 0'   # 9am PST / 10am PDT Sunday — 1h after editorial scrape
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: 'Max articles to tag (0 = no limit, full corpus)'
+        required: false
+        default: '0'
+        type: string
+      source:
+        description: 'Restrict to one source filename prefix (e.g. hairspring_finds). Blank = all sources.'
+        required: false
+        default: ''
+        type: string
+      retag:
+        description: 'Re-tag every article, even ones already tagged'
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: index-corpus-topics
+  cancel-in-progress: false
+
+jobs:
+  index:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          # PAT or GITHUB_TOKEN sufficient for committing to main —
+          # matches the pattern used by scrape-editorial-corpus.yml.
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Anthropic SDK
+        run: pip install anthropic
+
+      - name: Run topic indexer
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          # Manual trigger: respect the inputs. Scheduled trigger: run
+          # full incremental (default flags, idempotency skips tagged).
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            ARGS=""
+            LIMIT="${{ github.event.inputs.limit }}"
+            SOURCE="${{ github.event.inputs.source }}"
+            RETAG="${{ github.event.inputs.retag }}"
+            [ -n "$LIMIT" ] && [ "$LIMIT" != "0" ] && ARGS="$ARGS --limit $LIMIT"
+            [ -n "$SOURCE" ] && ARGS="$ARGS --source $SOURCE"
+            [ "$RETAG" = "true" ] && ARGS="$ARGS --retag"
+            echo "Running with args: $ARGS"
+            python corpus_topic_indexer.py $ARGS
+          else
+            echo "Scheduled incremental run (idempotent, only new articles)"
+            python corpus_topic_indexer.py
+          fi
+
+      - name: Commit + push tagged corpus
+        # Match scrape-editorial-corpus.yml's commit pattern: stage
+        # all corpus JSON files, commit with timestamp, retry-push on
+        # race. Bodies files aren't touched by the indexer but staging
+        # them is harmless and keeps the cron sweep self-consistent.
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/hairspring_finds.json public/bring_a_loupe.json \
+                  public/rolex_magazine.json public/onthedash.json \
+                  public/bulang_watch_talks.json public/hodinkee_shop.json \
+                  public/hodinkee_reference_points.json \
+                  public/acollectedman_journal.json
+          if git diff --staged --quiet; then
+            echo "No changes — nothing to commit."
+            exit 0
+          fi
+          git commit -m "Index editorial corpus topics $(date -u '+%Y-%m-%d %H:%M UTC')"
+          # Single retry on race with the scrape cron.
+          for i in 1 2 3; do
+            if git push; then exit 0; fi
+            echo "Push failed; rebasing and retrying ($i/3)…"
+            git pull --rebase origin main
+            sleep 5
+          done
+          echo "Push failed after 3 attempts."
+          exit 1
