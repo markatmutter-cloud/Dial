@@ -415,6 +415,17 @@ def enumerate_antiquorum(sale_url, sale=None):
             "lot_number": lot.get("lot_number"),
             "title": title,
             "description": truncated[:2000],
+            # Empty essay fields on the live-page enumerator — the
+            # live surface's viewVars.lots blob carries
+            # `truncated_description` only. Essays live on the post-
+            # sale catalog detail pages and get extracted by
+            # `enumerate_antiquorum_catalog` after the sale ends.
+            # Keep the keys present so the schema stays consistent
+            # with Sotheby's + Christie's.
+            "catalogue_note": "",
+            "provenance": "",
+            "literature": "",
+            "exhibition": "",
             "currency": currency,
             "estimate_low": estimate_low,
             "estimate_high": estimate_high,
@@ -737,12 +748,40 @@ def enumerate_christies(sale_url, sale=None):
                        or img_block.get("image_desktop_src")
                        or img_block.get("image_tablet_src")
                        or img_block.get("image_mobile_src"))
+        # Per-lot detail fetch for Lot Essay (Mark feedback 2026-05-19:
+        # "we are discarding the sothebys essays" applied to Christie's
+        # too). The bulk chrComponents.lots blob only carries title +
+        # estimates — essays live on the per-lot detail page under
+        # `<h2 ...>Lot Essay</h2>`. Gated by `CHRISTIES_ESSAYS` env
+        # var (default ON) so Mark can throttle if the comprehensive
+        # cron slows down past acceptable.
+        catalogue_note = ""
+        if os.environ.get("CHRISTIES_ESSAYS", "1") == "1":
+            try:
+                time.sleep(PER_LOT_SLEEP_SECONDS)
+                er = requests.get(url, headers=HEADERS, timeout=20)
+                if er.ok:
+                    catalogue_note = _extract_christies_essay(er.text)
+            except Exception as e:
+                # Same continue-on-error posture as Sotheby's per-lot
+                # path — one essay fetch failing shouldn't kill the
+                # sale.
+                print(f"    [Christie's] essay fetch failed for {url}: {e}")
         data = {
             "house": "Christie's",
             "lot_id": lot.get("object_id"),
             "lot_number": lot.get("lot_id_txt"),
             "title": title_primary,
             "description": title_secondary[:2000],
+            # Essay fields match Sotheby's schema. Christie's only
+            # surfaces catalogue_note (its "Lot Essay" maps onto our
+            # catalogue_note key). Provenance / literature / exhibition
+            # are reserved for future per-lot extraction if those
+            # surfaces become identifiable on Christie's lot pages.
+            "catalogue_note": (catalogue_note or "")[:4000],
+            "provenance": "",
+            "literature": "",
+            "exhibition": "",
             "currency": currency,
             "estimate_low": lot.get("estimate_low"),
             "estimate_high": lot.get("estimate_high"),
@@ -1149,6 +1188,36 @@ def _strip_html(s):
     s = re.sub(r"\n{3,}", "\n\n", s)
     s = re.sub(r"[ \t]+", " ", s)
     return s.strip()
+
+
+def _extract_christies_essay(html):
+    """Pull the "Lot Essay" content from a Christie's detail page.
+
+    Structure (verified 2026-05-19):
+      <h2 class="chr-lot-article__title">Lot Essay</h2>
+      <chr-readmore-expander ...>
+          <div class="content-zone chr-body">
+              ESSAY TEXT
+          </div>
+      </chr-readmore-expander>
+
+    The header + readmore wrapper varies per lot; what's stable is
+    the `<h2 ...>Lot Essay</h2>` anchor followed by the next
+    `<div class="content-zone chr-body">…</div>`. Returns "" when
+    the page doesn't have a Lot Essay (most lots don't).
+    """
+    if not html:
+        return ""
+    # Find the Lot Essay header, then the next content-zone block
+    # after it.
+    m = re.search(r'<h2[^>]*chr-lot-article__title[^>]*>\s*Lot Essay\s*</h2>(.*?)</section>', html, re.DOTALL | re.IGNORECASE)
+    if not m:
+        return ""
+    after = m.group(1)
+    inner = re.search(r'<div[^>]*content-zone[^>]*chr-body[^>]*>(.*?)</div>', after, re.DOTALL)
+    if not inner:
+        return ""
+    return _strip_html(inner.group(1))
 
 
 def _scrape_sothebys_lot_full(lot_url):
