@@ -1239,7 +1239,7 @@ unified corpus at `public/reference_guides.json` keyed by
 
 ## Editorial corpus scrapers
 
-**Eight sources, ~8,556 articles, ~4.3M words at 2026-05-19.**
+**Nine sources, ~8,850 articles, ~4.5M words at 2026-05-20.**
 Mining the corpus to power Editorial sub-tab browse + per-Reference
 "Editorial coverage" + listing-card "Explore paths" annotations +
 the recommender. See [docs/RECOMMENDER_STRATEGY.md](docs/RECOMMENDER_STRATEGY.md)
@@ -1260,6 +1260,7 @@ Listings > Sold archive (dual-track — see below).
 | Hodinkee Shop | `hodinkee_shop` | editorial (Sun, dual-track) | 2,346 |
 | Hodinkee Reference Points | `hodinkee_reference_points` | editorial (Sun) | 10 |
 | A Collected Man Journal | `acollectedman_journal` | editorial (Sun) | 160 |
+| Watches of Espionage (WOE Dispatch) | `woe_dispatch` | editorial (Sun) | 294 |
 
 ### Body-split persistence — `editorial_corpus_io.py`
 
@@ -1353,6 +1354,11 @@ adding a new source:
   (older) + `text-block-v2__content` (newer). And likely a third
   template not yet identified (~50% of articles still fail body
   extraction — see SESSION_HANDOFF for the open work).
+- **Watches of Espionage**: custom Shopify theme. Body wrapper
+  anchored on schema.org `itemprop="articleBody"` (the most stable
+  selector across articles — the class string is non-standard and
+  may drift with theme updates). Author is uniformly "Watches of
+  Espionage" (no per-article bylines).
 
 ### Discovery: sitemap > pagination when both exist
 

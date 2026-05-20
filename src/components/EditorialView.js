@@ -95,6 +95,14 @@ const SOURCES = [
     url: "/acollectedman_journal.json",
     bodies_url: "/acollectedman_journal_bodies.json",
   },
+  {
+    key: "woe_dispatch",
+    label: "WOE Dispatch",
+    publication: "Watches of Espionage",
+    column: "Dispatch",
+    url: "/woe_dispatch.json",
+    bodies_url: "/woe_dispatch_bodies.json",
+  },
 ];
 
 const BRAND_TOP_N = 24;       // Show top N brands in expansion panel; "+more" expander reveals the rest

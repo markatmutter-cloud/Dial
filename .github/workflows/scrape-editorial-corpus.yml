@@ -143,6 +143,17 @@ jobs:
         continue-on-error: true
         run: python acollectedman_journal_scraper.py
 
+      - name: Run WOE Dispatch scraper
+        # Watches of Espionage — horology / special operations /
+        # intelligence / exploration crossover blog. Shopify blog,
+        # ~239 articles via standard ?page=N pagination. Body wrapper
+        # anchored on schema.org itemprop="articleBody". Author is
+        # typically the "Watches of Espionage" byline (no per-article
+        # bylines). Incremental with 30-day rolling refresh; full walk
+        # ~3 min, typical weekly run sub-minute.
+        continue-on-error: true
+        run: python woe_dispatch_scraper.py
+
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
@@ -153,7 +164,8 @@ jobs:
                   public/bulang_watch_talks.json public/bulang_watch_talks_bodies.json \
                   public/hodinkee_shop.json public/hodinkee_shop_bodies.json \
                   public/hodinkee_reference_points.json public/hodinkee_reference_points_bodies.json \
-                  public/acollectedman_journal.json public/acollectedman_journal_bodies.json
+                  public/acollectedman_journal.json public/acollectedman_journal_bodies.json \
+                  public/woe_dispatch.json public/woe_dispatch_bodies.json
           if git diff --staged --quiet; then
             echo "No changes to commit"
             exit 0
