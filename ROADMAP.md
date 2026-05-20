@@ -359,7 +359,38 @@ Share tab retirement), Home banner → Screen pill, scale snap
 See `SESSION_HANDOFF_2026-05-15.md` "Maintenance session
 addendum" for the full inventory.
 
-Still open from that session's audit:
+**Maintenance session 2026-05-19 — audit + light cleanup** (#380
++ #381). Surveyed all seven maintenance categories from the
+2026-05-15 plan; most were already-compliant. Paid down:
+- Doc graduation (#380): ROADMAP + CLAUDE.md updates for every PR
+  that landed today (#367–#379). Three-place lockstep for proxied
+  hosts, Hodinkee source-label rename as the 4th naming-
+  divergence, `CHRISTIES_ESSAYS` env var, Antiquorum catalog
+  essay regex pattern, `reference_index_match` wired into
+  every scrape path.
+- Dead-code deletion (#381): `ShareListPickerModal.js` (−164
+  lines) — orphaned after the SharedTab retirement (#299), README
+  folder layout updated.
+
+**AUDIT-CLOSED today (no work needed):**
+- **Empty states** — re-verified all "no items" surfaces.
+  Listings filter-no-match has EmptyState at `App.js:3034`
+  ("Nothing matches" + Clear filters CTA). AuctionCalendar has a
+  voice-toned hand-rolled empty at `AuctionCalendar.js:145`
+  (🔨 icon + house list). HomeTab strips return null when empty,
+  but ManageCallout + FooterBand still render below. ROADMAP
+  entry was stale.
+- **Copy audit** — `confirm({...})` calls across 8 sites all use
+  appropriate `tone: "danger"` on destructive actions. No bare
+  "Loading…" / "Untitled" / "Confirm" strings in user-facing JSX.
+  Already compliant.
+- **DB hygiene** — `2026-05-08_security_hardening.sql` documents
+  the explicit `revoke from anon` + `grant to authenticated`
+  pattern. 6 SECURITY DEFINER functions covered, plus the two
+  intentionally-public ones (`get_public_challenge`,
+  `get_public_list`). Already compliant.
+
+Still open from prior audits (NOT audit-closed):
 - **Button consolidation** — ~184 hand-rolled `<button>` elements
   skip `actionButton` / `pillBase` / `iconButton`. Half-day diff.
   (CollectionEditModal got snapped in PR #318 from the desktop
@@ -370,25 +401,26 @@ Still open from that session's audit:
 - **Padding scale snap** — Mostly done in PR #321 (23 → 11
   distinct pairs). Remaining outliers if any can be caught next
   audit pass.
-- **Missing empty states** — Listings filter-no-match was already
-  done (`<EmptyState heading="Nothing matches" .../>` in
-  `listingsGridJSX`). AuctionCalendar empty + Home zero-recently-
-  added still missing — addressed in PR #380 (this maintenance
-  session). Component shape change.
 - **Loading states** — only the initial fetch has one; saved-search
   results / list drill-ins / screener mount flicker through empty
   UI for a beat.
+- **Visual papercuts / design tokens consolidation** (added 2026-
+  05-19 from this session's audit). ~8 distinct `borderRadius`
+  values (could rationalise to 3–4 + pill), ~10 `fontSize` values
+  not yet tokenised, ~78 hardcoded hex/rgba instances outside
+  `styles.js` (top offenders `#fff`, `#000`, `#c9a227`, `#1f9d4f`).
+  Mechanical sweep, ~2 hr. Deferred — stylistic-only, no functional
+  bug; better suited to a dedicated style pass.
 
 **Added from desktop audit (2026-05-15 → 2026-05-16):**
 - **Brand voice sweep** — `BRAND.md` was committed in PR #316 as
   the single-page brand-voice reference, but no surface has been
-  swept through it explicitly. Candidates: empty states (the ones
-  from PR #306 hit Plan view / Archive / Wishlist; Listings
-  no-match + AuctionCalendar empty + Home zero-state still
-  pending), tooltips, ConfirmModal copy (functional, not
-  voice-toned yet), toasts, onboarding card in screener, error
-  messages. One focused PR could re-tone every textual surface.
-  Mark feedback 2026-05-16: explicit roadmap item.
+  swept through it explicitly. Candidates: tooltips, ConfirmModal
+  copy (functional, not voice-toned yet), toasts, onboarding card
+  in screener, error messages. (Empty states audit-closed
+  2026-05-19 — already voice-toned.) One focused PR could re-tone
+  every textual surface. Mark feedback 2026-05-16: explicit
+  roadmap item. **Mark direction 2026-05-19: parked.**
 - **`DrillInHeader` component promotion** — My Watches / Wishlist
   / Lists / Saved-search / Auction list drill-ins all have
   slightly different header shapes (back link · title · optional
@@ -471,7 +503,8 @@ apple-touch-icon as placeholder; want a proper 1200×630), and the
 **welcome/about page** for first-time visitors. The cold-landing
 gap: a stranger hitting `the-watch-list.app` from search currently
 sees the Listings feed with no context for what the site is or
-how to use it. Half-session of mostly-content work.
+how to use it. Half-session of mostly-content work. **Mark
+direction 2026-05-19: parked.**
 
 ### Privacy notice (legal/compliance)
 
