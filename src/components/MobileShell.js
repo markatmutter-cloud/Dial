@@ -136,27 +136,36 @@ export function MobileShell(props) {
               Watchlist
             </button>
           ) : <span />}
-          {/* Top-right cluster — just About now. authJSX moved back
-              into the sticky search row below (which is itself now
-              visible on Home as of 2026-05-11 — Mark wants search +
-              auth pinned at top across all tabs, matching the
-              other-tab behaviour). */}
-          <button onClick={() => setAboutModalOpen(true)}
-            style={{ background: "none", border: "none", cursor: "pointer",
-                    padding: 0, fontFamily: "inherit", fontSize: 12,
-                    fontWeight: 500, color: "var(--text2)",
-                    letterSpacing: "0.04em" }}>
-            About
-          </button>
+          {/* Top-right cluster. On Home (mobile) the sticky search row
+              below is suppressed (Mark spec 2026-05-20: "search bar
+              under the logo on mobile like on the desktop site"), so
+              the M circle / auth lives here alongside About. Other
+              tabs keep About-only here and auth in the sticky search
+              row beneath. */}
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <button onClick={() => setAboutModalOpen(true)}
+              style={{ background: "none", border: "none", cursor: "pointer",
+                      padding: 0, fontFamily: "inherit", fontSize: 12,
+                      fontWeight: 500, color: "var(--text2)",
+                      letterSpacing: "0.04em" }}>
+              About
+            </button>
+            {tab === "home" && authJSX}
+          </div>
         </div>
         {/* Sticky stack: search row (with filter + dark-mode buttons) and
             sort/clear pills row. Stays pinned to the viewport top so
             filters are one tap away at any scroll depth.
-            Restored on Home 2026-05-11 (Mark spec): the search bar
-            and sign-in circle should stay at the top of the page
-            like on the other tabs. Editorial hero in the HomeTab
-            body still scrolls away naturally — this sticky bar just
-            persists. */}
+
+            Suppressed on Home (mobile) 2026-05-20: Mark wants the
+            desktop pattern — wordmark + hero search bar below, no
+            sticky top-bar search. HomeTab.js renders HomeSearchBar
+            in the body; the M-circle moved to the non-sticky title
+            row above so auth stays accessible.
+
+            Other tabs keep the sticky search at the top — filter
+            chrome needs to stay reachable at any scroll depth. */}
+        {tab !== "home" && (
         <div style={{ position: "sticky", top: 0, zIndex: 20, background: "var(--bg)" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 16px 4px", borderBottom: "0.5px solid var(--border)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, background: "var(--surface)", borderRadius: 10, padding: "8px 12px", flex: 1, minWidth: 0 }}>
@@ -369,6 +378,7 @@ export function MobileShell(props) {
             the prop is kept on the destructure for backward compat
             with the mock fixture. */}
         </div>
+        )}
         {/* Share-receive surface — self-contained component, hooks
             isolated. Renders null when no share intent in URL. */}
         {shareReceiverJSX}
