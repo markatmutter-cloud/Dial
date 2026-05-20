@@ -298,49 +298,58 @@ export function DesktopShell(props) {
         }}>× Clear all</button>
       )}
     </div>
-    {expandedSource && (
-      <div style={expansionPanelStyle}>
-        {SOURCES.length === 0 ? (
-          <span style={{ fontSize: 12, color: "var(--text3)" }}>No sources yet.</span>
-        ) : (
-          <>
-            {/* Group dealers and auction houses under sub-headers so
-                the list scans cleanly even at 30+ dealers. Headers are
-                inline pills (full-row width via flex basis) sandwiched
-                between the chip clusters. Live-listings sub-tab hides
-                the auction-house group; Live-auctions sub-tab hides
-                dealers — neither group is reachable from there anyway. */}
-            {showDealerSources && (DEALER_SOURCES?.length || 0) > 0 && (
-              <span style={{
-                flexBasis: "100%", fontSize: 10, fontWeight: 600,
-                textTransform: "uppercase", letterSpacing: "0.08em",
-                color: "var(--text3)", marginBottom: 2,
-              }}>Dealers</span>
-            )}
-            {showDealerSources && (DEALER_SOURCES || []).map(s => (
-              <Chip key={s} label={s} active={filterSources.includes(s)} onClick={() => toggleSource(s)} />
-            ))}
-            {showAuctionSources && (AUCTION_SOURCES?.length || 0) > 0 && (
-              <span style={{
-                flexBasis: "100%", fontSize: 10, fontWeight: 600,
-                textTransform: "uppercase", letterSpacing: "0.08em",
-                color: "var(--text3)", marginTop: showDealerSources ? 8 : 0, marginBottom: 2,
-              }}>Auction houses</span>
-            )}
-            {showAuctionSources && (AUCTION_SOURCES || []).map(s => (
-              <Chip key={s} label={s} active={filterSources.includes(s)} onClick={() => toggleSource(s)} />
-            ))}
-            {filterSources.length > 0 && (
-              <button onClick={() => setFilterSources([])} style={{
-                marginLeft: "auto", fontSize: 12, padding: "4px 10px", borderRadius: 6,
-                border: "0.5px solid var(--border)", background: "transparent",
-                color: "var(--text2)", cursor: "pointer", fontFamily: "inherit",
-              }}>Clear</button>
-            )}
-          </>
-        )}
-      </div>
-    )}
+    {expandedSource && (() => {
+      // Iterate the cross-axis-filtered effective list (visibleSources)
+      // — NOT the raw DEALER_SOURCES / AUCTION_SOURCES catalogs.
+      // Without this, picking brand=Urwerk shrinks the chip rail
+      // behind the pill but tapping "Source" still revealed every
+      // dealer (Mark feedback 2026-05-20). MobileShell already does
+      // this via PR_A; DesktopShell was missed.
+      const visDealers  = (visibleSources || []).filter(s => (DEALER_SOURCES || []).includes(s));
+      const visAuctions = (visibleSources || []).filter(s => (AUCTION_SOURCES || []).includes(s));
+      const hasAny = visDealers.length > 0 || visAuctions.length > 0;
+      return (
+        <div style={expansionPanelStyle}>
+          {!hasAny ? (
+            <span style={{ fontSize: 12, color: "var(--text3)" }}>
+              {(filterBrands?.length || 0) > 0 || (filterModels?.length || 0) > 0
+                ? "No sources match the active brand / model filter."
+                : "No sources yet."}
+            </span>
+          ) : (
+            <>
+              {showDealerSources && visDealers.length > 0 && (
+                <span style={{
+                  flexBasis: "100%", fontSize: 10, fontWeight: 600,
+                  textTransform: "uppercase", letterSpacing: "0.08em",
+                  color: "var(--text3)", marginBottom: 2,
+                }}>Dealers</span>
+              )}
+              {showDealerSources && visDealers.map(s => (
+                <Chip key={s} label={s} active={filterSources.includes(s)} onClick={() => toggleSource(s)} />
+              ))}
+              {showAuctionSources && visAuctions.length > 0 && (
+                <span style={{
+                  flexBasis: "100%", fontSize: 10, fontWeight: 600,
+                  textTransform: "uppercase", letterSpacing: "0.08em",
+                  color: "var(--text3)", marginTop: visDealers.length > 0 ? 8 : 0, marginBottom: 2,
+                }}>Auction houses</span>
+              )}
+              {showAuctionSources && visAuctions.map(s => (
+                <Chip key={s} label={s} active={filterSources.includes(s)} onClick={() => toggleSource(s)} />
+              ))}
+              {filterSources.length > 0 && (
+                <button onClick={() => setFilterSources([])} style={{
+                  marginLeft: "auto", fontSize: 12, padding: "4px 10px", borderRadius: 6,
+                  border: "0.5px solid var(--border)", background: "transparent",
+                  color: "var(--text2)", cursor: "pointer", fontFamily: "inherit",
+                }}>Clear</button>
+              )}
+            </>
+          )}
+        </div>
+      );
+    })()}
     {expandedBrand && (
       <div style={expansionPanelStyle}>
         {visibleBrands.map(b => (
