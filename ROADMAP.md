@@ -227,14 +227,13 @@ before deepening Epic 0 work.**
 In priority order. Each is contained and ships independently.
 
 1. **B — Attach `reference_id` to every listing at merge time.**
-   The matcher exists as a survey tool; integrate it into
-   `merge.py` and the auction-lot post-processing so every entry
-   in `listings.json` / `auction_lots.json` / `hairspring_finds.json`
-   carries `reference_id` + `model` + `sub_model` + `model_line`.
-   **Keystone**: unblocks per-reference grouping, the AdminTab
-   reading view, the Hairspring Finds → per-reference linkage.
-   Invisible-on-the-surface but the prereq for everything visible
-   downstream.
+   **SHIPPED 2026-05-19 PR #378.** `merge.py` runs
+   `reference_index_match.match_or_extract` against every dealer
+   item; fills `reference_id` / `model` / `sub_model` / `model_line`
+   where the matcher hits. Lazy-cached indices, no-op stub on
+   missing module. Auction lots + editorial projections were
+   already wired (since 2026-05-17). Dealer items pick up model
+   data on the next cron run.
 2. **C — `public/reference_guides.json` corpus storage.** Per the
    strategy doc, the corpus file keyed by `reference_id` with
    `source_type` tags. Version 1 is FREE — parse
@@ -261,18 +260,23 @@ In priority order. Each is contained and ships independently.
    for Omega `311.30` / Zenith `3100.3600`. ~80 lines in
    `reference_index_match.py`.
 
-#### Pending — auction essays + per-source description gaps
+#### Auction essays — status
 
-- **Sotheby's `catalogueNote` / `provenance` / `literature`** pull —
-  these fields are already in the LotV2 object we fetch but get
-  discarded. Adding them to `auction_lots_scraper.py` is a small
-  edit, captures the long-form essay content per lot. Type E in the
-  strategy doc.
-- **Christie's long essays** — investigate the auction-page payload
-  for an essay field; failing that, add bounded per-lot detail
-  fetches.
-- **Antiquorum descriptions** — currently empty in our output.
-  Per-lot detail fetches where the link exists.
+- **Sotheby's `catalogueNote` / `provenance` / `literature` /
+  `exhibition`** — **SHIPPED 2026-05-19 PR #374.** Extracted from
+  the LotV2 apolloCache; description cap lifted 600 → 4000.
+- **Christie's Lot Essay** — **SHIPPED 2026-05-19 PR #377.**
+  `_extract_christies_essay` pulls from per-lot detail page
+  (`<h2>Lot Essay</h2>` → `<div class="content-zone chr-body">`).
+  Gated by `CHRISTIES_ESSAYS` env var (default ON) for cron-time
+  throttling. Provenance / literature / exhibition kept as empty
+  schema-consistent keys (Christie's doesn't expose those as
+  separate sections).
+- **Antiquorum Notes / Provenance / Literature** — **SHIPPED
+  2026-05-19 PR #377.** Pulled from the post-sale catalog detail
+  page (`<h4>Notes</h4>` / `<h4>Provenance</h4>` / `<h4>Literature</h4>`).
+  Live-page (active sales) carries empty essay keys for schema
+  consistency.
 - **Phillips full essays** — parked. WAF blocks our IP after ~7
   detail-page fetches. Unblocks when the Mac-mini Playwright path
   lands (Mac mini Phase A in this Epic).
@@ -366,8 +370,11 @@ Still open from that session's audit:
 - **Padding scale snap** — Mostly done in PR #321 (23 → 11
   distinct pairs). Remaining outliers if any can be caught next
   audit pass.
-- **Missing empty states** — Listings filter-no-match, AuctionCalendar
-  empty, Home zero-recently-added. Component shape change.
+- **Missing empty states** — Listings filter-no-match was already
+  done (`<EmptyState heading="Nothing matches" .../>` in
+  `listingsGridJSX`). AuctionCalendar empty + Home zero-recently-
+  added still missing — addressed in PR #380 (this maintenance
+  session). Component shape change.
 - **Loading states** — only the initial fetch has one; saved-search
   results / list drill-ins / screener mount flicker through empty
   UI for a beat.
@@ -390,8 +397,9 @@ Still open from that session's audit:
 - **Auction calendar year-collapse for archive** — Mark answered
   yes during the desktop audit; deferred from this session.
   AuctionCalendar refactor needed.
-- **Mobile: remove Review button from Home** — Keep on desktop.
-  Small fix raised 2026-05-16 but not shipped.
+- ~~Mobile: remove Review button from Home~~ — **SHIPPED PR #331
+  (2026-05-16).** Gate `!isMobile` on the Recently-added Screen
+  pill. Verified 2026-05-19.
 
 - **`listings.json` split by status.** Currently 3.5 MB; users
   fetch the whole file on every page load. Split into

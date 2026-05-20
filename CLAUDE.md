@@ -419,9 +419,25 @@ detail for the four houses with working access:
   the catalog paginator, which was vendor-broken (?page=N
   301-redirected). Catalog URL bridge in
   `_resolve_antiquorum_live_auction_url`. See Scraper conventions
-  below for the full "live page" rule.
+  below for the full "live page" rule. **Catalog essay extraction
+  (PR #377, 2026-05-19):** for ended sales,
+  `enumerate_antiquorum_catalog` calls `scrape_catalog_antiquorum_lot`
+  which pulls Notes / Provenance / Literature sections from the
+  post-sale catalog detail page (`<h4>Notes</h4><div><div>…</div></div>`
+  / `<h4>Provenance</h4><div>…</div>` / `<h4>Literature</h4><div>…</div>`).
+  Plus `schema:description` for a short blurb. Most lots have empty
+  Notes — the rare-but-valuable subset (military pieces, important
+  provenance) now gets captured.
 - **Christie's** — inline `window.chrComponents.lots.data.lots` JSON
-  blob on the auction page; no per-lot fetch.
+  blob on the auction page covers title + estimates. Per-lot detail
+  fetch (PR #377, 2026-05-19) extracts Lot Essay from
+  `<h2>Lot Essay</h2>` → `<div class="content-zone chr-body">…</div>`
+  on each lot's detail page. Gated by `CHRISTIES_ESSAYS=1` env
+  (default ON); set to `0` to throttle if cron times grow past
+  acceptable. ~5-10 min added per typical Christie's sale.
+  Provenance / literature / exhibition kept as empty schema-
+  consistent keys (Christie's doesn't expose those as separate
+  sections).
 - **Sotheby's** — `__NEXT_DATA__.props.pageProps.algoliaJson.hits`,
   paginated via `&page=N`. PR #46 added a per-lot fetch to extract
   the canonical `og:image` brightspotcdn URL (algoliaJson hit
@@ -981,15 +997,28 @@ of completion, so the banner clears regardless of close path).
   thumbnails). Where possible extract from the homepage rendering
   instead of detail pages, and only fall back to detail pages for
   fields the home grid doesn't carry (title, price text).
-- **Image-proxy pattern for hot-link-protected dealers.** Three
-  dealers route through `/api/img` (Watchfid, Watches of Lancashire,
-  + a future fourth eventually). When a dealer returns 4xx to
-  cross-origin browser fetches (Cloudflare 403 with `vary: referer`,
-  Apache 404 on `Accept: image/webp`, etc.), add the host to BOTH
-  `src/utils.js` `PROXIED_IMG_HOSTS` AND `api/img.js` `ALLOWED_HOSTS`
-  + `REFERER_BY_HOST` in lockstep. The proxy fetches with the
-  dealer's own domain in Referer and minimal Accept. The CSV's
-  raw image URL stays unchanged; `imgSrc()` rewrites at render time.
+- **Image-proxy pattern for hot-link-protected dealers — THREE-place
+  lockstep.** Three dealers route through `/api/img` (Watchfid,
+  Watches of Lancashire, + a future fourth eventually). When a
+  dealer returns 4xx to cross-origin browser fetches (Cloudflare
+  403 with `vary: referer`, Apache 404 on `Accept: image/webp`,
+  etc.), add the host to ALL THREE in lockstep:
+  1. `src/utils.js` `PROXIED_IMG_HOSTS` — frontend chooses the
+     proxy URL on render.
+  2. `api/img.js` `ALLOWED_HOSTS` + `REFERER_BY_HOST` — the
+     proxy endpoint validates the host and sets the dealer's own
+     Referer.
+  3. `api/share.js` `PROXIED_IMG_HOSTS` — the OG-preview endpoint
+     routes the OG image through the proxy so iMessage / Slack /
+     Discord preview bots can fetch it (these bots see no Referer
+     and would 4xx without the proxy).
+  The third mirror was added 2026-05-19 PR #371 after Mark reported
+  WoL share-card images failing to load: utils.js + api/img.js had
+  both watchfid + WoL but share.js only had watchfid. Same shape
+  the next time a hot-linked dealer joins.
+  The proxy fetches with the dealer's own domain in Referer and
+  minimal Accept. The CSV's raw image URL stays unchanged;
+  `imgSrc()` rewrites at render time.
 - **`is_excluded_title` strips "o'clock" before running the
   clock-pattern regex.** The bare `\bclock\b` pattern matched
   "date aperture at 6 o'clock" and silently dropped 9/42 lots in
@@ -1144,6 +1173,25 @@ read that first if you're touching Epic 0 work.
 - `reference_survey.py` — pre-index regex-extraction baseline
   (53% on titles + descriptions). Kept as a re-runnable script.
 
+**Wired into every scrape path (Epic 0 slice B complete 2026-05-19
+PR #378).** The matcher runs against:
+- Dealer listings via `merge.py.enrich_with_reference_match` —
+  probes `brand + reference_no` first, falls back to title (Layer-4
+  model-name matching catches ref-less listings like Pelagos /
+  Aquanaut / Black Bay). Fills `reference_id` / `model` /
+  `sub_model` / `model_line` only when empty (per-dealer parser
+  fields win). Lazy-cached indices.
+- Auction lots: every per-house enumerator runs the matcher when
+  it builds a lot record (Antiquorum, Christie's, Phillips,
+  Sotheby's all wired since 2026-05-17).
+- Editorial projections: Hairspring Finds + Hodinkee Shop
+  scrapers run the matcher at scrape time.
+
+Downstream consumers (the Card brand+model prefix from PR #376,
+the Model filter axis from PR #379, the future per-reference page)
+can rely on every item having `model_line` populated when the
+matcher hits.
+
 **Patch-merge workflow.** Mark drops research-chat patches via
 GitHub mobile to `docs/<any-filename>.md`. The merge process:
 1. Pull main. Inspect the patch.
@@ -1259,6 +1307,15 @@ corpus AND project into App.js's Sold-archive view. Pattern:
    `hodinkeeShopItems`) that projects records to listings-shape
    (id from `shortHash(url)`, `sold: true`, brand / ref from the
    record, `desc` from `excerpt`).
+
+**Hodinkee source-label rename (2026-05-19 PR #369).** The
+`hodinkeeShopItems` projection emits `source: "Hodinkee"` (was
+"Hodinkee Shop"). Filename / SOURCE constant / env var
+(`HODINKEE_SHOP_FULL_REFRESH`) all stay as `hodinkee_shop` — fourth
+naming-divergence pattern (alongside collections/lists,
+watchlist/saved, references/learn). EditorialView surfaces BAL +
+Reference Points by COLUMN name, so the "Hodinkee" chip on
+Listings doesn't collide.
 4. That memo joins `mainFeedItems` alongside `items` +
    `auctionLotItems`.
 5. `DEALER_SOURCES` includes the projection so the source-chip rail
