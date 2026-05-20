@@ -217,6 +217,11 @@ def summarise(data: dict) -> str:
 
     # ── Collections breakdown ──
     out.append("\n\n## Collections (user-created lists + system buckets)")
+    out.append("\n**IMPORTANT — `source_of_entry` weighting:**")
+    out.append("- `manual`: user deliberately added → STRONG taste signal")
+    out.append("- `auction_review`: user kept after swipe-screening an auction → STRONG signal")
+    out.append("- `auction_bulk`: WHOLESALE-ADDED via 'Add catalog to list' (one tap = every lot in the sale lands in the list). NOT a taste signal — treat as bookmark/reference material, not curated desire.")
+    out.append("- `shared_with_me`: another user shared this with the collector → only a weak preference signal (depends on whether they reacted).\n")
     # Sort: system buckets first (Owned/Sold/Wishlist), then by item count.
     cols_sorted = sorted(cols, key=lambda c: (
         0 if c.get("is_system") else 1,
@@ -229,7 +234,13 @@ def summarise(data: dict) -> str:
         challenge_meta = ""
         if ctype == "challenge":
             challenge_meta = f" target={c.get('target_count')} budget={c.get('budget')}"
-        out.append(f"\n### {c['name']!r} ({ctype}{sysm}{challenge_meta}) — {len(items)} items")
+        # Surface source_of_entry mix so the LLM doesn't over-weight bulk-
+        # added auction catalogs as deliberate taste signals (Mark
+        # feedback 2026-05-20: the analyzer mistook bulk-added auction
+        # lots for curated saves).
+        soe_counts = Counter(it.get("source_of_entry") or "manual" for it in items)
+        soe_summary = ", ".join(f"{k}={v}" for k, v in soe_counts.most_common())
+        out.append(f"\n### {c['name']!r} ({ctype}{sysm}{challenge_meta}) — {len(items)} items [{soe_summary}]")
         if c.get("description"):
             out.append(f"   description: {c['description'][:200]}")
         # Sample items — manual entries first, then snapshot items.
@@ -257,8 +268,12 @@ def summarise(data: dict) -> str:
                 ref = snap.get("ref") or snap.get("model_line") or ""
                 price = it.get("saved_price_usd") or snap.get("priceUSD") or 0
                 pick_tag = " [PICK]" if it.get("is_pick") else ""
+                soe = it.get("source_of_entry") or "manual"
+                # Flag bulk-added items explicitly so the LLM doesn't
+                # confuse them with deliberate saves.
+                soe_tag = f" [{soe}]" if soe != "manual" else ""
                 reason = (it.get("reasoning") or "").strip()
-                line = f"   - {brand} {str(ref)[:60]}{pick_tag}"
+                line = f"   - {brand} {str(ref)[:60]}{pick_tag}{soe_tag}"
                 if price:
                     line += f" · ${float(price):.0f}"
                 if reason:
@@ -291,27 +306,52 @@ def summarise(data: dict) -> str:
     return "\n".join(out)
 
 
-SYSTEM_PROMPT = """You are a watch-collector taste analyst.
+BASE_SYSTEM_PROMPT = """You are a watch-collector taste analyst working within the framework defined in the strategy document above (RECOMMENDER_STRATEGY.md). Use that framework as your analytical lens — its three-layer model (reference knowledge / collector mentality / recommendation), the collector arc states (new enthusiast / reference builder / taste former / identity collector / market-aware / romantic-story / restraint / edge explorer), the seven recommendation modes (safe / adjacent / bridge / deep cut / surprise / counterpoint / restraint), and the collector psychology principle library (inversion / mimetic desire / opportunity cost / circle of competence / paradox of abundance / creativity at the edge / personal monopoly / via negativa / etc.).
 
 You will read a structured dataset of a single collector's behaviour on a vintage-watch curation app — what they've hearted, hidden, organised into lists, saved as recurring searches, marked as owned/sold/wishlist, and reacted to.
 
-Write a thoughtful 400-600 word profile of this collector. Cover:
+**Important data-shape caveats (read these BEFORE inferring taste):**
 
-1. **What kind of collector are they?** Era preferences, brand loyalty, complications, price comfort zone, niche vs canonical taste.
+1. The `source_of_entry` field on collection items distinguishes deliberate signals from non-taste-signal mass-imports. `auction_bulk` means the user one-tap-added an entire auction catalog (every single lot in the sale) as bookmark/reference material — NOT curated desire. Do not infer "this collector loves diamond Rolexes" from a catalog full of them being in a list with `auction_bulk` items.
 
-2. **Where is their taste decided vs exploratory?** Strong signals (heavy brand concentration, recurring refs, specific lists) vs places they're sampling more broadly.
+2. Lists with gift / for-someone-else names ("Watches for Jackie", "Watches for Mum", "for X's birthday") reflect taste for the recipient, NOT the collector's own taste. They reveal aesthetic range and self-awareness, but should be discussed separately from the collector's personal direction.
 
-3. **What's the through-line?** Is there a thematic thread (motorsport / military / tropical dials / integrated bracelets / classic designers)?
+3. `is_system=true` collections (Owned / Sold / Wishlist) are the most load-bearing personal signals. `flagged_for_sale` items + actual sold-price ledger reveal the buy / hold / exit pattern.
 
-4. **What might they be cautious of, and what are they aspirational about?** Hidden items and budget constraints point at the former; outlier price points and "wishlist" content point at the latter.
+4. Saved searches are user-named recurring interests — strong active-hunt signals.
 
-5. **Where might their taste go next?** Adjacent references, deeper cuts in lines they already favour, contrarian moves.
+5. Hidden items count is itself a signal: high hidden count + selective hearts = pickiness. Low hidden = casual browsing.
 
-6. **Blind spots and biases.** What's noticeably absent? Where might recommendations help them broaden?
+**Output structure** (~500-800 words, second-person):
 
-Write in second-person ("you") as if speaking to the collector. Be specific — name actual brands and references when they're clearly load-bearing. Avoid generic SaaS / horoscope language. If something is ambiguous, say so.
+1. **What kind of collector are you?** Era preferences, brand concentration, complications, price comfort zone. Map to one or two collector arc states from the strategy doc — name them explicitly.
 
-Don't list every brand or stat — synthesise. Quote a list name or a manual-entry note if it reveals intent. End with one or two pointed observations or questions worth thinking about."""
+2. **Where is your taste decided vs exploratory?** Be precise about which lists / refs / saved searches indicate hunting vs sampling. Distinguish bookmark/reference behaviour (auction_bulk, large analytical lists) from genuine desire.
+
+3. **Through-line / personal monopoly direction.** What collecting identity is emerging? Use the strategy doc's "personal monopoly" framing — what distinctive territory are you developing?
+
+4. **Psychology principles in play.** Pick 2-3 from the strategy doc's library that best describe behaviour patterns you see. Cite specifics from the data.
+
+5. **Recommendation modes that would land well.** From the seven modes (safe / adjacent / bridge / deep cut / surprise / counterpoint / restraint), pick 2-3 that fit this collector's current state and explain why. Give one concrete reference per mode you'd reach for.
+
+6. **Blind spots, biases, and via-negativa observations.** Where is removing / pausing / consolidating more useful than adding? What's absent that the data suggests should be considered?
+
+End with one or two pointed observations or questions worth sitting with. Avoid horoscope language. Name actual brands and references when they're load-bearing. If something is ambiguous, say so directly."""
+
+
+def load_strategy_doc(path: str) -> str:
+    """Load the RECOMMENDER_STRATEGY.md file as additional system context.
+
+    Returns the file contents wrapped in a heading, or empty string if the
+    file isn't accessible (defensive — the analyzer still produces a
+    usable profile without the framework lens, just less framework-aware).
+    """
+    try:
+        with open(path) as f:
+            content = f.read()
+    except (OSError, IOError):
+        return ""
+    return f"# RECOMMENDER STRATEGY (framework to use for the analysis)\n\n{content.strip()}\n"
 
 
 def main() -> None:
@@ -324,6 +364,9 @@ def main() -> None:
                         help="Print the assembled prompt to stderr before calling the API.")
     parser.add_argument("--out", default="",
                         help="Write analysis to this file in addition to stdout.")
+    parser.add_argument("--strategy-doc", default="docs/RECOMMENDER_STRATEGY.md",
+                        help="Prepend this doc as system context (default: "
+                             "docs/RECOMMENDER_STRATEGY.md). Empty to skip.")
     args = parser.parse_args()
 
     if not os.environ.get("ANTHROPIC_API_KEY"):
@@ -339,16 +382,33 @@ def main() -> None:
         print(user_prompt, file=sys.stderr)
         print("────── END PROMPT ──────\n", file=sys.stderr)
 
+    # Load strategy doc as a separate cacheable system block so the
+    # ~7K-token framework gets cache-read on subsequent runs.
+    strategy_doc = load_strategy_doc(args.strategy_doc) if args.strategy_doc else ""
+    if strategy_doc:
+        print(f"Loaded strategy framework from {args.strategy_doc} ({len(strategy_doc)} chars).", file=sys.stderr)
+    else:
+        print("Running WITHOUT strategy doc context (file not loaded).", file=sys.stderr)
+
+    system_blocks: list[dict] = []
+    if strategy_doc:
+        system_blocks.append({
+            "type": "text",
+            "text": strategy_doc,
+            "cache_control": {"type": "ephemeral"},
+        })
+    system_blocks.append({
+        "type": "text",
+        "text": BASE_SYSTEM_PROMPT,
+        "cache_control": {"type": "ephemeral"},
+    })
+
     print(f"Calling {args.model} ...", file=sys.stderr)
     client = anthropic.Anthropic()
     response = client.messages.create(
         model=args.model,
-        max_tokens=2000,
-        system=[{
-            "type": "text",
-            "text": SYSTEM_PROMPT,
-            "cache_control": {"type": "ephemeral"},
-        }],
+        max_tokens=2500,
+        system=system_blocks,
         messages=[{"role": "user", "content": user_prompt}],
     )
     text = next((b.text for b in response.content if b.type == "text"), "")
