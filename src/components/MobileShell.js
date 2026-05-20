@@ -19,6 +19,7 @@ export function MobileShell(props) {
   const {
     // Catalog / aliases
     BRANDS, BRANDS_SHOW, SOURCES, SOURCES_SHOW,
+    effectiveBrandsCount = 0, effectiveSourcesCount = 0, effectiveModelsCount = 0,
     DEALER_SOURCES, AUCTION_SOURCES,
     // State
     aboutModalOpen, allFiltered, displayedCount, brandsExpanded,
@@ -501,19 +502,27 @@ export function MobileShell(props) {
                       drawer compact at small viewports. */}
                   {sourcesExpanded ? (
                     <>
-                      {showDealerSources && (DEALER_SOURCES?.length || 0) > 0 && (
+                      {/* Expanded view: iterate the cross-axis-filtered
+                          effective lists, NOT the raw catalogs — otherwise
+                          tapping "+N more" reveals every source regardless
+                          of what's available under the active brand /
+                          sub-tab filter (Mark feedback 2026-05-20).
+                          DEALER_SOURCES and AUCTION_SOURCES gate the
+                          group headers; visibleSources represents the
+                          full effective set when expanded. */}
+                      {showDealerSources && (visibleSources || []).some(s => (DEALER_SOURCES || []).includes(s)) && (
                         <>
                           <div style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text3)", margin: "2px 0 6px" }}>Dealers</div>
                           <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                            {(DEALER_SOURCES || []).map(s => <Chip key={s} label={s} active={filterSources.includes(s)} onClick={() => toggleSource(s)} />)}
+                            {(visibleSources || []).filter(s => (DEALER_SOURCES || []).includes(s)).map(s => <Chip key={s} label={s} active={filterSources.includes(s)} onClick={() => toggleSource(s)} />)}
                           </div>
                         </>
                       )}
-                      {showAuctionSources && (AUCTION_SOURCES?.length || 0) > 0 && (
+                      {showAuctionSources && (visibleSources || []).some(s => (AUCTION_SOURCES || []).includes(s)) && (
                         <>
                           <div style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text3)", margin: showDealerSources ? "10px 0 6px" : "2px 0 6px" }}>Auction houses</div>
                           <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                            {(AUCTION_SOURCES || []).map(s => <Chip key={s} label={s} active={filterSources.includes(s)} onClick={() => toggleSource(s)} />)}
+                            {(visibleSources || []).filter(s => (AUCTION_SOURCES || []).includes(s)).map(s => <Chip key={s} label={s} active={filterSources.includes(s)} onClick={() => toggleSource(s)} />)}
                           </div>
                         </>
                       )}
@@ -532,7 +541,7 @@ export function MobileShell(props) {
                         .filter(s => (showDealerSources && (DEALER_SOURCES || []).includes(s))
                                   || (showAuctionSources && (AUCTION_SOURCES || []).includes(s)))
                         .map(s => <Chip key={s} label={s} active={filterSources.includes(s)} onClick={() => toggleSource(s)} />)}
-                      {SOURCES.length > SOURCES_SHOW && <Chip label={`+${SOURCES.length - SOURCES_SHOW} more`} active={false} onClick={() => setSourcesExpanded(true)} blue />}
+                      {effectiveSourcesCount > SOURCES_SHOW && <Chip label={`+${effectiveSourcesCount - SOURCES_SHOW} more`} active={false} onClick={() => setSourcesExpanded(true)} blue />}
                     </div>
                   )}
                 </div>
@@ -542,7 +551,7 @@ export function MobileShell(props) {
                   <div style={sectionHeadingStyle}>Brand</div>
                   <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                     {visibleBrands.map(b => <Chip key={b} label={b} active={filterBrands.includes(b)} onClick={() => toggleBrand(b)} />)}
-                    {BRANDS.length > BRANDS_SHOW && <Chip label={brandsExpanded ? "Less ↑" : `+${BRANDS.length - BRANDS_SHOW} more`} active={false} onClick={() => setBrandsExpanded(!brandsExpanded)} blue />}
+                    {effectiveBrandsCount > BRANDS_SHOW && <Chip label={brandsExpanded ? "Less ↑" : `+${effectiveBrandsCount - BRANDS_SHOW} more`} active={false} onClick={() => setBrandsExpanded(!brandsExpanded)} blue />}
                   </div>
                 </div>
                 {(MODELS?.length || 0) > 0 && (
@@ -554,8 +563,8 @@ export function MobileShell(props) {
                         {(visibleModels || []).map(m => (
                           <Chip key={m} label={m} active={(filterModels || []).includes(m)} onClick={() => toggleModel && toggleModel(m)} />
                         ))}
-                        {(MODELS.length || 0) > (MODELS_SHOW || 0) && (
-                          <Chip label={modelsExpanded ? "Less ↑" : `+${MODELS.length - MODELS_SHOW} more`}
+                        {effectiveModelsCount > (MODELS_SHOW || 0) && (
+                          <Chip label={modelsExpanded ? "Less ↑" : `+${effectiveModelsCount - MODELS_SHOW} more`}
                                 active={false} onClick={() => setModelsExpanded && setModelsExpanded(!modelsExpanded)} blue />
                         )}
                       </div>

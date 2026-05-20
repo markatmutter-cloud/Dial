@@ -1987,7 +1987,7 @@ For listing matching: CPCP and Privé are critical signals for authentication an
 - **Common nicknames**: “Ranger”, “Tudor Explorer” (homage understanding)
 - **Notes**: The Heritage Ranger 79910 (2014–2019) was the first modern Ranger and remains a budget-friendly used pick; the 2022 `79950` Ranger is significantly more refined with the in-house movement and is closer in proportion to the vintage 7995/0 and the Rolex Explorer 1016 it pays homage to. Vintage Ranger references (`7995`, `9050`, `7966`, `9101`) sat across the Tudor Oyster line — see vintage section.
 
-### Model line: Vintage Submariner / Oyster Prince Submariner
+### Model line: Submariner
 
 - **Refs**: `7922` (1954–1955), `7923` (manual wind 1955–1957, ultra-rare), `7924` “Big Crown” (1958–1959), `7928` (1959–1968, longest run), `7016` (1969–1975, snowflake non-date), `7021` (1969–1975, snowflake date), `9401` / `9411` (1975–1983, snowflake), `94010` / `94110` (1981–1989, transitional), `79090` (1989–1995, acrylic crystal), `79190` (1995–1999, sapphire crystal, final)
 - **Years**: 1954–1999

@@ -1647,12 +1647,18 @@ export default function Watchlist() {
   // listing of the same brand appears. Mark set this to 2 on
   // 2026-04-29 — adjustable later if the chip rail feels sparse.
   const BRAND_CHIP_MIN = 2;
-  // Per-sub-tab pool — shared base for chip-rail counts. Live
-  // listings + Auction calendar + Watchlist + References all fall
-  // through to the live dealer pool (Watchlist's sub-tab scoping
-  // isn't wired in here yet — refine when a complaint surfaces).
-  // Pre-2026-05-05 the brand chip rail read every live dealer item
-  // regardless of tab; sub-tab scoping fixed that.
+  // Per-tab pool — shared base for chip-rail counts (brand, source,
+  // model). Computing this off the wrong pool was the root cause of
+  // "brand → source filter doesn't react on Watchlist tab" — Mark
+  // feedback 2026-05-20. Branches:
+  //   Listings > Live auctions → live auction-format items
+  //   Listings > All sold      → mixed sold items
+  //   Watchlist (any sub-tab)  → user's saved set (hearted watchlist
+  //                              items + tracked-lot projections),
+  //                              full saved set regardless of sub-tab
+  //                              so the chip rail covers everything
+  //                              the user has saved
+  //   Everything else          → live dealer pool
   const currentPool = useMemo(() => {
     if (tab === "listings" && listingsSubTab === "auctions") {
       return mainFeedItems.filter(i =>
@@ -1660,9 +1666,29 @@ export default function Watchlist() {
       );
     } else if (tab === "listings" && listingsSubTab === "sold") {
       return mainFeedItems.filter(i => i.sold && !hidden[i.id]);
+    } else if (tab === "watchlist") {
+      // Merge savedItemsSnapshot (durable copy) + watchlist (current
+      // hearts). Newer watchlist values win on key collision so
+      // chip-rail counts reflect any in-flight un-heart cleanly.
+      const arr = Object.values({ ...savedItemsSnapshot, ...watchlist });
+      // Tracked lots — eBay items + any auction-house lots tracked
+      // via the +Track flow. Only the fields the chip rails read
+      // (brand, source, model, model_line) need to be present.
+      for (const url of trackedLotUrls) {
+        const data = trackedLotsState[url];
+        if (!data) continue;
+        arr.push({
+          source: data.house || "—",
+          brand: data.brand || "Other",
+          model: data.model || null,
+          model_line: data.model_line || null,
+        });
+      }
+      return arr;
     }
     return items.filter(i => !i.sold && !hidden[i.id]);
-  }, [items, hidden, mainFeedItems, tab, listingsSubTab]);
+  }, [items, hidden, mainFeedItems, tab, listingsSubTab,
+      savedItemsSnapshot, watchlist, trackedLotUrls, trackedLotsState]);
   // Brand counts power both the filter-chip rail (BRANDS below) and
   // the singleton-collapse decision in displayBrand. Pool depends on
   // the active sub-tab, NOT on filterSources — keep brandCounts as
@@ -3763,6 +3789,12 @@ export default function Watchlist() {
     // Catalog / config
     BRANDS, BRANDS_SHOW, SOURCES, SOURCES_SHOW,
     MODELS, MODELS_SHOW,
+    // Effective list lengths drive the "+N more" chip — without
+    // these, the chip text says "+107 more" even when the filter has
+    // narrowed the rail to ~3 chips (Mark feedback 2026-05-20).
+    effectiveBrandsCount: effectiveBrands.length,
+    effectiveSourcesCount: effectiveSources.length,
+    effectiveModelsCount: effectiveModels.length,
     DEALER_SOURCES, AUCTION_SOURCES,
     // State
     aboutModalOpen, activeFilterPop, allFiltered, displayedCount,
