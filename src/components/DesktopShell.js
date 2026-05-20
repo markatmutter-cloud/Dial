@@ -23,6 +23,7 @@ export function DesktopShell(props) {
     brandsExpanded,
     currentIsSaved,
     filterBrands, filterSources, filterModels,
+    effectiveBrandsCount = 0, effectiveSourcesCount = 0, effectiveModelsCount = 0,
     listingsSubTab,
     allFiltered, displayedCount,
     hasFilters, hiddenItems,
@@ -345,8 +346,8 @@ export function DesktopShell(props) {
         {visibleBrands.map(b => (
           <Chip key={b} label={b} active={filterBrands.includes(b)} onClick={() => toggleBrand(b)} />
         ))}
-        {BRANDS.length > BRANDS_SHOW && (
-          <Chip label={brandsExpanded ? "Less ↑" : `+${BRANDS.length - BRANDS_SHOW} more`}
+        {effectiveBrandsCount > BRANDS_SHOW && (
+          <Chip label={brandsExpanded ? "Less ↑" : `+${effectiveBrandsCount - BRANDS_SHOW} more`}
             active={false} onClick={() => setBrandsExpanded(!brandsExpanded)} blue />
         )}
         {filterBrands.length > 0 && (
@@ -363,8 +364,8 @@ export function DesktopShell(props) {
         {(visibleModels || []).map(m => (
           <Chip key={m} label={m} active={(filterModels || []).includes(m)} onClick={() => toggleModel && toggleModel(m)} />
         ))}
-        {(MODELS?.length || 0) > (MODELS_SHOW || 0) && (
-          <Chip label={modelsExpanded ? "Less ↑" : `+${MODELS.length - MODELS_SHOW} more`}
+        {effectiveModelsCount > (MODELS_SHOW || 0) && (
+          <Chip label={modelsExpanded ? "Less ↑" : `+${effectiveModelsCount - MODELS_SHOW} more`}
             active={false} onClick={() => setModelsExpanded && setModelsExpanded(!modelsExpanded)} blue />
         )}
         {(filterModels?.length || 0) > 0 && (

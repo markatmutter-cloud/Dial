@@ -102,10 +102,23 @@ try:
                 model_name_index=model_name_idx,
             )
             if hit:
+                hit_brand = hit.get("brand")
+                # Cross-pollination guard (2026-05-20): if the matcher's
+                # brand DISAGREES with our known brand, reject the hit.
+                # Without this, "TUDOR Heritage M70330N ... 2018" had
+                # "2018" matched as Cartier Crash reference 2018,
+                # planting `model=Crash` on Tudor items. Year-vs-ref
+                # collisions like this happen any time a numeric token
+                # in a title happens to be a registered reference for a
+                # different brand. Only apply the hit when brands agree
+                # or when our brand was empty/Other (matcher fills in).
+                brand_known = bool(brand) and brand != "Other"
+                if hit_brand and brand_known and hit_brand != brand:
+                    continue
                 # Trust the matcher's canonical brand when our existing
                 # value is empty / Other (e.g. scraper failed to detect).
-                if hit.get("brand") and (not brand or brand == "Other"):
-                    item["brand"] = hit["brand"]
+                if hit_brand and not brand_known:
+                    item["brand"] = hit_brand
                 # Fill structured fields only when our parser didn't.
                 if hit.get("reference_id") and not item.get("reference_id"):
                     item["reference_id"] = hit["reference_id"]
