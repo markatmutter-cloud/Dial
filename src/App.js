@@ -176,8 +176,9 @@ export default function Watchlist() {
   const {
     filterSources, setFilterSources,
     filterBrands,  setFilterBrands,
+    filterModels,  setFilterModels,
     filterRefs,    setFilterRefs,
-    toggleSource, toggleBrand,
+    toggleSource, toggleBrand, toggleModel,
     sort, setSort,
     search, setSearch,
     minPriceText, setMinPriceText,
@@ -187,6 +188,7 @@ export default function Watchlist() {
     statusMode, setStatusMode,
     brandsExpanded,  setBrandsExpanded,
     sourcesExpanded, setSourcesExpanded,
+    modelsExpanded,  setModelsExpanded,
     refsExpanded,    setRefsExpanded,
     activeFilterPop, setActiveFilterPop,
     filterPopRef,
@@ -1737,6 +1739,41 @@ export default function Watchlist() {
       : currentPool;
     return new Set(pool.map(displayBrand));
   }, [currentPool, filterSources, displayBrand]);
+  // Model filter axis (Epic 0 slice B → Mark spec 2026-05-19 item 7).
+  // Values are model_line strings populated by reference_index_match.
+  // Coverage is partial (~43% of dealer items + most auction lots +
+  // editorial projections) — surface only models with >= 2 hits to
+  // avoid singleton clutter.
+  const MODEL_CHIP_MIN = 2;
+  const modelCounts = useMemo(() => {
+    // modelCounts mirrors brandCounts — keyed on currentPool, NOT
+    // narrowed by other filters. modelsAvailableInPool (below) handles
+    // cross-axis reactivity.
+    const c = {};
+    currentPool.forEach(i => {
+      const m = i.model_line;
+      if (!m) return;
+      c[m] = (c[m] || 0) + 1;
+    });
+    return c;
+  }, [currentPool]);
+  const MODELS = useMemo(() => {
+    return Object.entries(modelCounts)
+      .filter(([, n]) => n >= MODEL_CHIP_MIN)
+      .sort((a, b) => b[1] - a[1])
+      .map(([m]) => m);
+  }, [modelCounts]);
+  // Models available after source + brand filter applies.
+  const modelsAvailableInPool = useMemo(() => {
+    let pool = currentPool;
+    if (filterSources.length > 0) {
+      pool = pool.filter(i => filterSources.includes(i.source));
+    }
+    if (filterBrands.length > 0) {
+      pool = pool.filter(i => filterBrands.includes(displayBrand(i)));
+    }
+    return new Set(pool.map(i => i.model_line).filter(Boolean));
+  }, [currentPool, filterSources, filterBrands, displayBrand]);
   // Reference chips aggregate digit sequences (3-6 digits, optional .NNN)
   // found in listing titles. Years (1900-2099) are filtered out so a 4-digit
   // year doesn't pose as a ref. Refs are **scoped to the current brand
@@ -1767,7 +1804,7 @@ export default function Watchlist() {
 
   // (minPrice / maxPrice — int-parsed bounds — now derived inside
   // useFilters from the raw text inputs.)
-  useEffect(() => { setPage(1); }, [filterSources, filterBrands, filterRefs, search, sort, newDays, minPriceText, maxPriceText]);
+  useEffect(() => { setPage(1); }, [filterSources, filterBrands, filterModels, filterRefs, search, sort, newDays, minPriceText, maxPriceText]);
 
   // Sign-in gate for save actions. Tapping the heart or X while signed
   // out triggers the Google OAuth redirect instead of silently doing
@@ -1909,6 +1946,7 @@ export default function Watchlist() {
     if (newDays > 0) its = its.filter(i => daysAgo(freshDate(i)) <= newDays && !i.backfilled);
     if (filterSources.length > 0) its = its.filter(i => filterSources.includes(i.source));
     if (filterBrands.length > 0) its = its.filter(i => filterBrands.includes(displayBrand(i)));
+    if (filterModels.length > 0) its = its.filter(i => filterModels.includes(i.model_line));
     if (search.trim()) {
       its = its.filter(i => matchesSearch(i, search));
     }
@@ -1975,7 +2013,7 @@ export default function Watchlist() {
       });
     }
     return its;
-  }, [mainFeedItems, filterSources, filterBrands, filterRefs, hidden, watchlist, search, sort, minPrice, maxPrice, newDays, listingsSubTab, filterHearted]);
+  }, [mainFeedItems, filterSources, filterBrands, filterModels, filterRefs, hidden, watchlist, search, sort, minPrice, maxPrice, newDays, listingsSubTab, filterHearted]);
 
   const visible = useMemo(() => allFiltered.slice(0, page * PAGE_SIZE), [allFiltered, page]);
   const hasMore = visible.length < allFiltered.length;
@@ -2218,6 +2256,7 @@ export default function Watchlist() {
     // predicates work here.
     if (filterSources.length > 0) its = its.filter(i => filterSources.includes(i.source));
     if (filterBrands.length > 0)  its = its.filter(i => filterBrands.includes(displayBrand(i)));
+    if (filterModels.length > 0)  its = its.filter(i => filterModels.includes(i.model_line));
     if (filterRefs.length > 0) {
       its = its.filter(i => {
         const ref = (i.ref || "").toLowerCase();
@@ -2264,7 +2303,7 @@ export default function Watchlist() {
         : (b.savedAt || "").localeCompare(a.savedAt || ""));
     }
     return its;
-  }, [watchlist, savedItemsSnapshot, liveStateById, sort, filterSources, filterBrands, filterRefs, search,
+  }, [watchlist, savedItemsSnapshot, liveStateById, sort, filterSources, filterBrands, filterModels, filterRefs, search,
       minPrice, maxPrice, watchTopTab,
       trackedLotUrls, trackedLotsState, trackedLotAddedAt]);
 
@@ -2390,6 +2429,11 @@ export default function Watchlist() {
   const visibleBrands = brandsExpanded ? effectiveBrands : effectiveBrands.slice(0, BRANDS_SHOW);
   const effectiveSources = SOURCES.filter(s => (sourceCounts[s] || 0) > 0 || filterSources.includes(s));
   const visibleSources = sourcesExpanded ? effectiveSources : effectiveSources.slice(0, SOURCES_SHOW);
+  // Models — same reactive pattern. MODELS_SHOW=8 is conservative
+  // because the model_line strings tend to be longer than brands.
+  const MODELS_SHOW = 8;
+  const effectiveModels = MODELS.filter(m => modelsAvailableInPool.has(m) || filterModels.includes(m));
+  const visibleModels = modelsExpanded ? effectiveModels : effectiveModels.slice(0, MODELS_SHOW);
   const REFS_SHOW = 12;
   const visibleRefs = refsExpanded ? REFS : REFS.slice(0, REFS_SHOW);
   const NEW_OPTS = [{ label: "Today", days: 1 }, { label: "3 days", days: 3 }, { label: "This week", days: 7 }];
@@ -2943,6 +2987,7 @@ export default function Watchlist() {
     <ActiveFiltersStrip
       filterSources={filterSources} toggleSource={toggleSource}
       filterBrands={filterBrands}   toggleBrand={toggleBrand}
+      filterModels={filterModels}   toggleModel={toggleModel}
       filterRefs={filterRefs}       toggleFilterRef={toggleFilterRef}
       search={search}               setSearch={setSearch}
       newDays={newDays}             setNewDays={setNewDays}
@@ -3717,35 +3762,36 @@ export default function Watchlist() {
   const shellProps = {
     // Catalog / config
     BRANDS, BRANDS_SHOW, SOURCES, SOURCES_SHOW,
+    MODELS, MODELS_SHOW,
     DEALER_SOURCES, AUCTION_SOURCES,
     // State
     aboutModalOpen, activeFilterPop, allFiltered, displayedCount,
     brandsExpanded, currentIsSaved,
     drawerOpen,
-    filterBrands, filterSources,
+    filterBrands, filterSources, filterModels,
     listingsSubTab,
     hasFilters, hiddenItems,
     maxPriceText, minPriceText,
     filterHearted,
-    search, signInPromptOpen, signInWithGoogle, sort, sourcesExpanded, tab, user,
-    visibleBrands, visibleSources,
+    search, signInPromptOpen, signInWithGoogle, sort, sourcesExpanded, modelsExpanded, tab, user,
+    visibleBrands, visibleSources, visibleModels,
     watchTopTab, watchlist,
     // Setters / handlers
     handleWish, openFavPrompt, resetFilters,
     setAboutModalOpen, setActiveFilterPop, setBrandsExpanded,
     setDrawerOpen,
-    setFilterBrands, setFilterHearted, setFilterSources,
+    setFilterBrands, setFilterHearted, setFilterSources, setFilterModels,
     setListingsSubTab,
     setMaxPriceText, setMinPriceText,
     setPage, setSearch, setShowUserMenu, setSignInPromptOpen,
-    setSort, setSourcePickerOpen, setSourcesExpanded,
+    setSort, setSourcePickerOpen, setSourcesExpanded, setModelsExpanded,
     // Wrapped: top-level nav from shells uses the wrapper so that
     // clicking the Watchlist logo or a main tab while a share-receive
     // surface is up auto-escapes (clears URL params + dismisses the
     // receiver) rather than leaving the recipient stuck. Internal
     // setTab callsites in App.js use the raw setTab.
     setTab: setTabWithReceiveEscape,
-    toggleBrand, toggleHide, toggleSource,
+    toggleBrand, toggleHide, toggleSource, toggleModel,
     // Style tokens / pre-built JSX
     addSearchModalJSX,
     authJSX, baseStyle,

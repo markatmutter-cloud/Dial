@@ -19,6 +19,8 @@ export function buildMockShellProps(overrides = {}) {
     BRANDS_SHOW: 12,
     SOURCES: ["Wind Vintage", "Menta"],
     SOURCES_SHOW: 6,
+    MODELS: [],
+    MODELS_SHOW: 8,
     DEALER_SOURCES: ["Wind Vintage", "Menta"],
     AUCTION_SOURCES: ["Antiquorum"],
 
@@ -37,6 +39,9 @@ export function buildMockShellProps(overrides = {}) {
     filterBrands: [],
     filterHearted: false,
     filterSources: [],
+    filterModels: [],
+    modelsExpanded: false,
+    visibleModels: [],
     listingsSubTab: "live",
     hasFilters: false,
     activeFiltersStripJSX: null,
@@ -80,6 +85,9 @@ export function buildMockShellProps(overrides = {}) {
     toggleBrand: noop,
     toggleHide: noop,
     toggleSource: noop,
+    toggleModel: noop,
+    setFilterModels: noop,
+    setModelsExpanded: noop,
 
     // Style tokens / pre-built JSX placeholders
     addSearchModalJSX: null,

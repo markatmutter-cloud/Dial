@@ -23,25 +23,26 @@ export function MobileShell(props) {
     // State
     aboutModalOpen, allFiltered, displayedCount, brandsExpanded,
     currentIsSaved, drawerOpen,
-    filterBrands, filterSources,
+    filterBrands, filterSources, filterModels,
     listingsSubTab,
     hasFilters, hiddenItems,
     maxPriceText, minPriceText,
     filterHearted,
-    search, signInPromptOpen, signInWithGoogle, sort, sourcesExpanded,
-    tab, user, visibleBrands, visibleSources,
+    search, signInPromptOpen, signInWithGoogle, sort, sourcesExpanded, modelsExpanded,
+    tab, user, visibleBrands, visibleSources, visibleModels,
+    MODELS, MODELS_SHOW,
     watchTopTab, watchlist,
     // Setters / handlers
     handleWish, openFavPrompt, resetFilters,
-    setAboutModalOpen, setBrandsExpanded,
+    setAboutModalOpen, setBrandsExpanded, setModelsExpanded,
     setDrawerOpen,
-    setFilterHearted,
+    setFilterHearted, setFilterModels,
     setMaxPriceText, setMinPriceText,
     setListingsSubTab,
     setPage, setSearch, setSignInPromptOpen, setSort,
     setSourcePickerOpen, setSourcesExpanded,
     setTab,
-    toggleBrand, toggleHide, toggleSource,
+    toggleBrand, toggleHide, toggleSource, toggleModel,
     // Style tokens / pre-built JSX
     addSearchModalJSX,
     authJSX, baseStyle,
@@ -544,6 +545,23 @@ export function MobileShell(props) {
                     {BRANDS.length > BRANDS_SHOW && <Chip label={brandsExpanded ? "Less ↑" : `+${BRANDS.length - BRANDS_SHOW} more`} active={false} onClick={() => setBrandsExpanded(!brandsExpanded)} blue />}
                   </div>
                 </div>
+                {(MODELS?.length || 0) > 0 && (
+                  <>
+                    <div style={{ height: "0.5px", background: "var(--border)", margin: "0 16px 0" }} />
+                    <div style={{ padding: "8px 16px 6px" }}>
+                      <div style={sectionHeadingStyle}>Model</div>
+                      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                        {(visibleModels || []).map(m => (
+                          <Chip key={m} label={m} active={(filterModels || []).includes(m)} onClick={() => toggleModel && toggleModel(m)} />
+                        ))}
+                        {(MODELS.length || 0) > (MODELS_SHOW || 0) && (
+                          <Chip label={modelsExpanded ? "Less ↑" : `+${MODELS.length - MODELS_SHOW} more`}
+                                active={false} onClick={() => setModelsExpanded && setModelsExpanded(!modelsExpanded)} blue />
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )}
                 <div style={{ height: "0.5px", background: "var(--border)", margin: "0 16px 0" }} />
 
                 <div style={{ padding: "8px 16px 6px" }}>

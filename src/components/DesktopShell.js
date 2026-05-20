@@ -22,22 +22,23 @@ export function DesktopShell(props) {
     aboutModalOpen, activeFilterPop,
     brandsExpanded,
     currentIsSaved,
-    filterBrands, filterSources,
+    filterBrands, filterSources, filterModels,
     listingsSubTab,
     allFiltered, displayedCount,
     hasFilters, hiddenItems,
     maxPriceText, minPriceText,
     filterHearted, search, signInPromptOpen, signInWithGoogle, sort,
-    tab, user, visibleBrands,
+    tab, user, visibleBrands, visibleModels,
+    MODELS, MODELS_SHOW, modelsExpanded, setModelsExpanded,
     watchTopTab, watchlist,
     // Setters / handlers
     handleWish, openFavPrompt, resetFilters,
     setAboutModalOpen, setActiveFilterPop, setBrandsExpanded,
-    setFilterBrands, setFilterSources,
+    setFilterBrands, setFilterSources, setFilterModels,
     setMaxPriceText, setMinPriceText,
     setFilterHearted, setPage, setSearch, setSignInPromptOpen, setSort,
     setTab,
-    toggleBrand, toggleHide, toggleSource,
+    toggleBrand, toggleHide, toggleSource, toggleModel,
     // Pre-built JSX
     addSearchModalJSX,
     authJSX, baseStyle,
@@ -106,10 +107,11 @@ export function DesktopShell(props) {
     };
     const expandedSource = activeFilterPop === "source";
     const expandedBrand  = activeFilterPop === "brand";
+    const expandedModel  = activeFilterPop === "model";
     return (
     <>
     <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 20px",
-                  borderBottom: expandedSource || expandedBrand ? "none" : "0.5px solid var(--border)",
+                  borderBottom: expandedSource || expandedBrand || expandedModel ? "none" : "0.5px solid var(--border)",
                   flexShrink: 0, flexWrap: "wrap", position: "relative" }}>
       {/* Status segment retired 2026-05-04 — both Listings AND
           Watchlist now have sub-tabs that cover Live / Sold. */}
@@ -257,6 +259,16 @@ export function DesktopShell(props) {
         style={dtPill(filterBrands.length > 0 || activeFilterPop === "brand")}>
         Brand{filterBrands.length > 0 ? ` · ${filterBrands.length}` : ""}
       </button>
+      {/* Model trigger — only renders when there are any model_line
+          values to filter by (MODELS is empty until the matcher hits
+          enough items). Avoids a permanent-dead pill on tabs/views
+          with no matched items. */}
+      {(MODELS?.length || 0) > 0 && (
+        <button onClick={() => setActiveFilterPop(p => p === "model" ? null : "model")}
+          style={dtPill((filterModels?.length || 0) > 0 || activeFilterPop === "model")}>
+          Model{(filterModels?.length || 0) > 0 ? ` · ${filterModels.length}` : ""}
+        </button>
+      )}
 
       {/* Auctions-only pill retired 2026-05-04 — Watchlist > Saved
           auctions sub-tab covers it. */}
@@ -339,6 +351,24 @@ export function DesktopShell(props) {
         )}
         {filterBrands.length > 0 && (
           <button onClick={() => setFilterBrands([])} style={{
+            marginLeft: "auto", fontSize: 12, padding: "4px 10px", borderRadius: 6,
+            border: "0.5px solid var(--border)", background: "transparent",
+            color: "var(--text2)", cursor: "pointer", fontFamily: "inherit",
+          }}>Clear</button>
+        )}
+      </div>
+    )}
+    {expandedModel && (
+      <div style={expansionPanelStyle}>
+        {(visibleModels || []).map(m => (
+          <Chip key={m} label={m} active={(filterModels || []).includes(m)} onClick={() => toggleModel && toggleModel(m)} />
+        ))}
+        {(MODELS?.length || 0) > (MODELS_SHOW || 0) && (
+          <Chip label={modelsExpanded ? "Less ↑" : `+${MODELS.length - MODELS_SHOW} more`}
+            active={false} onClick={() => setModelsExpanded && setModelsExpanded(!modelsExpanded)} blue />
+        )}
+        {(filterModels?.length || 0) > 0 && (
+          <button onClick={() => setFilterModels && setFilterModels([])} style={{
             marginLeft: "auto", fontSize: 12, padding: "4px 10px", borderRadius: 6,
             border: "0.5px solid var(--border)", background: "transparent",
             color: "var(--text2)", cursor: "pointer", fontFamily: "inherit",

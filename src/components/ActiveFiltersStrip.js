@@ -68,6 +68,7 @@ export function ActiveFiltersStrip({
   // Multi-selects
   filterSources = [], toggleSource,
   filterBrands  = [], toggleBrand,
+  filterModels  = [], toggleModel,
   filterRefs    = [], toggleFilterRef,
   // Search
   search = "", setSearch,
@@ -84,6 +85,7 @@ export function ActiveFiltersStrip({
   const hasAny = (
     filterSources.length > 0
     || filterBrands.length > 0
+    || filterModels.length > 0
     || filterRefs.length > 0
     || !!search
     || newDays > 0
@@ -129,6 +131,9 @@ export function ActiveFiltersStrip({
       ))}
       {filterBrands.map(b => (
         <FilterChip key={`brand-${b}`} label={b} onRemove={() => toggleBrand && toggleBrand(b)} />
+      ))}
+      {filterModels.map(m => (
+        <FilterChip key={`model-${m}`} label={m} onRemove={() => toggleModel && toggleModel(m)} />
       ))}
       {filterRefs.map(r => (
         <FilterChip key={`ref-${r}`} label={`Ref ${r}`} onRemove={() => toggleFilterRef && toggleFilterRef(r)} />
