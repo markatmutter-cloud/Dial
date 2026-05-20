@@ -164,6 +164,14 @@ def scrape_antiquorum_lot(url):
         "lot_number": lot.get("lot_number"),
         "title": _enrich_antiquorum_title(lot.get("title"), lot.get("description")),
         "description": (lot.get("description") or "").replace("<br/>", " ").strip()[:600],
+        # Live-page lots don't carry the catalog page's Notes /
+        # Provenance / Literature sections — those land in the post-
+        # sale catalog detail page. Keep keys present for schema
+        # consistency with Sotheby's + Christie's.
+        "catalogue_note": "",
+        "provenance": "",
+        "literature": "",
+        "exhibition": "",
         "currency": currency,
         "estimate_low": lot.get("estimate_low"),
         "estimate_high": lot.get("estimate_high"),
@@ -310,12 +318,55 @@ def scrape_catalog_antiquorum_lot(url):
         currency = sold_currency
     status = "ended" if sold_price is not None else "active"
 
+    # Notes + Provenance + Literature sections live in the post-sale
+    # catalog page as `<h4>Notes</h4><div><div>ESSAY</div></div>` /
+    # `<h4>Provenance</h4><div>TEXT</div>` / `<h4>Literature</h4>
+    # <div>TEXT</div>`. Sometimes present (military issues, important
+    # provenance), often empty (Mark feedback 2026-05-19: "Antiquorum
+    # doesn't have a lot of auction lot essays, but there are some
+    # that are good"). Capture all three for the rare-but-valuable
+    # subset that has them.
+    def _section_text(label, double_div=False):
+        # Notes uses nested <div><div>...</div></div>; Provenance +
+        # Literature use single <div>...</div>. The double_div arg
+        # picks the right pattern.
+        if double_div:
+            pat = rf"<h4>{label}</h4>\s*<div>\s*<div>(.*?)</div>\s*</div>"
+        else:
+            pat = rf"<h4>{label}</h4>\s*<div>(.*?)</div>"
+        m = re.search(pat, html, re.IGNORECASE | re.DOTALL)
+        if not m:
+            return ""
+        raw = m.group(1)
+        # Strip remaining HTML tags + normalize whitespace.
+        text = re.sub(r"<[^>]+>", " ", raw)
+        text = re.sub(r"\s+", " ", text).strip()
+        return text
+    notes = _section_text("Notes", double_div=True)
+    provenance = _section_text("Provenance", double_div=False)
+    literature = _section_text("Literature", double_div=False)
+    # Schema:description provides a short single-sentence summary
+    # ("A fine and rare, unusual, large, chrome, manual wind …").
+    # Treat as the structured description when present.
+    schema_desc = ""
+    sd = re.search(r'property="schema:description"[^>]*content="([^"]*)"', html)
+    if sd:
+        # Unescape basic HTML entities (Antiquorum sometimes double-
+        # escapes & → &amp;amp;).
+        schema_desc = sd.group(1).replace("&amp;amp;", "&").replace("&amp;", "&")
     return {
         "house": "Antiquorum",
         "lot_id": f"{auction_id}-{lot_number}" if auction_id and lot_number else None,
         "lot_number": lot_number,
         "title": title,
-        "description": "",
+        # Description is the short schema:description blurb (sentence-
+        # length one-liner). Essays land in catalogue_note below so
+        # the schema stays consistent with Sotheby's.
+        "description": (schema_desc or "")[:600],
+        "catalogue_note": notes[:4000],
+        "provenance":     provenance[:4000],
+        "literature":     literature[:4000],
+        "exhibition":     "",
         "currency": currency,
         "estimate_low": estimate_low,
         "estimate_high": estimate_high,
@@ -408,12 +459,32 @@ def scrape_christies_lot(url):
     # Status: Christie's gives is_auction_over on the sale block.
     status = "ended" if sale.get("is_auction_over") else "active"
 
+    # Lot Essay lives in the body HTML rather than in chrComponents
+    # JSON. Inline regex (same shape as `_extract_christies_essay` in
+    # auction_lots_scraper.py — duplicated here so this module stays
+    # standalone for user-tracked URL flows).
+    catalogue_note = ""
+    em = re.search(r'<h2[^>]*chr-lot-article__title[^>]*>\s*Lot Essay\s*</h2>(.*?)</section>', html, re.DOTALL | re.IGNORECASE)
+    if em:
+        inner = re.search(r'<div[^>]*content-zone[^>]*chr-body[^>]*>(.*?)</div>', em.group(1), re.DOTALL)
+        if inner:
+            t = inner.group(1)
+            t = re.sub(r"<br\s*/?>", "\n", t, flags=re.IGNORECASE)
+            t = re.sub(r"</p\s*>", "\n\n", t, flags=re.IGNORECASE)
+            t = re.sub(r"<[^>]+>", "", t)
+            t = t.replace("&nbsp;", " ").replace("&amp;", "&").replace("&#39;", "'")
+            t = re.sub(r"\s+", " ", t).strip()
+            catalogue_note = t[:4000]
     return {
         "house": "Christie's",
         "lot_id": lot.get("object_id"),
         "lot_number": lot.get("lot_id_txt"),
         "title": title_primary,
         "description": title_secondary[:600],
+        "catalogue_note": catalogue_note,
+        "provenance": "",
+        "literature": "",
+        "exhibition": "",
         "currency": currency,
         "estimate_low": lot.get("estimate_low"),
         "estimate_high": lot.get("estimate_high"),
