@@ -182,6 +182,13 @@ jobs:
         continue-on-error: true
         run: python maunderwatches_scraper.py
 
+      - name: Run Watch Center scraper (WooCommerce Store API, CHF)
+        # Swiss dealer (Mendrisio, Ticino). Standard WC Store API at
+        # /wp-json/wc/store/v1/products with page-based pagination.
+        # currency_minor_unit=0 (whole-franc display, no cents).
+        continue-on-error: true
+        run: python watchcenter_scraper.py
+
       - name: Run Watch Club scraper (TaffyDB JSON catalog)
         # UK dealer (Cardiff). Entire catalogue in a single 5MB JS file
         # at /upload/js/watches2018_bis.js wrapped as TAFFY([...]). No
@@ -284,6 +291,7 @@ jobs:
           [ -f visionvintagewatches_listings.csv ] && mv visionvintagewatches_listings.csv data/visionvintagewatches.csv || echo "visionvintagewatches missing"
           [ -f watchurbia_listings.csv ]          && mv watchurbia_listings.csv          data/watchurbia.csv          || echo "watchurbia missing"
           [ -f maunderwatches_listings.csv ]      && mv maunderwatches_listings.csv      data/maunderwatches.csv      || echo "maunderwatches missing"
+          [ -f watchcenter_listings.csv ]         && mv watchcenter_listings.csv         data/watchcenter.csv         || echo "watchcenter missing"
           [ -f watchclub_listings.csv ]           && mv watchclub_listings.csv           data/watchclub.csv           || echo "watchclub missing"
           [ -f vintagewatchshop_listings.csv ]    && mv vintagewatchshop_listings.csv    data/vintagewatchshop.csv    || echo "vintagewatchshop missing"
           [ -f watchesoflancashire_listings.csv ] && mv watchesoflancashire_listings.csv data/watchesoflancashire.csv || echo "watchesoflancashire missing"
