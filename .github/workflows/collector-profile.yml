@@ -1,0 +1,79 @@
+# One-shot collector profile via Claude (Sonnet 4.6 by default).
+#
+# Pulls a user's Supabase data (hearts, lists, hidden, saved searches,
+# owned/sold/wishlist, reactions) and asks Claude to write a 400-600
+# word taste profile. Results land in the job summary on the Actions
+# run page — no commits, no artifacts to download.
+#
+# Manual trigger only. Cost ~$0.03-0.05 per run at Sonnet 4.6 rates.
+# Defaults to the admin/Mark user_id (CLAUDE.md); pass any user UUID
+# via the workflow input.
+#
+# Secrets required:
+#   ANTHROPIC_API_KEY    — added 2026-05-20
+#   SUPABASE_URL         — Supabase project URL
+#   SUPABASE_SERVICE_KEY — service-role key (read-only access fine)
+name: Collector profile (one-shot)
+
+on:
+  workflow_dispatch:
+    inputs:
+      user_id:
+        description: 'Supabase user UUID to profile. Blank = admin (Mark).'
+        required: false
+        default: ''
+        type: string
+      model:
+        description: 'Anthropic model ID'
+        required: false
+        default: 'claude-sonnet-4-6'
+        type: choice
+        options:
+          - claude-haiku-4-5
+          - claude-sonnet-4-6
+          - claude-opus-4-7
+
+jobs:
+  profile:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install deps
+        run: pip install anthropic requests
+
+      - name: Run analyzer
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          # Two secret names exist in the repo: SUPABASE_SERVICE_KEY (used
+          # by the scraper workflows) and SUPABASE_SERVICE_ROLE_KEY (used
+          # by rollup-events). Expose both; the script picks whichever is
+          # non-empty.
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          ARGS="--model ${{ github.event.inputs.model }} --out profile.md"
+          if [ -n "${{ github.event.inputs.user_id }}" ]; then
+            ARGS="$ARGS --user-id ${{ github.event.inputs.user_id }}"
+          fi
+          python collector_profile_analyzer.py $ARGS
+
+      - name: Post analysis to job summary
+        if: always()
+        run: |
+          if [ -f profile.md ]; then
+            echo "# Collector profile (${{ github.event.inputs.model }})" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            cat profile.md >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## ❌ Analysis failed — no profile.md produced" >> $GITHUB_STEP_SUMMARY
+            echo "Check the **Run analyzer** step for details." >> $GITHUB_STEP_SUMMARY
+          fi
