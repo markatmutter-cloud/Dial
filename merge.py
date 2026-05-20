@@ -35,6 +35,96 @@ from collections import Counter
 # spec block. Same shape as auction_lot_parsers attaches to auction lots.
 from dealer_parsers import parse_dealer_description
 
+# Reference-index matcher (Epic 0 slice B, 2026-05-19). Wires the
+# curated `docs/watch_references.md` index into the dealer pipeline so
+# every listing picks up `reference_id` + `model` + `sub_model` +
+# `model_line` when its brand+ref hits the curated index. Same pattern
+# as hodinkee_shop_scraper / hairspring_finds_scraper.
+#
+# Falls back to no-op when the matcher module or index isn't present
+# (defensive — keeps merge.py runnable in stripped-down environments).
+try:
+    from pathlib import Path as _Path
+    from reference_index_match import (
+        parse_index as _ref_parse_index,
+        build_ref_index as _ref_build_ref_index,
+        build_model_name_index as _ref_build_model_name_index,
+        match_or_extract as _ref_match_or_extract,
+    )
+    _REF_INDEX_PATH = _Path(__file__).parent / "docs" / "watch_references.md"
+    _REF_CACHE = None
+
+    def _ref_indices():
+        """Lazy-build the matcher's three indices on first call.
+
+        Returns (ref_index, model_name_index, brands_in_index) or
+        (None, None, None) when the index file isn't present.
+        """
+        global _REF_CACHE
+        if _REF_CACHE is None:
+            if not _REF_INDEX_PATH.exists():
+                _REF_CACHE = (None, None, None)
+            else:
+                brands = _ref_parse_index(_REF_INDEX_PATH.read_text())
+                _REF_CACHE = (
+                    _ref_build_ref_index(brands),
+                    _ref_build_model_name_index(brands),
+                    set(brands.keys()),
+                )
+        return _REF_CACHE
+
+    def enrich_with_reference_match(item):
+        """Populate item['reference_id' / 'model' / 'sub_model' /
+        'model_line'] when the curated index matches.
+
+        Probes (in order): `brand + reference_no` (most precise),
+        title (fallback). Stops on first hit. Existing fields on the
+        item are preserved — only fills empty values.
+        """
+        ref_idx, model_name_idx, brands_in_idx = _ref_indices()
+        if not ref_idx:
+            return
+        brand = item.get("brand") or None
+        ref_no = item.get("reference_no") or ""
+        title = item.get("ref") or ""
+        probes = []
+        if brand and ref_no:
+            probes.append(f"{brand} {ref_no}")
+        if title:
+            probes.append(title)
+        for probe in probes:
+            if not probe:
+                continue
+            hit = _ref_match_or_extract(
+                probe, ref_idx,
+                brand=brand,
+                brands_in_index=brands_in_idx,
+                model_name_index=model_name_idx,
+            )
+            if hit:
+                # Trust the matcher's canonical brand when our existing
+                # value is empty / Other (e.g. scraper failed to detect).
+                if hit.get("brand") and (not brand or brand == "Other"):
+                    item["brand"] = hit["brand"]
+                # Fill structured fields only when our parser didn't.
+                if hit.get("reference_id") and not item.get("reference_id"):
+                    item["reference_id"] = hit["reference_id"]
+                if hit.get("reference_no") and not item.get("reference_no"):
+                    item["reference_no"] = hit["reference_no"]
+                if hit.get("model") and not item.get("model"):
+                    item["model"] = hit["model"]
+                if hit.get("sub_model") and not item.get("sub_model"):
+                    item["sub_model"] = hit["sub_model"]
+                if hit.get("model_line") and not item.get("model_line"):
+                    item["model_line"] = hit["model_line"]
+                return
+except Exception as _e:
+    # Module-level failure — log + no-op stub so the rest of merge.py
+    # runs unaffected. Same defensive posture as the other optional
+    # imports in this file.
+    def enrich_with_reference_match(item):  # type: ignore
+        return
+
 BRANDS = [
     'Rolex', 'Omega', 'Patek Philippe', 'Tudor', 'Breitling', 'IWC', 'Cartier',
     'Jaeger-LeCoultre', 'Panerai', 'Audemars Piguet', 'Vacheron Constantin',
@@ -405,6 +495,12 @@ def load_csv(path, source_name, currency='USD'):
             for k, v in structured.items():
                 if v:
                     item[k] = v
+            # Reference-index match — picks up model / sub_model /
+            # model_line / reference_id when brand+ref or title hits
+            # the curated index. Layered after dealer_parsers so the
+            # dealer's structured field wins when both fire; matcher
+            # fills the rest.
+            enrich_with_reference_match(item)
             items.append(item)
     return items
 
