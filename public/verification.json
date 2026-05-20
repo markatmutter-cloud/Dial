@@ -1,32 +1,24 @@
 {
-  "date": "2026-05-19",
-  "alerts": [
-    {
-      "source": "Watch Club",
-      "level": "WARN",
-      "today": 15,
-      "median": 53,
-      "note": "count is 28% of recent median (15 vs ~53)"
-    }
-  ],
+  "date": "2026-05-20",
+  "alerts": [],
   "counts": {
     "Wind Vintage": 111,
-    "Tropical Watch": 91,
+    "Tropical Watch": 92,
     "Menta Watches": 43,
     "Collectors Corner NY": 53,
     "Falco Watches": 103,
     "Grey & Patina": 49,
-    "Oliver & Clarke": 90,
-    "Craft & Tailored": 78,
+    "Oliver & Clarke": 89,
+    "Craft & Tailored": 77,
     "Watch Brothers London": 19,
     "MVV Watches": 43,
     "DB1983": 21,
     "Hairspring": 31,
     "Somlo": 206,
-    "Analog Shift": 627,
+    "Analog Shift": 628,
     "Watches of Knightsbridge": 70,
     "Belmont Watches": 36,
-    "Bob's Watches": 49,
+    "Bob's Watches": 50,
     "Watchfid": 67,
     "Bulang & Sons": 170,
     "Moonphase": 18,
@@ -51,6 +43,6 @@
     "Swiss Hours": 73,
     "eBay": 48
   },
-  "total_listings": 3327,
+  "total_listings": 3328,
   "sources_tracked": 40
 }
