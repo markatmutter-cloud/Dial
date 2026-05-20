@@ -103,6 +103,21 @@ const SOURCES = [
     url: "/woe_dispatch.json",
     bodies_url: "/woe_dispatch_bodies.json",
   },
+  {
+    key: "screwdowncrown",
+    label: "Screw Down Crown",
+    publication: "Screw Down Crown",
+    column: null,
+    url: "/screwdowncrown.json",
+    bodies_url: "/screwdowncrown_bodies.json",
+    // Subscription publication on Substack. We surface only the
+    // publicly-accessible posts (audience='everyone') here — paid
+    // content stays out of the public corpus. `subscribe_url`
+    // amplifies the publisher; consumers can render a "Subscribe to
+    // <publication>" CTA when this source is filtered on.
+    publication_url: "https://www.screwdowncrown.com/",
+    subscribe_url: "https://www.screwdowncrown.com/subscribe",
+  },
 ];
 
 const BRAND_TOP_N = 24;       // Show top N brands in expansion panel; "+more" expander reveals the rest

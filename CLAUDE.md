@@ -1239,7 +1239,7 @@ unified corpus at `public/reference_guides.json` keyed by
 
 ## Editorial corpus scrapers
 
-**Nine sources, ~8,850 articles, ~4.5M words at 2026-05-20.**
+**Ten sources, ~8,930 articles, ~4.5M words at 2026-05-20.**
 Mining the corpus to power Editorial sub-tab browse + per-Reference
 "Editorial coverage" + listing-card "Explore paths" annotations +
 the recommender. See [docs/RECOMMENDER_STRATEGY.md](docs/RECOMMENDER_STRATEGY.md)
@@ -1261,6 +1261,7 @@ Listings > Sold archive (dual-track — see below).
 | Hodinkee Reference Points | `hodinkee_reference_points` | editorial (Sun) | 10 |
 | A Collected Man Journal | `acollectedman_journal` | editorial (Sun) | 160 |
 | Watches of Espionage (WOE Dispatch) | `woe_dispatch` | editorial (Sun) | 294 |
+| Screw Down Crown (Substack, free posts only) | `screwdowncrown` | editorial (Sun) | 79 |
 
 ### Body-split persistence — `editorial_corpus_io.py`
 
@@ -1359,6 +1360,20 @@ adding a new source:
   selector across articles — the class string is non-standard and
   may drift with theme updates). Author is uniformly "Watches of
   Espionage" (no per-article bylines).
+- **Screw Down Crown** (Substack): standard Substack `<div class="available-content">`
+  body wrapper. Discovery via public `/api/v1/archive?sort=new&offset=N&limit=20`
+  endpoint with `audience` field filter — keep only `audience='everyone'`.
+  Paid posts (`audience='only_paid'` / `'founding'`) are logged and skipped;
+  the personal-corpus loader (separate, for Mark's Substack export only)
+  ingests those into a `personal_only=true` corpus that never surfaces
+  verbatim. Manifest entry carries `publication_url` + `subscribe_url`
+  for publisher amplification.
+  **`MIN_PUBLISHED_DATE = '2019-01-01'`** — the publication pivoted to
+  watches in 2019; older archive (back to 2012) was on different topics
+  and is filtered out at discovery time. The personal-corpus loader for
+  Mark's Substack export MUST apply the same filter — most of the
+  pre-2019 archive is paid, so it'd show up in the export zip but
+  shouldn't enter the watch corpus.
 
 ### Discovery: sitemap > pagination when both exist
 
