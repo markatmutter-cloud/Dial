@@ -24,6 +24,12 @@ export function useFilters() {
   const [filterSources, setFilterSources] = useState([]);
   const [filterBrands,  setFilterBrands]  = useState([]);
   const [filterRefs,    setFilterRefs]    = useState([]);
+  // Model filter — Mark spec 2026-05-19 item 7: "build in model
+  // names into the filters". Values are model_line strings (e.g.
+  // "GMT-Master / GMT-Master II", "Nautilus") matching the
+  // reference index's labels. Picked from items via Epic 0 slice B
+  // matcher integration.
+  const [filterModels,  setFilterModels]  = useState([]);
   // (filterAuctionsOnly state retired 2026-05-04 — both Listings AND
   // Watchlist now use sub-tabs that scope dealer vs auction items
   // up-front. The toggle's role is gone; predicate dispatch happens
@@ -58,6 +64,7 @@ export function useFilters() {
   // Chip-cluster "+N more" expansion toggles.
   const [brandsExpanded,  setBrandsExpanded]  = useState(false);
   const [sourcesExpanded, setSourcesExpanded] = useState(false);
+  const [modelsExpanded,  setModelsExpanded]  = useState(false);
   const [refsExpanded,    setRefsExpanded]    = useState(false);
 
   // Desktop filter row popover state. Single key; only one popover
@@ -93,6 +100,10 @@ export function useFilters() {
     (b) => setFilterBrands(p => p.includes(b) ? p.filter(x => x !== b) : [...p, b]),
     []
   );
+  const toggleModel = useCallback(
+    (m) => setFilterModels(p => p.includes(m) ? p.filter(x => x !== m) : [...p, m]),
+    []
+  );
 
   // Parsed-to-int price bounds. minPrice defaults to 0 when empty;
   // maxPrice defaults to GLOBAL_MAX so the filter is a no-op until
@@ -111,6 +122,7 @@ export function useFilters() {
   const hasFilters = (
     filterSources.length > 0 ||
     filterBrands.length > 0 ||
+    filterModels.length > 0 ||
     filterRefs.length > 0 ||
     !!search ||
     newDays > 0 ||
@@ -124,6 +136,7 @@ export function useFilters() {
   const resetFilters = useCallback(() => {
     setFilterSources([]);
     setFilterBrands([]);
+    setFilterModels([]);
     setFilterRefs([]);
     setSearch("");
     setNewDays(0);
@@ -136,8 +149,9 @@ export function useFilters() {
     // Multi-selects
     filterSources, setFilterSources,
     filterBrands,  setFilterBrands,
+    filterModels,  setFilterModels,
     filterRefs,    setFilterRefs,
-    toggleSource, toggleBrand,
+    toggleSource, toggleBrand, toggleModel,
     // Sort + search
     sort, setSort,
     search, setSearch,
@@ -153,6 +167,7 @@ export function useFilters() {
     // Expansion toggles
     brandsExpanded,  setBrandsExpanded,
     sourcesExpanded, setSourcesExpanded,
+    modelsExpanded,  setModelsExpanded,
     refsExpanded,    setRefsExpanded,
     // Popover
     activeFilterPop, setActiveFilterPop,
