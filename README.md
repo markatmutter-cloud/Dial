@@ -285,7 +285,6 @@ watchlist/
 │       ├─ ShareReceiver.js        # hook-isolated mount for single-listing share-receive
 │       ├─ ListReceiver.js         #   shared-list receive flow
 │       ├─ ChallengeReceiver.js    #   shared-challenge receive flow
-│       ├─ ShareListPickerModal.js # send a shared-list link via native share sheet
 │       ├─ ListingPickerModal.js   # picker for adding listings to a collection
 │       ├─ CollectionPickerModal.js # picker for adding a listing to a collection
 │       ├─ CollectionEditModal.js  # create + rename collections
