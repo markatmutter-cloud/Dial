@@ -1712,7 +1712,8 @@ A structured Markdown reference index for a vintage and collectible watch listin
 
 ### Model line: Crash
 
-- **Refs**: `Crash London 1967` (vintage — 12-piece original London production), `Crash Paris 1991` (London relaunch by Cartier Paris, LE 400 yellow gold), `Crash 2013 Watches & Wonders / Privé Crash Skeleton` (CPCP/Privé editions: WHRO0021 — Privé Crash Skeleton 2015, WHRO0023 — Privé Crash Radieuse 2018), `WJTA0001` (Crash Tigrée), `WGCH0007` (Crash Privé yellow gold), `2018 Cartier Privé Crash refs`, `WGCH0012` (Privé Crash Tigrée), `2024 Crash Squelette` (Cartier Privé Opus)
+- **Refs**: `WHRO0021` (Privé Crash Skeleton, 2015), `WHRO0023` (Privé Crash Radieuse, 2018), `WJTA0001` (Crash Tigrée), `WGCH0007` (Crash Privé yellow gold), `WGCH0012` (Privé Crash Tigrée)
+- **Vintage / revival eras** (no formal modern ref numbers): 1967 London originals (~12 pieces, hand-fitted distorted cases), 1991 Paris relaunch (LE 400 yellow gold), 2013 Privé Crash Skeleton, 2024 Crash Squelette (Cartier Privé Opus)
 - **Years**: 1967 (London origin) → revivals 1991, 2013, 2015, 2018, 2024, 2025 (Cartier Privé)
 - **Designer / movement**: Jean-Jacques Cartier (Cartier London, 1967 design) · Cal. 9618 MC (modern), Cal. 1967 MC (2024 Crash Squelette purpose-built movement)
 - **Key identifiers**: Asymmetric “melted” case shape (the iconic Cartier silhouette beyond Tank); ovoid distorted form; melted Roman numerals matching the case distortion; blue cabochon crown; gold or platinum exclusively; small case dimensions (~28-43mm length).
