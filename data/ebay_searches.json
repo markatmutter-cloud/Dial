@@ -1,18 +1,24 @@
 [
   {
     "label": "Omega Railmaster CK2914",
-    "query": "Omega Railmaster CK2914"
+    "query": "Omega Railmaster CK2914",
+    "must_contain": ["CK2914", "2914"],
+    "exclude_keywords": ["2812", "2812.52", "Aqua Terra", "modern", "Co-Axial"]
   },
   {
     "label": "Heuer Autavia GMT",
-    "query": "heuer autavia gmt"
+    "query": "heuer autavia gmt",
+    "must_contain": ["Autavia"],
+    "exclude_keywords": ["TAG Heuer", "tag-heuer", "reissue", "homage"]
   },
   {
     "label": "Omega Seamaster 145.016",
-    "query": "Omega Seamaster 145.016"
+    "query": "Omega Seamaster 145.016",
+    "must_contain": ["145.016", "145.0016"],
+    "exclude_keywords": ["Speedmaster", "145.012", "145.014", "145.022", "145.024", "145.029", "Aqua Terra"]
   },
   {
-    "_note": "Seller-only example (filtered out at runtime). Add real sellers like { 'label': 'Wind Vintage on eBay', 'seller': 'windvintage' } — when seller is set without a query, the scraper pulls that seller's full Wristwatches inventory. Combine seller + query to filter that seller's listings by keyword. country still applies.",
+    "_note": "Schema reference. Each search supports: label (required), query (eBay search string), country (ISO code or list), seller (eBay username), must_contain (list of substrings — title must contain at least one, case-insensitive), exclude_keywords (list — drop if title contains any). Use must_contain to fight eBay's loose query expansion (e.g. 'Omega Seamaster 145.016' otherwise returns 145.029/145.024). Use exclude_keywords for seller-bait keywords (Zeitwerk/Calatrava prefixed Omegas) or modern variants of vintage refs. The example below filters at runtime (it lacks a real query/seller).",
     "label": "Example seller — REPLACE OR REMOVE",
     "seller": "<ebay_username>",
     "country": "US"

@@ -74,14 +74,41 @@ _TAG_HEUER_RE = re.compile(r"\btag[\s\-]*heuer\b", re.IGNORECASE)
 
 
 def _excluded_by_title(title):
-    """Title-level filter at scrape time. Currently only flags
-    TAG Heuer to keep the modern brand out of the vintage feed.
-    Returns the matching pattern label for logging, or None.
+    """Global title-level filter (applies to every search). Currently
+    only flags TAG Heuer to keep the modern brand out of the vintage
+    feed. Returns the matching pattern label for logging, or None.
     """
     if not title:
         return None
     if _TAG_HEUER_RE.search(title):
         return "TAG Heuer"
+    return None
+
+
+def _excluded_by_search_filter(title, search):
+    """Per-search filter. Mark feedback 2026-05-20: eBay Browse API
+    returns too-loose matches ("Omega Railmaster CK2914" pulling
+    modern 2812.52.37; "Omega Seamaster 145.016" pulling 145.029).
+    Schema additions on each search:
+
+      "must_contain":     ["sub1", "sub2", ...]   — at least ONE substring
+                                                     must appear in title (any
+                                                     case)
+      "exclude_keywords": ["junk1", "junk2", ...] — drop if ANY appears
+                                                     (case-insensitive substring)
+
+    Returns the rejection reason string (for logging) or None.
+    """
+    if not title:
+        return None
+    tl = title.lower()
+    must = search.get("must_contain") or []
+    if must and not any(s.lower() in tl for s in must if isinstance(s, str)):
+        return f"missing required substring (one of: {', '.join(must)})"
+    excl = search.get("exclude_keywords") or []
+    for kw in excl:
+        if isinstance(kw, str) and kw.lower() in tl:
+            return f"excluded keyword: {kw}"
     return None
 
 
@@ -263,11 +290,19 @@ def main():
                 if not url or url in seen_urls:
                     continue
                 row = _row_for(it, search)
+                title = row.get("title", "")
                 # Title-level exclusion (currently TAG Heuer only).
                 # Done before price + dedupe so the count reflects
                 # actual brand-level filtering volume.
-                excl = _excluded_by_title(row.get("title", ""))
+                excl = _excluded_by_title(title)
                 if excl:
+                    excluded += 1
+                    continue
+                # Per-search must_contain / exclude_keywords. Mark
+                # feedback 2026-05-20: eBay's Browse API is too loose
+                # for ref-style queries — narrow at scrape time.
+                excl_search = _excluded_by_search_filter(title, search)
+                if excl_search:
                     excluded += 1
                     continue
                 usd = _approx_usd(row["price"], row["currency"])
