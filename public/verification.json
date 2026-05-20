@@ -2,7 +2,7 @@
   "date": "2026-05-20",
   "alerts": [],
   "counts": {
-    "Wind Vintage": 119,
+    "Wind Vintage": 120,
     "Tropical Watch": 92,
     "Menta Watches": 43,
     "Collectors Corner NY": 52,
@@ -19,17 +19,17 @@
     "Watches of Knightsbridge": 70,
     "Belmont Watches": 36,
     "Bob's Watches": 51,
-    "Watchfid": 67,
+    "Watchfid": 66,
     "Bulang & Sons": 170,
     "Moonphase": 18,
     "Huntington Company": 73,
     "The Vintage Watch": 28,
     "Chronoholic": 5,
-    "Vintage Watch Fam": 435,
-    "Shuck the Oyster": 107,
+    "Vintage Watch Fam": 433,
+    "Shuck the Oyster": 108,
     "Central Watch": 178,
     "European Watch": 21,
-    "Vintage Watch Collective": 37,
+    "Vintage Watch Collective": 36,
     "Vision Vintage Watches": 27,
     "Watchurbia": 8,
     "Maunder Watches": 91,
@@ -41,8 +41,8 @@
     "Luna Royster": 30,
     "S.Song Watches": 22,
     "Swiss Hours": 73,
-    "eBay": 35
+    "eBay": 27
   },
-  "total_listings": 3313,
+  "total_listings": 3303,
   "sources_tracked": 40
 }
