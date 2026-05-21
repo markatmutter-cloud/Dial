@@ -77,7 +77,7 @@ function EditorialHero({ isMobile }) {
           wordmark + moon feel balanced. */}
       <div style={{
         display: "flex", alignItems: "center", justifyContent: "center",
-        gap: isMobile ? 6 : 12,
+        gap: isMobile ? 2 : 4,
         margin: isMobile ? "0 0 12px" : "0 0 22px",
         // Mirror the wordmark's compensatory left-pad so the visual
         // center of the cluster aligns with the page's horizontal
