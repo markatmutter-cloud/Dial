@@ -23,7 +23,7 @@ how to behave for the rest of it.
   reference-page editorial coverage, or any recommender-adjacent
   surface.
 - `SESSION_HANDOFF_*.md` — in-flight snapshot per session. **Not durable.**
-  The current one is [SESSION_HANDOFF_2026-05-19.md](SESSION_HANDOFF_2026-05-19.md);
+  The current one is [SESSION_HANDOFF_2026-05-21.md](SESSION_HANDOFF_2026-05-21.md);
   older ones live in `archive/`.
 
 If a gotcha or convention is durable (still true next session), graduate
@@ -1538,27 +1538,33 @@ will deny over-broad bundles — that's a feature, not a bug.
 For dev/branch testing: `create_branch` / `merge_branch` is available
 when production-safety matters more than speed.
 
-**Supabase `public` schema default ACL gotcha (revised 2026-05-10).**
-On the current Supabase platform, every newly-created function in the
-`public` schema has `EXECUTE` granted to **PUBLIC** (everyone — and
-`anon` inherits via PUBLIC). It is NOT a direct grant to anon, despite
-what an older version of this note claimed. So
-`revoke execute on function … from anon` is a **no-op** — anon never
-had its own direct grant — and the function stays anon-callable through
-the PUBLIC inheritance.
+**Supabase `public` schema default ACL gotcha (revised again
+2026-05-20).** The platform's default-grant behavior has SHIFTED.
+Previously, new functions in `public` had EXECUTE granted to PUBLIC
+and `revoke execute … from public` was the lever to block anon.
+**Today, new functions get DIRECT EXECUTE grants to anon,
+authenticated, and service_role (plus postgres as owner).** PUBLIC
+is no longer the inheritance vector — so `revoke from public` is now
+a no-op, and the function stays anon-callable until you revoke from
+anon directly.
 
 The actually-effective pattern at the end of a function-creating
 migration is:
 
 ```sql
 grant execute on function public.foo(...) to authenticated;
-revoke execute on function public.foo(...) from public;
+revoke execute on function public.foo(...) from anon;
 ```
 
-`revoke … from public` strips the PUBLIC blanket grant; the explicit
-`grant to authenticated` keeps signed-in users callable; `service_role`
-keeps its own direct grant (preserved by the platform) so the cron
-path / service backends still work.
+Verified via `information_schema.routine_privileges` after creating
+`my_reactions_with_items()` on 2026-05-20 (PR #399). The grantees row
+showed direct entries for `postgres / anon / authenticated /
+service_role`. Only `revoke from anon` flipped
+`has_function_privilege('anon', …)` to false; `revoke from public`
+left it true because there was no PUBLIC grant to revoke.
+
+`service_role` keeps its own direct grant (preserved by the platform)
+so the cron path / service backends still work.
 
 Verify after applying:
 
@@ -1754,6 +1760,41 @@ again; it's permanently blocked at the platform layer.
 - **Don't extend the Vercel Blob cache** to listings/auctions feeds.
   Watchlist-only is intentional (auction images stay up long-term;
   caching ~1,800 dealer images costs storage for transient inventory).
+- **Don't `fetch()` from a Node script without a timeout.** Discovered
+  2026-05-21 (#412): `cache_watchlist_images.mjs` had no timeout on
+  its fetch calls. A single hung dealer URL stalled the entire workflow
+  for 6 days (May 15 → May 21). Bid data went stale because the
+  `Commit and push` step downstream never ran. Wrap every fetch in
+  the workflow scripts with `AbortController + setTimeout(15_000)`
+  and clear the timer in a `finally`. Cover both the headers-receive
+  AND the body-read phases — a dealer that opens a connection then
+  never sends bytes can stall `response.arrayBuffer()` too. The
+  workflow step also got a `timeout-minutes: 15` cap as
+  belt-and-suspenders; both layers stay.
+- **Don't add a variable to one shell's destructure without mirroring
+  to the other.** Caught 2026-05-21 (#413): DesktopShell was missing
+  `visibleSources` while MobileShell had it. The variable was
+  referenced directly in DesktopShell's code (no `props.` prefix),
+  so a ReferenceError fired the moment the Source filter expanded.
+  When extending the shellProps contract, update BOTH shells in
+  lockstep — and ideally `mockShellProps.js` too so the render-
+  without-crash tests cover the new field.
+- **Don't fork article-vs-listing storage.** Articles flow through
+  the SAME `watchlist_items` and `collection_items` tables that
+  listings use, distinguished by `listing_snapshot.kind = 'article'`
+  (jsonb). The `articleAsListing(article)` helper in
+  `src/components/EditorialView.js` is the canonical projection that
+  maps an article record to the listing-shaped item useWatchlist /
+  addItemToCollection expect. Downstream surfaces branch on the kind
+  marker:
+  - Watchlist > Saved sub-tabs filter out kind='article' (listings only)
+  - Saved-articles virtual row aggregates kind='article' from useWatchlist
+  - Collection drill-in splits items into listings + Articles sections
+  No DB migration was needed (or wanted) to support this — the
+  `listing_snapshot` jsonb column accepts any shape. Adding a new
+  entity type follows the same pattern: new `kind` value in
+  listing_snapshot, new helper that maps it into listing shape, new
+  projection filter on the existing tables.
 - **Don't skip Vercel verification** after a JS change. Use the bundle
   hash in `index.html` to confirm the new build is serving before
   reporting done.

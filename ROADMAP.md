@@ -1,7 +1,20 @@
 # Watchlist Roadmap
 
-Last updated: 2026-05-19
+Last updated: 2026-05-21
 Living document. Updated as priorities shift.
+
+> **Recent graduations (2026-05-20 → 2026-05-21 session, 23 PRs shipped).**
+> Articles became first-class: hearted (#403), saved-articles virtual
+> row (#404), add-to-list + Share + Articles section in drill-ins
+> (#405). Editorial corpus 8 → 11 sources: WOE Dispatch (#393), Screw
+> Down Crown free posts (#397), Fratello filtered (#406). My-reactions
+> virtual list (#399). Admin source_of_entry cleanup (#395). Robustness
+> Anxiety added to strategy doc (#396) + analyzer (#392). Image-perf
+> root cause: `cache_watchlist_images` fetch timeout (#412) + workflow
+> step cap (#410). Editorial UX through-line: sticky filter (#407 →
+> #409), search dedup + header symmetry (#415), Featured dark band
+> (#414 → #415 lighter). Plus hotfix #413. Full narrative:
+> [SESSION_HANDOFF_2026-05-21.md](SESSION_HANDOFF_2026-05-21.md).
 
 For project context and architecture, see [README.md](README.md). For
 working conventions, see [CLAUDE.md](CLAUDE.md).
