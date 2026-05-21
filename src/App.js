@@ -927,6 +927,30 @@ export default function Watchlist() {
       try {
         const url = new URL(window.location.origin);
         url.pathname = `/share/${encodeURIComponent(input.id)}`;
+        // Sender attribution (Mark spec 2026-05-21): append the
+        // signed-in user's display name as `?from=<name>` so the
+        // recipient surface can render "Mark Mutter sent you..."
+        // instead of the generic "Someone sent you...". Mirrors the
+        // ChallengeFlow.shareChallengeSpec pattern (see CLAUDE.md
+        // "Sender attribution on shared challenges"). Derived from
+        // user_metadata.full_name → name → email local-part with
+        // each segment capitalised. Falls through silently when no
+        // user (anonymous share — keeps the generic copy).
+        const md = user && user.user_metadata;
+        let senderName = "";
+        if (md) {
+          senderName = (md.full_name || md.name || "").trim();
+        }
+        if (!senderName && user && user.email) {
+          const local = String(user.email).split("@")[0] || "";
+          senderName = local.split(/[._-]+/)
+            .filter(Boolean)
+            .map(s => s.charAt(0).toUpperCase() + s.slice(1))
+            .join(" ");
+        }
+        if (senderName) {
+          url.searchParams.set("from", senderName);
+        }
         shareUrl = url.toString();
       } catch {
         return { copied: false };
