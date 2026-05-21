@@ -180,7 +180,7 @@ const BRAND_TOP_N = 24;       // Show top N brands in expansion panel; "+more" e
 const RESULTS_PAGE_SIZE = 48; // Denser scroll (Mark spec 2026-05-20 — "24 wasn't enough to scroll through"). Bumped 24→48.
 const FEATURED_COUNT = 8;     // Most-recent articles surfaced in the hero strip (visible only when no search / no filters active).
 
-export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, handleWish, openCollectionPicker, handleShare }) {
+export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, handleWish, openCollectionPicker, handleShare, search: searchProp, setSearch: setSearchProp }) {
   // cols / compact / gridStyle come from App.js's useViewSettings — the
   // same grid sizing the Listings tab uses. ArticleCard adapts its
   // typography + excerpt density to `compact` so a 7-col packed grid
@@ -203,7 +203,15 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
   const [bodies, setBodies] = useState(null); // null = not requested yet
   const [bodiesLoading, setBodiesLoading] = useState(false);
 
-  const [search, setSearch] = useState("");
+  // Search state may come from the parent (App.js's global search,
+  // shared with the top-bar input on Collecting per Mark spec
+  // 2026-05-21) OR fall back to local state when no controlled
+  // search is wired (e.g. test fixtures or other mount points).
+  // The controlled path is what production uses — Editorial search
+  // travels across tabs as a single source of truth.
+  const [localSearch, setLocalSearch] = useState("");
+  const search = searchProp !== undefined ? searchProp : localSearch;
+  const setSearch = setSearchProp || setLocalSearch;
   const [activeSources, setActiveSources] = useState([]); // [] = all
   const [activeBrands, setActiveBrands] = useState([]);    // [] = all
   // Hearted-only filter (PR_P, 2026-05-20). Mirrors the Listings
@@ -524,21 +532,14 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
         position: "sticky", top: 40, zIndex: 20,
         background: "var(--bg)",
       }}>
-      {/* Search row — own input. Listings uses the global top-bar
-          search; Editorial needs its own field for body-text matching
-          distinct from listing search. */}
-      <div style={{
-        padding: isMobile ? "10px 14px 0" : "10px 20px 0",
-        background: filterBandBg,
-      }}>
-        <input
-          type="search"
-          placeholder="Search title, author, or body text…"
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          style={{ ...inputBase, width: "100%" }}
-        />
-      </div>
+      {/* In-Editorial search input retired 2026-05-21 (Mark spec):
+          the global top-bar search now serves Editorial too, with a
+          context-aware placeholder. The shells (DesktopShell +
+          MobileShell) own the input element; App.js holds the state;
+          this component reads `search` from props. Removing the
+          duplicate input closes the visual asymmetry between
+          Listings and Collecting headers (the empty slot where the
+          search used to be). */}
 
       {/* Filter strip — mirrors Listings filterRowJSX shape. Single
           horizontal row, pill toggles, inline-expansion panels below
@@ -655,33 +656,30 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
       </div>{/* /sticky filter chrome */}
 
       {/* Featured strip — top N most-recent articles, shown only when
-          no filter / no search is active. Horizontal scroll on mobile,
-          multi-col grid on desktop. Visually distinct via a DARK
-          COLOR BLOCK background (Mark spec 2026-05-21, ref Hodinkee
-          Featured Videos pattern): the block signals "this is the
-          editorial section" without the filter bar needing brand-tint
-          chrome above. Negative horizontal margins extend the block
-          edge-to-edge across the scroll container's padding so it
-          reads as a full-width band, not a card sitting inside
-          padding. */}
+          no filter / no search is active.
+          Density refinement (Mark feedback 2026-05-21): the prior
+          full-block dark treatment carried 4-8 cards on a dark slab,
+          which felt too dense. New pattern is HEADER BAND ONLY — the
+          dark surface is just the "FEATURED · most recent" label row
+          (~52px tall), cards sit below on standard background.
+          Section signal stays clear; visual weight halves. */}
       {showFeatured && featured.length > 0 && (
-        <div style={{
-          background: "var(--text1)",
-          color: "var(--bg)",
-          padding: isMobile ? "20px 14px 24px" : "28px 20px 28px",
-          marginLeft: isMobile ? -14 : -20,
-          marginRight: isMobile ? -14 : -20,
-          marginBottom: 16,
-        }}>
+        <div style={{ marginBottom: 24 }}>
+          {/* Dark header band — full-width via negative horizontal
+              margins through the scroll container's padding. */}
           <div style={{
-            display: "flex", alignItems: "baseline", gap: 8,
+            background: "var(--text1)",
+            color: "var(--bg)",
+            padding: isMobile ? "14px 14px" : "16px 20px",
+            marginLeft: isMobile ? -14 : -20,
+            marginRight: isMobile ? -14 : -20,
             marginBottom: 14,
+            display: "flex", alignItems: "baseline", gap: 10,
           }}>
             <div style={{
-              fontSize: 11, fontWeight: 700,
-              letterSpacing: "0.12em", textTransform: "uppercase",
+              fontSize: 12, fontWeight: 700,
+              letterSpacing: "0.14em", textTransform: "uppercase",
               color: "var(--bg)",
-              opacity: 0.85,
             }}>Featured</div>
             <div style={{ fontSize: 12, color: "var(--bg)", opacity: 0.55 }}>
               · most recent

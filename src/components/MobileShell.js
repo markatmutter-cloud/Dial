@@ -165,7 +165,7 @@ export function MobileShell(props) {
 
             Other tabs keep the sticky search at the top — filter
             chrome needs to stay reachable at any scroll depth. */}
-        {tab !== "home" && tab !== "references" && (
+        {tab !== "home" && (
         <div style={{ position: "sticky", top: 0, zIndex: 20, background: "var(--bg)" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 16px 4px", borderBottom: "0.5px solid var(--border)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, background: "var(--surface)", borderRadius: 10, padding: "8px 12px", flex: 1, minWidth: 0 }}>
@@ -188,7 +188,7 @@ export function MobileShell(props) {
                   setPage(1);
                 }
               }}
-              placeholder="Search reference or brand..." style={{ flex: 1, border: "none", background: "transparent", fontSize: 14, color: "var(--text1)", outline: "none", fontFamily: "inherit", minWidth: 0 }} />
+              placeholder={tab === "references" ? "Search articles by title, author, body…" : "Search reference or brand..."} style={{ flex: 1, border: "none", background: "transparent", fontSize: 14, color: "var(--text1)", outline: "none", fontFamily: "inherit", minWidth: 0 }} />
             {search && user && (
               <button onClick={openFavPrompt} aria-label={currentIsSaved ? "Already saved" : "Save search as favorite"}
                 title={currentIsSaved ? "Saved to favorites" : "Save as favorite search"}
