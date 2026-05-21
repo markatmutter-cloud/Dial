@@ -71,15 +71,15 @@ function EditorialHero({ isMobile }) {
           divider into the search section. */}
       {/* Eyebrow: moon-phase indicator on its own centered row
           above the wordmark (2026-05-21 v2). Sits as a contextual
-          "today" header. The full square moon avoids the
-          alignment fiddling of the prior inline placement; per-
-          Figma-frame glyph position no longer matters because
-          the moon isn't trying to align to a text baseline. */}
+          "today" header. Indicator clips to the top half of the
+          source so the empty wheel-back doesn't pad the gap to
+          WATCHLIST. Sized so clipped visible height (size/2) is
+          bigger than the inline placement we iterated through. */}
       <div style={{
         display: "flex", justifyContent: "center",
-        marginBottom: isMobile ? 8 : 14,
+        marginBottom: isMobile ? 10 : 16,
       }}>
-        <MoonPhaseIndicator size={isMobile ? 44 : 64} />
+        <MoonPhaseIndicator size={isMobile ? 120 : 200} />
       </div>
       <h1 style={{
         margin: isMobile ? "0 0 12px" : "0 0 22px",

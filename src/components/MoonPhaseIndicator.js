@@ -22,19 +22,34 @@ export function MoonPhaseIndicator({ size = 56 }) {
   const phaseUrl = moonPhaseImageUrl(now);
   const phaseLabel = moonPhaseName(now);
 
+  // Clip the bottom half so the empty wheel-back below the moon
+  // doesn't leave dead space between the eyebrow and the wordmark
+  // (Mark report 2026-05-21: with full square rendered, the gap to
+  // WATCHLIST was visually huge). Wrapper is half-height, img inside
+  // at full square — only the top half (moon + sky) shows.
   return (
-    <img
-      src={phaseUrl}
-      alt=""
+    <span
       title={phaseLabel}
       aria-label={phaseLabel}
       role="img"
       style={{
+        display: "inline-block",
         width: size,
-        height: size,
-        display: "block",
+        height: size / 2,
+        overflow: "hidden",
         flexShrink: 0,
-      }}
-    />
+        lineHeight: 0,
+      }}>
+      <img
+        src={phaseUrl}
+        alt=""
+        aria-hidden="true"
+        style={{
+          width: size,
+          height: size,
+          display: "block",
+        }}
+      />
+    </span>
   );
 }
