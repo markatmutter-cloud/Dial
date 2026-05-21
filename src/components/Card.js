@@ -71,6 +71,12 @@ export const Card = memo(function Card({
   // ("👍" / "❌" / "❤️" legacy / null); onRate(emoji) toggles.
   myRating,
   onRate,
+  // Image-loading priority (PR 2026-05-21). When `priority` is truthy
+  // we set fetchpriority="high" on the <img>, telling the browser to
+  // queue this image ahead of the lazy backlog. Callers should set it
+  // on the first ~4-6 cards above the fold and leave the rest as
+  // default (auto + loading="lazy"). Cheap perceived-perf win.
+  priority = false,
 }) {
   // When the dealer's image URL goes 404 (e.g. they cleaned up their CDN
   // for a sold listing), the browser shows an ugly broken-image icon.
@@ -267,7 +273,9 @@ export const Card = memo(function Card({
             <img src={imgSrc(item.img)} alt={item.ref}
               onError={() => setImgFailed(true)}
               style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
-              loading="lazy" />
+              loading="lazy"
+              decoding="async"
+              fetchpriority={priority ? "high" : "auto"} />
           ) : (
             // On-brand placeholder when the image is missing or the dealer's
             // URL has gone 404. Uses the same hourglass mark as the favicon
