@@ -44,7 +44,7 @@ export function MoonPhaseIndicator({ size = 48 }) {
       overflow: "hidden",
       flexShrink: 0,
       lineHeight: 0,
-      transform: "translateY(-30%)",
+      transform: "translateY(-55%)",
     }}
     title={phaseLabel}
     aria-label={phaseLabel}
