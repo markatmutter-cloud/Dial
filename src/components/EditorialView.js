@@ -509,6 +509,18 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
 
   return (
     <div style={{ paddingTop: 4 }}>
+      {/* Sticky filter chrome (Mark feedback 2026-05-21 — Editorial
+          filter/search bar disappeared on scroll; Listings is fixed).
+          Wraps search input + filter strip + expansion panels so the
+          whole filter UI stays anchored as the card grid scrolls.
+          z-index is below the global page header but above article
+          cards. The background is var(--bg) so when the expansion
+          panel is collapsed and the tinted strip has its own bg, the
+          sticky boundary still reads as opaque. */}
+      <div style={{
+        position: "sticky", top: 0, zIndex: 20,
+        background: "var(--bg)",
+      }}>
       {/* Search row — own input. Listings uses the global top-bar
           search; Editorial needs its own field for body-text matching
           distinct from listing search. */}
@@ -637,6 +649,7 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
           )}
         </div>
       )}
+      </div>{/* /sticky filter chrome */}
 
       {/* Featured strip — top N most-recent articles, shown only when
           no filter / no search is active. Horizontal scroll on mobile,
