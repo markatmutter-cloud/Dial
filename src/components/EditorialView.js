@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { pillBase, inputBase } from "../styles";
 import { Chip } from "./Chip";
 import { shortHash } from "../utils";
@@ -162,7 +163,7 @@ const BRAND_TOP_N = 24;       // Show top N brands in expansion panel; "+more" e
 const RESULTS_PAGE_SIZE = 48; // Denser scroll (Mark spec 2026-05-20 — "24 wasn't enough to scroll through"). Bumped 24→48.
 const FEATURED_COUNT = 8;     // Most-recent articles surfaced in the hero strip (visible only when no search / no filters active).
 
-export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, handleWish }) {
+export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, handleWish, openCollectionPicker, handleShare }) {
   // cols / compact / gridStyle come from App.js's useViewSettings — the
   // same grid sizing the Listings tab uses. ArticleCard adapts its
   // typography + excerpt density to `compact` so a 7-col packed grid
@@ -658,6 +659,8 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
                 cols={isMobile ? 2 : 4}
                 watchlist={watchlist}
                 handleWish={handleWish}
+                openCollectionPicker={openCollectionPicker}
+                handleShare={handleShare}
               />
             ))}
           </div>
@@ -710,6 +713,8 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
                         cols={effectiveCols}
                         watchlist={watchlist}
                         handleWish={handleWish}
+                        openCollectionPicker={openCollectionPicker}
+                        handleShare={handleShare}
                       />
                     ))}
                   </div>
@@ -749,7 +754,7 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
 // excerpt + click-out behaviour.
 // ─────────────────────────────────────────────────────────────────
 
-export function ArticleCard({ article, isMobile, compact, cols, watchlist, handleWish }) {
+export function ArticleCard({ article, isMobile, compact, cols, watchlist, handleWish, openCollectionPicker, handleShare }) {
   const dateStr = formatDate(article.published_at);
   const sourceLabel = article._source.label;
   // Heart state — match the dealer-listing Card's behavior so the
@@ -763,6 +768,71 @@ export function ArticleCard({ article, isMobile, compact, cols, watchlist, handl
     const asListing = articleAsListing(article);
     if (asListing) handleWish(asListing);
   };
+
+  // "..." menu state (PR_R, 2026-05-20). Same portal-to-document.body
+  // pattern as Card.js so longer labels (Add to list…) don't get
+  // clipped by the card's overflow:hidden root. Click-outside +
+  // Escape close.
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuPos, setMenuPos] = useState(null);
+  const [shareFeedback, setShareFeedback] = useState("");
+  const triggerRef = useRef(null);
+  const portalRef = useRef(null);
+  useEffect(() => {
+    if (!menuOpen) return undefined;
+    const onDown = (e) => {
+      const inTrigger = triggerRef.current && triggerRef.current.contains(e.target);
+      const inPortal  = portalRef.current && portalRef.current.contains(e.target);
+      if (!inTrigger && !inPortal) setMenuOpen(false);
+    };
+    const onKey = (e) => { if (e.key === "Escape") setMenuOpen(false); };
+    const t = setTimeout(() => {
+      document.addEventListener("mousedown", onDown);
+      document.addEventListener("keydown", onKey);
+    }, 0);
+    return () => {
+      clearTimeout(t);
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [menuOpen]);
+  const onMenuClick = (e) => {
+    e.preventDefault(); e.stopPropagation();
+    if (!menuOpen && triggerRef.current) {
+      const r = triggerRef.current.getBoundingClientRect();
+      setMenuPos({ top: r.bottom + 4, right: Math.max(8, window.innerWidth - r.right) });
+    }
+    setMenuOpen(o => !o);
+  };
+  const onAddToList = (e) => {
+    e.preventDefault(); e.stopPropagation();
+    setMenuOpen(false);
+    if (!openCollectionPicker) return;
+    const asListing = articleAsListing(article);
+    if (asListing) openCollectionPicker(asListing);
+  };
+  const onShareClick = async (e) => {
+    e.preventDefault(); e.stopPropagation();
+    if (!handleShare) { setMenuOpen(false); return; }
+    let result;
+    try {
+      result = await handleShare({
+        // handleShare reads either an item (has .url) or a string URL.
+        // Articles fit the item-shape contract via their url field.
+        url: article.url,
+        ref: article.title,
+        title: article.title,
+        brand: article.brand,
+      });
+    } catch (err) { console.warn("share failed", err); result = null; }
+    if (result?.copied) {
+      setShareFeedback("Copied!");
+      setTimeout(() => { setShareFeedback(""); setMenuOpen(false); }, 1200);
+    } else {
+      setMenuOpen(false);
+    }
+  };
+  const showMenu = !!(openCollectionPicker || handleShare);
   // Density scaling — at high col counts (5-7), shrink typography and
   // drop the excerpt entirely so the card stays readable inside a
   // narrow tile. The `compact` flag from useViewSettings fires
@@ -865,32 +935,94 @@ export function ArticleCard({ article, isMobile, compact, cols, watchlist, handl
         )}
       </div>
     </a>
-    {/* Heart overlay (PR_P, 2026-05-20). Mirrors the Card heart on
-        dealer listings — same shape, same colors, same size logic.
-        preventDefault + stopPropagation so taps don't escape to the
-        wrapping <a>. Hidden entirely when handleWish isn't threaded
-        (e.g. signed-out states where the upstream wiring drops it). */}
-    {handleWish && (
-      <button
-        onClick={onHeartClick}
-        aria-label={wished ? "Remove from saved articles" : "Save article"}
-        title={wished ? "Saved — tap to remove" : "Save to articles"}
+    {/* Heart + "..." action stack (PR_P + PR_R, 2026-05-20). Mirrors
+        the Card actions on dealer listings — same shape, same colors,
+        same size logic. preventDefault + stopPropagation so taps
+        don't escape to the wrapping <a>. The "..." menu portals to
+        document.body so longer labels (Add to list…) don't get
+        clipped by the card root's overflow:hidden. */}
+    {(handleWish || showMenu) && (
+      <div style={{
+        position: "absolute", top: 6, right: 6,
+        display: "flex", flexDirection: "column", gap: 6, zIndex: 2,
+      }}>
+        {handleWish && (
+          <button
+            onClick={onHeartClick}
+            aria-label={wished ? "Remove from saved articles" : "Save article"}
+            title={wished ? "Saved — tap to remove" : "Save to articles"}
+            style={{
+              width: dense ? 26 : 32, height: dense ? 26 : 32,
+              borderRadius: "50%", border: "none", cursor: "pointer",
+              background: wished ? "rgba(220,38,38,0.88)" : "rgba(0,0,0,0.32)",
+              color: "#fff",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              padding: 0,
+            }}>
+            <HeartIcon filled={wished} size={dense ? 12 : 16} />
+          </button>
+        )}
+        {showMenu && (
+          <button
+            ref={triggerRef}
+            onClick={onMenuClick}
+            aria-label="More actions"
+            style={{
+              width: dense ? 26 : 32, height: dense ? 26 : 32,
+              borderRadius: "50%", border: "none", cursor: "pointer",
+              background: menuOpen ? "rgba(0,0,0,0.55)" : "rgba(0,0,0,0.32)",
+              color: "#fff",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              padding: 0, fontFamily: "inherit",
+              fontSize: dense ? 14 : 18, lineHeight: 1,
+            }}>
+            ⋯
+          </button>
+        )}
+      </div>
+    )}
+    {menuOpen && menuPos && showMenu && createPortal(
+      <div ref={portalRef} onClick={e => e.preventDefault()}
         style={{
-          position: "absolute",
-          top: 6, right: 6,
-          width: dense ? 26 : 32, height: dense ? 26 : 32,
-          borderRadius: "50%", border: "none", cursor: "pointer",
-          background: wished ? "rgba(220,38,38,0.88)" : "rgba(0,0,0,0.32)",
-          color: "#fff",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          padding: 0,
+          position: "fixed",
+          top: menuPos.top, right: menuPos.right,
+          zIndex: 1000,
+          maxWidth: `calc(100vw - ${menuPos.right + 16}px)`,
+          background: "var(--bg)", border: "0.5px solid var(--border)",
+          borderRadius: 8, padding: 4,
+          whiteSpace: "nowrap",
+          boxShadow: "0 6px 20px rgba(0,0,0,0.18)",
+          fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif",
         }}>
-        <HeartIcon filled={wished} size={dense ? 12 : 16} />
-      </button>
+        {handleShare && (
+          <button onClick={onShareClick} style={articleMenuItemStyle}>
+            {shareFeedback || "Share"}
+          </button>
+        )}
+        {openCollectionPicker && (
+          <button onClick={onAddToList} style={articleMenuItemStyle}>
+            Add to list…
+          </button>
+        )}
+      </div>,
+      document.body
     )}
     </div>
   );
 }
+
+// Menu-item style — slim, same shape as Card.js's menuItemStyle but
+// kept local to this file so EditorialView doesn't depend on a
+// non-exported style constant from Card.
+const articleMenuItemStyle = {
+  display: "block", width: "100%",
+  padding: "8px 12px",
+  background: "transparent", border: "none", cursor: "pointer",
+  textAlign: "left",
+  fontFamily: "inherit", fontSize: 13,
+  color: "var(--text1)",
+  borderRadius: 6,
+};
 
 function formatDate(iso) {
   if (!iso) return "";

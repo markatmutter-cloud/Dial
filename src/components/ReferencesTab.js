@@ -40,6 +40,9 @@ export function ReferencesTab({
   // Heart-articles plumbing (PR_P, 2026-05-20).
   watchlist,
   handleWish,
+  // Add-to-list + Share on articles (PR_R, 2026-05-20).
+  openCollectionPicker,
+  handleShare,
 }) {
   // Tab re-tap → return to default sub-tab. App.js bumps
   // `tabResetTick` whenever the user clicks the active main tab
@@ -111,6 +114,8 @@ export function ReferencesTab({
         isMobile={isMobile}
         watchlist={watchlist}
         handleWish={handleWish}
+        openCollectionPicker={openCollectionPicker}
+        handleShare={handleShare}
       />
     );
   }

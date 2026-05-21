@@ -1687,6 +1687,8 @@ function ListsView({
           gridStyle={gridStyle}
           watchlist={watchlist}
           handleWish={handleWish}
+          openCollectionPicker={openCollectionPicker}
+          handleShare={handleShare}
           onBack={() => setSelectedListId(null)}
         />
       );
@@ -2126,12 +2128,96 @@ function ListsView({
             // shared lists (solo lists fall through to the plain
             // grid below). Re-introduce a toggle here if the flat
             // view is ever asked for again.
+            // Articles split (PR_R, 2026-05-20). Items with
+            // snapshot.kind='article' get rendered in their own
+            // section below the listings grid — Mark spec: articles
+            // belong in a "different section" alongside listings/sold
+            // within the same user-created list. Article rows fall
+            // out of the bucketing flow (buckets are sentiment review,
+            // which doesn't apply to articles).
+            const articleItems = items.filter(i => i && i.kind === 'article');
+            const listingItems = items.filter(i => !i || i.kind !== 'article');
+
+            const renderArticlesSection = () => {
+              if (articleItems.length === 0) return null;
+              // Project the stored listing-shaped snapshot back to
+              // article shape ArticleCard expects (same projection as
+              // SavedArticlesView above).
+              const asArticles = articleItems.map(snap => {
+                const articleMeta = snap.article || {};
+                return {
+                  url: snap.url,
+                  title: snap.title || snap.ref || "",
+                  brand: snap.brand || "",
+                  model: snap.model || null,
+                  model_line: snap.model_line || null,
+                  reference_no: snap.reference_no || null,
+                  author: articleMeta.author || "",
+                  published_at: articleMeta.published_at || "",
+                  excerpt: articleMeta.excerpt || "",
+                  image: snap.img || "",
+                  _source: {
+                    key: articleMeta.source_key || "",
+                    label: articleMeta.source_label || "",
+                    publication: articleMeta.source_label || "",
+                  },
+                  // Pass rowId through so the heart-toggle remove path
+                  // can flow through removeItemFromCollection (handled
+                  // via the heart toggle on ArticleCard which calls
+                  // handleWish → toggleWatchlist; the collection_items
+                  // row stays unless the user explicitly removes via
+                  // the "..." menu's Remove. For PR_R we keep the
+                  // existing remove path — heart un-toggle removes
+                  // from watchlist_items but the article entry stays
+                  // in the collection list. Future iteration could
+                  // sync these.).
+                  _rowId: snap.rowId,
+                };
+              });
+              return (
+                <div style={{ marginTop: 24 }}>
+                  <div style={{
+                    display: "flex", alignItems: "baseline", gap: 8,
+                    margin: "0 0 10px",
+                  }}>
+                    <div style={{
+                      fontSize: 12, fontWeight: 600,
+                      color: "var(--text2)",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.08em",
+                    }}>Articles</div>
+                    <div style={{ fontSize: 13, color: "var(--text3)" }}>
+                      · {asArticles.length}
+                    </div>
+                  </div>
+                  <div style={gridStyle}>
+                    {asArticles.map(a => (
+                      <ArticleCard
+                        key={a.url}
+                        article={a}
+                        isMobile={!isWide}
+                        compact={compact}
+                        cols={isWide ? 3 : 1}
+                        watchlist={watchlist}
+                        handleWish={handleWish}
+                        openCollectionPicker={openCollectionPicker}
+                        handleShare={handleShare}
+                      />
+                    ))}
+                  </div>
+                </div>
+              );
+            };
+
             const useBuckets = screensEnabled;
             if (!useBuckets) {
               return (
-                <div style={{ ...gridStyle, borderRadius: 10, overflow: "hidden" }}>
-                  {items.map(renderItemCard)}
-                </div>
+                <>
+                  <div style={{ ...gridStyle, borderRadius: 10, overflow: "hidden" }}>
+                    {listingItems.map(renderItemCard)}
+                  </div>
+                  {renderArticlesSection()}
+                </>
               );
             }
 
@@ -2156,7 +2242,7 @@ function ListsView({
               return null;
             };
             const buckets = { toReview: [], loved: [], liked: [], passed: [] };
-            for (const it of items) {
+            for (const it of listingItems) {
               const r = myReactionFor(it);
               if (r) buckets[r].push(it);
               else buckets.toReview.push(it);
@@ -2191,6 +2277,7 @@ function ListsView({
                     />
                   );
                 })}
+                {renderArticlesSection()}
               </div>
             );
           })()
@@ -3119,7 +3206,7 @@ function ReactionCard({ row, onRemove, onOpenList }) {
 // the same component can render both surfaces.
 // ─────────────────────────────────────────────────────────────────
 
-function SavedArticlesView({ items, isWide, isMobile, gridStyle, watchlist, handleWish, onBack }) {
+function SavedArticlesView({ items, isWide, isMobile, gridStyle, watchlist, handleWish, openCollectionPicker, handleShare, onBack }) {
   // Convert a stored snapshot (article-as-listing shape) back into
   // the article shape ArticleCard renders. The stored fields live
   // both at the top level (ref, brand) and inside the `article`
@@ -3183,6 +3270,8 @@ function SavedArticlesView({ items, isWide, isMobile, gridStyle, watchlist, hand
               cols={isWide ? 3 : 1}
               watchlist={watchlist}
               handleWish={handleWish}
+              openCollectionPicker={openCollectionPicker}
+              handleShare={handleShare}
             />
           ))}
         </div>
