@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { supabase } from "../supabase";
 import { Card } from "./Card";
 import { daysOnSale } from "../utils";
+import { confirm } from "./ConfirmModal";
 
 // Admin-only source-quality dashboard. Surfaces the data the Epic 0
 // verification script + per-source aggregates produce, in a dense
@@ -260,6 +261,17 @@ export function AdminTab({ watchItems, hiddenItems }) {
   const [capForm, setCapForm] = useState({ email: "", cap: "5000", note: "" });
   const [capError, setCapError] = useState("");
   const [capBusy, setCapBusy] = useState(false);
+  // Collection cleanup section: per-collection breakdown of items
+  // grouped by source_of_entry. Operates on the CURRENT signed-in
+  // admin's own collections (auth.uid()), not other users — RLS on
+  // collection_items would block cross-user deletes anyway. Useful
+  // for purging auction_bulk noise that flowed in via the auction
+  // catalog "Add to list" path so the collector analyzer reads a
+  // truer signal.
+  const [cleanupRows, setCleanupRows] = useState(null);
+  const [cleanupTick, setCleanupTick] = useState(0);
+  const [cleanupBusy, setCleanupBusy] = useState(null); // `${collectionId}:${source}` while a delete is in-flight
+  const [cleanupError, setCleanupError] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -316,6 +328,82 @@ export function AdminTab({ watchItems, hiddenItems }) {
       });
     return () => { cancelled = true; };
   }, [userLimitsTick]);
+
+  // Collection cleanup fetch — pulls the current admin's collections
+  // + an aggregated source_of_entry breakdown per collection. We do
+  // this client-side via two queries (collections then items grouped
+  // in JS) rather than a SQL RPC because the result set is small
+  // (typically <50 collections × 4 source-of-entry buckets) and
+  // adding a SECURITY DEFINER RPC just for an admin tool isn't worth
+  // the surface area.
+  useEffect(() => {
+    if (!supabase) return undefined;
+    let cancelled = false;
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user || cancelled) return;
+      const { data: cols, error: colsErr } = await supabase
+        .from("collections")
+        .select("id, name, type, target_count")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: true });
+      if (cancelled || colsErr) return;
+      const { data: items, error: itemsErr } = await supabase
+        .from("collection_items")
+        .select("collection_id, source_of_entry")
+        .in("collection_id", (cols || []).map((c) => c.id));
+      if (cancelled || itemsErr) return;
+      const byColl = new Map();
+      for (const it of items || []) {
+        const key = it.collection_id;
+        if (!byColl.has(key)) byColl.set(key, {});
+        const bucket = (it.source_of_entry || "manual");
+        byColl.get(key)[bucket] = (byColl.get(key)[bucket] || 0) + 1;
+      }
+      const rows = (cols || []).map((c) => {
+        const counts = byColl.get(c.id) || {};
+        const total = Object.values(counts).reduce((a, b) => a + b, 0);
+        return {
+          id: c.id,
+          name: c.name || "(unnamed)",
+          type: c.type || "list",
+          manual: counts.manual || 0,
+          auction_review: counts.auction_review || 0,
+          auction_bulk: counts.auction_bulk || 0,
+          shared_with_me: counts.shared_with_me || 0,
+          total,
+        };
+      }).filter((r) => r.total > 0);
+      setCleanupRows(rows);
+    })();
+    return () => { cancelled = true; };
+  }, [cleanupTick]);
+
+  const handleCleanupDelete = async (row, source) => {
+    if (!supabase) return;
+    const count = row[source] || 0;
+    if (!count) return;
+    const ok = await confirm({
+      title: `Delete ${count} item${count === 1 ? "" : "s"}?`,
+      message: `From "${row.name}" — items with source_of_entry = "${source}". This cannot be undone.`,
+      confirmLabel: `Delete ${count}`,
+      tone: "danger",
+    });
+    if (!ok) return;
+    setCleanupError("");
+    setCleanupBusy(`${row.id}:${source}`);
+    const { error } = await supabase
+      .from("collection_items")
+      .delete()
+      .eq("collection_id", row.id)
+      .eq("source_of_entry", source);
+    setCleanupBusy(null);
+    if (error) {
+      setCleanupError(`Delete failed: ${error.message}`);
+      return;
+    }
+    setCleanupTick((t) => t + 1);
+  };
 
   const submitCapChange = async (e) => {
     e.preventDefault();
@@ -853,6 +941,7 @@ export function AdminTab({ watchItems, hiddenItems }) {
           ["sec-fastest",  "Fastest sales"],
           ["sec-house",    "Auction houses"],
           ["sec-limits",   "User limits"],
+          ["sec-cleanup",  "Collection cleanup"],
         ].map(([id, label]) => (
           <a key={id} href={`#${id}`} style={{
             fontSize: 12, padding: "4px 10px", borderRadius: 12,
@@ -1347,6 +1436,101 @@ export function AdminTab({ watchItems, hiddenItems }) {
         on watchlist_items, so a malicious or buggy frontend can't bypass it.
         Lowering a user's cap below their current count doesn't remove existing items —
         they just can't add more until they un-favorite.
+      </div>
+
+      {/* Collection cleanup (2026-05-20). Operates on the current
+          admin's own collections. Per-cell delete with confirm. */}
+      <div id="sec-cleanup" style={{
+        display: "flex", alignItems: "baseline", gap: 12, flexWrap: "wrap",
+        marginTop: 32, marginBottom: 14,
+      }}>
+        <h1 style={{ fontSize: 18, fontWeight: 600, color: "var(--text1)", margin: 0 }}>
+          Collection cleanup
+        </h1>
+        <span style={{ fontSize: 12, color: "var(--text2)" }}>
+          Your own collections · delete by source_of_entry
+        </span>
+      </div>
+
+      {cleanupRows === null ? (
+        <div style={{ color: "var(--text2)", fontSize: 13, padding: 20 }}>
+          {supabase ? "Loading…" : "Supabase not configured."}
+        </div>
+      ) : cleanupRows.length === 0 ? (
+        <div style={{ color: "var(--text2)", fontSize: 13, padding: 20 }}>
+          No collections with items yet.
+        </div>
+      ) : (
+        <div style={{ overflowX: "auto", border: "0.5px solid var(--border)", borderRadius: 8 }}>
+          <table style={{ borderCollapse: "collapse", width: "100%", minWidth: 720 }}>
+            <thead>
+              <tr>
+                <th style={{ ...headerBase, textAlign: "left", cursor: "default" }}>Collection</th>
+                <th style={{ ...headerBase, textAlign: "left", cursor: "default" }}>Type</th>
+                <th style={{ ...headerBase, textAlign: "right", cursor: "default" }}>manual</th>
+                <th style={{ ...headerBase, textAlign: "right", cursor: "default" }}>auction_review</th>
+                <th style={{ ...headerBase, textAlign: "right", cursor: "default" }}>auction_bulk</th>
+                <th style={{ ...headerBase, textAlign: "right", cursor: "default" }}>shared_with_me</th>
+                <th style={{ ...headerBase, textAlign: "right", cursor: "default" }}>total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {cleanupRows.map((r) => (
+                <tr key={r.id}>
+                  <td style={{ ...cellBase, textAlign: "left", color: "var(--text1)" }}>{r.name}</td>
+                  <td style={{ ...cellBase, textAlign: "left", color: "var(--text2)" }}>{r.type}</td>
+                  {["manual", "auction_review", "auction_bulk", "shared_with_me"].map((src) => {
+                    const n = r[src];
+                    const busy = cleanupBusy === `${r.id}:${src}`;
+                    return (
+                      <td key={src} style={{ ...cellBase, textAlign: "right", color: "var(--text1)" }}>
+                        {n === 0 ? (
+                          <span style={{ color: "var(--text3)" }}>—</span>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => handleCleanupDelete(r, src)}
+                            disabled={busy}
+                            title={`Delete ${n} ${src} item${n === 1 ? "" : "s"}`}
+                            style={{
+                              fontFamily: "inherit", fontSize: 12,
+                              padding: "2px 8px",
+                              border: "0.5px solid var(--border)",
+                              borderRadius: 4,
+                              background: "var(--surface)",
+                              color: "var(--danger)",
+                              cursor: busy ? "wait" : "pointer",
+                              opacity: busy ? 0.6 : 1,
+                            }}
+                          >
+                            {busy ? "…" : n.toLocaleString()}
+                          </button>
+                        )}
+                      </td>
+                    );
+                  })}
+                  <td style={{ ...cellBase, textAlign: "right", color: "var(--text1)", fontWeight: 600 }}>
+                    {r.total.toLocaleString()}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {cleanupError && (
+        <div style={{ marginTop: 8, color: "var(--danger)", fontSize: 12 }}>
+          {cleanupError}
+        </div>
+      )}
+
+      <div style={{ marginTop: 12, fontSize: 11, color: "var(--text3)", lineHeight: 1.6 }}>
+        Tap any non-zero count to delete every item in that collection with that
+        source_of_entry. Useful for purging <code>auction_bulk</code> noise from the
+        catalog-level "Add to list" flow so the collector analyzer reads a truer
+        signal of intent. Operates on YOUR own collections (auth.uid()); RLS on
+        collection_items blocks cross-user deletes regardless.
       </div>
     </div>
   );
