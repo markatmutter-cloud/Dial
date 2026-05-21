@@ -86,7 +86,11 @@ jobs:
         # Referer for hot-link-protected dealers, uploads to Vercel
         # Blob, writes the resulting URL back to Supabase. Also reaps
         # orphan blobs so unfavoriting frees the space.
+        # timeout-minutes added 2026-05-21 (Mark report) after this
+        # step hung indefinitely on the frequent-auction-lots workflow
+        # and starved the cron of fresh bid data. Same guard here.
         continue-on-error: true
+        timeout-minutes: 15
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
