@@ -3,6 +3,7 @@ import { SearchIcon, TabIcon } from "./icons";
 import { Chip } from "./Chip";
 import { AboutModal } from "./AboutModal";
 import { SignInPromptModal } from "./SignInPromptModal";
+import { MoonPhaseIndicator } from "./MoonPhaseIndicator";
 import { pillBase } from "../styles";
 
 // Desktop shell — receives everything the desktop branch needs from
@@ -394,6 +395,10 @@ export function DesktopShell(props) {
     <div style={{ ...baseStyle, display: "flex", flexDirection: "column", height: "100vh", overflow: "hidden" }}>
       {/* Full-width top bar */}
       <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 20px", borderBottom: "0.5px solid var(--border)", flexShrink: 0 }}>
+        {/* Moon-phase indicator (2026-05-21) — sits at top-left
+            on every tab, like the Hodinkee reference Mark sent.
+            Click for the full phase modal. */}
+        <MoonPhaseIndicator size={20} showDate={true} />
         {/* Top wordmark hidden on Home (editorial hero in body is the
             brand mark there). On every other tab: smaller-but-
             editorial — matches the Home hero's weight + tracking +

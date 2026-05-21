@@ -4,6 +4,7 @@ import { Chip } from "./Chip";
 import { AboutModal } from "./AboutModal";
 import { SignInPromptModal } from "./SignInPromptModal";
 import { ViewSettingsControls } from "./ViewSettingsControls";
+import { MoonPhaseIndicator } from "./MoonPhaseIndicator";
 import { iconButton, pillBase, inputBase } from "../styles";
 
 // Mobile shell — receives everything the mobile branch needs from
@@ -120,22 +121,25 @@ export function MobileShell(props) {
             twice. Trimmed vertical padding 6/4 → 2/2 and dropped the
             28px min-height; the wordmark's own line-height takes the
             row height, no minimum needed. */}
-        <div style={{ padding: "2px 16px 2px", display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12 }}>
-          {tab !== "home" ? (
-            // Smaller-but-editorial wordmark on other tabs — matches
-            // the Home hero's weight + tracking + uppercase, just
-            // shrunk so it sits inside the top bar (Mark spec
-            // 2026-05-11). Padding-left preserves the trailing
-            // letter-spacing visually so the wordmark reads centered.
-            <button onClick={() => { setTab("home"); setPage(1); }}
-              style={{ background: "none", border: "none", cursor: "pointer",
-                      padding: 0, paddingLeft: "0.14em", fontFamily: "inherit",
-                      fontSize: 14, fontWeight: 300, letterSpacing: "0.14em",
-                      textTransform: "uppercase",
-                      color: "var(--text1)" }}>
-              Watchlist
-            </button>
-          ) : <span />}
+        <div style={{ padding: "2px 16px 2px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+          {/* Top-left cluster: moon-phase indicator (2026-05-21,
+              Hodinkee-inspired) + wordmark. Moon shows on every
+              tab including Home — it's a permanent at-a-glance
+              decoration. Date label hidden on mobile to save
+              horizontal room; the modal carries the full context. */}
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <MoonPhaseIndicator size={18} showDate={false} />
+            {tab !== "home" && (
+              <button onClick={() => { setTab("home"); setPage(1); }}
+                style={{ background: "none", border: "none", cursor: "pointer",
+                        padding: 0, paddingLeft: "0.14em", fontFamily: "inherit",
+                        fontSize: 14, fontWeight: 300, letterSpacing: "0.14em",
+                        textTransform: "uppercase",
+                        color: "var(--text1)" }}>
+                Watchlist
+              </button>
+            )}
+          </div>
           {/* Top-right cluster. On Home (mobile) the sticky search row
               below is suppressed (Mark spec 2026-05-20: "search bar
               under the logo on mobile like on the desktop site"), so
