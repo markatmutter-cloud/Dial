@@ -37,6 +37,9 @@ export function ReferencesTab({
   compact,
   gridStyle,
   isMobile,
+  // Heart-articles plumbing (PR_P, 2026-05-20).
+  watchlist,
+  handleWish,
 }) {
   // Tab re-tap → return to default sub-tab. App.js bumps
   // `tabResetTick` whenever the user clicks the active main tab
@@ -106,6 +109,8 @@ export function ReferencesTab({
         compact={compact}
         gridStyle={gridStyle}
         isMobile={isMobile}
+        watchlist={watchlist}
+        handleWish={handleWish}
       />
     );
   }

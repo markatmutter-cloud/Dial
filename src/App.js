@@ -3343,6 +3343,13 @@ export default function Watchlist() {
       compact={compact}
       gridStyle={gridStyle}
       isMobile={isMobile}
+      // Heart-articles primitive (PR_P, 2026-05-20). Threaded through to
+      // EditorialView so each ArticleCard can render its own heart state +
+      // toggle. Articles share watchlist_items with listings; the snapshot
+      // carries `kind: 'article'` so Watchlists' listing-only sub-tabs can
+      // filter them out and the Saved-articles virtual row aggregates them.
+      watchlist={watchlist}
+      handleWish={handleWish}
     />
   );
 
