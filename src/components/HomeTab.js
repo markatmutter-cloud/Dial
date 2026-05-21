@@ -96,7 +96,11 @@ function EditorialHero({ isMobile }) {
         }}>
           Watchlist
         </h1>
-        <MoonPhaseIndicator size={isMobile ? 38 : 68} />
+        {/* Size matches 2× the wordmark fontSize because the
+            indicator clips to the top half — so the rendered
+            visible height equals the wordmark fontSize. The pair
+            reads as the same visual weight. */}
+        <MoonPhaseIndicator size={isMobile ? 60 : 112} />
       </div>
       <div style={{ height: 0.5, background: "var(--border)" }} />
     </section>
