@@ -29,7 +29,7 @@ export function DesktopShell(props) {
     hasFilters, hiddenItems,
     maxPriceText, minPriceText,
     filterHearted, search, signInPromptOpen, signInWithGoogle, sort,
-    tab, user, visibleBrands, visibleModels,
+    tab, user, visibleBrands, visibleSources, visibleModels,
     MODELS, MODELS_SHOW, modelsExpanded, setModelsExpanded,
     watchTopTab, watchlist,
     // Setters / handlers
