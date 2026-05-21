@@ -113,6 +113,15 @@ API_SLEEP = 0.4
 DETAIL_SLEEP = 0.5
 ARCHIVE_PAGE_SIZE = 20
 
+# Per Mark spec 2026-05-20: the publication only pivoted to watches in
+# 2019. Pre-2019 content (back to 2012) was on different topics and
+# shouldn't enter the watch-corpus. The current free seed already has
+# no pre-2019 content (older posts are all `audience='only_paid'`), so
+# this filter is defensive — but when the personal-corpus loader
+# ingests Mark's Substack export (which DOES include the paid pre-2019
+# archive), the same MIN_PUBLISHED_DATE must apply.
+MIN_PUBLISHED_DATE = "2019-01-01"
+
 
 def fetch(url: str, retries: int = 2) -> str:
     for attempt in range(retries + 1):
@@ -146,10 +155,13 @@ def fetch_archive_page(offset: int) -> list[dict]:
 
 def discover_free_posts() -> list[dict]:
     """Walk the archive API collecting metadata for `audience=everyone`
-    posts only. Paid posts get a one-line log entry + are skipped.
+    posts only. Paid posts get a one-line log entry + are skipped. Also
+    skips anything published before MIN_PUBLISHED_DATE — the publication
+    pivoted to watches in 2019 and the older archive is off-topic.
     """
     free: list[dict] = []
     paid_count = 0
+    pre_2019_count = 0
     offset = 0
     while True:
         page = fetch_archive_page(offset)
@@ -157,15 +169,20 @@ def discover_free_posts() -> list[dict]:
             break
         for post in page:
             audience = post.get("audience")
-            if audience == "everyone":
-                free.append(post)
-            else:
+            if audience != "everyone":
                 paid_count += 1
+                continue
+            post_date = (post.get("post_date") or "")[:10]
+            if post_date and post_date < MIN_PUBLISHED_DATE:
+                pre_2019_count += 1
+                continue
+            free.append(post)
         offset += ARCHIVE_PAGE_SIZE
         time.sleep(API_SLEEP)
         if len(page) < ARCHIVE_PAGE_SIZE:
             break
-    print(f"  archive walk: {len(free)} free, {paid_count} paid (skipped)")
+    print(f"  archive walk: {len(free)} free in-scope, "
+          f"{paid_count} paid (skipped), {pre_2019_count} pre-{MIN_PUBLISHED_DATE[:4]} (skipped)")
     return free
 
 
