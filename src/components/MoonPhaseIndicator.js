@@ -29,6 +29,13 @@ export function MoonPhaseIndicator({ size = 48 }) {
   // via an overflow-hidden wrapper: container is half-height, img
   // inside renders at full square so only the top is visible.
   // Mark spec 2026-05-21: "just show the top part".
+  // Vertical nudge: the moon glyph sits in the lower portion of the
+  // clipped top half (Figma source has sky above the moon), so when
+  // flex-center-aligned with the wordmark the moon visually hangs
+  // BELOW the wordmark baseline. translateY pulls it up by ~30% of
+  // its container height so the glyph centers on the wordmark
+  // visually. Tune via the `nudge` prop if a Figma re-export shifts
+  // the glyph position in the source.
   return (
     <span style={{
       display: "inline-block",
@@ -37,6 +44,7 @@ export function MoonPhaseIndicator({ size = 48 }) {
       overflow: "hidden",
       flexShrink: 0,
       lineHeight: 0,
+      transform: "translateY(-30%)",
     }}
     title={phaseLabel}
     aria-label={phaseLabel}
