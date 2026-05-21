@@ -235,6 +235,69 @@ via PR #397; this loader picks up the paid majority.
   to the full implementation. The lighter pattern would have been
   obvious on a paper sketch.
 
+## Addendum (post-#416): moonphase widget + polish round
+
+After the handoff doc was committed (#416), the session continued
+with 10 more PRs (#417 → #426). Two arcs:
+
+**Editorial bleed-through (#417).** The sticky filter band shipped
+in #409 wasn't extending edge-to-edge through the scroll
+container's padding, so the dark Featured band bled through the
+14/20px side gaps as it scrolled past. Negative-margin pattern
+fixes it. Lesson: when wrapping sticky elements inside a padded
+scroll container, the sticky must extend edge-to-edge OR the
+chrome must live outside the scroll container (PR_U).
+
+**Moonphase widget (#418 → #426).** Mark generated 30 phase
+frames in Figma; I built the math + indicator. The placement
+went through five iterations before landing:
+
+1. **#418** — top-bar with click-to-modal (Hodinkee-style)
+2. **#419** — moved next to Home hero wordmark, no modal
+3. **#420-#424** — inline placement, iterated size + translateY
+   nudge to align with wordmark baseline
+4. **#425** — pivoted to eyebrow placement (own row above wordmark)
+   after I called out that fighting per-frame Figma alignment was
+   the wrong battle
+5. **#426** — eyebrow with top-half clip + bigger size
+
+**Final state**: eyebrow above WATCHLIST, 200×100px clipped on
+desktop / 120×60 mobile, full lunar-cycle math driving daily image
+rotation. Verified today (lunar day 5.22 = Waxing Crescent → frame
+06.png) loads correctly. Refreshes every 60s.
+
+**Files added**:
+- `public/moonphase/01.png … 30.png` (30 normalized 600×600
+  transparent PNGs, padded square to 2589× max input then resized)
+- `src/utils/moonPhase.js` — lunar math (synodic month, reference
+  epoch 2000-01-06 18:14 UTC, image index 1..30, phase name,
+  illumination %)
+- `src/components/MoonPhaseIndicator.js` — clipped-img component
+
+**Lesson** for any future per-frame artwork integration: align via
+the COMPONENT LAYOUT (own row, own block) not via pixel nudges
+against external text. Each Figma re-export shifts the glyph's
+position in the source frame by a few pixels; translateY tuning
+would have to be re-done every time.
+
+## Search-placement question (deferred)
+
+Mark raised the idea of moving the search input INSIDE the filter
+row instead of the top bar. Discussed but **not shipped** — it's
+a whole-app refactor (touches every tab + the save-as-favorite
+plumbing). Queued as **PR_V** for a focused next session if Mark
+wants to pursue.
+
+## Branch hygiene done at session end
+
+Local + remote had 138 stale branches accumulated from prior
+sessions (PRs squash-merged without `--delete-branch` on the gh
+CLI side, or merged via the GitHub UI before that flag was added
+to the workflow). Bulk-deleted them all at session end — local
++ origin now show **only `main`**. Going forward, every PR in
+this session was opened + merged with `--delete-branch`, so the
+clean state should hold.
+
 ## Bottom line
 
 Articles are now a first-class object across the app. The editorial
@@ -244,8 +307,11 @@ collector analyzer reads cleaner with `source_of_entry` weighting +
 Robustness Anxiety in its strategy lens. Image-perf root cause is
 identified and patched. The Editorial UI has been through three
 rounds of polish in one session and now looks close to the Hodinkee
-reference quality bar.
+reference quality bar. Plus the moonphase widget — Mark's Figma
+artwork driving a daily lunar phase callout above the wordmark.
 
-Next session has a clean queue: the moonphase widget (with images
-arriving), PR_S related articles, PR_W article-share landing
-surface, and the first per-reference page pilot.
+Next session has a clean queue: PR_S related articles, PR_V search-
+in-filter-row refactor (if Mark wants), PR_W article-share landing
+surface, and the first per-reference page pilot (GMT 1675 candidate
+based on corpus coverage). Branch state is clean; docs reflect
+current reality.
