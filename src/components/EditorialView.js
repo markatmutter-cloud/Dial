@@ -121,7 +121,8 @@ const SOURCES = [
 ];
 
 const BRAND_TOP_N = 24;       // Show top N brands in expansion panel; "+more" expander reveals the rest
-const RESULTS_PAGE_SIZE = 24; // Lazy-render in chunks so a 1,860-article filter doesn't build all DOM upfront
+const RESULTS_PAGE_SIZE = 48; // Denser scroll (Mark spec 2026-05-20 — "24 wasn't enough to scroll through"). Bumped 24→48.
+const FEATURED_COUNT = 8;     // Most-recent articles surfaced in the hero strip (visible only when no search / no filters active).
 
 export function EditorialView({ isMobile, cols, compact, gridStyle }) {
   // cols / compact / gridStyle come from App.js's useViewSettings — the
@@ -149,7 +150,11 @@ export function EditorialView({ isMobile, cols, compact, gridStyle }) {
   const [search, setSearch] = useState("");
   const [activeSources, setActiveSources] = useState([]); // [] = all
   const [activeBrands, setActiveBrands] = useState([]);    // [] = all
-  // Date sort cycles desc → asc → desc on tap (matches Listings).
+  // Sort modes (2026-05-20): "relevance" (only meaningful when a
+  // query is present; falls back to date_desc when empty),
+  // "date_desc", "date_asc". Cycles through Relevance → Date ↓ →
+  // Date ↑ → Relevance when a query is typed; cycles between just
+  // Date ↓ and Date ↑ otherwise.
   const [sort, setSort] = useState("date_desc");
   // Inline-expansion popover state — same shape as Listings filter row.
   // null | "source" | "brand". Tapping the active pill closes it; tapping
@@ -247,8 +252,15 @@ export function EditorialView({ isMobile, cols, compact, gridStyle }) {
   // then a search like "Railmaster" matches whichever articles name the
   // term in their title — once bodies arrive the same query expands to
   // include every article whose prose mentions it, no re-type needed.
+  //
+  // Relevance scoring (when sort === "relevance" + non-empty query):
+  // weighted hits across title (10x) / author (5x) / body (1x per
+  // occurrence, capped at 10 per term) + small recency tiebreaker.
+  // Exact-title and title-contains matches get bonus weight so the
+  // hero result for a typed reference number lands at the top.
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
+    const queryTerms = q ? q.split(/\s+/).filter(t => t.length > 1) : [];
     const sourceSet = activeSources.length ? new Set(activeSources) : null;
     const brandSet  = activeBrands.length  ? new Set(activeBrands)  : null;
     let out = articles.filter(a => {
@@ -262,9 +274,39 @@ export function EditorialView({ isMobile, cols, compact, gridStyle }) {
       }
       return true;
     });
-    if (sort === "date_desc") {
+
+    const effectiveSort = (sort === "relevance" && !q) ? "date_desc" : sort;
+
+    if (effectiveSort === "relevance") {
+      const scored = out.map(a => {
+        const title  = (a.title  || "").toLowerCase();
+        const author = (a.author || "").toLowerCase();
+        const body   = bodies ? ((bodies[a.url] || "")).toLowerCase() : "";
+        let score = 0;
+        if (title === q) score += 100;
+        if (title.includes(q)) score += 50;
+        if (author.includes(q)) score += 8;
+        for (const w of queryTerms) {
+          if (title.includes(w)) score += 10;
+          if (author.includes(w)) score += 4;
+          if (body) {
+            // Count occurrences via split — faster + safer than regex
+            // for short query terms with potential special chars (e.g.
+            // "6263" or "wgch0007").
+            const occ = body.split(w).length - 1;
+            score += Math.min(10, occ);
+          }
+        }
+        // Tiny recency boost so two equally-scored articles land
+        // newest-first; uses date as a string-comparable proxy.
+        const dateProxy = (a.published_at || "0000-00-00");
+        return { a, score, dateProxy };
+      });
+      scored.sort((x, y) => y.score - x.score || y.dateProxy.localeCompare(x.dateProxy));
+      out = scored.map(s => s.a);
+    } else if (effectiveSort === "date_desc") {
       out.sort((a, b) => (b.published_at || "").localeCompare(a.published_at || ""));
-    } else if (sort === "date_asc") {
+    } else if (effectiveSort === "date_asc") {
       out.sort((a, b) => (a.published_at || "").localeCompare(b.published_at || ""));
     }
     return out;
@@ -275,7 +317,34 @@ export function EditorialView({ isMobile, cols, compact, gridStyle }) {
     setPageSize(RESULTS_PAGE_SIZE);
   }, [search, activeSources, activeBrands, sort]);
 
-  const visible = useMemo(() => filtered.slice(0, pageSize), [filtered, pageSize]);
+  // hasFilters has to be defined BEFORE the featured memo references
+  // it — useMemo callbacks run synchronously on first render, so a
+  // forward reference to a const declared further down hits the TDZ.
+  const hasFilters =
+    !!search.trim() || activeSources.length > 0 || activeBrands.length > 0;
+
+  // Featured strip — shown only when no search / filter is active.
+  // Top N most-recent articles regardless of which source they came
+  // from. When filters fire, the user has an intent and the featured
+  // strip would just be visual noise above their results.
+  const showFeatured = !hasFilters;
+  const featured = useMemo(() => {
+    if (!showFeatured) return [];
+    return [...articles]
+      .sort((a, b) => (b.published_at || "").localeCompare(a.published_at || ""))
+      .slice(0, FEATURED_COUNT);
+  }, [articles, showFeatured]);
+
+  // When the featured strip is showing, exclude those URLs from the
+  // dense scroll below — otherwise the newest articles appear twice
+  // (once large in the featured strip, once dense in the grid below).
+  const featuredUrls = useMemo(() => new Set(featured.map(a => a.url)), [featured]);
+  const visible = useMemo(() => {
+    const list = showFeatured
+      ? filtered.filter(a => !featuredUrls.has(a.url))
+      : filtered;
+    return list.slice(0, pageSize);
+  }, [filtered, pageSize, showFeatured, featuredUrls]);
 
   // Group visible items by year.
   const groups = useMemo(() => {
@@ -301,8 +370,6 @@ export function EditorialView({ isMobile, cols, compact, gridStyle }) {
     setCollapsedYears(prev => ({ ...prev, [label]: !prev[label] }));
   };
 
-  const hasFilters =
-    !!search.trim() || activeSources.length > 0 || activeBrands.length > 0;
   const clearAll = () => {
     setSearch("");
     setActiveSources([]);
@@ -310,11 +377,29 @@ export function EditorialView({ isMobile, cols, compact, gridStyle }) {
     setActiveFilterPop(null);
   };
 
-  const cycleDate = () => {
-    setSort(s => s === "date_desc" ? "date_asc" : "date_desc");
+  // Sort cycle behavior:
+  //   - With a query: Relevance → Date ↓ → Date ↑ → Relevance
+  //   - Without a query: Date ↓ → Date ↑ → Date ↓ (Relevance hidden,
+  //     the option only makes sense when there's something to score)
+  // If the user types a query while on Date sort, we DON'T jump them
+  // to Relevance — they chose the date axis explicitly. But if they
+  // clear the query while on Relevance, the memo falls back to
+  // date_desc rendering transparently (so the pill keeps showing
+  // "Relevance" but the actual order is date_desc).
+  const hasQuery = !!search.trim();
+  const cycleSort = () => {
+    setSort(s => {
+      if (hasQuery) {
+        if (s === "relevance") return "date_desc";
+        if (s === "date_desc") return "date_asc";
+        return "relevance";
+      }
+      return s === "date_desc" ? "date_asc" : "date_desc";
+    });
   };
-  const dateLabel = sort === "date_desc" ? "Date ↓"
-                  : sort === "date_asc" ? "Date ↑"
+  const sortLabel = sort === "relevance" ? (hasQuery ? "Relevance" : "Date ↓")
+                  : sort === "date_desc" ? "Date ↓"
+                  : sort === "date_asc"  ? "Date ↑"
                   : "Date";
 
   // ─────────────────────────────────────────────────────────────────
@@ -385,13 +470,14 @@ export function EditorialView({ isMobile, cols, compact, gridStyle }) {
         borderBottom: expanded ? "none" : "0.5px solid var(--border)",
         flexShrink: 0, flexWrap: "wrap",
       }}>
-        {/* Date sort — single pill that flips on tap. */}
+        {/* Sort pill — cycles Date ↓ / Date ↑ when no query is typed,
+            expands to Relevance / Date ↓ / Date ↑ when a query is active. */}
         <button
-          onClick={cycleDate}
+          onClick={cycleSort}
           style={{
             ...pillBase(true, { compact: true, surface: true }),
             fontWeight: 600,
-          }}>{dateLabel}</button>
+          }}>{sortLabel}</button>
 
         {/* Source inline-expand pill */}
         <button
@@ -472,6 +558,48 @@ export function EditorialView({ isMobile, cols, compact, gridStyle }) {
               )}
             </>
           )}
+        </div>
+      )}
+
+      {/* Featured strip — top N most-recent articles, shown only when
+          no filter / no search is active. Horizontal scroll on mobile,
+          multi-col grid on desktop. Visually distinct from the dense
+          scroll below via the FEATURED header + larger card grid. */}
+      {showFeatured && featured.length > 0 && (
+        <div style={{
+          padding: isMobile ? "16px 14px 12px" : "20px 20px 16px",
+          borderBottom: "0.5px solid var(--border)",
+        }}>
+          <div style={{
+            display: "flex", alignItems: "baseline", gap: 8,
+            marginBottom: 10,
+          }}>
+            <div style={{
+              fontSize: 11, fontWeight: 700,
+              letterSpacing: "0.08em", textTransform: "uppercase",
+              color: "var(--text2)",
+            }}>Featured</div>
+            <div style={{ fontSize: 12, color: "var(--text3)" }}>
+              · most recent
+            </div>
+          </div>
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: isMobile
+              ? "repeat(2, minmax(0, 1fr))"
+              : `repeat(${Math.min(4, FEATURED_COUNT)}, minmax(0, 1fr))`,
+            gap: isMobile ? 10 : 12,
+          }}>
+            {featured.map(a => (
+              <ArticleCard
+                key={"featured-" + a.url}
+                article={a}
+                isMobile={isMobile}
+                compact={false}
+                cols={isMobile ? 2 : 4}
+              />
+            ))}
+          </div>
         </div>
       )}
 
