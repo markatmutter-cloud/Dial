@@ -77,7 +77,7 @@ function EditorialHero({ isMobile }) {
           wordmark + moon feel balanced. */}
       <div style={{
         display: "flex", alignItems: "center", justifyContent: "center",
-        gap: isMobile ? 14 : 24,
+        gap: isMobile ? 6 : 12,
         margin: isMobile ? "0 0 12px" : "0 0 22px",
         // Mirror the wordmark's compensatory left-pad so the visual
         // center of the cluster aligns with the page's horizontal
@@ -96,11 +96,13 @@ function EditorialHero({ isMobile }) {
         }}>
           Watchlist
         </h1>
-        {/* Size matches 2× the wordmark fontSize because the
-            indicator clips to the top half — so the rendered
-            visible height equals the wordmark fontSize. The pair
-            reads as the same visual weight. */}
-        <MoonPhaseIndicator size={isMobile ? 60 : 112} />
+        {/* The Figma source has empty sky above the moon glyph
+            within the top half, so the EFFECTIVE moon-glyph
+            height is ~30-40% of the clipped container. Sized 4×
+            wordmark fontSize so the visible moon roughly matches
+            the wordmark cap height. Iterate the multiplier if
+            still off. */}
+        <MoonPhaseIndicator size={isMobile ? 120 : 220} />
       </div>
       <div style={{ height: 0.5, background: "var(--border)" }} />
     </section>
