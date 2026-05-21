@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Card } from "./Card";
 import { SearchIcon } from "./icons";
+import { MoonPhaseIndicator } from "./MoonPhaseIndicator";
 
 // Home tab — phase 4 polish (2026-05-11).
 //
@@ -68,21 +69,35 @@ function EditorialHero({ isMobile }) {
           was reading as having two horizontal rules in close
           succession. The hairline below the wordmark stays as the
           divider into the search section. */}
-      <h1 style={{
+      {/* Wordmark + moon-phase pair (2026-05-21). The combined
+          block sits centered as a single hero — the moon reads as
+          an addition to the brand mark, not a separate widget.
+          Live current-day phase, no click affordance. Gap between
+          them matches the trailing letter-spacing visually so the
+          wordmark + moon feel balanced. */}
+      <div style={{
+        display: "flex", alignItems: "center", justifyContent: "center",
+        gap: isMobile ? 14 : 24,
         margin: isMobile ? "0 0 12px" : "0 0 22px",
-        fontFamily: "inherit",
-        fontSize: isMobile ? 30 : 56,
-        fontWeight: 400,
-        letterSpacing: isMobile ? "0.14em" : "0.16em",
-        color: "var(--text1)",
-        textTransform: "uppercase",
-        // Visual centering: nudge right by half a "track" so the
-        // trailing letter-spacing on the last glyph doesn't pull
-        // the wordmark visually left.
+        // Mirror the wordmark's compensatory left-pad so the visual
+        // center of the cluster aligns with the page's horizontal
+        // center (the wordmark's trailing letter-spacing on the K
+        // pulls the cluster slightly right without this).
         paddingLeft: isMobile ? "0.14em" : "0.16em",
       }}>
-        Watchlist
-      </h1>
+        <h1 style={{
+          margin: 0,
+          fontFamily: "inherit",
+          fontSize: isMobile ? 30 : 56,
+          fontWeight: 400,
+          letterSpacing: isMobile ? "0.14em" : "0.16em",
+          color: "var(--text1)",
+          textTransform: "uppercase",
+        }}>
+          Watchlist
+        </h1>
+        <MoonPhaseIndicator size={isMobile ? 38 : 68} />
+      </div>
       <div style={{ height: 0.5, background: "var(--border)" }} />
     </section>
   );
