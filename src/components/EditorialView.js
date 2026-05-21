@@ -1,6 +1,44 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { pillBase, inputBase } from "../styles";
 import { Chip } from "./Chip";
+import { shortHash } from "../utils";
+import { HeartIcon } from "./icons";
+
+// Map an editorial article record into the listing-shaped item that
+// useWatchlist / watchlist_items expects. The `kind: 'article'`
+// marker on the snapshot is what downstream surfaces (Watchlists
+// Saved sub-tabs, the Saved-articles virtual row, future sold-state
+// inference) branch on. Listing-style toggling reuses the existing
+// `toggleWatchlist` path so we don't fork the heart primitive.
+function articleAsListing(article) {
+  if (!article || !article.url) return null;
+  const sourceMeta = article._source || {};
+  return {
+    id: shortHash(article.url),
+    url: article.url,
+    img: article.image || null,
+    ref: article.title || "",
+    title: article.title || "",
+    brand: article.brand || "",
+    model: article.model || null,
+    model_line: article.model_line || null,
+    reference_no: article.reference_no || null,
+    // kind marker — downstream code uses this to discriminate
+    // article entries from real listings in shared watchlist_items.
+    kind: "article",
+    article: {
+      author: article.author || "",
+      published_at: article.published_at || "",
+      excerpt: article.excerpt || "",
+      source_key: sourceMeta.key || article.source || "",
+      source_label: sourceMeta.label || sourceMeta.publication || "",
+    },
+    // Suppress the sold/active flow — articles never go sold.
+    sold: false,
+    price: null,
+    currency: null,
+  };
+}
 
 // Editorial sub-tab — v0 (2026-05-18). Surfaces the saved editorial
 // corpus (Hairspring Finds + Hodinkee Bring a Loupe today; more sources
@@ -124,7 +162,7 @@ const BRAND_TOP_N = 24;       // Show top N brands in expansion panel; "+more" e
 const RESULTS_PAGE_SIZE = 48; // Denser scroll (Mark spec 2026-05-20 — "24 wasn't enough to scroll through"). Bumped 24→48.
 const FEATURED_COUNT = 8;     // Most-recent articles surfaced in the hero strip (visible only when no search / no filters active).
 
-export function EditorialView({ isMobile, cols, compact, gridStyle }) {
+export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, handleWish }) {
   // cols / compact / gridStyle come from App.js's useViewSettings — the
   // same grid sizing the Listings tab uses. ArticleCard adapts its
   // typography + excerpt density to `compact` so a 7-col packed grid
@@ -150,6 +188,10 @@ export function EditorialView({ isMobile, cols, compact, gridStyle }) {
   const [search, setSearch] = useState("");
   const [activeSources, setActiveSources] = useState([]); // [] = all
   const [activeBrands, setActiveBrands] = useState([]);    // [] = all
+  // Hearted-only filter (PR_P, 2026-05-20). Mirrors the Listings
+  // Hearted toggle. Off by default; tap to scope the visible set
+  // to just articles the current user has hearted.
+  const [heartedOnly, setHeartedOnly] = useState(false);
   // Sort modes (2026-05-20): "relevance" (only meaningful when a
   // query is present; falls back to date_desc when empty),
   // "date_desc", "date_asc". Cycles through Relevance → Date ↓ →
@@ -266,6 +308,10 @@ export function EditorialView({ isMobile, cols, compact, gridStyle }) {
     let out = articles.filter(a => {
       if (sourceSet && !sourceSet.has(a._source.key)) return false;
       if (brandSet && !brandSet.has((a.brand || "").trim())) return false;
+      if (heartedOnly) {
+        const id = shortHash(a.url);
+        if (!watchlist || !watchlist[id]) return false;
+      }
       if (q) {
         const body = bodies ? (bodies[a.url] || "") : "";
         const hay =
@@ -310,18 +356,18 @@ export function EditorialView({ isMobile, cols, compact, gridStyle }) {
       out.sort((a, b) => (a.published_at || "").localeCompare(b.published_at || ""));
     }
     return out;
-  }, [articles, bodies, search, activeSources, activeBrands, sort]);
+  }, [articles, bodies, search, activeSources, activeBrands, sort, heartedOnly, watchlist]);
 
   // Lazy page-size reset whenever filters or sort change.
   useEffect(() => {
     setPageSize(RESULTS_PAGE_SIZE);
-  }, [search, activeSources, activeBrands, sort]);
+  }, [search, activeSources, activeBrands, sort, heartedOnly]);
 
   // hasFilters has to be defined BEFORE the featured memo references
   // it — useMemo callbacks run synchronously on first render, so a
   // forward reference to a const declared further down hits the TDZ.
   const hasFilters =
-    !!search.trim() || activeSources.length > 0 || activeBrands.length > 0;
+    !!search.trim() || activeSources.length > 0 || activeBrands.length > 0 || heartedOnly;
 
   // Featured strip — shown only when no search / filter is active.
   // Top N most-recent articles regardless of which source they came
@@ -374,6 +420,7 @@ export function EditorialView({ isMobile, cols, compact, gridStyle }) {
     setSearch("");
     setActiveSources([]);
     setActiveBrands([]);
+    setHeartedOnly(false);
     setActiveFilterPop(null);
   };
 
@@ -493,6 +540,18 @@ export function EditorialView({ isMobile, cols, compact, gridStyle }) {
           Brand{activeBrands.length > 0 ? ` · ${activeBrands.length}` : ""}
         </button>
 
+        {/* Hearted-only toggle (PR_P, 2026-05-20). Mirrors the Listings
+            Hearted pill. Only meaningful when a user is signed in
+            with at least one hearted article — disabled otherwise so
+            taps on the empty state don't dead-end with "no results."  */}
+        <button
+          onClick={() => setHeartedOnly(v => !v)}
+          aria-pressed={heartedOnly}
+          title={heartedOnly ? "Showing hearted articles only" : "Filter to hearted articles"}
+          style={pillBase(heartedOnly, { compact: true })}>
+          ♥ Hearted
+        </button>
+
         {/* Article count — right-aligned via marginLeft auto. */}
         <span style={{
           marginLeft: "auto", flexShrink: 0,
@@ -597,6 +656,8 @@ export function EditorialView({ isMobile, cols, compact, gridStyle }) {
                 isMobile={isMobile}
                 compact={false}
                 cols={isMobile ? 2 : 4}
+                watchlist={watchlist}
+                handleWish={handleWish}
               />
             ))}
           </div>
@@ -647,6 +708,8 @@ export function EditorialView({ isMobile, cols, compact, gridStyle }) {
                         isMobile={isMobile}
                         compact={!!compact}
                         cols={effectiveCols}
+                        watchlist={watchlist}
+                        handleWish={handleWish}
                       />
                     ))}
                   </div>
@@ -686,9 +749,20 @@ export function EditorialView({ isMobile, cols, compact, gridStyle }) {
 // excerpt + click-out behaviour.
 // ─────────────────────────────────────────────────────────────────
 
-function ArticleCard({ article, isMobile, compact, cols }) {
+function ArticleCard({ article, isMobile, compact, cols, watchlist, handleWish }) {
   const dateStr = formatDate(article.published_at);
   const sourceLabel = article._source.label;
+  // Heart state — match the dealer-listing Card's behavior so the
+  // primitive feels identical on both surfaces.
+  const articleId = shortHash(article.url);
+  const wished = !!(watchlist && watchlist[articleId]);
+  const onHeartClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!handleWish) return;
+    const asListing = articleAsListing(article);
+    if (asListing) handleWish(asListing);
+  };
   // Density scaling — at high col counts (5-7), shrink typography and
   // drop the excerpt entirely so the card stays readable inside a
   // narrow tile. The `compact` flag from useViewSettings fires
@@ -709,6 +783,7 @@ function ArticleCard({ article, isMobile, compact, cols }) {
   const padding = dense ? "8px 10px 10px" : "12px 14px 14px";
 
   return (
+    <div style={{ position: "relative", height: "100%" }}>
     <a
       href={article.url}
       target="_blank"
@@ -790,6 +865,30 @@ function ArticleCard({ article, isMobile, compact, cols }) {
         )}
       </div>
     </a>
+    {/* Heart overlay (PR_P, 2026-05-20). Mirrors the Card heart on
+        dealer listings — same shape, same colors, same size logic.
+        preventDefault + stopPropagation so taps don't escape to the
+        wrapping <a>. Hidden entirely when handleWish isn't threaded
+        (e.g. signed-out states where the upstream wiring drops it). */}
+    {handleWish && (
+      <button
+        onClick={onHeartClick}
+        aria-label={wished ? "Remove from saved articles" : "Save article"}
+        title={wished ? "Saved — tap to remove" : "Save to articles"}
+        style={{
+          position: "absolute",
+          top: 6, right: 6,
+          width: dense ? 26 : 32, height: dense ? 26 : 32,
+          borderRadius: "50%", border: "none", cursor: "pointer",
+          background: wished ? "rgba(220,38,38,0.88)" : "rgba(0,0,0,0.32)",
+          color: "#fff",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          padding: 0,
+        }}>
+        <HeartIcon filled={wished} size={dense ? 12 : 16} />
+      </button>
+    )}
+    </div>
   );
 }
 
