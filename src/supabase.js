@@ -1544,6 +1544,20 @@ export function useCollections(user) {
     return { error: null, rows: data || [] };
   }, [user]);
 
+  // Fetch every reaction the current user has placed, joined with
+  // the underlying item snapshot. Backs the "My reactions" synthetic
+  // row in Collections > Lists (Mark spec 2026-05-20: "the reactions
+  // to shared lists and auction catalogs are not easy to find and
+  // review — forgot that I had reviews most of those things and
+  // might not have got them right"). One round-trip via the
+  // SECURITY DEFINER RPC `my_reactions_with_items`.
+  const fetchMyReactions = useCallback(async () => {
+    if (!user || !supabase) return { error: 'not signed in', rows: [] };
+    const { data, error } = await supabase.rpc('my_reactions_with_items');
+    if (error) return { error: error.message, rows: [] };
+    return { error: null, rows: data || [] };
+  }, [user]);
+
   // Per-collection count of reactions by someone other than the
   // current user. Drives the small chip on list rows in the Lists
   // view (Mark spec 2026-05-10: "how do I know Jackie reacted other
@@ -1689,6 +1703,7 @@ export function useCollections(user) {
     fetchReactions,
     toggleReaction,
     fetchReactionCounts,
+    fetchMyReactions,
   };
 }
 
