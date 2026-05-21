@@ -157,6 +157,23 @@ const SOURCES = [
     publication_url: "https://www.screwdowncrown.com/",
     subscribe_url: "https://www.screwdowncrown.com/subscribe",
   },
+  {
+    key: "fratello",
+    label: "Fratello Watches",
+    publication: "Fratello",
+    column: null,
+    url: "/fratello.json",
+    bodies_url: "/fratello_bodies.json",
+    // Scrape is brand-allowlist-filtered at ingestion time (Mark spec
+    // 2026-05-20). The corpus here is the watch-taste subset of
+    // Fratello's full output, not the whole publication — covering
+    // Rolex / Omega / TAG / IWC / Casio (G-Shock) / Lange / Longines
+    // / Zenith / Breitling, plus the TBT (Throwback Thursday) vintage
+    // series and a small collector-philosophy keyword fallback. AP /
+    // Hublot / Seiko / sub-$500 / microbrand / gift-guide content is
+    // explicitly excluded.
+    publication_url: "https://www.fratellowatches.com/",
+  },
 ];
 
 const BRAND_TOP_N = 24;       // Show top N brands in expansion panel; "+more" expander reveals the rest
