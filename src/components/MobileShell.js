@@ -165,7 +165,7 @@ export function MobileShell(props) {
 
             Other tabs keep the sticky search at the top — filter
             chrome needs to stay reachable at any scroll depth. */}
-        {tab !== "home" && (
+        {tab !== "home" && tab !== "references" && (
         <div style={{ position: "sticky", top: 0, zIndex: 20, background: "var(--bg)" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 16px 4px", borderBottom: "0.5px solid var(--border)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, background: "var(--surface)", borderRadius: 10, padding: "8px 12px", flex: 1, minWidth: 0 }}>

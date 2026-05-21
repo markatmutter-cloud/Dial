@@ -435,10 +435,15 @@ export function DesktopShell(props) {
           ))}
         </div>
         {/* Top-bar search is suppressed on Home (Mark spec 2026-05-11):
-            the HomeTab editorial hero owns the search composite. A
-            flex spacer takes the room so the top bar layout stays
+            the HomeTab editorial hero owns the search composite.
+            ALSO suppressed on Collecting (Mark spec 2026-05-21: "why
+            do we have two search bars on this page?") — the
+            Editorial sub-tab has its own purpose-built search field
+            for title/author/body text matching that's distinct from
+            listing search. Showing both was duplicative and confusing.
+            A flex spacer takes the room so the top bar layout stays
             balanced — auth chrome stays right-aligned. */}
-        {tab === "home" ? (
+        {tab === "home" || tab === "references" ? (
           <div style={{ flex: 1 }} />
         ) : (
         <div style={{ flex: 1, display: "flex", justifyContent: "center" }}>
