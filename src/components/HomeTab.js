@@ -69,41 +69,34 @@ function EditorialHero({ isMobile }) {
           was reading as having two horizontal rules in close
           succession. The hairline below the wordmark stays as the
           divider into the search section. */}
-      {/* Wordmark + moon-phase pair (2026-05-21). The combined
-          block sits centered as a single hero — the moon reads as
-          an addition to the brand mark, not a separate widget.
-          Live current-day phase, no click affordance. Gap between
-          them matches the trailing letter-spacing visually so the
-          wordmark + moon feel balanced. */}
+      {/* Eyebrow: moon-phase indicator on its own centered row
+          above the wordmark (2026-05-21 v2). Sits as a contextual
+          "today" header. The full square moon avoids the
+          alignment fiddling of the prior inline placement; per-
+          Figma-frame glyph position no longer matters because
+          the moon isn't trying to align to a text baseline. */}
       <div style={{
-        display: "flex", alignItems: "center", justifyContent: "center",
-        gap: isMobile ? 2 : 4,
+        display: "flex", justifyContent: "center",
+        marginBottom: isMobile ? 8 : 14,
+      }}>
+        <MoonPhaseIndicator size={isMobile ? 44 : 64} />
+      </div>
+      <h1 style={{
         margin: isMobile ? "0 0 12px" : "0 0 22px",
-        // Mirror the wordmark's compensatory left-pad so the visual
-        // center of the cluster aligns with the page's horizontal
-        // center (the wordmark's trailing letter-spacing on the K
-        // pulls the cluster slightly right without this).
+        fontFamily: "inherit",
+        fontSize: isMobile ? 30 : 56,
+        fontWeight: 400,
+        letterSpacing: isMobile ? "0.14em" : "0.16em",
+        color: "var(--text1)",
+        textTransform: "uppercase",
+        textAlign: "center",
+        // Visual centering: nudge right by half a "track" so the
+        // trailing letter-spacing on the last glyph doesn't pull
+        // the wordmark visually left.
         paddingLeft: isMobile ? "0.14em" : "0.16em",
       }}>
-        <h1 style={{
-          margin: 0,
-          fontFamily: "inherit",
-          fontSize: isMobile ? 30 : 56,
-          fontWeight: 400,
-          letterSpacing: isMobile ? "0.14em" : "0.16em",
-          color: "var(--text1)",
-          textTransform: "uppercase",
-        }}>
-          Watchlist
-        </h1>
-        {/* The Figma source has empty sky above the moon glyph
-            within the top half, so the EFFECTIVE moon-glyph
-            height is ~30-40% of the clipped container. Sized 4×
-            wordmark fontSize so the visible moon roughly matches
-            the wordmark cap height. Iterate the multiplier if
-            still off. */}
-        <MoonPhaseIndicator size={isMobile ? 90 : 168} />
-      </div>
+        Watchlist
+      </h1>
       <div style={{ height: 0.5, background: "var(--border)" }} />
     </section>
   );
