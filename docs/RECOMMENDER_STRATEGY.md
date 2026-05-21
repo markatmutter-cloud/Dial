@@ -217,6 +217,71 @@ Each principle should include:
 | Map Is Not the Territory | The model is useful, but the lived experience of ownership is personal. | Use recommendations as prompts, not deterministic answers. |
 | Transgression / Burning Money | Luxury can be pleasurable because it is irrational, not because it is sensible. | Avoid over-rationalizing every recommendation as an investment case. |
 | Via Negativa | Removing or avoiding may improve a collection more than adding. | Suggest restraint, selling, consolidating, or pausing where appropriate. |
+| Robustness Anxiety | A vintage watch that has already broken (or that the collector worries will break) carries an invisible tax on every future vintage purchase. | Detect "wearable confidence" signals — has a piece been repaired? Does the user wear it? Surface modern-enough-to-service complications + lower-stakes experiment-tier pieces when the anxiety is rising. Ask the collecting-vs-appreciating question explicitly. |
+
+---
+
+## Robustness Anxiety: Case Pattern
+
+A Reference Builder who has been at it for ~2 years and owns multiple
+mid-five-figure vintage pieces eventually hits a robustness inflection.
+The signal pattern looks like:
+
+- A vintage piece in the collection has **already broken** (movement
+  fault, bracelet failure, dial damage). The repair cost or downtime
+  surprised the collector.
+- A second piece — usually the centerpiece "mentor watch" — has its
+  own scare (bracelet snap, water resistance failure on a "diver",
+  service interval gap).
+- Subsequent vintage purchases start carrying a *what-if-this-one-
+  breaks-too* tax. The collector can still pull the trigger, but the
+  wear-anxiety lingers and shifts ownership feel toward custody
+  rather than enjoyment.
+
+The behavioral consequence — visible to the recommender via search +
+save patterns — is a quiet pivot in two directions simultaneously:
+
+1. **Modern-enough-to-service complications** become disproportionately
+   attractive. A rose-gold Lange 1, a modern Calatrava 3940, a current-
+   gen Royal Oak — anything where there is still a healthy parts +
+   service ecosystem AND where the collector trusts they can wear it
+   without crossing fingers. The collector may not have articulated
+   the pivot yet, but the wishlist starts populating with pieces that
+   share this property.
+2. **Lower-stakes vintage experiments** (sub-$10K range, in the
+   collector's central taste cluster — vintage chronos, weird '70s
+   case shapes, deep-cut sport refs). The downside risk if one of
+   these breaks is small enough that the anxiety doesn't fire. Missed
+   listings in this band — especially when sold within a day at
+   "would have bought" prices — sting more than missed listings 5×
+   higher because the *threshold to participate* is so low.
+
+The implicit question the collector is wrestling with becomes:
+
+> Is this a watch I want to wear, or a watch I want to *have*?
+
+And specifically for the troubled piece:
+
+> If I can't wear it without anxiety, does the appreciation case
+> stand alone at this price point?
+
+That question is rarely articulated cleanly. The recommender's job
+is to surface it at the right moment — not push toward sell, repair,
+or hold, but make the trilemma visible. Adjacent product surfaces
+that fall out of this:
+
+- Repair-quote integration / partnerships with established service
+  houses, so the collector can put a real number on "fix it and keep
+  wearing" before deciding. Without that number, the decision keeps
+  deferring.
+- Per-reference robustness intelligence on the listing card —
+  service-part availability, known weak points (e.g. the 1675's gas
+  escape valve sealing), realistic service intervals + costs.
+- Wishlist annotations that note when a piece would slot into the
+  "modern-enough-to-service complications" bucket vs the "low-stakes
+  experiment" bucket, so the collector can see the shift in their
+  own taste over time without needing the recommender to call it out
+  directly.
 
 ---
 
