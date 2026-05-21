@@ -491,6 +491,44 @@ export function MobileShell(props) {
                 <div style={{ width: 36, height: 4, borderRadius: 0, background: "var(--border)" }} />
               </div>
 
+              {/* Fixed header — title + X close (Mark feedback 2026-05-20:
+                  "sometimes you can't see a way out of the filter other
+                  than Show watches"). The grab handle above is a swipe
+                  affordance but doesn't read as a tap target; this header
+                  makes the exit explicit and stays visible regardless of
+                  how deep the user has scrolled into the chip list. The
+                  Show CTA at the bottom commits the filter; X here
+                  closes without committing further changes (filter state
+                  is live anyway — every chip tap updates the result
+                  count, so "close" and "apply" are functionally the same
+                  on this sheet). */}
+              <div style={{
+                display: "flex", alignItems: "center", justifyContent: "space-between",
+                padding: "4px 16px 10px",
+                borderBottom: "0.5px solid var(--border)",
+                flexShrink: 0,
+              }}>
+                <div style={{ fontSize: 15, fontWeight: 600, color: "var(--text1)" }}>
+                  Filter
+                </div>
+                <button
+                  onClick={() => setDrawerOpen(false)}
+                  aria-label="Close filter"
+                  style={{
+                    width: 32, height: 32,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    background: "var(--surface)",
+                    border: "0.5px solid var(--border)",
+                    borderRadius: "50%",
+                    cursor: "pointer",
+                    color: "var(--text2)",
+                    fontFamily: "inherit", fontSize: 18, lineHeight: 1,
+                    padding: 0,
+                  }}>
+                  ×
+                </button>
+              </div>
+
               {/* Scrollable filter content */}
               <div style={{ flex: 1, overflowY: "auto", padding: "0 0 8px" }}>
 
