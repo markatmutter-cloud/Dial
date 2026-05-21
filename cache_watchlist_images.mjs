@@ -62,6 +62,15 @@ const EXT_BY_MIME = {
   "image/gif":  "gif",
 };
 
+// 15-second hard timeout on every dealer image fetch. Without this,
+// a slow/hung dealer URL would hold the entire workflow indefinitely
+// — exactly what happened May 15 → May 21 on the auction-lots-
+// frequent cron (Mark report 2026-05-21). AbortController wraps both
+// the response headers AND the body stream (arrayBuffer reads) so a
+// dealer that opens a connection then never sends bytes can't stall
+// the process either.
+const FETCH_TIMEOUT_MS = 15_000;
+
 async function fetchImage(url) {
   let host;
   try { host = new URL(url).hostname; } catch { return null; }
@@ -70,16 +79,27 @@ async function fetchImage(url) {
     "Accept": "image/*,*/*;q=0.8",
   };
   if (REFERER_BY_HOST[host]) headers["Referer"] = REFERER_BY_HOST[host];
-  let resp;
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT_MS);
   try {
-    resp = await fetch(url, { headers, redirect: "follow" });
-  } catch (err) {
-    return { error: `fetch threw: ${err.message}` };
+    let resp;
+    try {
+      resp = await fetch(url, { headers, redirect: "follow", signal: ctrl.signal });
+    } catch (err) {
+      return { error: err.name === "AbortError" ? `timeout after ${FETCH_TIMEOUT_MS}ms` : `fetch threw: ${err.message}` };
+    }
+    if (!resp.ok) return { error: `HTTP ${resp.status}` };
+    let buf;
+    try {
+      buf = Buffer.from(await resp.arrayBuffer());
+    } catch (err) {
+      return { error: err.name === "AbortError" ? `body-read timeout` : `body read threw: ${err.message}` };
+    }
+    const mime = (resp.headers.get("content-type") || "image/jpeg").split(";")[0].trim();
+    return { buf, mime };
+  } finally {
+    clearTimeout(timer);
   }
-  if (!resp.ok) return { error: `HTTP ${resp.status}` };
-  const buf = Buffer.from(await resp.arrayBuffer());
-  const mime = (resp.headers.get("content-type") || "image/jpeg").split(";")[0].trim();
-  return { buf, mime };
 }
 
 async function cacheUncached() {
