@@ -418,6 +418,16 @@ export const Card = memo(function Card({
                 if (lotShowNative) return fmtLotPrice(lotNativeValue, item.currency);
                 return estimateLine || " ";
               }
+              // Compact tiles (Home strips, 38% / 170px wide) suppress
+              // the native-currency line — the dual-price stack made
+              // non-USD dealer tiles render ~16px taller than USD
+              // tiles, breaking strip uniformity (Mark screenshot
+              // 2026-05-20: Falco £11,495 below $14,599 pushed the
+              // tile past everything else). The minHeight: 12 spacer
+              // still reserves the line so bottom edges stay aligned.
+              // Sold-date + auction-estimate (cases above) stay
+              // visible everywhere because they're high-signal context.
+              if (compact) return " ";
               return showNative ? fmt(item.price, item.currency) : " ";
             })()}
           </div>
