@@ -78,6 +78,14 @@ export function ReferencesTab({
       WebkitOverflowScrolling: "touch",
       scrollbarWidth: "none",
       msOverflowStyle: "none",
+      // Sticky so it stacks with the EditorialView filter chrome
+      // (which is sticky at top:0 too — they end up flush, no gap
+      // between them or the top bar). Mark feedback 2026-05-21:
+      // before this, the subStrip scrolled out, leaving a visible gap
+      // between the global top bar and the (sticky) editorial filter.
+      // zIndex must beat the editorial filter's z=20 so when both
+      // are stuck they layer correctly with subStrip on top.
+      position: "sticky", top: 0, zIndex: 25,
     }}>
       {SUB_TABS.map(([key, label]) => {
         const active = current === key;
