@@ -57,6 +57,11 @@ export function ShareReceiver({
 }) {
   const [shareIntent, setShareIntent] = useState(null);
   const [busy, setBusy] = useState(false);
+  // Image-load failure flag. The dealer's image URL can 404 between
+  // scrape and share-open (sold listing, dealer cleared inventory).
+  // Without this fallback the pane rendered empty (Mark report
+  // 2026-05-21 with screenshot of an MVV Watches share).
+  const [imgFailed, setImgFailed] = useState(false);
 
   // Parse URL on mount. useEffect (not useState lazy init) so the
   // first render is always shareIntent=null — no fights with
@@ -67,7 +72,14 @@ export function ShareReceiver({
       const params = new URLSearchParams(window.location.search);
       if (params.get("shared") !== "1") return;
       const id = params.get("listing");
-      if (id) setShareIntent({ id });
+      // Sender attribution (Mark spec 2026-05-21). Sender name comes
+      // through as `?from=<name>` from handleShare in App.js. Falls
+      // back silently to "Someone" if the link doesn't include it
+      // (anonymous share, or pre-2026-05-21 link). XSS-safe by virtue
+      // of React's text-node escaping — we never inject the value as
+      // markup, only render it as a string child.
+      const fromName = params.get("from") || "";
+      if (id) setShareIntent({ id, from: fromName });
     } catch (e) {
       console.warn("share URL parse failed", e);
     }
@@ -186,7 +198,9 @@ export function ShareReceiver({
         fontSize: 18, fontWeight: 600,
         color: "var(--text1)", margin: "0 0 14px", lineHeight: 1.3,
       }}>
-        Someone sent you a watch on Watchlist.
+        {shareIntent && shareIntent.from
+          ? `${shareIntent.from} sent you a watch on Watchlist.`
+          : "Someone sent you a watch on Watchlist."}
       </h1>
 
       {sharedItem ? (
@@ -334,10 +348,11 @@ function FocusedShareCard({
         }}
         title={`Open ${item.source} listing in a new tab`}
       >
-        {item.img ? (
+        {item.img && !imgFailed ? (
           <img
             src={imgSrc(item.img)}
             alt={item.ref || item.title || "shared watch"}
+            onError={() => setImgFailed(true)}
             style={{
               position: "absolute", inset: 0,
               width: "100%", height: "100%",
@@ -346,11 +361,31 @@ function FocusedShareCard({
             loading="eager"
           />
         ) : (
+          // Two paths land here:
+          //   1. item.img is empty (sold listing where the dealer
+          //      pulled the image, or a snapshot that never had one).
+          //   2. Image load failed at runtime (dealer URL 404'd between
+          //      the time the listing was scraped and the recipient
+          //      opened the share). Without the onError fallback above,
+          //      this case left the pane visually empty with the dealer
+          //      link still active — Mark report 2026-05-21.
           <div style={{
             position: "absolute", inset: 0,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            color: "var(--text3)", fontSize: 14,
-          }}>No image</div>
+            display: "flex", flexDirection: "column",
+            alignItems: "center", justifyContent: "center", gap: 6,
+            color: "var(--text3)", fontSize: 13,
+            padding: 16, textAlign: "center",
+          }}>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" strokeWidth="1.5"
+              strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="18" rx="2" />
+              <circle cx="8.5" cy="8.5" r="1.5" />
+              <path d="M21 15l-5-5L5 21" />
+            </svg>
+            <span>Image unavailable</span>
+            <span style={{ fontSize: 11 }}>Open on {item.source} to see the listing.</span>
+          </div>
         )}
         {item.sold && (
           <span style={{
