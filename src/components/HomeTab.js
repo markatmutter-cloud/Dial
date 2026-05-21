@@ -102,7 +102,7 @@ function EditorialHero({ isMobile }) {
             wordmark fontSize so the visible moon roughly matches
             the wordmark cap height. Iterate the multiplier if
             still off. */}
-        <MoonPhaseIndicator size={isMobile ? 120 : 220} />
+        <MoonPhaseIndicator size={isMobile ? 90 : 168} />
       </div>
       <div style={{ height: 0.5, background: "var(--border)" }} />
     </section>
