@@ -482,17 +482,18 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
   }
 
   const expanded = activeFilterPop !== null;
-  // Tinted background reads as "this filter strip is a different
-  // surface than Listings" — Mark spec 2026-05-18: a coloured block
-  // marks Editorial as a theme inside Collecting, not a listings feed.
-  // 10% brand tint on the strip + search row; 8% on the expansion
-  // panels (softer step-down so the panel reads as nested chrome,
-  // not a third equal-weight surface).
-  const filterBandBg = "var(--brand-tint-10)";
+  // Filter chrome background. Reverted from the prior brand-tint
+  // (Mark spec 2026-05-21, with Hodinkee Featured Videos reference):
+  // the tinted strip read as "this is a different surface" but the
+  // editorial-section signal now comes from the dark Featured block
+  // below — letting the filter bar return to standard chrome
+  // matches the rest of the app's surfaces while still keeping
+  // Editorial visually distinct.
+  const filterBandBg = "var(--bg)";
   const expansionPanelStyle = {
     padding: "10px 20px 24px",
     borderBottom: "0.5px solid var(--border)",
-    background: "var(--brand-tint-08)",
+    background: "var(--bg)",
     display: "flex", flexWrap: "wrap", gap: 8,
     alignItems: "flex-start",
     lineHeight: 1.5,
@@ -655,23 +656,34 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
 
       {/* Featured strip — top N most-recent articles, shown only when
           no filter / no search is active. Horizontal scroll on mobile,
-          multi-col grid on desktop. Visually distinct from the dense
-          scroll below via the FEATURED header + larger card grid. */}
+          multi-col grid on desktop. Visually distinct via a DARK
+          COLOR BLOCK background (Mark spec 2026-05-21, ref Hodinkee
+          Featured Videos pattern): the block signals "this is the
+          editorial section" without the filter bar needing brand-tint
+          chrome above. Negative horizontal margins extend the block
+          edge-to-edge across the scroll container's padding so it
+          reads as a full-width band, not a card sitting inside
+          padding. */}
       {showFeatured && featured.length > 0 && (
         <div style={{
-          padding: isMobile ? "16px 14px 12px" : "20px 20px 16px",
-          borderBottom: "0.5px solid var(--border)",
+          background: "var(--text1)",
+          color: "var(--bg)",
+          padding: isMobile ? "20px 14px 24px" : "28px 20px 28px",
+          marginLeft: isMobile ? -14 : -20,
+          marginRight: isMobile ? -14 : -20,
+          marginBottom: 16,
         }}>
           <div style={{
             display: "flex", alignItems: "baseline", gap: 8,
-            marginBottom: 10,
+            marginBottom: 14,
           }}>
             <div style={{
               fontSize: 11, fontWeight: 700,
-              letterSpacing: "0.08em", textTransform: "uppercase",
-              color: "var(--text2)",
+              letterSpacing: "0.12em", textTransform: "uppercase",
+              color: "var(--bg)",
+              opacity: 0.85,
             }}>Featured</div>
-            <div style={{ fontSize: 12, color: "var(--text3)" }}>
+            <div style={{ fontSize: 12, color: "var(--bg)", opacity: 0.55 }}>
               · most recent
             </div>
           </div>
