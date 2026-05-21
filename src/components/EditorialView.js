@@ -528,9 +528,22 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
           the two sticky bands flush instead of overlapping. Brittle
           to subStrip height changes but the simplest fix that doesn't
           require lifting the filter chrome out of EditorialView. */}
+      {/* The sticky wrapper extends edge-to-edge via negative
+          horizontal margins through the scroll container's padding
+          — without that, the wrapper was only as wide as the
+          inner content area and the dark Featured band could bleed
+          through the 14/20px gaps on each side as it scrolled past
+          (Mark report 2026-05-21). Inner padding restores the
+          breathing room. Listings doesn't have this problem because
+          its filter row renders OUTSIDE the scroll container — the
+          shell chrome handles full-width naturally. */}
       <div style={{
         position: "sticky", top: 40, zIndex: 20,
         background: "var(--bg)",
+        marginLeft: isMobile ? -14 : -20,
+        marginRight: isMobile ? -14 : -20,
+        paddingLeft: isMobile ? 14 : 20,
+        paddingRight: isMobile ? 14 : 20,
       }}>
       {/* In-Editorial search input retired 2026-05-21 (Mark spec):
           the global top-bar search now serves Editorial too, with a
