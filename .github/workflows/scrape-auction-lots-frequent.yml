@@ -90,7 +90,16 @@ jobs:
         # Hearted auction-lot images can disappear once the lot ends —
         # this re-cache pass keeps Blob copies fresh for currently-
         # hearted lots. Same script as the daily run.
+        #
+        # timeout-minutes hard-caps the step (Mark report 2026-05-21):
+        # this step started hanging indefinitely sometime after May 15,
+        # blocking the Commit/push step downstream and starving the
+        # cron of fresh bid data for ~6 days. continue-on-error: true
+        # means the workflow proceeds even when the script times out;
+        # the bid data still lands. Root-cause investigation of the
+        # hang is a separate task.
         continue-on-error: true
+        timeout-minutes: 15
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
