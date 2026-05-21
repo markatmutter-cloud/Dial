@@ -436,14 +436,13 @@ export function DesktopShell(props) {
         </div>
         {/* Top-bar search is suppressed on Home (Mark spec 2026-05-11):
             the HomeTab editorial hero owns the search composite.
-            ALSO suppressed on Collecting (Mark spec 2026-05-21: "why
-            do we have two search bars on this page?") — the
-            Editorial sub-tab has its own purpose-built search field
-            for title/author/body text matching that's distinct from
-            listing search. Showing both was duplicative and confusing.
-            A flex spacer takes the room so the top bar layout stays
-            balanced — auth chrome stays right-aligned. */}
-        {tab === "home" || tab === "references" ? (
+            On Collecting (Mark spec 2026-05-21 v2): the global
+            search is RE-ENABLED but the placeholder swaps to
+            "Search articles…" so the same input serves the
+            Editorial sub-tab. The in-Editorial search input was
+            retired in lockstep — single source of truth, search
+            travels across tabs. */}
+        {tab === "home" ? (
           <div style={{ flex: 1 }} />
         ) : (
         <div style={{ flex: 1, display: "flex", justifyContent: "center" }}>
@@ -451,7 +450,7 @@ export function DesktopShell(props) {
             <SearchIcon />
             <input value={search} onChange={e => setSearch(e.target.value)}
               onKeyDown={e => { if (e.key === "Enter") e.target.blur(); }}
-              placeholder="Search reference or brand..." style={{ flex: 1, border: "none", background: "transparent", fontSize: 13, color: "var(--text1)", outline: "none", fontFamily: "inherit", minWidth: 0 }} />
+              placeholder={tab === "references" ? "Search articles by title, author, body…" : "Search reference or brand..."} style={{ flex: 1, border: "none", background: "transparent", fontSize: 13, color: "var(--text1)", outline: "none", fontFamily: "inherit", minWidth: 0 }} />
             {search && user && (
               <button onClick={openFavPrompt} aria-label={currentIsSaved ? "Already saved" : "Save search as favorite"}
                 title={currentIsSaved ? "Saved to favorites" : "Save as favorite search"}

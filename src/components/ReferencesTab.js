@@ -43,6 +43,12 @@ export function ReferencesTab({
   // Add-to-list + Share on articles (PR_R, 2026-05-20).
   openCollectionPicker,
   handleShare,
+  // Global search lifted up (2026-05-21): the in-Editorial search
+  // input was retired so the top-bar search slot fills the header
+  // symmetry gap on Collecting. EditorialView now reads `search`
+  // from props (shared with the global listings search).
+  search,
+  setSearch,
 }) {
   // Tab re-tap → return to default sub-tab. App.js bumps
   // `tabResetTick` whenever the user clicks the active main tab
@@ -124,6 +130,8 @@ export function ReferencesTab({
         handleWish={handleWish}
         openCollectionPicker={openCollectionPicker}
         handleShare={handleShare}
+        search={search}
+        setSearch={setSearch}
       />
     );
   }

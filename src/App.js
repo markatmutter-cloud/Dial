@@ -3381,6 +3381,12 @@ export default function Watchlist() {
       // clipboard fallback, same as dealer cards).
       openCollectionPicker={user ? openCollectionPicker : undefined}
       handleShare={handleShare}
+      // Shared search state (2026-05-21): EditorialView consumes
+      // App.js's global `search` so the top-bar input on Collecting
+      // serves both Listings and Editorial. Typing travels across
+      // tabs; placeholder adapts via the shells.
+      search={search}
+      setSearch={setSearch}
     />
   );
 
