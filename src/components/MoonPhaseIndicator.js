@@ -22,16 +22,35 @@ export function MoonPhaseIndicator({ size = 48 }) {
   const phaseUrl = moonPhaseImageUrl(now);
   const phaseLabel = moonPhaseName(now);
 
+  // The Figma source image is square because the wheel artwork
+  // occupies the FULL square at every rotation, but only the
+  // upper-half arc shows the moon-of-the-day (the lower half is
+  // the back of the wheel — blank / black). Clip to the top half
+  // via an overflow-hidden wrapper: container is half-height, img
+  // inside renders at full square so only the top is visible.
+  // Mark spec 2026-05-21: "just show the top part".
   return (
-    <img
-      src={phaseUrl}
-      alt={phaseLabel}
-      title={phaseLabel}
-      style={{
-        width: size, height: size,
-        display: "block",
-        flexShrink: 0,
-      }}
-    />
+    <span style={{
+      display: "inline-block",
+      width: size,
+      height: size / 2,
+      overflow: "hidden",
+      flexShrink: 0,
+      lineHeight: 0,
+    }}
+    title={phaseLabel}
+    aria-label={phaseLabel}
+    role="img">
+      <img
+        src={phaseUrl}
+        alt=""
+        aria-hidden="true"
+        style={{
+          width: size,
+          height: size,
+          display: "block",
+        }}
+      />
+    </span>
   );
 }
