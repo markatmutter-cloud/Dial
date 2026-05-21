@@ -11,6 +11,7 @@ import { ManageListSheet } from "./ManageListSheet";
 import { confirm } from "./ConfirmModal";
 import { WatchDetailSheet } from "./WatchDetailSheet";
 import { ListReviewMode } from "./ListReviewMode";
+import { ArticleCard } from "./EditorialView";
 import { fmtUSD, matchesSearch } from "../utils";
 import { actionButton, signInButton } from "../styles";
 import { EmptyState } from "./EmptyState";
@@ -51,6 +52,15 @@ const SAVED_COLLECTION_ID = "__saved__";
 // in the system isn't hearts (those are filterable + reachable) — it's
 // reactions on shared lists and auction catalogs that get forgotten.
 const MY_REACTIONS_COLLECTION_ID = "__my_reactions__";
+
+// Saved-articles virtual list (PR_Q, 2026-05-20). Aggregates every
+// hearted editorial article (kind='article' entries in watchlist_items)
+// into a synthetic row in Collections > Lists alongside Saved. Mark
+// spec: "lists should have a favorite articles list which automatically
+// saves hearted items." Same Approach-A pattern as the Saved row —
+// data stays in watchlist_items, the surface is just a UI projection.
+// No collection_items writes; this id is UI-only.
+const SAVED_ARTICLES_COLLECTION_ID = "__saved_articles__";
 
 export function CollectionsTab({
   user,
@@ -1626,15 +1636,62 @@ function ListsView({
     isMyReactions: true,
   } : null;
 
+  // Saved-articles synthetic row (PR_Q, 2026-05-20). Walks the
+  // watchlist map for entries flagged kind='article' on the snapshot.
+  // useWatchlist exposes `items` as a map where each value is the
+  // full snapshot spread, so this is one filter pass — no extra
+  // fetch needed. Hides the row entirely when the user has no
+  // hearted articles yet (parallel to "Hidden" / "My reactions"
+  // hiding when empty).
+  const savedArticleItems = useMemo(() => {
+    const out = [];
+    for (const v of Object.values(watchlist || {})) {
+      if (v && v.kind === "article") out.push(v);
+    }
+    // Newest-first by savedAt — matches the Saved row's implicit order.
+    out.sort((a, b) => {
+      const sa = a.savedAt || "";
+      const sb = b.savedAt || "";
+      return sb.localeCompare(sa);
+    });
+    return out;
+  }, [watchlist]);
+  const savedArticlesCount = savedArticleItems.length;
+  const savedArticlesRow = (user && savedArticlesCount > 0) ? {
+    id: SAVED_ARTICLES_COLLECTION_ID,
+    name: "Saved articles",
+    isSystem: true,
+    isSavedArticles: true,
+  } : null;
+
   const selected = (() => {
     if (!selectedListId) return null;
     if (selectedListId === HIDDEN_COLLECTION_ID) return hiddenRow;
     if (selectedListId === SAVED_COLLECTION_ID) return savedRow;
     if (selectedListId === MY_REACTIONS_COLLECTION_ID) return myReactionsRow;
+    if (selectedListId === SAVED_ARTICLES_COLLECTION_ID) return savedArticlesRow;
     return cols.find(c => c.id === selectedListId) || null;
   })();
 
   if (selected) {
+    // Saved-articles virtual list (PR_Q, 2026-05-20). Focused render
+    // — hearted articles aren't dealer listings so they don't fit the
+    // Card-based grid below. Reuses ArticleCard from EditorialView via
+    // an article-shape projection from each watchlist snapshot.
+    if (selected.id === SAVED_ARTICLES_COLLECTION_ID) {
+      return (
+        <SavedArticlesView
+          items={savedArticleItems}
+          isWide={isWide}
+          isMobile={!isWide}
+          gridStyle={gridStyle}
+          watchlist={watchlist}
+          handleWish={handleWish}
+          onBack={() => setSelectedListId(null)}
+        />
+      );
+    }
+
     // My-reactions virtual list (2026-05-20). Focused render —
     // doesn't share the shared-list / recipient / auction logic
     // below, because the items here aren't tied to a single
@@ -2175,14 +2232,18 @@ function ListsView({
     ...collabLists,
   ];
   const reviewRows = myReactionsRow ? [myReactionsRow] : [];
+  const savedRows = [
+    ...(savedRow ? [savedRow] : []),
+    ...(savedArticlesRow ? [savedArticlesRow] : []),
+  ];
   const groups = [
-    { key: "saved",    title: "Saved",            rows: savedRow ? [savedRow] : [], hideIfEmpty: true },
+    { key: "saved",    title: "Saved",            rows: savedRows,                  hideIfEmpty: true },
     { key: "review",   title: "Review",           rows: reviewRows,                 hideIfEmpty: true },
     { key: "owned",    title: "My lists",         rows: ownedLists,                 hideIfEmpty: false },
     { key: "shared",   title: "Shared with me",   rows: sharedRows,                 hideIfEmpty: true },
     { key: "auctions", title: "Auction catalogs", rows: auctionLists,               hideIfEmpty: true },
   ].filter(g => !g.hideIfEmpty || g.rows.length > 0);
-  const totalRows = (savedRow ? 1 : 0) + reviewRows.length + ownedLists.length + sharedRows.length + auctionLists.length;
+  const totalRows = savedRows.length + reviewRows.length + ownedLists.length + sharedRows.length + auctionLists.length;
 
   // Per-row renderer — shared across all three groups so the row
   // styling stays in one place. Closes over the local state of
@@ -2192,15 +2253,19 @@ function ListsView({
     const isHiddenRowItem = c.id === HIDDEN_COLLECTION_ID;
     const isSavedRowItem  = c.id === SAVED_COLLECTION_ID;
     const isMyReactionsRowItem = c.id === MY_REACTIONS_COLLECTION_ID;
+    const isSavedArticlesRowItem = c.id === SAVED_ARTICLES_COLLECTION_ID;
     const count = isSavedRowItem
       ? (watchItems || []).length
       : isHiddenRowItem
         ? hiddenItems.length
         : isMyReactionsRowItem
           ? myReactionsCount
-          : (itemsByColl[c.id] || []).length;
+          : isSavedArticlesRowItem
+            ? savedArticlesCount
+            : (itemsByColl[c.id] || []).length;
     const isShared = sharedListIds.has(c.id);
     const icon = isSavedRowItem ? heartIcon
+               : isSavedArticlesRowItem ? bookmarkIcon
                : isMyReactionsRowItem ? thumbsUpIcon
                : isInbox        ? inboxIcon
                : isHiddenRowItem ? eyeOffIcon
@@ -2208,15 +2273,17 @@ function ListsView({
                : folderIcon;
     const subtitle = isSavedRowItem
       ? `${count} hearted watch${count === 1 ? "" : "es"}`
-      : isMyReactionsRowItem
-        ? `${count} item${count === 1 ? "" : "s"} you've reacted on · revisit + clean up`
-        : isInbox
-          ? `${count} listing${count === 1 ? "" : "s"} shared with you`
-          : isHiddenRowItem
-            ? `${count} listing${count === 1 ? "" : "s"} hidden from feed`
-            : `${count} watch${count === 1 ? "" : "es"}${isShared ? " · shared" : ""}`;
+      : isSavedArticlesRowItem
+        ? `${count} hearted article${count === 1 ? "" : "s"}`
+        : isMyReactionsRowItem
+          ? `${count} item${count === 1 ? "" : "s"} you've reacted on · revisit + clean up`
+          : isInbox
+            ? `${count} listing${count === 1 ? "" : "s"} shared with you`
+            : isHiddenRowItem
+              ? `${count} listing${count === 1 ? "" : "s"} hidden from feed`
+              : `${count} watch${count === 1 ? "" : "es"}${isShared ? " · shared" : ""}`;
     const isOwner = !!(myUserId && c?.userId && myUserId === c.userId);
-    const isSyntheticOrInbox = isInbox || isHiddenRowItem || isSavedRowItem || isMyReactionsRowItem;
+    const isSyntheticOrInbox = isInbox || isHiddenRowItem || isSavedRowItem || isMyReactionsRowItem || isSavedArticlesRowItem;
     const actions = [];
     if (!isSyntheticOrInbox && isOwner && setEditingCollection) {
       actions.push({
@@ -2649,6 +2716,15 @@ const thumbsUpIcon = (
     <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>
   </svg>
 );
+// Bookmark icon for the Saved-articles synthetic row (PR_Q). Line-art
+// SVG to match the rest of the synthetic-row icons; bookmark shape
+// reads as "saved reading material" — visually distinct from the
+// solid heart on the Saved (watches) row above it.
+const bookmarkIcon = (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+  </svg>
+);
 
 // Inline-action icons for ListRow row-level edit/delete (2026-05-09).
 // Sized 14×14 to match ChallengesView's pattern.
@@ -3027,6 +3103,90 @@ function ReactionCard({ row, onRemove, onOpenList }) {
           in {listName}
         </button>
       </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// SavedArticlesView — drill-in for the Saved-articles synthetic row
+// (PR_Q, 2026-05-20). Renders the user's hearted articles via the
+// shared ArticleCard from EditorialView so the visual + heart logic
+// stays identical to the source surface.
+//
+// Items here come from useWatchlist (each value spread from
+// watchlist_items.listing_snapshot) filtered by kind === 'article'.
+// We re-project them into the article shape ArticleCard expects so
+// the same component can render both surfaces.
+// ─────────────────────────────────────────────────────────────────
+
+function SavedArticlesView({ items, isWide, isMobile, gridStyle, watchlist, handleWish, onBack }) {
+  // Convert a stored snapshot (article-as-listing shape) back into
+  // the article shape ArticleCard renders. The stored fields live
+  // both at the top level (ref, brand) and inside the `article`
+  // sub-object (author, published_at, excerpt, source_label).
+  const asArticles = items.map(snap => {
+    const articleMeta = snap.article || {};
+    return {
+      url: snap.url,
+      title: snap.title || snap.ref || "",
+      brand: snap.brand || "",
+      model: snap.model || null,
+      model_line: snap.model_line || null,
+      reference_no: snap.reference_no || null,
+      author: articleMeta.author || "",
+      published_at: articleMeta.published_at || "",
+      excerpt: articleMeta.excerpt || "",
+      image: snap.img || "",
+      _source: {
+        key: articleMeta.source_key || "",
+        label: articleMeta.source_label || "",
+        publication: articleMeta.source_label || "",
+      },
+    };
+  });
+
+  return (
+    <div style={{ padding: isWide ? "0 24px 80px" : "0 14px 80px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "14px 0 6px" }}>
+        <button
+          onClick={onBack}
+          style={{
+            background: "transparent", border: "none", padding: "4px 10px 4px 0",
+            color: "var(--text2)", cursor: "pointer", fontSize: 13, fontFamily: "inherit",
+          }}>← Lists</button>
+        <h1 style={{ fontSize: 18, fontWeight: 600, color: "var(--text1)", margin: 0 }}>
+          Saved articles
+        </h1>
+        <span style={{ fontSize: 13, color: "var(--text3)" }}>· {asArticles.length}</span>
+      </div>
+
+      <div style={{ fontSize: 13, color: "var(--text2)", lineHeight: 1.5, marginBottom: 16 }}>
+        Auto-populated from articles you've hearted on the Editorial tab. Tap the heart
+        on any card to remove it from this list.
+      </div>
+
+      {asArticles.length === 0 ? (
+        <div style={{
+          padding: 32, color: "var(--text2)", textAlign: "center",
+          border: "0.5px dashed var(--border)", borderRadius: 8,
+        }}>
+          You haven't hearted any articles yet. Open the Editorial tab and tap the heart on any article you'd like to save.
+        </div>
+      ) : (
+        <div style={gridStyle}>
+          {asArticles.map(a => (
+            <ArticleCard
+              key={a.url}
+              article={a}
+              isMobile={isMobile}
+              compact={false}
+              cols={isWide ? 3 : 1}
+              watchlist={watchlist}
+              handleWish={handleWish}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

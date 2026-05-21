@@ -749,7 +749,7 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
 // excerpt + click-out behaviour.
 // ─────────────────────────────────────────────────────────────────
 
-function ArticleCard({ article, isMobile, compact, cols, watchlist, handleWish }) {
+export function ArticleCard({ article, isMobile, compact, cols, watchlist, handleWish }) {
   const dateStr = formatDate(article.published_at);
   const sourceLabel = article._source.label;
   // Heart state — match the dealer-listing Card's behavior so the
