@@ -1239,7 +1239,7 @@ unified corpus at `public/reference_guides.json` keyed by
 
 ## Editorial corpus scrapers
 
-**Ten sources, ~8,930 articles, ~4.5M words at 2026-05-20.**
+**Eleven sources, ~12,500 articles, ~6M words at 2026-05-20.**
 Mining the corpus to power Editorial sub-tab browse + per-Reference
 "Editorial coverage" + listing-card "Explore paths" annotations +
 the recommender. See [docs/RECOMMENDER_STRATEGY.md](docs/RECOMMENDER_STRATEGY.md)
@@ -1262,6 +1262,7 @@ Listings > Sold archive (dual-track — see below).
 | A Collected Man Journal | `acollectedman_journal` | editorial (Sun) | 160 |
 | Watches of Espionage (WOE Dispatch) | `woe_dispatch` | editorial (Sun) | 294 |
 | Screw Down Crown (Substack, free posts only) | `screwdowncrown` | editorial (Sun) | 79 |
+| Fratello Watches (brand-allowlist filtered) | `fratello` | editorial (Sun) | ~3,600 |
 
 ### Body-split persistence — `editorial_corpus_io.py`
 
@@ -1374,6 +1375,20 @@ adding a new source:
   Mark's Substack export MUST apply the same filter — most of the
   pre-2019 archive is paid, so it'd show up in the export zip but
   shouldn't enter the watch corpus.
+- **Fratello Watches**: WordPress REST API
+  (`/wp-json/wp/v2/posts?per_page=100&page=N`), brand-allowlist-
+  filtered at ingestion time. Per Mark spec 2026-05-20: include if
+  any of (1) `vintage` keyword in title/URL, (2) TBT category, (3)
+  brand match for Rolex/Omega/TAG/IWC/Casio (G-Shock)/A. Lange &
+  Söhne/Longines/Zenith/Breitling and their model lines, (4)
+  collector-philosophy keywords (collecting, mistakes, fake,
+  authentic, etc.). HARD-exclude Hublot / AP / sub-$500 / budget /
+  microbrand / gift-guide content even on vintage articles. SOFT-
+  exclude Seiko only when no vintage signal is present (so multi-
+  brand vintage roundups like "Best Vintage Under €5K: JLC, Seiko
+  and Gallet" still land). Kept-rate ~30% of total Fratello output.
+  `FRATELLO_FULL_REFRESH=1` forces full re-evaluation; default cron
+  is incremental.
 
 ### Discovery: sitemap > pagination when both exist
 

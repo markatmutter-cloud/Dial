@@ -165,6 +165,18 @@ jobs:
         continue-on-error: true
         run: python screwdowncrown_scraper.py
 
+      - name: Run Fratello Watches scraper
+        # High-volume watch publication. WordPress REST API at
+        # /wp-json/wp/v2/posts paginated 100 per page over ~117 pages
+        # of total archive. Brand-allowlist + "vintage" / TBT include
+        # filter, hard excludes Hublot/AP/microbrand/sub-$500/gift-
+        # guide; soft-excludes Seiko unless the article carries a
+        # vintage signal (so multi-brand vintage roundups land
+        # correctly). FRATELLO_FULL_REFRESH=1 forces a full walk;
+        # default cron run is incremental (newest first + skip-fresh).
+        continue-on-error: true
+        run: python fratello_scraper.py
+
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
@@ -177,7 +189,8 @@ jobs:
                   public/hodinkee_reference_points.json public/hodinkee_reference_points_bodies.json \
                   public/acollectedman_journal.json public/acollectedman_journal_bodies.json \
                   public/woe_dispatch.json public/woe_dispatch_bodies.json \
-                  public/screwdowncrown.json public/screwdowncrown_bodies.json
+                  public/screwdowncrown.json public/screwdowncrown_bodies.json \
+                  public/fratello.json public/fratello_bodies.json
           if git diff --staged --quiet; then
             echo "No changes to commit"
             exit 0
