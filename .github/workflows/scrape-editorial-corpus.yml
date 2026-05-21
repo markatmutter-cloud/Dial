@@ -154,6 +154,17 @@ jobs:
         continue-on-error: true
         run: python woe_dispatch_scraper.py
 
+      - name: Run Screw Down Crown scraper
+        # Substack publication by kingflum. Free posts only via the
+        # public /api/v1/archive endpoint + audience='everyone' filter.
+        # Paid posts are deliberately skipped — the public corpus
+        # respects the paywall and the manifest carries the publisher's
+        # subscribe_url for an optional "Subscribe to <publication>"
+        # CTA when the source is filtered on. Incremental with 30-day
+        # rolling refresh.
+        continue-on-error: true
+        run: python screwdowncrown_scraper.py
+
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
@@ -165,7 +176,8 @@ jobs:
                   public/hodinkee_shop.json public/hodinkee_shop_bodies.json \
                   public/hodinkee_reference_points.json public/hodinkee_reference_points_bodies.json \
                   public/acollectedman_journal.json public/acollectedman_journal_bodies.json \
-                  public/woe_dispatch.json public/woe_dispatch_bodies.json
+                  public/woe_dispatch.json public/woe_dispatch_bodies.json \
+                  public/screwdowncrown.json public/screwdowncrown_bodies.json
           if git diff --staged --quiet; then
             echo "No changes to commit"
             exit 0
