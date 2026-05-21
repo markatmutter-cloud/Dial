@@ -3350,6 +3350,13 @@ export default function Watchlist() {
       // filter them out and the Saved-articles virtual row aggregates them.
       watchlist={watchlist}
       handleWish={handleWish}
+      // Per-article "..." menu (PR_R, 2026-05-20). Same Add-to-list + Share
+      // affordances dealer-listing Cards have. Add-to-list goes through
+      // openCollectionPicker → addItemToCollection with kind='article' on
+      // the snapshot; Share routes through handleShare (Web Share API →
+      // clipboard fallback, same as dealer cards).
+      openCollectionPicker={user ? openCollectionPicker : undefined}
+      handleShare={handleShare}
     />
   );
 
