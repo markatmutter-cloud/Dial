@@ -581,7 +581,7 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
         <button
           onClick={cycleSort}
           style={{
-            ...pillBase(true, { compact: true, surface: true }),
+            ...pillBase(true, { compact: true }),
             fontWeight: 600,
           }}>{sortLabel}</button>
 
