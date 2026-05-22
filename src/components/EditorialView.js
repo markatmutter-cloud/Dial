@@ -575,7 +575,10 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
         {!isMobile && (
           <div style={{
             display: "flex", alignItems: "center", gap: 8,
-            background: "var(--surface)", borderRadius: 10,
+            // PR_γ 2026-05-22: hairline border instead of surface fill.
+            background: "transparent",
+            border: "0.5px solid var(--border)",
+            borderRadius: 10,
             padding: "6px 12px", flex: 1, minWidth: 0, maxWidth: 420,
           }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none"

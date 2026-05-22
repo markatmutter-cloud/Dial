@@ -21,13 +21,21 @@
 // `surface: true` for the desktop variant where inactive pills sit on a
 // `--surface` background instead of transparent.
 export const pillBase = (active, { compact = false, surface = false } = {}) => ({
+  // PR_γ 2026-05-22 (Mark spec): active state goes "ghost" instead
+  // of solid black-fill. Reads as editorial chrome rather than app
+  // chrome — same shape, lighter visual weight. Active now =
+  // transparent bg + bold text1 + thicker text1 border; inactive
+  // unchanged.
   fontSize: 13,
   padding: compact ? "6px 12px" : "9px 14px",
   borderRadius: 20, cursor: "pointer",
   fontFamily: "inherit", whiteSpace: "nowrap", border: "none", outline: "none",
-  background: active ? "var(--text1)" : (surface ? "var(--surface)" : "transparent"),
-  color:      active ? "var(--bg)"    : "var(--text2)",
-  boxShadow:  active ? "none" : "inset 0 0 0 0.5px var(--border)",
+  background: surface ? "var(--surface)" : "transparent",
+  color: active ? "var(--text1)" : "var(--text2)",
+  fontWeight: active ? 600 : 500,
+  boxShadow: active
+    ? "inset 0 0 0 1.25px var(--text1)"
+    : "inset 0 0 0 0.5px var(--border)",
 });
 
 // Inner-toggle pill. Smaller, denser variant used for nested sub-toggles

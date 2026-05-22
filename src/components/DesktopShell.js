@@ -100,8 +100,13 @@ export function DesktopShell(props) {
     ? "Search articles by title, author, body…"
     : "Search reference or brand...";
   const searchComposite = (
+    // PR_γ 2026-05-22: hairline border + transparent bg instead of
+    // grey-surface fill. Lighter visual weight; reads more
+    // "publication" than "app input".
     <div style={{ display: "flex", alignItems: "center", gap: 8,
-                  background: "var(--surface)", borderRadius: 10,
+                  background: "transparent",
+                  border: "0.5px solid var(--border)",
+                  borderRadius: 10,
                   padding: "6px 12px", flex: 1, minWidth: 0, maxWidth: 420 }}>
       <SearchIcon />
       <input value={search} onChange={e => setSearch(e.target.value)}
