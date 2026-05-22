@@ -1169,6 +1169,10 @@ export default function Watchlist() {
     // Text-on-bg variant — dark mode needs a lighter sage so olive
     // reads on black. Used for Home wordmark hero etc.
     "--brand-olive-text": "#a8b3a0",
+    // Disc-tint variant (translucent olive) for icon discs + chips
+    // in the Watchlists family. Dark mode uses the lighter sage at
+    // higher opacity so it reads against #000.
+    "--brand-olive-tint-12": "rgba(168,179,160,0.18)",
     // Brand-tint surfaces (subtle fills behind icons, chips, hover
     // states) and the gold accent used for status / warning hints
     // (Plan view over-budget, admin "earning its keep" chip, etc.).
@@ -1207,6 +1211,8 @@ export default function Watchlist() {
     "--brand-olive": "#3b4a36",
     // Text-on-bg variant — light mode uses the full olive directly.
     "--brand-olive-text": "#3b4a36",
+    // Disc-tint variant for olive icon discs + chips (Watchlists).
+    "--brand-olive-tint-12": "rgba(59,74,54,0.12)",
     "--brand-tint-08": "rgba(24,95,165,0.08)",
     "--brand-tint-10": "rgba(24,95,165,0.10)",
     "--brand-tint-12": "rgba(24,95,165,0.12)",
