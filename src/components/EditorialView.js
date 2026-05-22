@@ -531,13 +531,11 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
     boxShadow: "inset 0 0 0 0.5px var(--brand)",
     marginLeft: 4,
   };
-  // Horizontal padding zeroed 2026-05-22 — the wrapper above already
-  // provides 14/20px inset via paddingLeft. Stacking another 14/20 on
-  // the inner strip put Editorial pills at 40px from viewport vs
-  // Listings pills at 20px (Mark report: "filter on editorial needs
-  // fixing still"). Vertical stays at 8 to keep the row height
-  // matching the wrapper's existing rhythm.
-  const stripPadding = "8px 0";
+  // Vertical 6 matches Listings filter row exactly ("6px 20px") so
+  // the row heights line up on the Y axis (Mark report 2026-05-22:
+  // "filters aligned to the left but not matching on y axis").
+  // Horizontal 0 keeps pills at the wrapper's 14/20px inset.
+  const stripPadding = "6px 0";
 
   return (
     <div style={{ paddingTop: 4 }}>
