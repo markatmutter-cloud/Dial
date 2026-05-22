@@ -44,25 +44,16 @@ const CARDS_PER_SECTION_DESKTOP = 20;
 // as a masthead rather than a header label. No new typefaces — the
 // system stack carries the italic via the regular `font-style`.
 function EditorialHero({ isMobile }) {
-  // PR_β extension 2026-05-22 (Mark spec): extend the olive chrome
-  // zone DOWN into the editorial hero on mobile so the brand moment
-  // (moonphase + WATCHLIST) reads as one continuous identity slab
-  // from the iOS PWA strip to the search bar below. The moonphase
-  // PNG is transparent outside its navy arc — the dark-navy + stars
-  // sit on olive cleanly (more striking than against white).
-  // Mark: "extend the green on the landing page if you think it
-  // will work with moonphase image."
-  // Desktop unchanged for now (chrome above the hero isn't olive on
-  // desktop yet; if we extend olive to desktop chrome, mirror here).
-  const olive = isMobile;
+  // Hero stays on neutral page bg — olive was tried in PR #450 and
+  // pulled back 2026-05-22 (Mark: "undo the green on the landing
+  // page. remove green altogether"). Home is the editorial moment;
+  // the colored chrome zone lives only on Listings/Watchlists/
+  // Collecting where it's an identity cue, not on Home.
   return (
     <section style={{
       padding: isMobile ? "12px 16px 14px" : "22px 16px 22px",
       textAlign: "center",
-      background: olive ? "var(--brand-olive)" : "transparent",
     }}>
-      {/* Eyebrow: moon-phase indicator on its own centered row above
-          the wordmark. PNG is transparent — sits cleanly on olive. */}
       <div style={{
         display: "flex", justifyContent: "center",
         marginBottom: isMobile ? 10 : 16,
@@ -75,17 +66,14 @@ function EditorialHero({ isMobile }) {
         fontSize: isMobile ? 30 : 56,
         fontWeight: 500,
         letterSpacing: isMobile ? "0.14em" : "0.16em",
-        color: olive ? "#ffffff" : "var(--text1)",
+        color: "var(--text1)",
         textTransform: "uppercase",
         textAlign: "center",
         paddingLeft: isMobile ? "0.14em" : "0.16em",
       }}>
         Watchlist
       </h1>
-      <div style={{
-        height: 0.5,
-        background: olive ? "rgba(255,255,255,0.25)" : "var(--border)",
-      }} />
+      <div style={{ height: 0.5, background: "var(--border)" }} />
     </section>
   );
 }

@@ -1226,6 +1226,28 @@ export default function Watchlist() {
     for (const [k, v] of Object.entries(c)) root.style.setProperty(k, v);
   }, [c]);
 
+  // Dynamic PWA theme-color — Mark spec 2026-05-22: "(and on PWA
+  // strip for landing page)". Olive identifies the chrome zone on
+  // non-Home tabs (matches the in-page colored chrome via PR_β).
+  // Home flips to the page bg color so the iOS status-bar strip
+  // matches Home's neutral chrome — single editorial moment, no
+  // identity strip above. White in light, dark surface in dark mode.
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const onHome = tab === "home";
+    const oliveColor = "#3b4a36";
+    const lightHome = "#ffffff";
+    const darkHome = "#1c1c1e"; // matches dark theme --surface
+    const lightColor = onHome ? lightHome : oliveColor;
+    const darkColor  = onHome ? darkHome  : oliveColor;
+    document.querySelectorAll('meta[name="theme-color"]').forEach((m) => {
+      const media = (m.getAttribute("media") || "").toLowerCase();
+      if (!media) m.setAttribute("content", lightColor); // default tag
+      else if (media.includes("light")) m.setAttribute("content", lightColor);
+      else if (media.includes("dark"))  m.setAttribute("content", darkColor);
+    });
+  }, [tab]);
+
   // Auction lots projected into the main listings feed. Two sources
   // get merged by URL key:
   //   1. tracked_lots.json — user-tracked URLs (eBay primarily,
