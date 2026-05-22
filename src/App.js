@@ -2558,35 +2558,94 @@ export default function Watchlist() {
   const authJSX = !isAuthConfigured ? null : !authReady ? (
     <div style={{ width: 26, height: 26, borderRadius: "50%", background: "var(--surface)" }} />
   ) : !user ? (
-    // Signed-out: small "About" text link + the Sign-in button. The
-    // About link is the always-on access path for signed-out users
-    // (signed-in users reach About via Settings dropdown). Sign-in
-    // routes through SignInPromptModal — 2-step explainer before the
-    // OAuth fires.
-    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-      <button onClick={() => setAboutModalOpen(true)} style={{
-        fontSize: 12, padding: "4px 10px", borderRadius: 20,
-        border: "none", background: "transparent",
-        color: "var(--text2)", cursor: "pointer", fontFamily: "inherit",
-        whiteSpace: "nowrap",
-      }}>
-        About
-      </button>
-      <button onClick={() => setSignInPromptOpen(true)} style={{
-        fontSize: 12, padding: "4px 12px", borderRadius: 20,
-        border: "0.5px solid var(--border)", background: "var(--surface)",
-        color: "var(--text1)", cursor: "pointer", fontFamily: "inherit",
-        whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: 6,
-      }}>
-        <svg width="12" height="12" viewBox="0 0 48 48" aria-hidden="true">
-          <path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.2l6.7-6.7C35.6 2.1 30.1 0 24 0 14.8 0 6.8 5.3 3 13l7.8 6C12.7 13.5 17.8 9.5 24 9.5z"/>
-          <path fill="#4285F4" d="M46.5 24.5c0-1.6-.2-3.1-.5-4.5H24v9h12.7c-.6 3-2.3 5.5-4.9 7.2l7.6 5.9c4.4-4.1 7.1-10.1 7.1-17.6z"/>
-          <path fill="#FBBC05" d="M10.8 28.7c-.5-1.5-.8-3.1-.8-4.7s.3-3.2.8-4.7l-7.8-6C1.1 16.3 0 20 0 24s1.1 7.7 3 11.2l7.8-6.5z"/>
-          <path fill="#34A853" d="M24 48c6.1 0 11.3-2 15.1-5.5l-7.6-5.9c-2.1 1.4-4.8 2.2-7.5 2.2-6.2 0-11.3-4-13.2-9.5l-7.8 6C6.8 42.7 14.8 48 24 48z"/>
-        </svg>
-        Sign in
-      </button>
-    </div>
+    // Signed-out chrome.
+    //
+    // Desktop: small About text link + Sign-in button (unchanged) so
+    //   the page surface stays self-explanatory at first glance.
+    //
+    // Mobile: single hamburger icon that opens the same menu the
+    //   signed-in M-circle uses, with About + Sign in inside. PR_Y3
+    //   consolidation (Mark spec 2026-05-21): keeps the brand row
+    //   compact and reduces the chrome-zone button count to one.
+    isMobile ? (
+      <div style={{ position: "relative" }}>
+        <button onClick={() => setShowUserMenu(o => !o)}
+          aria-label="Menu"
+          title="Menu"
+          style={{
+            width: 40, height: 40, borderRadius: "50%",
+            border: "0.5px solid var(--border)",
+            background: "var(--surface)",
+            color: "var(--text1)", cursor: "pointer", fontFamily: "inherit",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            flexShrink: 0,
+            padding: 0,
+          }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" strokeWidth="2" strokeLinecap="round"
+            aria-hidden="true">
+            <line x1="4" y1="7" x2="20" y2="7"/>
+            <line x1="4" y1="12" x2="20" y2="12"/>
+            <line x1="4" y1="17" x2="20" y2="17"/>
+          </svg>
+        </button>
+        {showUserMenu && (
+          <div style={{
+            position: "absolute", right: 0, top: 46, zIndex: 50,
+            background: "var(--bg)", border: "0.5px solid var(--border)",
+            borderRadius: 12, padding: 10, minWidth: 220,
+            boxShadow: "0 6px 20px rgba(0,0,0,0.18)",
+          }}>
+            <button onClick={() => { setShowUserMenu(false); setAboutModalOpen(true); }}
+              style={{ display: "block", width: "100%", textAlign: "left",
+                      padding: "10px 12px", border: "none", background: "transparent",
+                      color: "var(--text1)", cursor: "pointer", fontFamily: "inherit",
+                      fontSize: 14, borderRadius: 6 }}>
+              About Watchlist
+            </button>
+            <button onClick={() => { setShowUserMenu(false); setSignInPromptOpen(true); }}
+              style={{ display: "flex", alignItems: "center", gap: 8,
+                      width: "100%", textAlign: "left",
+                      padding: "10px 12px", border: "none", background: "transparent",
+                      color: "var(--text1)", cursor: "pointer", fontFamily: "inherit",
+                      fontSize: 14, fontWeight: 600, borderRadius: 6 }}>
+              <svg width="14" height="14" viewBox="0 0 48 48" aria-hidden="true" style={{ flexShrink: 0 }}>
+                <path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.2l6.7-6.7C35.6 2.1 30.1 0 24 0 14.8 0 6.8 5.3 3 13l7.8 6C12.7 13.5 17.8 9.5 24 9.5z"/>
+                <path fill="#4285F4" d="M46.5 24.5c0-1.6-.2-3.1-.5-4.5H24v9h12.7c-.6 3-2.3 5.5-4.9 7.2l7.6 5.9c4.4-4.1 7.1-10.1 7.1-17.6z"/>
+                <path fill="#FBBC05" d="M10.8 28.7c-.5-1.5-.8-3.1-.8-4.7s.3-3.2.8-4.7l-7.8-6C1.1 16.3 0 20 0 24s1.1 7.7 3 11.2l7.8-6.5z"/>
+                <path fill="#34A853" d="M24 48c6.1 0 11.3-2 15.1-5.5l-7.6-5.9c-2.1 1.4-4.8 2.2-7.5 2.2-6.2 0-11.3-4-13.2-9.5l-7.8 6C6.8 42.7 14.8 48 24 48z"/>
+              </svg>
+              Sign in with Google
+            </button>
+          </div>
+        )}
+      </div>
+    ) : (
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <button onClick={() => setAboutModalOpen(true)} style={{
+          fontSize: 12, padding: "4px 10px", borderRadius: 20,
+          border: "none", background: "transparent",
+          color: "var(--text2)", cursor: "pointer", fontFamily: "inherit",
+          whiteSpace: "nowrap",
+        }}>
+          About
+        </button>
+        <button onClick={() => setSignInPromptOpen(true)} style={{
+          fontSize: 12, padding: "4px 12px", borderRadius: 20,
+          border: "0.5px solid var(--border)", background: "var(--surface)",
+          color: "var(--text1)", cursor: "pointer", fontFamily: "inherit",
+          whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: 6,
+        }}>
+          <svg width="12" height="12" viewBox="0 0 48 48" aria-hidden="true">
+            <path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.2l6.7-6.7C35.6 2.1 30.1 0 24 0 14.8 0 6.8 5.3 3 13l7.8 6C12.7 13.5 17.8 9.5 24 9.5z"/>
+            <path fill="#4285F4" d="M46.5 24.5c0-1.6-.2-3.1-.5-4.5H24v9h12.7c-.6 3-2.3 5.5-4.9 7.2l7.6 5.9c4.4-4.1 7.1-10.1 7.1-17.6z"/>
+            <path fill="#FBBC05" d="M10.8 28.7c-.5-1.5-.8-3.1-.8-4.7s.3-3.2.8-4.7l-7.8-6C1.1 16.3 0 20 0 24s1.1 7.7 3 11.2l7.8-6.5z"/>
+            <path fill="#34A853" d="M24 48c6.1 0 11.3-2 15.1-5.5l-7.6-5.9c-2.1 1.4-4.8 2.2-7.5 2.2-6.2 0-11.3-4-13.2-9.5l-7.8 6C6.8 42.7 14.8 48 24 48z"/>
+          </svg>
+          Sign in
+        </button>
+      </div>
+    )
   ) : (
     <div style={{ position: "relative" }}>
       {/* Desktop: brand-tinted pill that wraps the avatar initial +
@@ -3200,9 +3259,9 @@ export default function Watchlist() {
     }
 
     if (tab === "references") {
-      if (referencesSubTab === "editorial")       return <IdentityBand tone={darkTone} label="Editorial" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
-      if (referencesSubTab === "sizecomparison")  return <IdentityBand tone={darkTone} label="Size comparison" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
-      if (referencesSubTab === "links")           return <IdentityBand tone={darkTone} label="Directory" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
+      if (referencesSubTab === "editorial") return <IdentityBand tone={darkTone} label="Editorial" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
+      if (referencesSubTab === "size")      return <IdentityBand tone={darkTone} label="Size comparison" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
+      if (referencesSubTab === "links")     return <IdentityBand tone={darkTone} label="Directory" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
     }
 
     if (tab === "admin") {
@@ -3283,6 +3342,43 @@ export default function Watchlist() {
           const active = listingsSubTab === key;
           return (
             <button key={key} onClick={() => { setListingsSubTab(key); setDrawerOpen(false); setPage(1); }}
+              style={{ ...tabPill(active), flexShrink: 0 }}>
+              {label}
+            </button>
+          );
+        })}
+      </div>
+    </>
+  );
+
+  // References (Collecting) sub-tab strip — lifted from inside
+  // ReferencesTab into App.js 2026-05-21 (PR_Y3) so it sits in the
+  // same shell-level position as the Listings / Watchlists sub-tab
+  // strips. Mark feedback: Editorial band rendered ABOVE the
+  // sub-tabs because they lived inside the tab content component
+  // — fix was to lift them up so every tab's chrome stack matches.
+  const referencesSubTabsJSX = tab !== "references" ? null : (
+    <>
+      <div style={{
+        display: "flex", gap: isMobile ? 14 : 20, alignItems: "center",
+        padding: isMobile ? "0 14px" : "0 20px",
+        background: "var(--bg)",
+        borderBottom: "0.5px solid var(--border)",
+        flexShrink: 0,
+        overflowX: "auto",
+        overflowY: "hidden",
+        WebkitOverflowScrolling: "touch",
+        scrollbarWidth: "none",
+        msOverflowStyle: "none",
+      }}>
+        {[
+          ["editorial", "Editorial"],
+          ["size",      "Size comparison"],
+          ["links",     "Links"],
+        ].map(([key, label]) => {
+          const active = referencesSubTab === key;
+          return (
+            <button key={key} onClick={() => setReferencesSubTab(key)}
               style={{ ...tabPill(active), flexShrink: 0 }}>
               {label}
             </button>
@@ -3990,6 +4086,7 @@ export default function Watchlist() {
     challengeReceiverJSX,
     listReceiverJSX,
     listingsSubTabsJSX,
+    referencesSubTabsJSX,
     trackNewItemModalJSX, watchSubTabsJSX, watchHeartedToggleJSX, collectionsSubTabsJSX,
     // Bundle 2A.2: shells render `watchlistTabJSX` for the Saved
     // tab — the value is now the dispatched content (Watchlist or

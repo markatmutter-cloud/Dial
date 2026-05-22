@@ -61,6 +61,7 @@ export function MobileShell(props) {
     challengeReceiverJSX,
     listReceiverJSX,
     listingsSubTabsJSX,
+    referencesSubTabsJSX,
     trackNewItemModalJSX, watchSubTabsJSX, watchHeartedToggleJSX, collectionsSubTabsJSX, watchlistTabJSX,
     watchboxTabJSX,
     referencesTabJSX, collectionsTabJSX,
@@ -135,22 +136,27 @@ export function MobileShell(props) {
           display: "flex", alignItems: "baseline",
           justifyContent: "space-between", gap: 12,
         }}>
-          <button onClick={() => { setTab("home"); setPage(1); }}
-            style={{ background: "none", border: "none", cursor: "pointer",
-                    padding: 0, paddingLeft: "0.14em", fontFamily: "inherit",
-                    fontSize: 14, fontWeight: 300, letterSpacing: "0.14em",
-                    textTransform: "uppercase",
-                    color: "var(--text1)" }}>
-            Watchlist
-          </button>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <button onClick={() => setAboutModalOpen(true)}
+          {/* Wordmark hidden on Home — the editorial hero below carries
+              the brand mark (Mark feedback 2026-05-21: "two wordmarks
+              seems a little redundant"). The hamburger / avatar on the
+              right is the home-tap affordance via the menu. */}
+          {tab !== "home" ? (
+            <button onClick={() => { setTab("home"); setPage(1); }}
               style={{ background: "none", border: "none", cursor: "pointer",
-                      padding: 0, fontFamily: "inherit", fontSize: 12,
-                      fontWeight: 500, color: "var(--text2)",
-                      letterSpacing: "0.04em" }}>
-              About
+                      padding: 0, paddingLeft: "0.14em", fontFamily: "inherit",
+                      fontSize: 14, fontWeight: 300, letterSpacing: "0.14em",
+                      textTransform: "uppercase",
+                      color: "var(--text1)" }}>
+              Watchlist
             </button>
+          ) : <span />}
+          {/* About button retired from the inline brand row 2026-05-21
+              (PR_Y3, Mark spec): About is now inside the menu that the
+              avatar / hamburger opens, so the brand row stays compact.
+              Signed-in users see the M-circle dropdown (About + Sign
+              out + Watchbox + Settings); signed-out users see a
+              hamburger that opens the same menu with About + Sign in. */}
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             {authJSX}
           </div>
         </div>
@@ -207,6 +213,16 @@ export function MobileShell(props) {
             chrome needs to stay reachable at any scroll depth. */}
         {tab !== "home" && (
         <div style={{ position: "sticky", top: 0, zIndex: 20, background: "var(--bg)" }}>
+        {/* Sub-tabs strip — anchored at the TOP of the sticky stack
+            2026-05-21 (PR_Y3, Mark feedback). Sub-tabs sit above the
+            search row so they read as a continuation of main-nav
+            chrome (main tabs → sub-tabs → search/filter). Also fixes
+            the Collecting inconsistency — referencesSubTabsJSX is
+            now lifted to App.js (was inside ReferencesTab) so all
+            three tabs hit the same shell-level slot. */}
+        {!anyShareActive && listingsSubTabsJSX}
+        {!anyShareActive && watchSubTabsJSX}
+        {!anyShareActive && referencesSubTabsJSX}
         <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 16px 4px", borderBottom: "0.5px solid var(--border)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, background: "var(--surface)", borderRadius: 10, padding: "8px 12px", flex: 1, minWidth: 0 }}>
             <SearchIcon />
@@ -301,13 +317,11 @@ export function MobileShell(props) {
         {/* Sub-tab strips — Listings strip on tab=listings, the
             unified Saved strip on tab=watchlist (combines the
             Watchlist + old Collections sub-tabs after Bundle 2A.2
-            collapsed Collections into Saved). Anchored ABOVE the
-            sort/filter row 2026-05-21 (PR_Y2): when a sub-tab has no
-            filters, the row below collapses but the sub-tab strip
-            stays at the same y-position — eliminates the "sub-tabs
-            jump" jitter Mark flagged. */}
-        {!anyShareActive && listingsSubTabsJSX}
-        {!anyShareActive && watchSubTabsJSX}
+            collapsed Collections into Saved). Anchored at the TOP of
+            the sticky stack (above search) 2026-05-21 (PR_Y3, Mark
+            feedback) — sub-tabs read as nav-chrome paired with the
+            main tabs above, search becomes scoped to the active
+            sub-tab below. */}
         {!anyShareActive && !noFilterableList && (
         <div style={{ display: "flex", gap: 6, padding: "4px 16px 6px", borderBottom: "0.5px solid var(--border)", position: "relative", alignItems: "center", overflowX: "auto", overflowY: "hidden", WebkitOverflowScrolling: "touch", scrollbarWidth: "none", msOverflowStyle: "none" }}>
           {/* Count chip retired from the sort row 2026-05-21 (PR_Y).

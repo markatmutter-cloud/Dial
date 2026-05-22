@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { SizeCompare } from "./SizeCompare";
 import { Links } from "./Links";
 import { EditorialView } from "./EditorialView";
-import { tabPill } from "../styles";
 
 // Collecting tab (internal `tab="references"`, UI label "Collecting").
 // Restructured 2026-05-18 (Mark spec) from a resource-button list
@@ -63,46 +62,10 @@ export function ReferencesTab({
 
   const current = subTab || "editorial";
 
-  // ── Sub-tab strip — mirrors watchSubTabsJSX shape from App.js ──
-  const SUB_TABS = [
-    ["editorial", "Editorial"],
-    ["size",      "Size comparison"],
-    ["links",     "Links"],
-  ];
-
-  const subStrip = (
-    <div style={{
-      display: "flex",
-      gap: isMobile ? 14 : 20,
-      alignItems: "center",
-      padding: isMobile ? "0 14px" : "0 20px",
-      background: "var(--bg)",
-      borderBottom: "0.5px solid var(--border)",
-      flexShrink: 0,
-      overflowX: "auto",
-      overflowY: "hidden",
-      WebkitOverflowScrolling: "touch",
-      scrollbarWidth: "none",
-      msOverflowStyle: "none",
-      // Sticky so it stacks with the EditorialView filter chrome
-      // (which is sticky at top:0 too — they end up flush, no gap
-      // between them or the top bar). Mark feedback 2026-05-21:
-      // before this, the subStrip scrolled out, leaving a visible gap
-      // between the global top bar and the (sticky) editorial filter.
-      // zIndex must beat the editorial filter's z=20 so when both
-      // are stuck they layer correctly with subStrip on top.
-      position: "sticky", top: 0, zIndex: 25,
-    }}>
-      {SUB_TABS.map(([key, label]) => {
-        const active = current === key;
-        return (
-          <button key={key}
-            onClick={() => typeof setSubTab === "function" && setSubTab(key)}
-            style={{ ...tabPill(active), flexShrink: 0 }}>{label}</button>
-        );
-      })}
-    </div>
-  );
+  // Sub-tab strip retired here 2026-05-21 (PR_Y3) — lifted into App.js
+  // as `referencesSubTabsJSX` so it renders in the shell's sticky
+  // stack alongside listingsSubTabsJSX / watchSubTabsJSX. Consistent
+  // chrome on every tab.
 
   // ── Sub-tab body dispatch ──────────────────────────────────────
   let body;
@@ -138,7 +101,11 @@ export function ReferencesTab({
 
   return (
     <div>
-      {subStrip}
+      {/* subStrip retired here 2026-05-21 (PR_Y3) — the Collecting
+          sub-tabs lifted into App.js as `referencesSubTabsJSX` so
+          they render in the shell's sticky stack alongside the
+          Listings + Watchlists sub-tabs. Same chrome position on
+          every tab. */}
       {body}
     </div>
   );
