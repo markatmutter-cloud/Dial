@@ -571,6 +571,13 @@ export function DesktopShell(props) {
         // search still"). Skip the shell's search row so it doesn't
         // stack above EditorialView's strip.
         if (tab === "references") return null;
+        // Watchlists tab — Mark spec 2026-05-22: "remove search from
+        // watchlist tab" (extends the mobile-side hide from #440 to
+        // desktop too). None of the Watchlists sub-tabs filter the
+        // watch corpus — Lists / Searches / Challenges are
+        // collections-of-things; saved-item sub-tabs filter the user's
+        // hearts which is a small set the search would rarely help.
+        if (tab === "watchlist") return null;
         return searchOnlyRowJSX;
       })()}
       <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>

@@ -3383,10 +3383,12 @@ export default function Watchlist() {
         // Tighter gap + side padding on mobile (Mark feedback
         // 2026-05-11). Saved's 4 longer labels were the tight case;
         // listings strip benefits too. Desktop spacing unchanged.
+        // PR_β-A 2026-05-22: mobile picks up olive bg to extend the
+        // colored chrome zone from brand+tabs down through sub-tabs.
         display: "flex", gap: isMobile ? 14 : 20, alignItems: "center",
         padding: isMobile ? "0 14px" : "0 20px",
-        background: "var(--bg)",
-        borderBottom: "0.5px solid var(--border)",
+        background: isMobile ? "var(--brand-olive)" : "var(--bg)",
+        borderBottom: isMobile ? "none" : "0.5px solid var(--border)",
         flexShrink: 0,
         overflowX: "auto",
         overflowY: "hidden",
@@ -3403,7 +3405,7 @@ export default function Watchlist() {
           const active = listingsSubTab === key;
           return (
             <button key={key} onClick={() => { setListingsSubTab(key); setDrawerOpen(false); setPage(1); }}
-              style={{ ...tabPill(active), flexShrink: 0 }}>
+              style={{ ...tabPill(active, { onOlive: isMobile }), flexShrink: 0 }}>
               {label}
             </button>
           );
@@ -3423,8 +3425,8 @@ export default function Watchlist() {
       <div style={{
         display: "flex", gap: isMobile ? 14 : 20, alignItems: "center",
         padding: isMobile ? "0 14px" : "0 20px",
-        background: "var(--bg)",
-        borderBottom: "0.5px solid var(--border)",
+        background: isMobile ? "var(--brand-olive)" : "var(--bg)",
+        borderBottom: isMobile ? "none" : "0.5px solid var(--border)",
         flexShrink: 0,
         overflowX: "auto",
         overflowY: "hidden",
@@ -3440,7 +3442,7 @@ export default function Watchlist() {
           const active = referencesSubTab === key;
           return (
             <button key={key} onClick={() => setReferencesSubTab(key)}
-              style={{ ...tabPill(active), flexShrink: 0 }}>
+              style={{ ...tabPill(active, { onOlive: isMobile }), flexShrink: 0 }}>
               {label}
             </button>
           );
@@ -3786,8 +3788,8 @@ export default function Watchlist() {
       // one line at iPhone SE (375px) without horizontal-scrolling.
       display: "flex", gap: isMobile ? 14 : 20, alignItems: "center",
       padding: isMobile ? "0 14px" : "0 20px",
-      background: "var(--bg)",
-      borderBottom: "0.5px solid var(--border)",
+      background: isMobile ? "var(--brand-olive)" : "var(--bg)",
+      borderBottom: isMobile ? "none" : "0.5px solid var(--border)",
       flexShrink: 0,
       overflowX: "auto",
       overflowY: "hidden",
@@ -3826,7 +3828,7 @@ export default function Watchlist() {
               setWatchTopTab(key);
               setDrawerOpen(false);
             }}
-            style={{ ...tabPill(active), flexShrink: 0 }}>{label}</button>
+            style={{ ...tabPill(active, { onOlive: isMobile }), flexShrink: 0 }}>{label}</button>
         );
       })}
     </div>
