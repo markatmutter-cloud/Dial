@@ -2480,13 +2480,12 @@ function ListsView({
             <section key={g.key}>
               <div style={{
                 display: "flex", alignItems: "center", gap: 12,
-                padding: "14px 14px 12px",
-                borderBottom: "0.5px solid var(--border)",
-                background: "var(--surface)",
-                marginBottom: 10,
+                padding: "2px 4px 8px",
+                marginBottom: 8,
               }}>
                 <span style={{
-                  fontSize: 14, fontWeight: 600, color: "var(--text1)",
+                  fontSize: 12, fontWeight: 600, color: "var(--text2)",
+                  textTransform: "uppercase", letterSpacing: "0.08em",
                 }}>
                   {g.title}
                 </span>
