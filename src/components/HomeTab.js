@@ -75,7 +75,18 @@ function EditorialHero({ isMobile, dark }) {
       }}>
         Watchlist
       </h1>
-      <div style={{ height: 0.5, background: "var(--border)" }} />
+      {/* PR 2026-05-22: olive kicker rule beneath the wordmark.
+          Mark's olive-on-Home experiment (#450) was reverted because
+          full olive chrome clashed with the moonphase disc's white
+          bg. This narrower accent — short olive bar, centered —
+          gives the brand thread without flooding the page. Replaces
+          the previous 0.5px border-color hairline. */}
+      <div style={{
+        height: 2,
+        width: isMobile ? 56 : 88,
+        background: "var(--brand-olive-text)",
+        margin: "0 auto",
+      }} />
     </section>
   );
 }
