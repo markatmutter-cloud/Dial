@@ -1295,18 +1295,29 @@ export default function Watchlist() {
       // 2026-05-09 — reverse-direction override. If the scraper
       // hasn't re-run since the auction ended (daily 06:00 cron
       // misses an EU-evening auction), mark the lot as sold so it
-      // moves to Archive Sold when the user expects. Only flip
-      // active→ended when auction_end has explicit time-of-day
-      // (HH:MM > 0); date-only strings resolve to 00:00 UTC and
-      // would false-positive the entire calendar day.
+      // moves to Archive Sold when the user expects.
+      //
+      // Mark report 2026-05-21: lots from sales that ended 12 days
+      // ago were still showing in Live auctions because their
+      // `auction_end` is a date-only string ("2026-05-09" → 00:00
+      // UTC), and the old gate "only flip when time-of-day is set"
+      // never fired on those. The original time-of-day check was
+      // there to avoid false-positives on TODAY's date (a date-only
+      // string for today reads as 00:00 UTC and so looks past mid-
+      // morning UTC even though the live session hasn't run yet).
+      // Updated rule: keep the same-day safeguard (don't flip when
+      // auction_end is within the last 24h AND has no time-of-day),
+      // but anything older than 24h past is treated as ended.
       if (!isEnded && data.auction_end) {
         const endMs = new Date(data.auction_end).getTime();
-        if (Number.isFinite(endMs) && endMs < Date.now()) {
+        const now = Date.now();
+        if (Number.isFinite(endMs) && endMs < now) {
           const d = new Date(endMs);
           const hasTimeOfDay = d.getUTCHours() !== 0
                             || d.getUTCMinutes() !== 0
                             || d.getUTCSeconds() !== 0;
-          if (hasTimeOfDay) isEnded = true;
+          const moreThanADayPast = (now - endMs) > 24 * 3600 * 1000;
+          if (hasTimeOfDay || moreThanADayPast) isEnded = true;
         }
       }
       // Mark report 2026-05-15 (Loupe This): when the reverse-direction
