@@ -145,12 +145,15 @@ export function DesktopShell(props) {
   // the content area; the chrome above them should still read as
   // the rest of the site, not flip back to neutral just because
   // the underlying tab value is "home". Fix 2026-05-22.
-  const topBarOnOlive = tab !== "home" || anyShareActive || searchAllActive;
-  const tbBorderColor = topBarOnOlive ? "rgba(255,255,255,0.3)" : "var(--border)";
-  const tbTextColor   = topBarOnOlive ? "#ffffff" : "var(--text1)";
-  const tbIconColor   = topBarOnOlive ? "rgba(255,255,255,0.85)" : "var(--text2)";
-  const tbMutedColor  = topBarOnOlive ? "rgba(255,255,255,0.65)" : "var(--text3)";
-  const topBarSearchJSX = (
+  // Search rendered in the filter row (PR 2026-05-22, Mark spec
+  // "search bar location should apply to all tabs where the search
+  // bar exists, other than landing page and strip search"). Filter
+  // row is always neutral bg so the chrome colors are fixed.
+  const tbBorderColor = "var(--border)";
+  const tbTextColor   = "var(--text1)";
+  const tbIconColor   = "var(--text2)";
+  const tbMutedColor  = "var(--text3)";
+  const expandingSearchJSX = (
     <div style={{ position: "relative", flexShrink: 0, display: "flex", alignItems: "center" }}>
       {!searchExpanded ? (
         <button
@@ -449,26 +452,36 @@ export function DesktopShell(props) {
       {/* Auctions-only pill retired 2026-05-04 — Watchlist > Saved
           auctions sub-tab covers it. */}
 
-      {/* Count chip — RESTORED 2026-05-22 (Mark spec, after retiring
-          the identity band). Was retired in PR_Y1 when the band took
-          over the count display; now back at the right edge of the
-          filter row since the band is gone. */}
-      <span style={{
-        marginLeft: "auto", flexShrink: 0,
-        fontSize: 12, color: "var(--text3)", fontFamily: "inherit",
-        whiteSpace: "nowrap", padding: "0 6px",
-      }}>
-        {(displayedCount || 0).toLocaleString()} {displayedCount === 1 ? "watch" : "watches"}
-      </span>
-      {hasFilters && (
-        <button onClick={resetFilters} style={{
-          fontSize: 13, padding: "6px 12px", borderRadius: 20, cursor: "pointer",
-          fontFamily: "inherit", whiteSpace: "nowrap",
-          border: "none", outline: "none",
-          background: "transparent", color: "var(--brand)",
-          boxShadow: "inset 0 0 0 0.5px var(--brand)",
-        }}>× Clear all</button>
-      )}
+      {/* Search — moved here 2026-05-22 (Mark spec: filter row,
+          right-aligned, "search bar more often in the middle of
+          the page"). Same expanding-icon-then-input pattern that
+          previously lived in the top bar (PR_ε1.5). Applies to
+          every tab that has a filter row (Listings / Watchlists /
+          Editorial); Home + Search-all skip it. marginLeft: auto
+          pushes it (plus the trailing count + Clear-all) to the
+          right edge. */}
+      <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+        {expandingSearchJSX}
+        {/* Count chip — RESTORED 2026-05-22 (Mark spec, after
+            retiring the identity band). Stays in the right cluster
+            beside the search pill. */}
+        <span style={{
+          flexShrink: 0,
+          fontSize: 12, color: "var(--text3)", fontFamily: "inherit",
+          whiteSpace: "nowrap", padding: "0 6px",
+        }}>
+          {(displayedCount || 0).toLocaleString()} {displayedCount === 1 ? "watch" : "watches"}
+        </span>
+        {hasFilters && (
+          <button onClick={resetFilters} style={{
+            fontSize: 13, padding: "6px 12px", borderRadius: 20, cursor: "pointer",
+            fontFamily: "inherit", whiteSpace: "nowrap",
+            border: "none", outline: "none",
+            background: "transparent", color: "var(--brand)",
+            boxShadow: "inset 0 0 0 0.5px var(--brand)",
+          }}>× Clear all</button>
+        )}
+      </div>
     </div>
     {expandedSource && (() => {
       // Iterate the cross-axis-filtered effective list (visibleSources)
@@ -662,10 +675,9 @@ export function DesktopShell(props) {
             sticky header). Hide the top-bar one when Search-all is
             active — the body's input is the canonical surface for
             editing the query in that context. */}
-        {/* Top-bar search hidden on Home (masthead band owns the
-            search there) AND on Search-all (its own sticky header
-            owns the input). */}
-        {!minimalTopBar && !searchAllActive && topBarSearchJSX}
+        {/* Top-bar search retired 2026-05-22 — moved into the
+            filter row's right edge (see expandingSearchJSX render
+            below). */}
         {/* About link — top-right area, before the auth chrome.
             Was previously next to the top-left wordmark; relocated
             2026-05-11 so it lives in the same zone as sign-in (per
