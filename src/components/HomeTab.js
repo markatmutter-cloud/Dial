@@ -225,7 +225,10 @@ function HomeSearchBar({ onSubmit, isMobile, dealerSources, onJumpToDealer }) {
             style={{
               flexShrink: 0,
               border: "none", borderLeft: "0.5px solid var(--border)",
-              background: "var(--text1)", color: "var(--bg)",
+              // PR olive-on-home 2026-05-22: brand-color the primary
+              // search CTA so the main action carries the olive
+              // identity through the editorial hero on Home.
+              background: "var(--brand-olive)", color: "#ffffff",
               fontFamily: "inherit", fontSize: isMobile ? 12 : 13, fontWeight: 600,
               letterSpacing: "0.04em", cursor: "pointer",
               padding: isMobile ? "0 14px" : "0 22px",
@@ -650,8 +653,14 @@ function SectionStrip({ heading, descriptor, items, onViewAll, onScreen, screenC
 function ManageCallout({ goToSavedLists, goToMyWatches, goToChallenges, isMobile, shellPad }) {
   return (
     <section style={{
-      background: "var(--text1)",
-      color: "var(--bg)",
+      // PR olive-on-home 2026-05-22: switch the Watchbox bleed block
+      // from dark to olive. Brand color carries through the editorial
+      // hero on Home (was: pure dark band; could feel disconnected
+      // from the olive chrome zone everywhere else). Olive + white
+      // text on the same dark-mode contrast curve as the previous
+      // dark + white pairing.
+      background: "var(--brand-olive)",
+      color: "#ffffff",
       marginLeft: -shellPad,
       marginRight: -shellPad,
       marginTop: isMobile ? 8 : 16,
@@ -675,7 +684,7 @@ function ManageCallout({ goToSavedLists, goToMyWatches, goToChallenges, isMobile
       }}>
         Your Watchbox
       </div>
-      <h2 style={{ margin: 0, fontSize: isMobile ? 22 : 28, fontWeight: 600, color: "var(--bg)", letterSpacing: "-0.3px" }}>
+      <h2 style={{ margin: 0, fontSize: isMobile ? 22 : 28, fontWeight: 600, color: "#ffffff", letterSpacing: "-0.3px" }}>
         Your private space for everything you collect
       </h2>
       <p style={{ margin: "10px auto 0", maxWidth: 560, fontSize: 14, color: "var(--text-on-dark-2)", lineHeight: 1.5 }}>
@@ -705,8 +714,11 @@ function ManageCallout({ goToSavedLists, goToMyWatches, goToChallenges, isMobile
 function calloutPrimaryCta() {
   return {
     padding: "12px 24px", borderRadius: 999,
-    border: "none", background: "var(--bg)",
-    color: "var(--text1)", fontFamily: "inherit", fontSize: 14,
+    // Literal white bg + dark text so the CTA reads cleanly on the
+    // olive callout block in BOTH light and dark themes (var(--bg)
+    // would flip to black in dark mode = invisible on olive).
+    border: "none", background: "#ffffff",
+    color: "#1d1d1f", fontFamily: "inherit", fontSize: 14,
     fontWeight: 600, letterSpacing: "0.02em", cursor: "pointer",
     display: "inline-flex", alignItems: "center", gap: 8,
   };

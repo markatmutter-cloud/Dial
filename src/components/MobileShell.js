@@ -249,13 +249,14 @@ export function MobileShell(props) {
             section header is the first thing below the navigation and
             the search/filters apply to that named section. */}
         {!anyShareActive && identityBandJSX}
-        {/* Search row — hidden on the entire Watchlists tab (Mark spec
-            2026-05-21): "not sure we need search for saved lists or
-            searches or challenge (so none of the watchlist tab)".
-            Saved-listings/auctions/sold sub-tabs lose search too. If
-            users ask for it back on filterable sub-tabs, re-add a
-            `watchTopTab in (listings, auctions, sold)` exception. */}
-        {tab !== "watchlist" && (
+        {/* Search row — hidden on:
+            - The entire Watchlists tab (Mark spec 2026-05-21).
+            - Listings > Auction calendar sub-tab (Mark spec
+              2026-05-22: "auction calendar subtab shouldn't have a
+              search bar"). Calendar is a month-grouped list of
+              upcoming sales — search across calendar entries
+              isn't a useful affordance. */}
+        {tab !== "watchlist" && !(tab === "listings" && listingsSubTab === "calendar") && (
         <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 16px 4px", borderBottom: "0.5px solid var(--border)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, background: "transparent", border: "0.5px solid var(--border)", borderRadius: 10, padding: "8px 12px", flex: 1, minWidth: 0 }}>
             <SearchIcon />
