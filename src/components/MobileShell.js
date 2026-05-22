@@ -219,7 +219,14 @@ export function MobileShell(props) {
               );
             })}
           </div>
-          {tab === "home" && (
+          {/* M-circle goes here ONLY when the brand row above is
+              suppressed (Home with no receiver / search-all). When
+              a receive surface or Search-all is active over Home,
+              the brand row renders + already carries authJSX — the
+              tabs-row M would be a duplicate. Fix 2026-05-22:
+              two M circles visible on Search-all from a fresh
+              landing. */}
+          {tab === "home" && !anyShareActive && !searchAllActive && (
             <div style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
               {authJSX}
             </div>

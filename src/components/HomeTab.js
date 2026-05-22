@@ -694,7 +694,7 @@ function ManageCallout({ goToSavedLists, goToMyWatches, goToChallenges, isMobile
         Watchbox
       </div>
       <h2 style={{ margin: 0, fontSize: isMobile ? 22 : 28, fontWeight: 600, color: "#ffffff", letterSpacing: "-0.3px" }}>
-        A record of your collecting.
+        Your collecting space.
       </h2>
       <p style={{ margin: "10px auto 0", maxWidth: 560, fontSize: 14, color: "var(--text-on-dark-2)", lineHeight: 1.5 }}>
         Shortlists, ownership history, references worth revisiting — kept together thoughtfully.
