@@ -1,0 +1,31 @@
+{
+  "_comment": "Curated Christie's stories URLs for the editorial corpus. Christie's stories index is client-rendered (302 redirect), so URLs are added manually. To add an article: paste the full URL into this array and the scraper will fetch it on the next cron run. URLs are matched by full string — old/new can coexist.",
+  "_added_by": "Mark, 2026-05-22",
+  "urls": [
+    "https://www.christies.com/en/stories/laurel-pantin-on-the-meaning-of-luxury-in-2026-3602ab8c536d41dd91dc7db8f33dfa40",
+    "https://www.christies.com/en/stories/double-signed-watches-collecting-guide-16a92e6be45d4953b582b97a64952f3b",
+    "https://www.christies.com/en/stories/5-reasons-collectors-love-rolex-daytona-f6b1d628db52402483d50a375bfd5862",
+    "https://www.christies.com/en/stories/fp-journe-watches-collecting-guide-66229c840ef34477b719ac92e57606e0",
+    "https://www.christies.com/en/stories/a-lange-and-sohne-watches-collecting-guide-d185a88e21cb42f7b4e7edb265325a4a",
+    "https://www.christies.com/en/stories/cartier-crash-watch-collecting-guide-043c83abfc0647d0a6132ca3bd4cf606",
+    "https://www.christies.com/en/stories/5-reasons-collectors-love-royal-oak-watches-b494c53bb15541869e5a9df6e649b0b6",
+    "https://www.christies.com/en/stories/womens-watches-what-collectors-look-for-05b8c368567b441ea92356d1931a6a0c",
+    "https://www.christies.com/en/stories/one-of-a-kind-why-the-oak-collection-9355376f202d43a0bbb78570e1880607",
+    "https://www.christies.com/en/stories/watches-owned-by-brando-warhol-and-belmondo-69cb8a938a9a49738fc7ff4ab3cb8581",
+    "https://www.christies.com/en/stories/rolex-deep-sea-special-no1-tested-3150m-underwater-f67fc536714646b096a1d4d27100db7e",
+    "https://www.christies.com/en/stories/five-unisex-watches-that-defy-gender-stereotypes-2bcf0aae220e4e40b76c68b6b920f445",
+    "https://www.christies.com/en/stories/10-rolex-references-to-die-for-15058023516e40a09101b8a63adee365",
+    "https://www.christies.com/en/stories/watch-investor-rolex-submariner-daytona-and-explorer-ii-c551d28c32ad469caed129cb85f70a46",
+    "https://www.christies.com/en/stories/watches-owned-by-american-icons-from-jackie-kennedy-to-babe-ruth-dc19ede5ce524530b19e3b53269f4262",
+    "https://www.christies.com/en/stories/giving-the-perfect-watch-ef71c7250f8448ba8e5efe401a2cbb3a",
+    "https://www.christies.com/en/stories/five-reasons-to-love-womens-vintage-watches-f26204f6d6474f488b8bde1776c23d16",
+    "https://www.christies.com/en/stories/rolex-sea-dweller-4000-16600-deconstructed-869c6062284745de8ce62a85df752299",
+    "https://www.christies.com/en/stories/rolex-sigma-dial-ref-6263-oyster-daytona-57fd5489e53143c7b1daf3f3e19792bc",
+    "https://www.christies.com/en/stories/deconstructed-jaeger-lecoultre-1967-memovox-polaris-e859-f4c07e3f1a7640c0b9c5c0bb405bc1db",
+    "https://www.christies.com/en/stories/omega-speedmaster-professional-moonwatch-with-meteorite-dial-d5cda2af045b43929571c0966a629e5d",
+    "https://www.christies.com/en/stories/the-patina-trend-in-watches-d525637cc3d74fb7abaada5984d98f7b",
+    "https://www.christies.com/en/stories/vintage-heuer-for-abercrombie-and-fitch-watches-4a2b9bc712fa480987f40a67e55e09fb",
+    "https://www.christies.com/en/stories/5-reasons-collectors-love-vintage-heuer-chronographs-c6ba31e31e084d53aefa39f488a2a93d",
+    "https://www.christies.com/en/stories/10-most-desirable-patek-philippe-references-7f88324c98884a0a8e5e509ff19cb486"
+  ]
+}

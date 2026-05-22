@@ -175,6 +175,22 @@ const SOURCES = [
     // explicitly excluded.
     publication_url: "https://www.fratellowatches.com/",
   },
+  {
+    key: "christies_stories",
+    label: "Christie's Stories",
+    publication: "Christie's",
+    column: "Stories",
+    url: "/christies_stories.json",
+    bodies_url: "/christies_stories_bodies.json",
+    // Curated URL list at data/christies_stories_urls.json — Christie's
+    // stories index is a client-rendered SPA so we can't sitemap-walk.
+    // Mark adds URLs by hand as he finds them. A small handful of
+    // SPA-only articles fail body extraction (their text lives only in
+    // the inline Sitecore JSS JSON, not in the static HTML); a follow-
+    // up scraper enhancement could deep-parse the JSS payload for
+    // those if Mark wants the count higher.
+    publication_url: "https://www.christies.com/en/stories",
+  },
 ];
 
 const BRAND_TOP_N = 24;       // Show top N brands in expansion panel; "+more" expander reveals the rest

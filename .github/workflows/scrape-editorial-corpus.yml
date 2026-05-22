@@ -177,6 +177,20 @@ jobs:
         continue-on-error: true
         run: python fratello_scraper.py
 
+      - name: Run Christie's Stories scraper
+        # Curated URL list at data/christies_stories_urls.json —
+        # Christie's stories index is client-rendered SPA (302 redirect
+        # on direct fetch) and the main sitemap.xml is a lot-finder
+        # redirector, so URLs are added manually by Mark. Substantive
+        # long-form editorial (collecting guides, deconstructed series,
+        # celebrity-watch features) typically 600-2,200 words per
+        # article. Two known SPA-hydrated articles fail body extraction;
+        # the remaining ~92% land with og:title + datePublished +
+        # og:image + body paragraphs. CHRISTIES_STORIES_FULL_REFRESH=1
+        # forces re-fetch; default is 30-day rolling.
+        continue-on-error: true
+        run: python christies_stories_scraper.py
+
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
@@ -190,7 +204,8 @@ jobs:
                   public/acollectedman_journal.json public/acollectedman_journal_bodies.json \
                   public/woe_dispatch.json public/woe_dispatch_bodies.json \
                   public/screwdowncrown.json public/screwdowncrown_bodies.json \
-                  public/fratello.json public/fratello_bodies.json
+                  public/fratello.json public/fratello_bodies.json \
+                  public/christies_stories.json public/christies_stories_bodies.json
           if git diff --staged --quiet; then
             echo "No changes to commit"
             exit 0
