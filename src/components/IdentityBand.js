@@ -10,9 +10,11 @@ import React from "react";
 //
 //   [label] · [count]                                    [+action]
 //
-// Tone: "green" for Listings + Watchlists (hourglass-favicon vibe,
-// reuses --accent-positive); "dark" for Collecting (matches the
-// retired FEATURED slab).
+// Tone: "olive" for Listings + Watchlists (matches the favicon's
+// army-olive hourglass background, --brand-olive); "dark" for
+// Collecting (matches the retired FEATURED slab). The default
+// "green" alias maps to olive for back-compat with earlier
+// in-progress wiring (PR_Y1).
 //
 // The band extends edge-to-edge via negative horizontal margins
 // through the parent scroll container's padding — same pattern the
@@ -27,12 +29,12 @@ export function IdentityBand({
   label,
   count,            // optional — number or pre-formatted string (e.g. "23 upcoming · 7 archived")
   action,           // optional — JSX rendered on the right (e.g. a +New button)
-  tone = "green",   // "green" | "dark"
+  tone = "olive",   // "olive" | "dark" | "green" (alias for olive)
   isMobile = false,
   pad,              // parent scroll container's horizontal padding (number, px). For full bleed.
 }) {
   const isDark = tone === "dark";
-  const bg = isDark ? "var(--text1)" : "var(--accent-positive)";
+  const bg = isDark ? "var(--text1)" : "var(--brand-olive)";
   const fg = isDark ? "var(--bg)"    : "#ffffff";
   const subOpacity = isDark ? 0.55 : 0.75;
 
