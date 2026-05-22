@@ -163,29 +163,96 @@ export function SearchResultsView({
 }) {
   const q = (search || "").trim().toLowerCase();
 
+  // PR 2026-05-22 (task #11): local Brand + Price filters scoped to
+  // this surface. Mark spec: "If I search submariner it could be a
+  // tudor or rolex. maybe i want dive watch... then filter by
+  // brand/source etc." Local state so filters reset when the user
+  // exits Search-all — these are ad-hoc disambiguators, not durable
+  // preferences. Brand multi-select; Price as min/max text inputs
+  // (same shape as the global filter row).
+  const [selBrands, setSelBrands] = useState([]);
+  const [minPriceText, setMinPriceText] = useState("");
+  const [maxPriceText, setMaxPriceText] = useState("");
+  const minPrice = useMemo(() => {
+    if (!minPriceText) return 0;
+    return parseInt(minPriceText.replace(/[^0-9]/g, ""), 10) || 0;
+  }, [minPriceText]);
+  const maxPrice = useMemo(() => {
+    if (!maxPriceText) return Number.POSITIVE_INFINITY;
+    return parseInt(maxPriceText.replace(/[^0-9]/g, ""), 10) || Number.POSITIVE_INFINITY;
+  }, [maxPriceText]);
+  const toggleBrand = (b) =>
+    setSelBrands(prev => prev.includes(b) ? prev.filter(x => x !== b) : [...prev, b]);
+  const clearFilters = () => {
+    setSelBrands([]);
+    setMinPriceText("");
+    setMaxPriceText("");
+  };
+  const matchesFilters = (i) => {
+    if (selBrands.length > 0 && !selBrands.includes(i.brand)) return false;
+    if (minPriceText || maxPriceText) {
+      // Use priceUSD for cross-currency comparison; items without
+      // priceUSD survive the price filter (don't penalise for
+      // missing data).
+      const p = i.priceUSD;
+      if (p != null) {
+        if (p < minPrice || p > maxPrice) return false;
+      }
+    }
+    return true;
+  };
+
   const liveListings = useMemo(() => {
     const arr = mainFeedItems.filter(i =>
       !i.sold && !hidden[i.id]
       && !i._isAuctionFormat && !i._isTrackedLot
       && matchesQuery(i, q)
+      && matchesFilters(i)
     );
     return arr;
-  }, [mainFeedItems, hidden, q]);
+  }, [mainFeedItems, hidden, q, selBrands, minPrice, maxPrice]); // eslint-disable-line
 
   const liveAuctions = useMemo(() => {
     const arr = auctionLotItems.filter(i =>
       !i.sold && !hidden[i.id] && matchesQuery(i, q)
+      && matchesFilters(i)
     );
     return arr;
-  }, [auctionLotItems, hidden, q]);
+  }, [auctionLotItems, hidden, q, selBrands, minPrice, maxPrice]); // eslint-disable-line
 
   const soldItems = useMemo(() => {
     const arr = [
       ...mainFeedItems.filter(i => i.sold),
       ...auctionLotItems.filter(i => i.sold),
-    ].filter(i => !hidden[i.id] && matchesQuery(i, q));
+    ].filter(i => !hidden[i.id] && matchesQuery(i, q) && matchesFilters(i));
     return arr;
+  }, [mainFeedItems, auctionLotItems, hidden, q, selBrands, minPrice, maxPrice]); // eslint-disable-line
+
+  // Available brand chips — top brands across the un-brand-filtered
+  // matched set, sorted by total hit count (Live + Auctions + Sold).
+  // Computed without selBrands so the chip list stays stable when
+  // the user toggles a chip (otherwise toggling a brand off would
+  // drop other brands from the list — confusing UX).
+  const availableBrands = useMemo(() => {
+    if (!q) return [];
+    const tally = new Map();
+    const tick = (i) => {
+      if (!i || !i.brand) return;
+      tally.set(i.brand, (tally.get(i.brand) || 0) + 1);
+    };
+    for (const i of mainFeedItems) {
+      if (hidden[i.id]) continue;
+      if (matchesQuery(i, q)) tick(i);
+    }
+    for (const i of auctionLotItems) {
+      if (hidden[i.id]) continue;
+      if (matchesQuery(i, q)) tick(i);
+    }
+    return Array.from(tally.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([brand, count]) => ({ brand, count }));
   }, [mainFeedItems, auctionLotItems, hidden, q]);
+  const hasFilters = selBrands.length > 0 || !!minPriceText || !!maxPriceText;
 
   // PR_φ2 2026-05-22: article matches across the editorial corpus.
   // App.js lazy-fetches the source JSONs the first time
@@ -328,6 +395,95 @@ export function SearchResultsView({
             </button>
           )}
         </div>
+        {/* Filter row — Brand chips + Price min/max. Local-state
+            filters scoped to this surface; Mark spec: "submariner
+            could be Tudor or Rolex — filter by brand / source etc."
+            Brand chips show the top brands present in the matched
+            corpus; click to toggle multi-select. Price uses USD as
+            the cross-currency bridge (matches Listings filter row).
+            Skip the row entirely when there's no query yet (nothing
+            to filter). */}
+        {q && (availableBrands.length > 0 || hasFilters) && (
+          <div style={{
+            marginTop: 10,
+            display: "flex", alignItems: "center", gap: 8,
+            flexWrap: "wrap",
+          }}>
+            {availableBrands.slice(0, 8).map(({ brand, count }) => {
+              const active = selBrands.includes(brand);
+              return (
+                <button key={brand}
+                  onClick={() => toggleBrand(brand)}
+                  style={{
+                    fontFamily: "inherit", fontSize: 12,
+                    padding: "5px 11px", borderRadius: 999, cursor: "pointer",
+                    background: active ? "var(--brand-olive-text)" : "transparent",
+                    color: active ? "#fff" : "var(--text2)",
+                    border: `0.5px solid ${active ? "var(--brand-olive-text)" : "var(--border)"}`,
+                    fontWeight: active ? 600 : 500,
+                    whiteSpace: "nowrap",
+                  }}>
+                  {brand}
+                  <span style={{
+                    marginLeft: 6,
+                    color: active ? "rgba(255,255,255,0.8)" : "var(--text3)",
+                    fontVariantNumeric: "tabular-nums",
+                  }}>
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
+            {/* Price — two slim inputs side by side. Same chrome as
+                the Listings filter row's price popover. USD-based
+                comparison. */}
+            <div style={{
+              display: "inline-flex", alignItems: "center", gap: 6,
+              padding: "3px 4px 3px 10px", borderRadius: 999,
+              border: "0.5px solid var(--border)",
+              background: "transparent",
+              fontFamily: "inherit",
+            }}>
+              <span style={{ fontSize: 12, color: "var(--text3)", whiteSpace: "nowrap" }}>$</span>
+              <input
+                type="text"
+                inputMode="numeric"
+                value={minPriceText}
+                onChange={e => setMinPriceText(e.target.value)}
+                placeholder="Min"
+                style={{
+                  width: 56, fontFamily: "inherit", fontSize: 12,
+                  border: "none", outline: "none", background: "transparent",
+                  color: "var(--text1)", padding: "3px 0",
+                }}
+              />
+              <span style={{ fontSize: 12, color: "var(--text3)" }}>–</span>
+              <input
+                type="text"
+                inputMode="numeric"
+                value={maxPriceText}
+                onChange={e => setMaxPriceText(e.target.value)}
+                placeholder="Max"
+                style={{
+                  width: 60, fontFamily: "inherit", fontSize: 12,
+                  border: "none", outline: "none", background: "transparent",
+                  color: "var(--text1)", padding: "3px 8px 3px 0",
+                }}
+              />
+            </div>
+            {hasFilters && (
+              <button onClick={clearFilters}
+                style={{
+                  fontFamily: "inherit", fontSize: 12, fontWeight: 500,
+                  background: "transparent", border: "none", cursor: "pointer",
+                  color: "var(--text3)", padding: "5px 4px",
+                  textDecoration: "underline",
+                }}>
+                Clear
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {stripDefs.length === 0 && (
