@@ -3950,7 +3950,7 @@ export default function Watchlist() {
       hidden={hidden}
       primaryCurrency={primaryCurrency}
       pendingChallengeDrillId={pendingChallengeDrillId}
-      clearPendingChallengeDrill={clearPendingChallengeDrill}
+      clearPendingChallengeDrill={() => setPendingChallengeDrillId(null)}
     />
   );
 
