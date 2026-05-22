@@ -855,6 +855,110 @@ def scrape_phillips_lot(url):
     }
 
 
+def scrape_bonhams_lot(url):
+    """Return a dict of fields scraped from one Bonhams lot detail page.
+
+    The lot page embeds __NEXT_DATA__ with rich fields under
+    pageProps.lot:
+      sDesc                  — display title
+      sCatalogDesc           — full catalog essay (the editorial-
+                               quality content for Epic 0)
+      sCondition             — condition report
+      footnote_sExtraDesc    — provenance / literature / notes
+      dEstimateLow / dEstimateHigh
+      dHammerPrice / dHammerPremium   — bare hammer / all-in
+      currency.iso_code      — GBP / USD / HKD / EUR / CHF
+      images[].image_url     — full-resolution photos
+      sLotStatus             — SOLD / BI / WITHDRAWN / etc.
+
+    Mirrors the shape of scrape_christies_lot / scrape_sothebys_lot
+    so this function is interchangeable with them at every call
+    site (manual-URL tracking, future per-lot essay fetches, etc.).
+    """
+    r = requests.get(url, headers=HEADERS, timeout=30)
+    r.raise_for_status()
+    m = re.search(r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>', r.text, re.S)
+    if not m:
+        raise RuntimeError("Bonhams: __NEXT_DATA__ not found on lot page")
+    blob = json.loads(m.group(1))
+    pp = blob.get("props", {}).get("pageProps", {}) or {}
+    lot = pp.get("lot") or {}
+    auction = pp.get("auction") or {}
+
+    def _strip(s):
+        if not s:
+            return ""
+        s = re.sub(r"<br\s*/?>", "\n", s, flags=re.IGNORECASE)
+        s = re.sub(r"</p\s*>", "\n\n", s, flags=re.IGNORECASE)
+        s = re.sub(r"<[^>]+>", "", s)
+        s = (s.replace("&nbsp;", " ").replace("&amp;", "&")
+             .replace("&quot;", '"').replace("&#39;", "'")
+             .replace("&lt;", "<").replace("&gt;", ">"))
+        s = re.sub(r"\n{3,}", "\n\n", s)
+        s = re.sub(r"[ \t]+", " ", s)
+        return s.strip()
+
+    title = (_strip(lot.get("sDesc") or "")[:240]) or "Untitled"
+    catalog_desc = _strip(lot.get("sCatalogDesc") or "")
+    footnote = _strip(lot.get("footnote_sExtraDesc") or "")
+    description = catalog_desc or title
+    if footnote:
+        description = (description + "\n\nNotes:\n" + footnote)[:4000]
+    else:
+        description = description[:4000]
+
+    currency = (lot.get("currency") or {}).get("iso_code") or "USD"
+    low = lot.get("dEstimateLow") or None
+    high = lot.get("dEstimateHigh") or None
+    # Prefer dHammerPremium (realised all-in) over dHammerPrice (bare
+    # hammer) — same call as the enumerate path makes.
+    sold_price = lot.get("dHammerPremium") or None
+    if sold_price == 0:
+        sold_price = None
+
+    lot_status = (lot.get("sLotStatus") or "").upper()
+    is_ended = (
+        lot_status in {"SOLD", "BI", "WITHDRAWN", "UNSOLD", "PASSED"}
+        or sold_price is not None
+    )
+
+    images = lot.get("images") or []
+    image = None
+    for img in images:
+        u = (img.get("image_url") or "")
+        if u.startswith("http"):
+            image = u
+            break
+
+    auction_title = auction.get("sSaleName")
+    dates = auction.get("dates") or {}
+    start_obj = ((dates.get("start") or [{}])[0] or {}).get("date") or {}
+    auction_start = start_obj.get("datetime")
+    auction_end = (dates.get("end") or {}).get("datetime")
+
+    return {
+        "house": "Bonhams",
+        "title": title,
+        "description": description,
+        "currency": currency,
+        "estimate_low": low,
+        "estimate_high": high,
+        "current_bid": None,
+        "sold_price": sold_price,
+        "estimate_low_usd":  to_usd(low,  currency),
+        "estimate_high_usd": to_usd(high, currency),
+        "current_bid_usd":    None,
+        "sold_price_usd":    to_usd(sold_price, currency),
+        "status": "ended" if is_ended else "active",
+        "image": image,
+        "auction_title": auction_title,
+        "auction_start": auction_start,
+        "auction_end":   auction_end,
+        "auction_url":   url.rsplit("/lot/", 1)[0] + "/" if "/lot/" in url else None,
+        "scraped_at":    time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+    }
+
+
 def scrape_monaco_legend_lot(url):
     """Return a dict of fields scraped from one Monaco Legend lot page.
 
