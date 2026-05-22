@@ -106,6 +106,13 @@ const EDITORIAL_SOURCE_URLS = [
   "/screwdowncrown.json",
   "/fratello.json",
 ];
+// Body-text companion URLs (each meta JSON has a sibling *_bodies.json
+// per editorial_corpus_io.py's split). Lazy-loaded on first
+// keystroke in the Search-all input so Mark's "submariner" query
+// matches articles where the term only appears in the body.
+const EDITORIAL_BODY_URLS = EDITORIAL_SOURCE_URLS.map(u =>
+  u.replace(/\.json$/, "_bodies.json")
+);
 // Hodinkee Shop archive — frozen since Feb 2023 (Hodinkee shut the
 // vintage-watch shop). 2,346 products, 99.96% sold. Per-product
 // editorial writeup + structured Fine Print (Maker/Model/Reference/
@@ -271,6 +278,17 @@ export default function Watchlist() {
   // attribution without re-importing the EditorialView SOURCES list.
   const [searchAllArticles, setSearchAllArticles] = useState([]);
   const [searchAllArticlesLoaded, setSearchAllArticlesLoaded] = useState(false);
+  // Article body text — lazy-loaded SEPARATELY from meta (~14 MB
+  // vs ~2 MB for meta only). First non-trivial keystroke in the
+  // Search-all input triggers the fetch so the user's title-level
+  // search returns immediately while body matches arrive shortly
+  // after. Mark report 2026-05-22: "when I search submariner in
+  // the editorial tab there are lots of articles. when I search in
+  // the search area it says no articles" — Editorial's lazy body
+  // load was matching against article body_text; Search-all wasn't,
+  // so words that only appear in the body missed.
+  const [searchAllArticleBodies, setSearchAllArticleBodies] = useState({});
+  const [searchAllBodiesLoaded, setSearchAllBodiesLoaded] = useState(false);
   // Sub-tab inside Watchlist > Auction lots: upcoming vs past.
   // Sub-tab on the Watchlist tab. Three values: "listings" (dealer
   // items you've hearted) or "searches" (saved searches editor). The
@@ -822,6 +840,45 @@ export default function Watchlist() {
     })();
     return () => { cancelled = true; };
   }, [searchAllActive, searchAllArticlesLoaded]);
+
+  // Article-body lazy load — fires on the first non-trivial Search-all
+  // query (length >= 2). Bodies are heavy (~14 MB across sources) so
+  // we defer until the user actually types. Once loaded, they stay
+  // in memory for the session; subsequent searches use cached map.
+  // SearchResultsView reads from `searchAllArticleBodies` and merges
+  // body_text into the article match haystack.
+  useEffect(() => {
+    if (!searchAllActive || searchAllBodiesLoaded) return;
+    const q = (search || "").trim();
+    if (q.length < 2) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const fetched = await Promise.all(
+          EDITORIAL_BODY_URLS.map(async (url) => {
+            try {
+              const r = await fetch(url);
+              if (!r.ok) return null;
+              return await r.json();
+            } catch (e) {
+              console.warn("editorial bodies fetch failed", url, e);
+              return null;
+            }
+          })
+        );
+        if (cancelled) return;
+        const merged = {};
+        for (const obj of fetched) {
+          if (obj && typeof obj === "object") Object.assign(merged, obj);
+        }
+        setSearchAllArticleBodies(merged);
+        setSearchAllBodiesLoaded(true);
+      } catch (e) {
+        console.warn("editorial bodies aggregate fetch failed", e);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [searchAllActive, searchAllBodiesLoaded, search]);
   // Tracks the URL of the auction whose "Add to list" / "Review"
   // mutation is currently in flight so the calendar row buttons
   // can show disabled state. Single-slot — we don't expect two
@@ -3489,6 +3546,7 @@ export default function Watchlist() {
       setSearch={setSearch}
       mainFeedItems={mainFeedItems}
       articles={searchAllArticles}
+      articleBodies={searchAllArticleBodies}
       auctionLotItems={auctionLotItems}
       isMobile={isMobile}
       gridStyle={gridStyle}
