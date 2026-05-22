@@ -292,3 +292,155 @@ brand row, grey section-header treatment in Lists view), PR_W v2
 to add Editorial to Search all, and the per-reference page pilot
 from Epic 0. Branch state is clean (all 27 PRs squash-merged with
 `--delete-branch`).
+
+---
+
+## Addendum — afternoon session (2026-05-22 PT)
+
+After the morning handoff (#456), Mark and I continued through a
+desktop chrome overhaul + a density pass. **12 more PRs landed.**
+
+### Five additional arcs
+
+1. **End-of-session polish backlog → shipped (PRs #457/#458/#459).**
+   The three δ items from the morning's "carried forward" list:
+   - PR_δ1: grey fill dropped from Lists section headers
+     (typographic uppercase letter-spaced labels).
+   - PR_δ2: WATCHLIST wordmark on Home in olive via the new
+     `--brand-olive-text` token (full olive light / lighter sage
+     `#a8b3a0` in dark mode).
+   - PR_δ3: mobile brand row wordmark 600 → 700 + 12%-white
+     hairline below to anchor wordmark+M on olive without a third
+     band color.
+
+2. **Desktop chrome overhaul — ε series (PRs #460/#461/#462/
+   #463/#464/#465).** The wide-ranging direction Mark asked for:
+   bring olive to desktop in a way that maintains site-wide
+   consistency.
+   - PR_ε0: Editorial sticky filter `top: 40 → 0` (the 40px was
+     reserved for a subStrip lifted to the shell in PR_Y3;
+     became a transparent gap). Fixes Mark's transparency report.
+   - PR_ε1: Desktop main tabs filled-pill → underline via
+     tabPill. Same metaphor as mobile + every sub-tab strip.
+   - PR_ε1.5: Top-bar expanding search (icon → 320px input + `/`
+     shortcut). Replaces the filter-row search composite from
+     PR_V. Editorial inline search reverts to single source.
+   - PR_ε2: Olive top bar on desktop non-Home tabs — the visual
+     centerpiece. White-on-olive wordmark (700), tabs, About,
+     Watchbox pill. Avatar disc INVERTS on olive (white disc +
+     olive letter); fixes the ε5 mobile regression where olive
+     disc on already-olive mobile chrome was invisible.
+   - PR_ε3: Filter pill consistency — drop `surface: true` from
+     Date/Price/Sort so all pills share the PR_γ ghost-active
+     pattern.
+   - PR_ε5: Olive accents on M circle, Watchbox dropdown disc,
+     ADMIN badge, and VIEW SETTINGS active pills. Single brand
+     color across user-affordance surfaces.
+
+3. **Search bar placement — resolved (PR_ε1.5).** After Mark
+   flagged "still not sold on where the search bar goes", my
+   expert recommendation was top-bar expanding inline input (over
+   right-of-pills, between-pills, separate-line). Mark approved.
+   Shipped. Mobile keeps the Spotify overlay from PR_Z.
+
+4. **Surface-fill cleanup pattern extended (PRs #466/#467).**
+   Mark screenshotted multiple grey-filled containers across the
+   app:
+   - Home Screen CTA reshaped from brand-blue → outline pill +
+     ▶ glyph (matches sibling View-all).
+   - Watchbox stat cards (Collection count / Total value):
+     typographic-only, value bumped 18 → 22.
+   - About modal feature cards: hairline top-rules between cards,
+     no surface fill.
+   - User dropdown Watchbox CTA + VIEW SETTINGS container: drop
+     surface fill, keep border on Watchbox CTA, replace VIEW
+     SETTINGS container with a hairline top-rule.
+
+5. **Density pass (PR #468).** Mark report: "for a whole screen I
+   can only see one row of watches feels poor value." Three changes
+   reclaim ~30-40px above the fold:
+   - Date dividers (App.js visibleWithDividers): drop chunky
+     surface bg + 14-28px padding. Convert to typographic uppercase
+     letter-spaced label. Saves ~18-28px per divider.
+   - Filter row vertical padding 8 → 6px.
+   - Source/Brand/Model expansion panel bottom 24 → 14.
+
+### Architectural decisions worth keeping in mind (additions)
+
+#### Desktop olive top bar is a contextual chrome, mobile mirrors
+
+Both shells now have `tab !== "home" → olive bg` as the chrome
+rule. Desktop bar contents flip via `topBarOnOlive` derived from
+`tab`, mobile bar contents flip via the existing mobile chrome
+pattern. The single rule is: **olive chrome on every tab except
+Home, both viewports.** Same dynamic PWA theme-color logic from
+PR #451 still applies.
+
+#### Avatar disc has TWO color states based on chrome context
+
+```
+On olive top bar (tab !== "home"):  white disc + olive letter
+On neutral top bar (tab === "home"): olive disc + white letter
+```
+
+Implemented as a wrapping IIFE in App.js's authJSX so the
+olive-aware tokens (discBg / discFg / pillBorder / pillText /
+pillOpenBg) are computed once and used by both desktop pill and
+mobile circle. **If you add a new context where the chrome bg
+flips, mirror this pattern** — don't duplicate the conditional.
+
+#### `--brand-olive-text` token for text-on-bg olive
+
+`#3b4a36` (light mode, full olive) / `#a8b3a0` (dark mode, lighter
+sage). Used for the Home WATCHLIST wordmark; available for any
+other olive-text-on-page-bg surface. **Don't use `var(--brand-olive)`
+for text in light mode** — the contrast on white is fine, but in
+dark mode `#3b4a36` is unreadable on `#000`. Always reach for
+`var(--brand-olive-text)` when the surface needs text-on-bg olive.
+
+#### Top-bar search is the single source of truth
+
+Lives in DesktopShell as `topBarSearchJSX`. Same `search` state
+threads through every surface (Listings filter, Editorial filter,
+Saved-search runners). The `/` keyboard shortcut expands it from
+anywhere except when an input is already focused. Editorial's
+inline input (PR #442) is gone — don't reintroduce.
+
+### Status of the original carried-forward queue
+
+- ✅ Mark's three end-of-session polish items (δ1/δ2/δ3)
+- ✅ PR_W → PR_ε1.5 superseded the cross-tab search work; search
+  now lives in the top bar with the strip view available via
+  "Search all" target. Editorial-strip-in-Search-all (v2) is
+  still queued.
+- 🟡 Per-reference page pilot from Epic 0 — not started.
+
+### Active polish backlog (carried into next session)
+
+| Item | Notes |
+|---|---|
+| **PR_ε4 polish + dark-mode audit** | Needs Mark's eyes on the live site. The ε series shipped a lot of color changes; an audit pass would catch any dark-mode regressions or contrast issues. |
+| **Editorial strip in Search all (PR_W v2)** | Lift EditorialView's article corpus to App.js so SearchResultsView can render a 4th strip. ~Half-day. |
+| **Reference page pilot (Epic 0)** | Pick one of Rolex GMT-Master 1675 (65 articles), Omega Speedmaster 145.022 (35), Rolex Submariner 5513 (67) and build the surface. |
+
+### PR_ε naming key (for grep in future sessions)
+
+The ε series followed a non-linear naming because Mark approved
+δ1.5/ε1.5/ε2/ε3/ε5 in that order. The final landed PRs:
+
+| Branch | PR # | Description |
+|---|---|---|
+| pr-e0-* | #460 | Editorial sticky transparency fix |
+| pr-e1-* | #461 | Desktop main tab underline |
+| pr-e1-5-* | #462 | Top-bar expanding search |
+| pr-e5-* | #463 | Olive M circle + dropdown |
+| pr-e2-* | #464 | Olive top bar on desktop |
+| pr-e3-* | #465 | Filter pill consistency |
+
+ε4 (polish + dark mode) deferred to next session — needs visual.
+
+### Total session PR count
+
+**~40 PRs squash-merged in this session** (counting both morning
+and afternoon, plus the original handoff PR). Branch state still
+clean (all delete-branched on merge).
