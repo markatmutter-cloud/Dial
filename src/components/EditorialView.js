@@ -202,11 +202,17 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
   // same grid sizing the Listings tab uses. ArticleCard adapts its
   // typography + excerpt density to `compact` so a 7-col packed grid
   // still reads cleanly.
-  const effectiveCols = cols || (isMobile ? 1 : 3);
-  const articleGridStyle = gridStyle || {
+  // PR 2026-05-22 magazine redesign: cap at 3 cols on desktop, 1 col
+  // on mobile (Vogue/Hodinkee pattern). The site-wide useViewSettings
+  // grid can go denser for the Listings feed where small tiles work;
+  // Editorial intentionally stays sparser so the serif title + image
+  // breathe. The shared gridStyle prop is ignored here in favour of
+  // an editorial-specific grid with real gaps (no hairline background).
+  const effectiveCols = isMobile ? 1 : 3;
+  const articleGridStyle = {
     display: "grid",
     gridTemplateColumns: `repeat(${effectiveCols}, minmax(0, 1fr))`,
-    gap: 12,
+    gap: isMobile ? 28 : 36,
   };
 
   const [loading, setLoading] = useState(true);
@@ -709,21 +715,17 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
           grid stays as the visual cue that these are surfaced
           items; no label slab needed. */}
       {showFeatured && featured.length > 0 && (
-        <div style={{ marginBottom: 24 }}>
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: isMobile
-              ? "repeat(2, minmax(0, 1fr))"
-              : `repeat(${Math.min(4, FEATURED_COUNT)}, minmax(0, 1fr))`,
-            gap: isMobile ? 10 : 12,
-          }}>
+        <div style={{ marginBottom: isMobile ? 32 : 48 }}>
+          {/* Featured strip uses the same 3-col magazine layout as
+              the year-grouped grid below — Vogue/Hodinkee top-of-
+              page pattern. Mobile keeps 1-col so the hero card
+              breathes; the rest of the featured set scrolls below. */}
+          <div style={articleGridStyle}>
             {featured.map(a => (
               <ArticleCard
                 key={"featured-" + a.url}
                 article={a}
                 isMobile={isMobile}
-                compact={false}
-                cols={isMobile ? 2 : 4}
                 watchlist={watchlist}
                 handleWish={handleWish}
                 openCollectionPicker={openCollectionPicker}
@@ -769,15 +771,13 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
                 {group.label} <span style={{ fontWeight: 400, color: "var(--text3)" }}>· {group.items.length}</span>
               </button>
               {!collapsed && (
-                <div style={{ marginTop: 10 }}>
-                  <div style={{ ...articleGridStyle, borderRadius: 8, overflow: "hidden" }}>
+                <div style={{ marginTop: isMobile ? 20 : 28 }}>
+                  <div style={articleGridStyle}>
                     {group.items.map(a => (
                       <ArticleCard
                         key={a.url}
                         article={a}
                         isMobile={isMobile}
-                        compact={!!compact}
-                        cols={effectiveCols}
                         watchlist={watchlist}
                         handleWish={handleWish}
                         openCollectionPicker={openCollectionPicker}
@@ -916,15 +916,15 @@ export function ArticleCard({ article, isMobile, compact, cols, watchlist, handl
     }
   };
   const showMenu = !!(openCollectionPicker || handleShare);
-  // Density scaling — shrink typography at high col counts so the
-  // card stays readable inside a narrow tile. The `compact` flag
-  // from useViewSettings fires automatically at cols >= 4. Excerpt
-  // line retired 2026-05-22 — see the JSX block below for context.
-  const dense = compact || (cols && cols >= 5);
-  const veryDense = cols && cols >= 6;
-  const titleFontSize = veryDense ? 12 : (dense ? 13 : 15);
-  const metaFontSize = veryDense ? 9 : (dense ? 10 : 11);
-  const padding = dense ? "8px 10px 10px" : "12px 14px 14px";
+  // PR 2026-05-22 magazine redesign (Mark spec: Vogue/Hodinkee
+  // pattern). Drop card border + surface bg — cards float on the
+  // page background. Uppercase letter-spaced kicker (source name)
+  // above a serif title. Tiny uppercase letter-spaced byline below.
+  // The density-mode complexity (dense / veryDense scaling) is
+  // retired alongside the multi-col grid; the parent grids now
+  // cap at 3 cols on desktop / 1 on mobile so a single card size
+  // works everywhere.
+  const SERIF_TITLE = "'Hoefler Text', 'Garamond', 'Georgia', 'Times New Roman', serif";
 
   return (
     <div style={{ position: "relative", height: "100%" }}>
@@ -937,19 +937,16 @@ export function ArticleCard({ article, isMobile, compact, cols, watchlist, handl
         flexDirection: "column",
         textDecoration: "none",
         color: "inherit",
-        background: "var(--surface)",
-        border: "0.5px solid var(--border)",
-        borderRadius: dense ? 6 : 8,
-        overflow: "hidden",
         cursor: "pointer",
         height: "100%",
       }}>
       {article.image && (
         <div style={{
           width: "100%",
-          aspectRatio: veryDense ? "1 / 1" : "16 / 10",
-          background: "var(--bg)",
+          aspectRatio: "16 / 10",
+          background: "var(--surface)",
           overflow: "hidden",
+          marginBottom: 12,
         }}>
           <img
             src={article.image}
@@ -964,47 +961,44 @@ export function ArticleCard({ article, isMobile, compact, cols, watchlist, handl
         </div>
       )}
       <div style={{
-        padding,
-        display: "flex", flexDirection: "column", gap: dense ? 4 : 6, flex: 1,
+        display: "flex", flexDirection: "column", gap: 8, flex: 1,
       }}>
+        {/* Kicker — source name in uppercase letter-spaced. */}
         <div style={{
-          display: "flex", justifyContent: "space-between", gap: 8,
-          fontSize: metaFontSize, color: "var(--text3)",
-          textTransform: "uppercase", letterSpacing: 0.4,
+          fontSize: 10, fontWeight: 600,
+          letterSpacing: "0.14em",
+          textTransform: "uppercase",
+          color: "var(--text3)",
         }}>
-          <span style={{
-            overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-          }}>{sourceLabel}</span>
-          <span style={{ flexShrink: 0 }}>{dateStr}</span>
+          {sourceLabel}
         </div>
+        {/* Serif title — magazine voice. fontWeight 400 reads
+            heavier on serif than sans; bumping past 500 starts to
+            feel chunky. lineClamp 3 lines so longer titles wrap
+            without ballooning the card height. */}
         <div style={{
-          fontSize: titleFontSize, fontWeight: 600, lineHeight: 1.3,
+          fontFamily: SERIF_TITLE,
+          fontSize: isMobile ? 22 : 20,
+          fontWeight: 400,
+          lineHeight: 1.22,
           color: "var(--text1)",
           display: "-webkit-box",
-          WebkitLineClamp: veryDense ? 3 : (dense ? 3 : 4),
+          WebkitLineClamp: 3,
           WebkitBoxOrient: "vertical",
           overflow: "hidden",
         }}>{article.title}</div>
-        {article.author && !veryDense && (
-          <div style={{ fontSize: dense ? 11 : 12, color: "var(--text2)" }}>
-            {article.author}
-          </div>
-        )}
-        {/* Excerpt retired 2026-05-22 (Mark spec): "the cards have a
-            preview of the text in the article - this is on mobile
-            and desktop and makes it look very cluttered. I think
-            just stick with title but search able to pick up text in
-            the articles as well." Body-text search remains intact —
-            bodies are lazy-loaded on first keystroke and matched
-            against `body_text`; cards just don't render the snippet
-            inline. */}
-        {article.brand && !veryDense && (
+        {/* Byline + relative date — tiny uppercase letter-spaced,
+            same eyebrow voice as the kicker. */}
+        {(article.author || dateStr) && (
           <div style={{
-            marginTop: dense ? 2 : 4,
-            fontSize: dense ? 10 : 11,
+            fontSize: 10, fontWeight: 600,
+            letterSpacing: "0.12em",
+            textTransform: "uppercase",
             color: "var(--text3)",
           }}>
-            {article.brand}
+            {article.author ? `By ${article.author}` : null}
+            {article.author && dateStr ? " · " : null}
+            {dateStr || null}
           </div>
         )}
       </div>
@@ -1017,8 +1011,8 @@ export function ArticleCard({ article, isMobile, compact, cols, watchlist, handl
         clipped by the card root's overflow:hidden. */}
     {(handleWish || showMenu) && (
       <div style={{
-        position: "absolute", top: 6, right: 6,
-        display: "flex", flexDirection: "column", gap: 6, zIndex: 2,
+        position: "absolute", top: 8, right: 8, zIndex: 2,
+        display: "flex", flexDirection: "column", gap: 6,
       }}>
         {handleWish && (
           <button
@@ -1026,14 +1020,14 @@ export function ArticleCard({ article, isMobile, compact, cols, watchlist, handl
             aria-label={wished ? "Remove from saved articles" : "Save article"}
             title={wished ? "Saved — tap to remove" : "Save to articles"}
             style={{
-              width: dense ? 26 : 32, height: dense ? 26 : 32,
+              width: 32, height: 32,
               borderRadius: "50%", border: "none", cursor: "pointer",
               background: wished ? "rgba(220,38,38,0.88)" : "rgba(0,0,0,0.32)",
               color: "#fff",
               display: "flex", alignItems: "center", justifyContent: "center",
               padding: 0,
             }}>
-            <HeartIcon filled={wished} size={dense ? 12 : 16} />
+            <HeartIcon filled={wished} size={16} />
           </button>
         )}
         {showMenu && (
@@ -1042,13 +1036,13 @@ export function ArticleCard({ article, isMobile, compact, cols, watchlist, handl
             onClick={onMenuClick}
             aria-label="More actions"
             style={{
-              width: dense ? 26 : 32, height: dense ? 26 : 32,
+              width: 32, height: 32,
               borderRadius: "50%", border: "none", cursor: "pointer",
               background: menuOpen ? "rgba(0,0,0,0.55)" : "rgba(0,0,0,0.32)",
               color: "#fff",
               display: "flex", alignItems: "center", justifyContent: "center",
               padding: 0, fontFamily: "inherit",
-              fontSize: dense ? 14 : 18, lineHeight: 1,
+              fontSize: 18, lineHeight: 1,
             }}>
             ⋯
           </button>
