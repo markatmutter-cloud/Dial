@@ -2797,16 +2797,23 @@ export default function Watchlist() {
       </div>
     ) : (
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        {/* Mobile signed-out About button — uses the same 13/500/0.01em
+            shape as the desktop top-bar About + the tabPill inactive,
+            so chrome typography reads as one family. */}
         <button onClick={() => setAboutModalOpen(true)} style={{
-          fontSize: 12, padding: "4px 10px", borderRadius: 20,
+          fontSize: 13, fontWeight: 500, letterSpacing: "0.01em",
+          padding: "4px 10px", borderRadius: 20,
           border: "none", background: "transparent",
-          color: "var(--text2)", cursor: "pointer", fontFamily: "inherit",
+          color: "var(--text3)", cursor: "pointer", fontFamily: "inherit",
           whiteSpace: "nowrap",
         }}>
           About
         </button>
+        {/* Sign in pill — 13/600 to read as a CTA (active-tab weight),
+            same letter-spacing as the rest of the chrome. */}
         <button onClick={() => setSignInPromptOpen(true)} style={{
-          fontSize: 12, padding: "4px 12px", borderRadius: 20,
+          fontSize: 13, fontWeight: 600, letterSpacing: "0.01em",
+          padding: "4px 12px", borderRadius: 20,
           border: "0.5px solid var(--border)", background: "var(--surface)",
           color: "var(--text1)", cursor: "pointer", fontFamily: "inherit",
           whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: 6,
