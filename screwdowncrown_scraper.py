@@ -3,19 +3,21 @@
 
 ScrewDownCrown (https://www.screwdowncrown.com/) is a watch-collecting
 publication on Substack covering taste, market commentary, etiquette,
-and reference profiles. The publication is partially paywalled —
-this scraper captures ONLY the publicly-accessible (`audience:
-"everyone"`) posts. Paid posts are deliberately skipped here; Mark
-ingests those separately into the personal corpus via the Substack
-account export.
+and reference profiles. The publication is partially paywalled — this
+scraper captures EVERY post (free + paid) published on/after
+MIN_PUBLISHED_DATE. Free posts carry a full body; paid posts carry
+whatever public preview Substack exposes (often a short teaser before
+the paywall). Each record has an `is_paid` flag so the frontend can
+render a lock indicator + route clicks to Substack, which handles the
+actual paywall.
 
 Discovery via Substack's public archive API:
   /api/v1/archive?sort=new&offset=N&limit=20
 
-Each item carries an `audience` field — we filter `everyone` only.
-Then fetch /p/<slug> for the body. Body wrapper is the standard
-Substack `<div class="available-content">` (same shape as the
-personal-export HTML files for parity).
+Each item carries an `audience` field (`everyone` / `only_paid` /
+`founding`). We no longer filter on it — paid posts are link-
+discoverable here; Mark's personal-corpus loader still ingests the
+full paid bodies from his Substack export into a gitignored sibling.
 
 Per Mark spec 2026-05-20: surface this as a regular editorial source
 in the public corpus (same shelf as WOE / Hodinkee / Hairspring) —
@@ -23,6 +25,12 @@ the canonical card link drives traffic to screwdowncrown.com and
 amplifies the publisher's subscription funnel. The `subscribe_url`
 manifest entry on EditorialView's SOURCES powers an optional
 "Subscribe to <publication>" CTA when filtering on this source.
+
+Per Mark spec 2026-05-21: include paid post links so the user can
+discover every article published since 2019. Substack's public archive
+API exposes title / slug / date / cover image / truncated preview
+body for paid posts — we ingest that. Click-through hits Substack's
+paywall as normal.
 
 Incremental: re-fetches only articles missing or >30 days since last
 scrape. Set SCREWDOWNCROWN_FULL_REFRESH=1 to force a full pass.
@@ -115,11 +123,10 @@ ARCHIVE_PAGE_SIZE = 20
 
 # Per Mark spec 2026-05-20: the publication only pivoted to watches in
 # 2019. Pre-2019 content (back to 2012) was on different topics and
-# shouldn't enter the watch-corpus. The current free seed already has
-# no pre-2019 content (older posts are all `audience='only_paid'`), so
-# this filter is defensive — but when the personal-corpus loader
-# ingests Mark's Substack export (which DOES include the paid pre-2019
-# archive), the same MIN_PUBLISHED_DATE must apply.
+# shouldn't enter the watch-corpus. With paid posts now in scope (Mark
+# spec 2026-05-21), this filter actually does work — pre-2019 archive
+# is mostly paid, and it's all off-topic. Same filter applies to the
+# personal-corpus loader when ingesting Mark's Substack export.
 MIN_PUBLISHED_DATE = "2019-01-01"
 
 
@@ -153,37 +160,40 @@ def fetch_archive_page(offset: int) -> list[dict]:
     return data if isinstance(data, list) else []
 
 
-def discover_free_posts() -> list[dict]:
-    """Walk the archive API collecting metadata for `audience=everyone`
-    posts only. Paid posts get a one-line log entry + are skipped. Also
-    skips anything published before MIN_PUBLISHED_DATE — the publication
-    pivoted to watches in 2019 and the older archive is off-topic.
+def discover_posts() -> list[dict]:
+    """Walk the archive API collecting metadata for every post published
+    on/after MIN_PUBLISHED_DATE — both free (`audience='everyone'`) and
+    paid (`'only_paid'` / `'founding'`). The `audience` field is kept on
+    each meta dict so parse_post can flag paid records.
     """
-    free: list[dict] = []
+    posts: list[dict] = []
+    free_count = 0
     paid_count = 0
-    pre_2019_count = 0
+    pre_min_count = 0
     offset = 0
     while True:
         page = fetch_archive_page(offset)
         if not page:
             break
         for post in page:
-            audience = post.get("audience")
-            if audience != "everyone":
-                paid_count += 1
-                continue
             post_date = (post.get("post_date") or "")[:10]
             if post_date and post_date < MIN_PUBLISHED_DATE:
-                pre_2019_count += 1
+                pre_min_count += 1
                 continue
-            free.append(post)
+            audience = post.get("audience")
+            if audience == "everyone":
+                free_count += 1
+            else:
+                paid_count += 1
+            posts.append(post)
         offset += ARCHIVE_PAGE_SIZE
         time.sleep(API_SLEEP)
         if len(page) < ARCHIVE_PAGE_SIZE:
             break
-    print(f"  archive walk: {len(free)} free in-scope, "
-          f"{paid_count} paid (skipped), {pre_2019_count} pre-{MIN_PUBLISHED_DATE[:4]} (skipped)")
-    return free
+    print(f"  archive walk: {len(posts)} in-scope "
+          f"({free_count} free + {paid_count} paid), "
+          f"{pre_min_count} pre-{MIN_PUBLISHED_DATE[:4]} (skipped)")
+    return posts
 
 
 def _walk_balanced_div(html: str, open_idx: int) -> str:
@@ -308,7 +318,14 @@ def parse_post(html: str, meta: dict) -> dict | None:
                 cleaned.append(t)
         body_text = "\n\n".join(cleaned)
 
-    if not body_text or len(body_text) < 200:
+    # Paid posts return only a truncated preview in `available-content`
+    # (Substack paywalls everything after the teaser). Free posts must
+    # meet the 200-char body floor that filters out gallery-only / stub
+    # pages; paid posts are accepted with whatever preview is there
+    # (link discoverability is the goal — body content lives on
+    # Substack behind the paywall).
+    is_paid = meta.get("audience") != "everyone"
+    if not is_paid and (not body_text or len(body_text) < 200):
         return None
 
     resolved = _resolve_brand_and_ref(title)
@@ -323,6 +340,7 @@ def parse_post(html: str, meta: dict) -> dict | None:
         "image": image,
         "body_text": body_text,
         "word_count": len(body_text.split()),
+        "is_paid": is_paid,
         "brand": resolved["brand"],
         "reference_no": resolved["reference_no"],
         "model": resolved["model"],
@@ -353,12 +371,12 @@ def main():
     existing = _load_split(OUTPUT_JSON, OUTPUT_BODIES)
     print(f"  existing entries on disk: {len(existing)}")
 
-    free_posts = discover_free_posts()
-    print(f"\nDiscovered {len(free_posts)} free posts")
+    all_posts = discover_posts()
+    print(f"\nDiscovered {len(all_posts)} posts (free + paid)")
 
     out = dict(existing)
     fetched = skipped = failed = 0
-    for i, post in enumerate(free_posts, 1):
+    for i, post in enumerate(all_posts, 1):
         slug = post.get("slug") or ""
         url = post.get("canonical_url") or f"{BASE}/p/{slug}"
         if not should_refresh(existing.get(url), full_refresh):
@@ -368,12 +386,13 @@ def main():
         record = parse_post(html, post)
         if not record:
             failed += 1
-            print(f"  [{i}/{len(free_posts)}] FAILED: {url}")
+            print(f"  [{i}/{len(all_posts)}] FAILED: {url}")
             time.sleep(DETAIL_SLEEP)
             continue
         out[url] = record
         fetched += 1
-        print(f"  [{i}/{len(free_posts)}] {record['title'][:70]}  ({record['word_count']} words)")
+        paid_tag = " [PAID]" if record.get("is_paid") else ""
+        print(f"  [{i}/{len(all_posts)}] {record['title'][:70]}{paid_tag}  ({record['word_count']} words)")
         time.sleep(DETAIL_SLEEP)
 
     write_split(out, OUTPUT_JSON, OUTPUT_BODIES)
