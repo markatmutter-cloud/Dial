@@ -52,22 +52,23 @@ function EditorialHero({ isMobile, dark }) {
   return (
     <section style={{
       // PR 2026-05-22 γ: top bar suppressed on Home → hero sits at
-      // the top of the viewport. The utility row above the hero now
-      // absorbs the safe-area-inset-top, so this just needs normal
-      // breathing room.
-      padding: isMobile ? "8px 16px 14px" : "22px 16px 22px",
+      // the top of the viewport. PR 2026-05-22 (Mark report
+      // "masthead looks dominating - 50% screen, can't see one row
+      // of watches fully on laptop"): compress the hero so the
+      // first strip lands above the fold on a laptop viewport.
+      padding: isMobile ? "6px 16px 8px" : "8px 16px 12px",
       textAlign: "center",
     }}>
       <div style={{
         display: "flex", justifyContent: "center",
-        marginBottom: isMobile ? 10 : 16,
+        marginBottom: isMobile ? 6 : 8,
       }}>
-        <MoonPhaseIndicator size={isMobile ? 120 : 200} dark={dark} />
+        <MoonPhaseIndicator size={isMobile ? 80 : 110} dark={dark} />
       </div>
       <h1 style={{
-        margin: isMobile ? "0 0 12px" : "0 0 22px",
+        margin: isMobile ? "0 0 6px" : "0 0 10px",
         fontFamily: "inherit",
-        fontSize: isMobile ? 30 : 56,
+        fontSize: isMobile ? 24 : 36,
         fontWeight: 500,
         letterSpacing: isMobile ? "0.14em" : "0.16em",
         // PR_δ2 2026-05-22: wordmark in brand olive — threads the brand
@@ -79,15 +80,11 @@ function EditorialHero({ isMobile, dark }) {
       }}>
         Watchlist
       </h1>
-      {/* PR 2026-05-22: olive kicker rule beneath the wordmark.
-          Mark's olive-on-Home experiment (#450) was reverted because
-          full olive chrome clashed with the moonphase disc's white
-          bg. This narrower accent — short olive bar, centered —
-          gives the brand thread without flooding the page. Replaces
-          the previous 0.5px border-color hairline. */}
+      {/* Short olive kicker rule (PR #501) — tightened to read as
+          a continuation of the wordmark rather than a separator. */}
       <div style={{
         height: 2,
-        width: isMobile ? 56 : 88,
+        width: isMobile ? 44 : 64,
         background: "var(--brand-olive-text)",
         margin: "0 auto",
       }} />
@@ -484,15 +481,16 @@ function SectionStrip({ heading, descriptor, items, onViewAll, onScreen, screenC
               skipped past the section labels entirely. */}
           <h2 style={{
             margin: 0,
-            // PR_γ 2026-05-22: serif touch on Home strip headings —
-            // gives the strips ("Recently added", "Recently hearted",
-            // "Recently sold", "Ending next at auction") an editorial
-            // pulse. System serif stack — no new typefaces shipped.
-            fontFamily: "Georgia, 'Iowan Old Style', 'Times New Roman', serif",
-            fontSize: isMobile ? 18 : 24,
-            fontWeight: 500,
+            // PR 2026-05-22: drop the serif on Home strip headings —
+            // it diverged from every other tab's sans treatment and
+            // Mark flagged the inconsistency. Strip headings now use
+            // the inherited system stack, same as Listings / Watchlist
+            // / Editorial section labels.
+            fontFamily: "inherit",
+            fontSize: isMobile ? 16 : 18,
+            fontWeight: 600,
             color: headingColor,
-            letterSpacing: "-0.2px",
+            letterSpacing: "0.01em",
           }}>
             {heading}
           </h2>
@@ -515,32 +513,13 @@ function SectionStrip({ heading, descriptor, items, onViewAll, onScreen, screenC
             this in-context affordance (Mark spec: "I want it to not
             have a grey bar at the top"). */}
         <div style={{ flexShrink: 0, display: "inline-flex", alignItems: "center", gap: 8 }}>
-          {onScreen && screenCount > 0 && !isMobile && (
-            // Desktop-only since 2026-05-17 (Mark spec): mobile Home
-            // dropped the Screen pill — was queued from the
-            // 2026-05-16 desktop-audit session as "remove Review
-            // button from Home on mobile, keep on desktop" but
-            // hadn't shipped.
-            <button onClick={onScreen}
-              style={{
-                // PR_screen 2026-05-22: reshape as an outline pill to
-                // match the sibling "View all" CTA. Drops the loud
-                // brand-blue fill which clashed with Home's neutral +
-                // olive-accent palette (Mark feedback 2026-05-22:
-                // "blue button feels like it no longer fits — better
-                // pill ui/color").
-                cursor: "pointer", fontFamily: "inherit",
-                fontSize: 12, fontWeight: 600, letterSpacing: "0.04em",
-                padding: "8px 14px", borderRadius: 999,
-                border: `0.5px solid ${inverted ? "var(--text-on-dark-3)" : "var(--text2)"}`,
-                background: "transparent",
-                color: viewAllColor,
-                display: "inline-flex", alignItems: "center", gap: 6,
-              }}>
-              <span aria-hidden style={{ fontSize: 10 }}>▶</span>
-              Screen
-            </button>
-          )}
+          {/* Screen pill retired from Home 2026-05-22 (Mark spec).
+              Screener still reachable via auction catalogs + the
+              feed-screening entry remains wired (openFeedScreener
+              prop still flows through for the per-strip button if
+              re-enabled in future). Home strips now lead with View
+              all only — cleaner header, matches the editorial-
+              section pattern the rest of the site uses. */}
           <button onClick={onViewAll}
             style={{
               cursor: "pointer", fontFamily: "inherit",
@@ -874,12 +853,12 @@ export function HomeTab(props) {
         marginLeft: -shellPad,
         marginRight: -shellPad,
         background: "var(--brand-olive-tint-12)",
-        padding: isMobile ? "10px 16px 14px" : "12px 20px 18px",
-        marginBottom: isMobile ? 20 : 32,
+        padding: isMobile ? "8px 16px 10px" : "10px 20px 12px",
+        marginBottom: isMobile ? 16 : 22,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        gap: isMobile ? 10 : 14,
+        gap: isMobile ? 8 : 10,
       }}>
         {homeMastheadTabs && (
           <div style={{
