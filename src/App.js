@@ -1146,6 +1146,11 @@ export default function Watchlist() {
     "--border": "rgba(255,255,255,0.1)", "--text1": "#f5f5f7",
     "--text2": "#98989d", "--text3": "#48484a",
     "--brand": "#185FA5", "--danger": "#c0392b", "--accent-positive": "#1b8f3a",
+    // Brand olive — the favicon hourglass background. Used as the
+    // identity band tone for Listings + Watchlists (PR_Y1, Mark
+    // feedback 2026-05-21: the bright --accent-positive green didn't
+    // match the favicon).
+    "--brand-olive": "#3b4a36",
     // Brand-tint surfaces (subtle fills behind icons, chips, hover
     // states) and the gold accent used for status / warning hints
     // (Plan view over-budget, admin "earning its keep" chip, etc.).
@@ -1177,6 +1182,11 @@ export default function Watchlist() {
     "--border": "rgba(0,0,0,0.09)", "--text1": "#1d1d1f",
     "--text2": "#6e6e73", "--text3": "#aeaeb2",
     "--brand": "#185FA5", "--danger": "#c0392b", "--accent-positive": "#1b8f3a",
+    // Brand olive — the favicon hourglass background. Used as the
+    // identity band tone for Listings + Watchlists (PR_Y1, Mark
+    // feedback 2026-05-21: the bright --accent-positive green didn't
+    // match the favicon).
+    "--brand-olive": "#3b4a36",
     "--brand-tint-08": "rgba(24,95,165,0.08)",
     "--brand-tint-10": "rgba(24,95,165,0.10)",
     "--brand-tint-12": "rgba(24,95,165,0.12)",
@@ -3150,18 +3160,20 @@ export default function Watchlist() {
     if (tab === "home") return null;
     if (shareActive || challengeShareActive || listShareActive) return null;
 
-    const greenTone = "green";
+    // Olive (favicon-hourglass background) for Listings + Watchlists;
+    // dark slab for Collecting (matches retired FEATURED).
+    const oliveTone = "olive";
     const darkTone  = "dark";
 
     if (tab === "listings") {
       if (listingsSubTab === "live") {
-        return <IdentityBand tone={greenTone} label="Live listings" count={allFiltered.length} isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
+        return <IdentityBand tone={oliveTone} label="Live listings" count={allFiltered.length} isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
       }
       if (listingsSubTab === "auctions") {
-        return <IdentityBand tone={greenTone} label="Live auctions" count={allFiltered.length} isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
+        return <IdentityBand tone={oliveTone} label="Live auctions" count={allFiltered.length} isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
       }
       if (listingsSubTab === "sold") {
-        return <IdentityBand tone={greenTone} label="Archive" count={`${allFiltered.length.toLocaleString()} sold`} isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
+        return <IdentityBand tone={oliveTone} label="Archive" count={`${allFiltered.length.toLocaleString()} sold`} isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
       }
       if (listingsSubTab === "calendar") {
         // Match AuctionCalendar's status fields: live + upcoming
@@ -3169,22 +3181,22 @@ export default function Watchlist() {
         const list = auctions || [];
         const upcoming = list.filter(a => a.status === "live" || a.status === "upcoming").length;
         const archived = list.filter(a => a.status === "past").length;
-        return <IdentityBand tone={greenTone} label="Auction calendar" count={`${upcoming} upcoming · ${archived} archived`} isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
+        return <IdentityBand tone={oliveTone} label="Auction calendar" count={`${upcoming} upcoming · ${archived} archived`} isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
       }
     }
 
     if (tab === "watchlist") {
-      if (watchTopTab === "listings")  return <IdentityBand tone={greenTone} label="Saved listings" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
-      if (watchTopTab === "auctions")  return <IdentityBand tone={greenTone} label="Saved auctions" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
-      if (watchTopTab === "sold")      return <IdentityBand tone={greenTone} label="Saved sold" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
-      if (watchTopTab === "searches")  return <IdentityBand tone={greenTone} label="Saved searches" count={(savedSearchStats || []).length} isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
-      if (watchTopTab === "lists")     return <IdentityBand tone={greenTone} label="Your lists" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
-      if (watchTopTab === "challenges") return <IdentityBand tone={greenTone} label="Challenges" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
-      if (watchTopTab === "wishlist")  return <IdentityBand tone={greenTone} label="Wishlist" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
+      if (watchTopTab === "listings")  return <IdentityBand tone={oliveTone} label="Saved listings" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
+      if (watchTopTab === "auctions")  return <IdentityBand tone={oliveTone} label="Saved auctions" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
+      if (watchTopTab === "sold")      return <IdentityBand tone={oliveTone} label="Saved sold" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
+      if (watchTopTab === "searches")  return <IdentityBand tone={oliveTone} label="Saved searches" count={(savedSearchStats || []).length} isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
+      if (watchTopTab === "lists")     return <IdentityBand tone={oliveTone} label="Your lists" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
+      if (watchTopTab === "challenges") return <IdentityBand tone={oliveTone} label="Challenges" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
+      if (watchTopTab === "wishlist")  return <IdentityBand tone={oliveTone} label="Wishlist" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
     }
 
     if (tab === "watchbox") {
-      return <IdentityBand tone={greenTone} label="Your watchbox" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
+      return <IdentityBand tone={oliveTone} label="Your watchbox" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
     }
 
     if (tab === "references") {
