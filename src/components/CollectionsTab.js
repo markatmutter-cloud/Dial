@@ -1343,6 +1343,17 @@ function ListsView({
   // fullscreen overlay walking through items the current user hasn't
   // reacted to yet. Closed via Done / ESC / completing the queue.
   const [reviewModeOpen, setReviewModeOpen] = useState(false);
+  // Hearted-only filter on the active drill-in (Mark spec 2026-05-22:
+  // "when I'm in a list (like one of the auctions lists) I want to
+  // filter them by hearted items"). Useful for narrowing 300-lot
+  // auction catalogs to the user's saved subset. Local-state — resets
+  // when the user backs out of the drill-in. Toggle pill lives in
+  // the drill-in header. Skipped for Saved (it's all hearted) and
+  // Hidden (the watchlist filter would empty it).
+  const [heartedOnly, setHeartedOnly] = useState(false);
+  // Reset the toggle when switching between lists so a previous
+  // session's filter doesn't carry over.
+  useEffect(() => { setHeartedOnly(false); }, [selectedListId]);
   // Screening v1.2 (2026-05-13). isWide drives inline-on-desktop
   // (vs fullscreen portal on mobile) for the screening surface.
   // screeningResetTick is incremented when the user resets their
@@ -1737,7 +1748,18 @@ function ListsView({
     // source, brand, search) to the drilled-in items so the filter
     // pills above the grid actually narrow the visible set.
     // 2026-05-09 IA pass.
-    const items = applyDrillInFilters(rawItems, filterValues);
+    // PR 2026-05-22: optional "hearted only" narrowing on top of the
+    // shell filters. Skipped for Saved (already all-hearted by
+    // definition) and Hidden (would empty the view). Toggle in the
+    // drill-in header below.
+    const heartedFilterActive = heartedOnly && !isSavedColl && !isHiddenColl;
+    const heartedCount = isSavedColl || isHiddenColl
+      ? rawItems.length
+      : rawItems.reduce((acc, i) => acc + (watchlist[i.id] ? 1 : 0), 0);
+    const filteredRaw = heartedFilterActive
+      ? rawItems.filter(i => !!watchlist[i.id])
+      : rawItems;
+    const items = applyDrillInFilters(filteredRaw, filterValues);
     // Owner-only actions vs collaborator-visible actions. List Sharing
     // v2 / slice 1: SELECT RLS now includes accepted collaborators, so
     // a "selected" list might not be owned by the current user. Gate
@@ -1909,6 +1931,42 @@ function ListsView({
             }}>
               {selected.name}
             </span>
+            {/* Hearted-only toggle pill (PR 2026-05-22 task #9). Most
+                useful on auction-catalog lists (300+ lots → user's
+                saved subset). Hidden when there's nothing to filter
+                — Saved is all-hearted; Hidden would empty. */}
+            {!isSavedColl && !isHiddenColl && heartedCount > 0 && (
+              <button
+                onClick={() => setHeartedOnly(v => !v)}
+                title={heartedOnly
+                  ? `Show all (${rawItems.length})`
+                  : `Show only your hearted items (${heartedCount})`}
+                style={{
+                  display: "inline-flex", alignItems: "center", gap: 6,
+                  flexShrink: 0,
+                  padding: "5px 11px", borderRadius: 999,
+                  cursor: "pointer", fontFamily: "inherit",
+                  fontSize: 12, fontWeight: heartedOnly ? 600 : 500,
+                  background: heartedOnly ? "var(--brand-olive-text)" : "transparent",
+                  color: heartedOnly ? "#fff" : "var(--text2)",
+                  border: `0.5px solid ${heartedOnly ? "var(--brand-olive-text)" : "var(--border)"}`,
+                }}>
+                <svg width="11" height="11" viewBox="0 0 24 24"
+                  fill={heartedOnly ? "currentColor" : "none"}
+                  stroke="currentColor" strokeWidth="2"
+                  strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+                {heartedOnly ? "Hearted" : "Hearted only"}
+                <span style={{
+                  fontSize: 11, fontWeight: 500,
+                  color: heartedOnly ? "rgba(255,255,255,0.85)" : "var(--text3)",
+                  fontVariantNumeric: "tabular-nums",
+                }}>
+                  {heartedCount}
+                </span>
+              </button>
+            )}
             {/* Review + Reset cluster — Mark spec 2026-05-14: pair
                 lives next to the list name (not at the far right
                 with Share) so the relationship between them reads
