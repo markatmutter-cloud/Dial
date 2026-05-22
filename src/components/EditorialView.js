@@ -523,12 +523,10 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
           filter/search bar disappeared on scroll; Listings is fixed).
           Wraps search input + filter strip + expansion panels so the
           whole filter UI stays anchored as the card grid scrolls.
-          z-index sits below ReferencesTab's subStrip (z=25) so when
-          both are stuck they layer correctly (subStrip on top, filter
-          below). `top: 40` matches the tabPill subStrip height — keeps
-          the two sticky bands flush instead of overlapping. Brittle
-          to subStrip height changes but the simplest fix that doesn't
-          require lifting the filter chrome out of EditorialView. */}
+          Top: 0 (PR_ε0 2026-05-22). Previously top: 40 to clear an
+          in-component subStrip — that subStrip lifted to the shell
+          in PR_Y3 (2026-05-21), so the 40px offset became a
+          transparent gap where content scrolled through. */}
       {/* The sticky wrapper extends edge-to-edge via negative
           horizontal margins through the scroll container's padding
           — without that, the wrapper was only as wide as the
@@ -539,7 +537,7 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
           its filter row renders OUTSIDE the scroll container — the
           shell chrome handles full-width naturally. */}
       <div style={{
-        position: "sticky", top: 40, zIndex: 20,
+        position: "sticky", top: 0, zIndex: 20,
         background: "var(--bg)",
         marginLeft: isMobile ? -14 : -20,
         marginRight: isMobile ? -14 : -20,
