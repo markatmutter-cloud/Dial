@@ -255,12 +255,11 @@ export function DesktopShell(props) {
     // pattern (vs the prior floating popover) so all filter controls
     // share the same "tap a pill" interaction.
     const expansionPanelStyle = {
-      // Bottom padding bumped 20 → 28 on 2026-05-14 — Mark report
-      // showed the chip cluster bottom edge clipped against the
-      // border-bottom on the panel. Extra 8px gives the rounded
-      // corners breathing room. Top padding stays 8 — chips visually
-      // anchor to the pill above without much space.
-      padding: "10px 20px 24px",
+      // Bottom padding 24 → 14 on 2026-05-22 (density pass): the
+      // chunky bottom slab was burning ~10px above the fold for no
+      // structural reason. 14px keeps the chip cluster off the
+      // bottom border cleanly.
+      padding: "8px 20px 14px",
       borderBottom: "0.5px solid var(--border)",
       background: "var(--surface)",
       display: "flex", flexWrap: "wrap", gap: 8,
@@ -276,7 +275,7 @@ export function DesktopShell(props) {
     const expandedModel  = activeFilterPop === "model";
     return (
     <>
-    <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 20px",
+    <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 20px",
                   borderBottom: expandedSource || expandedBrand || expandedModel ? "none" : "0.5px solid var(--border)",
                   flexShrink: 0, flexWrap: "wrap", position: "relative" }}>
       {/* Search — leftmost cluster (2026-05-21, Mark spec): in line
