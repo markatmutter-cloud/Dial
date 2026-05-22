@@ -200,8 +200,8 @@ export function ShareReceiver({
         color: "var(--text1)", margin: "0 0 14px", lineHeight: 1.3,
       }}>
         {shareIntent && shareIntent.from
-          ? `${shareIntent.from} sent you a watch on Watchlist.`
-          : "Someone sent you a watch on Watchlist."}
+          ? `${shareIntent.from} thought you'd want to see this.`
+          : "A watch worth a look."}
       </h1>
 
       {sharedItem ? (
@@ -502,8 +502,8 @@ function FocusedShareCard({
           fontSize: 12, color: "var(--text3)", lineHeight: 1.5, marginTop: 4,
         }}>
           {user
-            ? <>Save adds to your default list <strong style={{ color: "var(--text2)" }}>and</strong> a separate <strong style={{ color: "var(--text2)" }}>Shared with me</strong> inbox so you can find it again.</>
-            : <>No account is needed to follow the dealer link. Sign in only if you want to save it for later.</>
+            ? <>Save lands in your hearted list and a <strong style={{ color: "var(--text2)" }}>Shared with me</strong> inbox so it doesn't get lost.</>
+            : <>The dealer link is public — sign in only if you want to keep this for later.</>
           }
         </div>
       </div>
@@ -566,8 +566,9 @@ function OrientationAnchors({ signedIn, onClickAnchor, onSignIn, signInCopy }) {
           margin: "0 0 14px", fontSize: 13, color: "var(--text2)",
           lineHeight: 1.5,
         }}>
-          Watchlist is a vintage watch aggregator from independent dealers and auction houses.
-          One feed to manage watchlists, no ads, and it's free.
+          A working journal for the watches you follow.
+          Dealers, auction houses, editorial — kept in one place,
+          on your terms. No ads, no tracking, no fees.
         </p>
         <div style={{
           display: "flex", flexDirection: "column", gap: 8,

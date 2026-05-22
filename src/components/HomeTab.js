@@ -691,13 +691,13 @@ function ManageCallout({ goToSavedLists, goToMyWatches, goToChallenges, isMobile
         color: "var(--text-on-dark-3)",
         marginBottom: 12,
       }}>
-        Your Watchbox
+        Watchbox
       </div>
       <h2 style={{ margin: 0, fontSize: isMobile ? 22 : 28, fontWeight: 600, color: "#ffffff", letterSpacing: "-0.3px" }}>
-        Your private space for everything you collect
+        The shape of your collecting.
       </h2>
       <p style={{ margin: "10px auto 0", maxWidth: 560, fontSize: 14, color: "var(--text-on-dark-2)", lineHeight: 1.5 }}>
-        Owned watches, what's sold, what's on the wishlist — filed where you can return to them.
+        Owned, sold, wishlisted, shortlisted — kept where you can revisit and rethink.
       </p>
       <div style={{
         display: "flex", justifyContent: "center", alignItems: "center",
