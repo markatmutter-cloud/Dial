@@ -566,9 +566,11 @@ function OrientationAnchors({ signedIn, onClickAnchor, onSignIn, signInCopy }) {
           margin: "0 0 14px", fontSize: 13, color: "var(--text2)",
           lineHeight: 1.5,
         }}>
-          A working journal for the watches you follow.
-          Dealers, auction houses, editorial — kept in one place,
-          on your terms. No ads, no tracking, no fees.
+          <span style={{ fontStyle: "italic", color: "var(--text1)" }}>
+            For people who watch vintage watches.
+          </span>{" "}
+          Search, save, and follow listings from across the vintage
+          watch world.
         </p>
         <div style={{
           display: "flex", flexDirection: "column", gap: 8,
