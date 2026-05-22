@@ -364,10 +364,18 @@ export function shortHash(str) {
 }
 
 export function fmt(price, currency) {
+  // Null-safe: kind='article' items have price:null (no transaction
+  // attached to an editorial post) and can reach Card via the Home
+  // "Recently hearted" strip if articles are filtered through. Without
+  // this guard, null.toLocaleString() throws — bug surfaced in
+  // production 2026-05-21 (Mark crash report). Returning "—" keeps the
+  // price slot occupied so the layout doesn't shift.
+  if (price == null) return "—";
   return (CURRENCY_SYM[currency] || "$") + price.toLocaleString();
 }
 
 export function fmtUSD(p) {
+  if (p == null) return "—";
   return "$" + Math.round(p).toLocaleString();
 }
 

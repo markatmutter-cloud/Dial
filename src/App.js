@@ -2116,7 +2116,13 @@ export default function Watchlist() {
     // hearted items get their fresh data; un-hearted items fall back
     // to the snapshot value (the original render-time copy) so the
     // card stays on screen until the next sub-tab change / refresh.
-    let its = Object.values({ ...savedItemsSnapshot, ...watchlist });
+    // Articles (kind='article') share watchlist_items but render via
+    // ArticleCard, not the dealer Card — strip them here so the
+    // listing-only sub-tabs (Saved listings / auctions / sold) never
+    // get an article. The "Saved articles" virtual row in Lists picks
+    // them up via its own kind='article' filter pass.
+    let its = Object.values({ ...savedItemsSnapshot, ...watchlist })
+      .filter(it => it && it.kind !== "article");
     // Tag each entry with its current liveness so we can split into
     // Live/Sold sub-views below. An item is "sold" if the live scrape
     // says it's sold/on-hold OR if it's no longer in the scrape at all
@@ -2791,6 +2797,13 @@ export default function Watchlist() {
     if (!user) return [];
     const arr = Object.values(watchlist || {}).filter(it => {
       if (!it || !it.id) return false;
+      // Articles (kind='article') flow into watchlist_items via the
+      // heart-article primitive (PR #403) but aren't dealer listings —
+      // they have price=null and break Card render. Saved articles are
+      // discoverable via the "Saved articles" virtual row in
+      // Watchlists > Lists; keep them out of the Home strip. (Crash
+      // surfaced in production 2026-05-21.)
+      if (it.kind === "article") return false;
       if (hidden[it.id] || adminHidden.has(it.id) || homeHidden.has(it.id)) return false;
       return true;
     });
