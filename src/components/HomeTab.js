@@ -210,7 +210,7 @@ function HomeSearchBar({ onSubmit, isMobile, dealerSources, onJumpToDealer }) {
                   setMobileOverlay(true);
                 }
               }}
-              onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); fire("live"); } }}
+              onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); fire("all"); } }}
               placeholder={isMobile ? "Reference or brand…" : "Reference, brand, model…"}
               style={{ flex: 1, border: "none", background: "transparent", fontSize: isMobile ? 14 : 15, color: "var(--text1)", outline: "none", fontFamily: "inherit", minWidth: 0, padding: isMobile ? "11px 0" : "13px 0" }}
             />
@@ -222,7 +222,7 @@ function HomeSearchBar({ onSubmit, isMobile, dealerSources, onJumpToDealer }) {
               </button>
             )}
           </div>
-          <button onClick={() => fire("live")}
+          <button onClick={() => fire("all")}
             aria-label="Search"
             style={{
               flexShrink: 0,
@@ -330,7 +330,7 @@ function HomeSearchBar({ onSubmit, isMobile, dealerSources, onJumpToDealer }) {
                 ref={overlayInputRef}
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); fire("live"); } }}
+                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); fire("all"); } }}
                 placeholder="Reference, brand, dealer…"
                 style={{
                   flex: 1, border: "none", background: "transparent",
