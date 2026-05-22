@@ -248,7 +248,7 @@ export function MobileShell(props) {
             PR_W (2026-05-22): also hidden when in cross-tab Search-all
             destination — SearchResultsView has its own header + Exit. */}
         {tab !== "home" && !searchAllActive && (
-        <div style={{ position: "sticky", top: 0, zIndex: 20, background: "var(--bg)" }}>
+        <div data-sticky-chrome style={{ position: "sticky", top: 0, zIndex: 20, background: "var(--bg)" }}>
         {/* Sub-tabs strip — anchored at the TOP of the sticky stack
             2026-05-21 (PR_Y3, Mark feedback). Sub-tabs sit above the
             search row so they read as a continuation of main-nav

@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useRef, useCallback } from "react";
+import React, { useState, useMemo, useEffect, useLayoutEffect, useRef, useCallback } from "react";
 import { useAuth, useWatchlist, useHidden, useAdminHidden, useSearches, useTrackedLots, useCollections, useUserSettings, useUserProfile, isAuthConfigured } from "./supabase";
 import { useEventTelemetry } from "./hooks/useEventTelemetry";
 import { useUserLimit } from "./hooks/useUserLimit";
@@ -50,6 +50,7 @@ import { ConfirmHost } from "./components/ConfirmModal";
 // the repo for git history, no current call site.
 // import { IdentityBand } from "./components/IdentityBand";
 import { SearchResultsView } from "./components/SearchResultsView";
+import DateDivider from "./components/DateDivider";
 import { tabPill, innerToggleButton, actionButton } from "./styles";
 
 // Same-origin paths — Vercel serves everything in /public at the
@@ -1346,6 +1347,38 @@ export default function Watchlist() {
       ? (dark ? darkHome : lightHome)
       : (dark ? oliveDark : oliveLight);
   }, [tab, dark, shareActive, challengeShareActive, listShareActive, searchAllActive]);
+
+  // Measure the sticky chrome height + set `--sticky-top` CSS variable
+  // so DateDivider can lock just below the chrome instead of hiding
+  // behind it (mobile chrome is `position: sticky; top: 0; z-index: 20`
+  // — a divider with `top: 0` would render under it).
+  //
+  // Desktop has no sticky chrome → the selector misses, value stays 0,
+  // dividers lock at viewport top naturally. The ResizeObserver re-fires
+  // when chrome content changes (sub-tab switch, share/search-receive
+  // toggles, viewport resize). Kept ABOVE the loading/loadError early
+  // returns below so the hook count stays stable across the
+  // loading→ready transition (see Things-to-never-do in CLAUDE.md).
+  useLayoutEffect(() => {
+    if (typeof document === "undefined") return;
+    const measure = () => {
+      const chrome = document.querySelector('[data-sticky-chrome]');
+      const h = chrome ? Math.round(chrome.getBoundingClientRect().height) : 0;
+      document.documentElement.style.setProperty('--sticky-top', `${h}px`);
+    };
+    measure();
+    const chrome = document.querySelector('[data-sticky-chrome]');
+    let ro;
+    if (chrome && typeof ResizeObserver !== 'undefined') {
+      ro = new ResizeObserver(measure);
+      ro.observe(chrome);
+    }
+    window.addEventListener('resize', measure);
+    return () => {
+      window.removeEventListener('resize', measure);
+      if (ro) ro.disconnect();
+    };
+  }, [tab, shareActive, challengeShareActive, listShareActive, searchAllActive]);
 
   // Auction lots projected into the main listings feed. Two sources
   // get merged by URL key:
@@ -3307,39 +3340,21 @@ export default function Watchlist() {
   const listingsGridJSX = (
     <>
       {activeFiltersStripJSX}
-      <div style={{ ...gridStyle, borderRadius: 10, overflow: "hidden" }}>
+      {/* Grid wrapper drops `overflow: hidden` + `borderRadius` (was
+          there to clip the hairline-gap background to rounded corners)
+          so the DateDivider inside can `position: sticky` against the
+          page scroll. With overflow:hidden the wrapper became a
+          non-scrolling containment block and sticky bound to it, which
+          meant the divider never stuck. PR 2026-05-22 sticky dividers. */}
+      <div style={gridStyle}>
         {visibleWithDividers.map((entry, idx) => (
           entry.kind === "divider" ? (
-            <div key={`div-${idx}-${entry.label}`} style={{
-              // PR 2026-05-22 redesign: the previous uppercase letter-
-              // spaced treatment (post-density pass) read as a chip
-              // rather than a section header — Mark report "look like
-              // they've gone weird on formatting." Switched to a clean
-              // sentence-case section header (sentence-case, 14/600,
-              // olive accent for the label) with a thin top-rule above
-              // (and no border-bottom) so groups read as separated
-              // sections in an editorial feed, not as floating labels.
-              gridColumn: "1/-1",
-              padding: idx === 0 ? "4px 4px 10px" : "20px 4px 10px",
-              display: "flex", alignItems: "baseline", gap: 12,
-              borderTop: idx === 0 ? "none" : "0.5px solid var(--border)",
-              marginBottom: 6,
-            }}>
-              <span style={{
-                fontSize: 14, fontWeight: 600,
-                color: "var(--brand-olive)",
-                marginTop: idx === 0 ? 0 : 10,
-              }}>
-                {entry.label}
-              </span>
-              <span style={{
-                fontSize: 12, color: "var(--text3)", marginLeft: "auto",
-                fontVariantNumeric: "tabular-nums",
-                marginTop: idx === 0 ? 0 : 10,
-              }}>
-                {entry.total.toLocaleString()}
-              </span>
-            </div>
+            <DateDivider
+              key={`div-${idx}-${entry.label}`}
+              label={entry.label}
+              total={entry.total}
+              isFirst={idx === 0}
+            />
           ) : (
             <Card key={entry.item.id} item={entry.item} wished={!!watchlist[entry.item.id]} onWish={handleWish} compact={compact} onHide={isAdmin ? toggleHide : undefined} isHidden={!!hidden[entry.item.id]} onAddToCollection={user ? openCollectionPicker : undefined} primaryCurrency={primaryCurrency} onShare={handleShare} onView={observeCard} onClickListing={onClickListing} />
           )
