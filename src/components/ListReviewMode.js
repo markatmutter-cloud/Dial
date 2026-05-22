@@ -518,7 +518,12 @@ export function ListReviewMode({
           at the end. Tiny chip row in the screening palette; only
           renders buckets with non-zero counts so a fresh queue
           starts clean. */}
-      {(cumulativeTally.hearted > 0 || cumulativeTally.yes > 0 || cumulativeTally.pass > 0) && (
+      {/* Running tally — Mark feedback 2026-05-22: "don't like the
+          emoji reaction triple icons." Retired on desktop; mobile
+          keeps a slimmer chip row since the vertical stack has the
+          room. Desktop surfaces the same counts inside the right
+          column instead (closer to the action buttons). */}
+      {!isWide && (cumulativeTally.hearted > 0 || cumulativeTally.yes > 0 || cumulativeTally.pass > 0) && (
         <div style={{
           display: "flex",
           gap: 6,
@@ -577,7 +582,11 @@ export function ListReviewMode({
             <div style={{
               position: "relative",
               width: "100%",
-              maxWidth: isWide ? 520 : 380,
+              // PR 2026-05-22 (Mark feedback "image feels too big"):
+              // shrink the desktop card 520 → 400 so the details
+              // column gets equal weight and the horizontal layout
+              // reads as two balanced sides, not image-dominated.
+              maxWidth: isWide ? 400 : 380,
               flexShrink: 0,
               alignSelf: "center",
               zIndex: 1,
@@ -722,10 +731,13 @@ export function ListReviewMode({
               {current.brand && (
                 <div style={{
                   fontFamily: SERIF_DISPLAY_STACK,
-                  fontSize: isWide ? 36 : 26,
+                  // PR 2026-05-22 (Mark feedback "title looks too
+                  // small"): 36 → 52 on desktop so the brand reads
+                  // as the page anchor next to the image.
+                  fontSize: isWide ? 52 : 26,
                   fontWeight: 500, color: "var(--text1)",
-                  lineHeight: 1.1, marginBottom: 6,
-                  letterSpacing: "-0.005em",
+                  lineHeight: 1.05, marginBottom: 8,
+                  letterSpacing: "-0.01em",
                   fontVariantLigatures: "common-ligatures",
                 }}>
                   {current.brand}
@@ -788,12 +800,97 @@ export function ListReviewMode({
                 </div>
               )}
             </a>
+            {/* Desktop-only inline action zone (PR 2026-05-22 Mark
+                spec: "horizontal engagement design... buttons at the
+                bottom of the screen are too big but also feel in the
+                wrong place"). Pass / Yes sit alongside the details
+                column so the user's eye doesn't have to travel from
+                the card to a far-away bottom bar. Undo / Skip
+                demoted to small text links underneath. Mobile keeps
+                the bottom-pinned action bar (vertical-stacking
+                pattern works there). Note: this is OUTSIDE the <a>
+                so clicks on the buttons don't bubble through to
+                "open listing." */}
+            {isWide && (
+              <div style={{
+                width: "100%",
+                maxWidth: 440,
+                marginTop: 4,
+                fontFamily: SANS_STACK,
+              }}>
+                <div style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: 12,
+                }}>
+                  <button onClick={handlePass} style={reactionBtnStyle("pass", myReactionOnCurrent === "❌")}>
+                    <span style={{ fontSize: 18, fontWeight: 300, letterSpacing: 0, marginRight: -2 }}>←</span>
+                    <span>Pass</span>
+                  </button>
+                  <button onClick={handleYes} style={reactionBtnStyle("yes", myReactionOnCurrent === "👍")}>
+                    <span>{mode === "feed" ? "Save" : "Yes"}</span>
+                    <span style={{ fontSize: 18, fontWeight: 300, letterSpacing: 0, marginLeft: -2 }}>→</span>
+                  </button>
+                </div>
+                {/* Secondary nav as quiet text links — much less
+                    visual weight than the primary reaction CTAs. */}
+                <div style={{
+                  display: "flex", alignItems: "center", gap: 16,
+                  marginTop: 12,
+                  fontSize: 12, color: "var(--text3)",
+                }}>
+                  <button onClick={handleUndo} disabled={idx === 0}
+                    style={{
+                      background: "transparent", border: "none",
+                      padding: "4px 0", cursor: idx === 0 ? "default" : "pointer",
+                      fontFamily: SANS_STACK, fontSize: 12,
+                      color: idx === 0 ? "var(--text3)" : "var(--text2)",
+                      opacity: idx === 0 ? 0.5 : 1,
+                      textDecoration: "underline", textUnderlineOffset: 2,
+                      letterSpacing: "0.02em",
+                    }}>
+                    Undo
+                  </button>
+                  <button onClick={handleSkip}
+                    style={{
+                      background: "transparent", border: "none",
+                      padding: "4px 0", cursor: "pointer",
+                      fontFamily: SANS_STACK, fontSize: 12,
+                      color: "var(--text2)",
+                      textDecoration: "underline", textUnderlineOffset: 2,
+                      letterSpacing: "0.02em",
+                    }}>
+                    Skip
+                  </button>
+                  {myReactionOnCurrent && (
+                    <button onClick={handleClearCurrent} style={subtleLinkStyle}>
+                      Remove my reaction
+                    </button>
+                  )}
+                  {/* Inline tally — replaces the retired top-of-page
+                      chip row (Mark didn't like the emoji icons). */}
+                  <span style={{
+                    marginLeft: "auto",
+                    fontSize: 11, color: "var(--text3)",
+                    fontVariantNumeric: "tabular-nums",
+                    letterSpacing: "0.06em",
+                  }}>
+                    {cumulativeTally.hearted > 0 && `${cumulativeTally.hearted} hearted · `}
+                    {cumulativeTally.yes} yes · {cumulativeTally.pass} pass
+                  </span>
+                </div>
+              </div>
+            )}
           </>
         ) : null}
       </div>
 
-      {/* Bottom action bar */}
-      {!done && current && (
+      {/* Bottom action bar — mobile only (PR 2026-05-22 redesign).
+          Desktop moves the buttons inline with the details column
+          above so the user's eye stays in the content. Vertical
+          stacking on mobile keeps the bottom bar as the natural
+          thumb-zone. */}
+      {!done && current && !isWide && (
         <div style={{
           flexShrink: 0,
           borderTop: "0.5px solid var(--border)",
