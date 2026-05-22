@@ -144,11 +144,15 @@ export function DesktopShell(props) {
   );
 
   // Slim row used on non-Home tabs that don't render the full filter
-  // row today. Keeps the search at a consistent vertical position
-  // across the app.
+  // row today. Matches filterRowJSX's outer padding + border + flex
+  // pattern exactly so the search input vertical position is identical
+  // across every tab (Mark feedback 2026-05-21: "feint line and
+  // spacing difference across the tabs").
   const searchOnlyRowJSX = (
-    <div style={{ display: "flex", alignItems: "center", padding: "8px 20px",
-                  borderBottom: "0.5px solid var(--border)", flexShrink: 0 }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 8,
+                  padding: "8px 20px",
+                  borderBottom: "0.5px solid var(--border)",
+                  flexShrink: 0, flexWrap: "wrap" }}>
       {searchComposite}
     </div>
   );
@@ -529,6 +533,11 @@ export function DesktopShell(props) {
       {!anyShareActive && listingsSubTabsJSX}
       {!anyShareActive && watchSubTabsJSX}
       {!anyShareActive && referencesSubTabsJSX}
+      {/* Identity band — moved to chrome stack 2026-05-21 (PR_Y4,
+          Mark spec: "search and filter pills below the black block").
+          Band reads as the section header between sub-tabs and the
+          tools below, rather than scrolling inside the content. */}
+      {!anyShareActive && identityBandJSX}
       {/* watchHeartedToggleJSX is embedded inside filterRowJSX below
           (2026-05-08 — Mark feedback) so the Listings/Auctions/Sold
           pills sit on the same line as Date/Price/$Min/Source/Brand
@@ -575,13 +584,9 @@ export function DesktopShell(props) {
               recipient gets a clean first-impression page. */}
           {!anyShareActive && (
             <>
-              {/* Identity band — colored slab carrying section
-                  identity (label + count). Rendered inside the
-                  scroll container so it bleeds edge-to-edge via the
-                  parent's 20px horizontal padding (negative margins
-                  in IdentityBand) and scrolls with content. App.js
-                  builds the per-tab/sub-tab content; null on Home. */}
-              {identityBandJSX}
+              {/* identityBandJSX moved to chrome stack 2026-05-21
+                  (PR_Y4): sits between sub-tabs and filter row up
+                  there, no longer inside the scroll content. */}
               {/* (Ending-soon pinned section retired 2026-05-04 —
                   Watchlist > Saved auctions sub-tab IS the
                   ending-soon view now.) */}
