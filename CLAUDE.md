@@ -23,7 +23,7 @@ how to behave for the rest of it.
   reference-page editorial coverage, or any recommender-adjacent
   surface.
 - `SESSION_HANDOFF_*.md` — in-flight snapshot per session. **Not durable.**
-  The current one is [SESSION_HANDOFF_2026-05-21.md](SESSION_HANDOFF_2026-05-21.md);
+  The current one is [SESSION_HANDOFF_2026-05-22.md](SESSION_HANDOFF_2026-05-22.md);
   older ones live in `archive/`.
 
 If a gotcha or convention is durable (still true next session), graduate
@@ -843,12 +843,17 @@ slider layout with scroll-snap. Tile sizing differs by viewport
 section on both. Hidden scrollbar (`scrollbarWidth: none`) on
 the wrapper.
 
-**Mobile chrome conventions (PRs #247 / #250 / #252).**
+**Mobile chrome conventions (PRs #247 / #250 / #252; rewritten
+2026-05-22 PR_Y2 series).** Main tabs lifted from the bottom-fixed
+nav into the top stack (no PWA/Safari bottom-area fight). Bottom
+nav retired entirely. Order of mobile chrome (top-to-bottom):
+brand row (wordmark + M circle) → main tabs strip → sub-tabs
+strip (per-tab) → search row → filter row. On Home, brand row +
+main tabs merge into ONE row with `space-between` (M circle on
+the right).
 - Top wordmark row: `padding: "2px 16px 2px"`, no min-height.
-- Bottom nav container: `paddingBottom: "calc(env(safe-area-
-  inset-bottom, 0px) + 4px)"`. PWA mode adds the home-indicator
-  clear via env(); browser mode stays tight.
-- Bottom nav buttons: `padding: "6px 0 4px"`.
+- Wordmark font-weight: 600 small / 500 hero. Bumped 300 → 500 →
+  600 across the session so small-size wordmarks read consistently.
 - Filter-row spacer on filter-less tabs DROPPED — was a hidden
   ~40px placeholder div, read as dead whitespace. Search row's
   bottom border + sub-tab strip's bottom border preserve
@@ -856,6 +861,125 @@ the wrapper.
 - On Home, the hero search bar is rendered only on desktop
   (`!isMobile`); mobile uses the sticky top-bar search to avoid
   duplicate search bars.
+
+**Olive chrome zone (2026-05-22 PRs #445 / #446 / #453).** Color
+token `--brand-olive: #3b4a36` (the favicon hourglass colour) is
+the brand zone on non-Home tabs. On mobile, the chrome zone (brand
+row + main tabs + sub-tab strip) renders on olive — sub-tabs drop
+their `border-bottom` so the whole zone reads as one continuous
+band. Active tab + sub-tab use white-on-olive underline:
+`tabPill(active, { onOlive: isMobile })` returns
+`color: #ffffff` (active) / `rgba(255,255,255,0.65)` (inactive) and
+`borderBottom: 2px solid #ffffff` (active).
+- **Home is the exception** — neutral chrome carries the editorial
+  hero (moonphase eyebrow + WATCHLIST). Olive accents preserve the
+  brand thread (Watchbox CTA block bg, "Search →" button bg). Don't
+  extend olive to Home without an explicit decision — Mark tried it
+  (#450), didn't like it, reverted (#451).
+- **Desktop hasn't picked up olive yet.** Desktop chrome stays
+  neutral as of 2026-05-22. If/when olive moves to desktop, both
+  shells need the same conditional + the `onOlive: true` flag on
+  tabPill.
+
+**Dynamic PWA theme-color via useEffect on App.js (2026-05-22
+PRs #451 / #453).** The iOS PWA strip and Android browser strip
+both read `<meta name="theme-color">` from the document head — it
+can't change per-route via static HTML. Solution: a useEffect in
+App.js watches `tab` + `dark` and updates all three theme-color
+meta tags (default / light / dark) + `<html>.style.background`:
+
+```js
+useEffect(() => {
+  const onHome = tab === "home";
+  const oliveColor = "#3b4a36";
+  const lightHome = "#ffffff";
+  const darkHome = "#1c1c1e";
+  const lightColor = onHome ? lightHome : oliveColor;
+  const darkColor  = onHome ? darkHome  : oliveColor;
+  document.querySelectorAll('meta[name="theme-color"]').forEach((m) => {
+    const media = (m.getAttribute("media") || "").toLowerCase();
+    if (!media) m.setAttribute("content", lightColor);
+    else if (media.includes("light")) m.setAttribute("content", lightColor);
+    else if (media.includes("dark"))  m.setAttribute("content", darkColor);
+  });
+  document.documentElement.style.background = onHome
+    ? (dark ? darkHome : lightHome)
+    : oliveColor;
+}, [tab, dark]);
+```
+
+The `<html>` bg update matters because iOS over-scroll bounce
+reveals the html element's bg (not body's). Without it, scrolling
+past the top of an olive-chrome tab shows a white gap above the
+chrome before springing back.
+
+**Identity bands — RETIRED 2026-05-22 PR #448.** Shipped as a
+colored slab below each sub-tab strip ("LIVE LISTINGS · 3,548" /
+"EDITORIAL" / etc.), iterated through colour + margin + placement,
+then retired once the olive chrome zone took over section
+identity. `identityBandJSX` is set to `null` in App.js but kept
+as a named const so shells can still destructure it without
+conditional logic. `IdentityBand` component file still exists for
+git history. Future tabs / sub-tabs should rely on the colored
+chrome + active sub-tab underline for section identity — **don't
+reintroduce a separate identity band** under the chrome.
+
+**Search row hide rules (post-2026-05-22).** The shell-level search
+row is hidden on:
+- Home (HomeTab has its own hero search).
+- All Watchlists sub-tabs (Saved listings / auctions / sold /
+  searches — Mark spec, "not sure we need search for saved lists").
+- Listings > Auction calendar (no card grid to search).
+- Collecting > Size comparison + Links (only Editorial keeps
+  search).
+- Admin.
+
+If a new tab/sub-tab should also hide search, extend the
+conditional in BOTH `DesktopShell.js` AND `MobileShell.js`
+in lockstep — they have independent visibility computations
+because of layout asymmetry. Don't gate via `noFilterableList`
+for new hides — that flag drives FILTER row visibility, not
+SEARCH row.
+
+**Cross-tab "Search all" destination (2026-05-22 PR #444 —
+PR_W v1).** `searchAllActive` boolean state in App.js. When true,
+both shells skip rendering sub-tab strips / filter row / identity
+band and render `searchAllResultsJSX` (`<SearchResultsView/>`) in
+place of the regular tab content. Main tab bar stays visible
+(exit path). `setTabWithReceiveEscape` calls
+`setSearchAllActive(false)` so picking a main tab clears the flag.
+Strip-view shows 3 strips (Live listings / Live auctions / Archive
+Sold), each capped at 8 cards with "View all" jumping to that
+tab + sub-tab with the search query preserved. The HomeSearchBar
+dropdown surfaces "Search all" as the first SEARCH IN target.
+**Editorial strip deferred to v2** — articles live inside
+EditorialView's lazy-loaded corpus; lifting that state to App.js
+is the prerequisite.
+
+**Mobile search-focus overlay (2026-05-22 PR #439 — Spotify
+pattern).** On mobile, focusing the top-bar search input opens a
+full-screen overlay rendered via `createPortal(..., document.body)`
+so the iOS keyboard doesn't cover the SEARCH IN dropdown. The
+overlay carries its own search input (auto-focused) + the SEARCH
+IN target list. Tap a target → fires the search and dismisses.
+Hardware back / cancel button restores the underlying tab.
+
+**Editorial page-size + infinite scroll (2026-05-22 PR #454).**
+`RESULTS_PAGE_SIZE = 40` (was 100, was 48 before that). First
+paint loads 40 cards. IntersectionObserver sentinel at the
+bottom of the grid bumps page by 40 when in viewport with 200px
+rootMargin so loading begins before the user reaches the literal
+end. Replaces the previous "Show N more" button. Same callback-
+ref + IntersectionObserver pattern used elsewhere — copy it if
+adding infinite scroll to another grid.
+
+**Editorial card density (2026-05-22 PR #454).** Article cards
+on Editorial show title + image only; the ~240-char `excerpt`
+is no longer rendered on the card. Body-text search remains —
+the excerpt + body still feed the in-component search index.
+Don't restore the excerpt on cards without an explicit redirect;
+Mark feedback was "this is on mobile and desktop and makes it
+look very cluttered."
 
 **Don't push followup commits to an already-open PR
 (2026-05-10).** PR #176 was merged with only its first commit;
@@ -1594,6 +1718,36 @@ again; it's permanently blocked at the platform layer.
 
 ## Things to never do
 
+- **Don't move `font-family` off `body` in `public/index.html`.**
+  The site's `-apple-system, BlinkMacSystemFont, ...` stack lives
+  on `body` so portal-rendered nodes — Card ⋯ menu, mobile
+  search-focus overlay, ConfirmHost, future toasts — inherit it.
+  Portal targets `document.body`, outside the App-root subtree.
+  Without body-level `font-family`, iOS Safari falls back to Times
+  serif on every portal node. Same pattern as theme-variables-on-
+  `:root` (PR #168) — the inline App-root `fontFamily` style stays
+  for back-compat, but the body-level declaration is what makes
+  new portal surfaces "just work". Cost a session of polish work
+  to diagnose 2026-05-22 (PR #447).
+- **Don't reintroduce a colored identity band under the sub-tab
+  strip.** Retired 2026-05-22 PR #448 once the olive chrome zone
+  took over section identity. `identityBandJSX` is set to `null`
+  in App.js but kept as a named const for shell destructure
+  compatibility. Section identity now comes from the chrome color
+  + active sub-tab underline. If a future tab needs an in-content
+  identity slab, build it as a one-off rather than reviving the
+  generic dispatcher.
+- **Don't extend olive chrome to Home without an explicit
+  decision.** Mark tried it 2026-05-22 (PR #450), didn't like it,
+  reverted (PR #451). Home is the editorial exception so the
+  moonphase + WATCHLIST hero carries the first-paint moment.
+  Olive accents (Watchbox callout block bg, "Search →" button bg)
+  preserve the brand thread without flooding the page.
+- **Don't expose search on Watchlists sub-tabs / Listings auction
+  calendar / Collecting Size comparison + Links.** Mark spec —
+  search row is hidden on these surfaces. If revisiting, change
+  BOTH `DesktopShell.js` AND `MobileShell.js` in lockstep (they
+  have independent visibility logic).
 - **Don't reach for `window.confirm` — use `confirm()` from
   `./ConfirmModal`.** Native confirm dialogs break dark mode and
   read as jarring against the rest of the UI (Mark feedback
