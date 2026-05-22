@@ -2802,7 +2802,10 @@ export default function Watchlist() {
             style={{ display: "flex", alignItems: "center", gap: 12,
                     width: "100%", textAlign: "left",
                     padding: "10px 12px", border: "0.5px solid var(--border)",
-                    background: "var(--surface)",
+                    // PR_δ pattern 2026-05-22: drop the surface fill,
+                    // keep the border. CTA still reads as contained
+                    // primary action without the grey weight.
+                    background: "transparent",
                     color: "var(--text1)", cursor: "pointer", fontFamily: "inherit",
                     fontSize: 14, fontWeight: 600, borderRadius: 10 }}>
             <span style={{
@@ -2873,10 +2876,11 @@ export default function Watchlist() {
           {!isMobile ? (
             <div style={{
               marginTop: 10,
-              padding: "10px 12px",
-              border: "0.5px solid var(--border)",
-              borderRadius: 10,
-              background: "var(--surface)",
+              padding: "10px 4px 4px",
+              // PR_δ pattern 2026-05-22: drop surface fill + border;
+              // a hairline top-rule separates VIEW SETTINGS from the
+              // utility links above.
+              borderTop: "0.5px solid var(--border)",
             }}>
               <div style={{ fontSize: 10, color: "var(--text3)",
                           letterSpacing: "0.12em", textTransform: "uppercase",

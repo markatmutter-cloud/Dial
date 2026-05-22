@@ -52,10 +52,11 @@ const linkButton = {
 };
 
 const featureCard = {
-  padding: "12px 14px",
-  borderRadius: 10,
-  border: "0.5px solid var(--border)",
-  background: "var(--surface)",
+  // PR_δ pattern 2026-05-22: drop the var(--surface) fill that
+  // competed visually with the rest of the editorial chrome. Hairline
+  // top-border separates rows; padding keeps the airy feel.
+  padding: "10px 4px 10px",
+  borderTop: "0.5px solid var(--border)",
   display: "flex", flexDirection: "column", gap: 4,
 };
 
