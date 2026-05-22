@@ -178,6 +178,7 @@ export function MobileShell(props) {
               </button>
             );
           })}
+        </div>
         {/* Sticky stack: search row (with filter + dark-mode buttons) and
             sort/clear pills row. Stays pinned to the viewport top so
             filters are one tap away at any scroll depth.
