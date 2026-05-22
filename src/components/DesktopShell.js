@@ -592,12 +592,11 @@ export function DesktopShell(props) {
         // `tab` is "home" (e.g. user landed via a /share link with
         // no prior nav). Fix 2026-05-22 — Mark report "still old
         // interface at the top" on share + search-all surfaces.
-        // Top bar is now olive on every tab (PR 2026-05-22) — Home
-        // gets a minimal version (just About + auth pill, no
-        // wordmark + no tabs) so the M circle anchors at viewport
-        // top-right same as non-Home. Chrome colors stay on the
-        // white-on-olive treatment.
-        const onOlive = true;
+        // Olive bg only on non-Home tabs (Mark spec: Home stays
+        // neutral, the M just inherits the position via a
+        // transparent minimal top bar). Receive surfaces +
+        // Search-all still get olive.
+        const onOlive = tab !== "home" || anyShareActive || searchAllActive;
         // PR 2026-05-22 γ — Home masthead restructure. On Home (and
         // not over a receive/search-all destination), the persistent
         // top-bar chrome is suppressed entirely; tabs / About / auth
@@ -615,11 +614,10 @@ export function DesktopShell(props) {
         const minimalTopBar = tab === "home" && !anyShareActive && !searchAllActive;
         return (
         <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 20px",
-                      borderBottom: onOlive ? "none" : "0.5px solid var(--border)",
-                      // Olive bg on Home too so the M sits on the same
-                      // background as it does on non-Home — kills the
-                      // perceived "jump" when navigating.
-                      background: "var(--brand-olive)",
+                      // No border on Home — keeps the top of the
+                      // page clean (no visible bar above the hero).
+                      borderBottom: onOlive ? "none" : (minimalTopBar ? "none" : "0.5px solid var(--border)"),
+                      background: onOlive ? "var(--brand-olive)" : "transparent",
                       flexShrink: 0 }}>
         {/* Top wordmark hidden on Home (editorial hero in body is the
             brand mark there) AND on the minimal Home top bar. */}

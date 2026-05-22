@@ -134,11 +134,10 @@ export function MobileShell(props) {
             as the wordmark home-tap affordance. */}
         {/* Brand row — ALWAYS renders so the auth pill (M circle)
             sits at top-right of the viewport regardless of tab. On
-            Home the wordmark is suppressed (the editorial hero in
-            the body owns the brand mark), but the row + olive bg +
-            auth pill stay so the user sees the M in the same place
-            on every tab. Mark spec 2026-05-22 "in the same location
-            on all tabs top right so it doesn't move around". */}
+            Home the wordmark + olive bg are suppressed (page stays
+            neutral, editorial hero owns the brand mark); on every
+            other tab the row carries the wordmark left + auth right
+            on olive. Same screen position for the M either way. */}
         <div style={{
           padding: "8px 16px 8px",
           paddingTop: "calc(env(safe-area-inset-top, 0px) + 8px)",
@@ -147,8 +146,12 @@ export function MobileShell(props) {
             ? "flex-end"
             : "space-between",
           gap: 12,
-          background: "var(--brand-olive)",
-          borderBottom: "1px solid rgba(255,255,255,0.12)",
+          background: (tab === "home" && !anyShareActive && !searchAllActive)
+            ? "transparent"
+            : "var(--brand-olive)",
+          borderBottom: (tab === "home" && !anyShareActive && !searchAllActive)
+            ? "none"
+            : "1px solid rgba(255,255,255,0.12)",
         }}>
           {(tab !== "home" || anyShareActive || searchAllActive) && (
             <button onClick={() => { setTab("home"); setPage(1); }}
