@@ -1182,6 +1182,24 @@ of completion, so the banner clears regardless of close path).
   2026-05-22 with the Hong Kong May 31 sale (sale ID `1-CLRMQK`)
   whose catalog HEAD was 500 but whose live URL had 36 lots already
   published.
+- **Monaco Legend lot scraping uses server-rendered Livewire HTML,
+  not the per-lot JSON-LD path.** Pre-2026-05-22 CLAUDE.md described
+  MLA as a "SPA with no server-rendered lot list" — that was stale or
+  about an earlier version of the site. Today every MLA sale page
+  server-renders every lot as a `<section class="lot[ sold[ reserved[
+  temp-import]]]" data-id="<id>" data-num="<N>" data-est="<low>"
+  data-year="<Y>">` block. Inside each: a `<span class='lot-brand'>`
+  for the maker, `<span class='lot-title'>` for the description,
+  `<p class='lot-estimation'>` for the estimate range, and (on past
+  sales) `<span class="bid-price">` for the realised price including
+  buyer's premium. The "sold" CSS class on the section signals
+  status. One sale-page fetch covers every lot — typical sale is
+  100-300 lots at ~1.3-1.7 MB of HTML. No per-lot fetches needed for
+  catalog-level fields (the JSON-LD per-lot `scrape_monaco_legend_lot`
+  path stays for richer detail when a user manually tracks one lot).
+  Estimation currency varies — current sales mostly use CHF (`Fr.`),
+  past sales use EUR (`€`) — `_mla_parse_estimation` detects the
+  currency from the leading token.
 - **Antiquorum lot scraping uses `live.antiquorum.swiss`, not
   `catalog.antiquorum.swiss`.** Catalog's `?page=N` 301-redirects
   to `/lots`, so the catalog scraper had only ever seen the first
