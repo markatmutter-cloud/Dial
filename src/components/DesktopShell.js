@@ -49,6 +49,7 @@ export function DesktopShell(props) {
     challengeReceiverJSX,
     listReceiverJSX,
     listingsSubTabsJSX,
+    referencesSubTabsJSX,
     trackNewItemModalJSX, watchSubTabsJSX, watchHeartedToggleJSX, collectionsSubTabsJSX, watchlistTabJSX,
     watchboxTabJSX,
     referencesTabJSX, collectionsTabJSX,
@@ -527,6 +528,7 @@ export function DesktopShell(props) {
           sub-tab + filter row chrome until they dismiss / save. */}
       {!anyShareActive && listingsSubTabsJSX}
       {!anyShareActive && watchSubTabsJSX}
+      {!anyShareActive && referencesSubTabsJSX}
       {/* watchHeartedToggleJSX is embedded inside filterRowJSX below
           (2026-05-08 — Mark feedback) so the Listings/Auctions/Sold
           pills sit on the same line as Date/Price/$Min/Source/Brand
