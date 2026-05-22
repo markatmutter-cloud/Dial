@@ -3225,24 +3225,29 @@ export default function Watchlist() {
         {visibleWithDividers.map((entry, idx) => (
           entry.kind === "divider" ? (
             <div key={`div-${idx}-${entry.label}`} style={{
-              // Date-divider contrast bumped 2026-05-11. The transparent
-              // divider was reading too close to the card grid below —
-              // Mark feedback: "would be nice to clearly see as you
-              // scroll past one of these." Add an explicit --surface
-              // bg (slightly elevated grey) so the band reads as a
-              // landmark when scanning at speed. Heading text + count
-              // unchanged.
+              // Density pass 2026-05-22 (Mark report: "for a whole
+              // screen I can only see one row of watches feels poor
+              // value"). Dropped the var(--surface) bg + heavy
+              // padding (14-28px top → 4-12px) and converted the
+              // label to the typographic-only treatment used elsewhere
+              // post-PR_δ1. Hairline top-border carries the group
+              // separation without the slab weight.
               gridColumn: "1/-1",
-              padding: idx === 0 ? "14px 14px 12px" : "28px 14px 12px",
+              padding: idx === 0 ? "0 4px 6px" : "12px 4px 6px",
               display: "flex", alignItems: "baseline", gap: 12,
               borderBottom: "0.5px solid var(--border)",
-              background: "var(--surface)",
               marginBottom: 4,
             }}>
-              <span style={{ fontSize: 14, fontWeight: 600, color: "var(--text1)" }}>
+              <span style={{
+                fontSize: 11, fontWeight: 600, color: "var(--text2)",
+                textTransform: "uppercase", letterSpacing: "0.08em",
+              }}>
                 {entry.label}
               </span>
-              <span style={{ fontSize: 12, color: "var(--text3)", marginLeft: "auto" }}>
+              <span style={{
+                fontSize: 11, color: "var(--text3)", marginLeft: "auto",
+                fontVariantNumeric: "tabular-nums",
+              }}>
                 {entry.total.toLocaleString()}
               </span>
             </div>
