@@ -1163,6 +1163,25 @@ of completion, so the banner clears regardless of close path).
   Extractor anchors on that pattern; falls back to ld_price only when
   the panel is missing (very rare). Affects every sold Phillips lot,
   including the daily comprehensive sweep — fix is global.
+- **Antiquorum calendar scraper has a live-host fallback for sales
+  whose catalog hasn't been published yet.** Antiquorum publishes
+  catalog pages (`catalog.antiquorum.swiss/.../lots`) 3–5 days before
+  the sale, but the live surface (`live.antiquorum.swiss/auctions/...`)
+  goes up much earlier. Pre-2026-05-22 the calendar scraper's catalog-
+  URL HEAD probe would 500 on those still-pre-catalog sales and the
+  row reverted to the generic upcoming-auctions landing page, which
+  the comprehensive lot scraper rightly skips as non-enumerable. Fix:
+  `fetch_live_upcoming_index()` in `antiquorum_auctions_scraper.py`
+  fetches `live.antiquorum.swiss/` once per scrape run, parses the
+  inline `upcomingAuctions.result_page` JSON array, and `scrape()`'s
+  per-sale loop matches by (date_start, location-in-title) when the
+  catalog HEAD fails. `enumerate_antiquorum` already accepted live
+  URLs as input (since 2026-05-05); the only orchestrator change
+  needed was widening `ENUMERATORS["Antiquorum"]`'s URL fragments to
+  include `live.antiquorum.swiss/auctions/`. Mark surfaced the gap
+  2026-05-22 with the Hong Kong May 31 sale (sale ID `1-CLRMQK`)
+  whose catalog HEAD was 500 but whose live URL had 36 lots already
+  published.
 - **Antiquorum lot scraping uses `live.antiquorum.swiss`, not
   `catalog.antiquorum.swiss`.** Catalog's `?page=N` 301-redirects
   to `/lots`, so the catalog scraper had only ever seen the first

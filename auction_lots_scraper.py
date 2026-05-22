@@ -1811,7 +1811,10 @@ def _brace_match_json(text, start):
 # ── Orchestrator ────────────────────────────────────────────────────────
 
 ENUMERATORS = {
-    "Antiquorum":    (enumerate_antiquorum,  ("catalog.antiquorum.swiss",)),
+    # Antiquorum: accepts either catalog OR live URL. The calendar
+    # scraper falls back to live URLs when catalogs haven't been
+    # published yet — see antiquorum_auctions_scraper.py.
+    "Antiquorum":    (enumerate_antiquorum,  ("catalog.antiquorum.swiss", "live.antiquorum.swiss/auctions/")),
     "Bonhams":       (enumerate_bonhams,     ("bonhams.com/auction/",)),
     "Christie's":    (enumerate_christies,   ("christies.com/en/auction/",)),
     "Sotheby's":     (enumerate_sothebys,    ("sothebys.com/en/buy/auction/",)),
