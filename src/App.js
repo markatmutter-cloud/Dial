@@ -1320,7 +1320,11 @@ export default function Watchlist() {
   //      with the chrome.
   useEffect(() => {
     if (typeof document === "undefined") return;
-    const onHome = tab === "home";
+    // Treat receive surfaces + Search-all the same as a non-Home tab
+    // for chrome / PWA strip purposes — they have olive chrome above
+    // them regardless of underlying tab value. Fix 2026-05-22.
+    const onHome = tab === "home" && !shareActive && !challengeShareActive
+                   && !listShareActive && !searchAllActive;
     // Per-theme olive (PR 2026-05-22 darker-green-in-dark-mode):
     // light mode keeps the favicon-matched #3b4a36; dark mode tones
     // it to #2a3527 so the chrome zone reads as a subtle brand
@@ -1341,7 +1345,7 @@ export default function Watchlist() {
     document.documentElement.style.background = onHome
       ? (dark ? darkHome : lightHome)
       : (dark ? oliveDark : oliveLight);
-  }, [tab, dark]);
+  }, [tab, dark, shareActive, challengeShareActive, listShareActive, searchAllActive]);
 
   // Auction lots projected into the main listings feed. Two sources
   // get merged by URL key:
