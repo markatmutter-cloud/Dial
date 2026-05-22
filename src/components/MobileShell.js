@@ -159,18 +159,18 @@ export function MobileShell(props) {
           </div>
         </div>
         )}
-        {/* Row 2 — main tab pills. On Home, doubles as the brand row:
-            picks up safe-area-inset-top padding (was on the suppressed
-            Row 1) and renders M / hamburger on the right via
-            justify-content: space-between. */}
+        {/* Row 2 — main tab pills. PR 2026-05-22 γ: also suppressed on
+            Home (along with Row 1 brand row). Tabs + auth move into
+            the HomeTab masthead band under the wordmark, framed by
+            an olive bleed. Top bar collapses to nothing on Home so
+            the hero is the first thing in the viewport. */}
+        {(tab !== "home" || anyShareActive || searchAllActive) && (
         <div style={{
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           gap: 8,
-          padding: (tab === "home" && !anyShareActive && !searchAllActive)
-            ? `calc(env(safe-area-inset-top, 0px) + 4px) 16px 0`
-            : "0 16px",
+          padding: "0 16px",
           // Olive chrome on every tab EXCEPT Home — receive surfaces
           // + Search-all also get olive even if underlying tab is
           // "home" (Mark report 2026-05-22).
@@ -237,6 +237,7 @@ export function MobileShell(props) {
             </div>
           )}
         </div>
+        )}
         {/* Sticky stack: search row (with filter + dark-mode buttons) and
             sort/clear pills row. Stays pinned to the viewport top so
             filters are one tap away at any scroll depth.

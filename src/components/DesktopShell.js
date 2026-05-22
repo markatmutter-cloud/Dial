@@ -593,6 +593,14 @@ export function DesktopShell(props) {
         // no prior nav). Fix 2026-05-22 — Mark report "still old
         // interface at the top" on share + search-all surfaces.
         const onOlive = tab !== "home" || anyShareActive || searchAllActive;
+        // PR 2026-05-22 γ — Home masthead restructure. On Home (and
+        // not over a receive/search-all destination), the persistent
+        // top-bar chrome is suppressed entirely; tabs / About / auth
+        // render under the wordmark inside HomeTab's olive-bleed
+        // masthead band. Top bar collapses to nothing so the hero
+        // is the first thing in the viewport.
+        const suppressTopBar = tab === "home" && !anyShareActive && !searchAllActive;
+        if (suppressTopBar) return null;
         return (
         <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 20px",
                       borderBottom: onOlive ? "none" : "0.5px solid var(--border)",

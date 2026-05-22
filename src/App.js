@@ -3733,6 +3733,17 @@ export default function Watchlist() {
       // 2026-05-15: re-running review left the banner stuck.
       openFeedScreener={() => { markFeedSeen(); setFeedScreenerOpen(true); }}
       dark={dark}
+      // Masthead-nav: chrome moved into HomeTab on Home (PR 2026-05-22
+      // γ). Tabs + auth render below the wordmark in an olive-bleed
+      // band; top bar is suppressed on Home in both shells. About
+      // trigger reuses openAbout above.
+      homeMastheadTabs={[
+        ["listings", "Listings"],
+        ["watchlist", "Watchlists"],
+        ["references", "Collecting"],
+      ]}
+      homeGoToTab={(key) => { setTab(key); setPage(1); }}
+      homeMastheadAuthJSX={authJSX}
     />
   );
 
