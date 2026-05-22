@@ -508,14 +508,21 @@ function SectionStrip({ heading, descriptor, items, onViewAll, onScreen, screenC
             // hadn't shipped.
             <button onClick={onScreen}
               style={{
+                // PR_screen 2026-05-22: reshape as an outline pill to
+                // match the sibling "View all" CTA. Drops the loud
+                // brand-blue fill which clashed with Home's neutral +
+                // olive-accent palette (Mark feedback 2026-05-22:
+                // "blue button feels like it no longer fits — better
+                // pill ui/color").
                 cursor: "pointer", fontFamily: "inherit",
-                fontSize: 12, fontWeight: 600, letterSpacing: "0.02em",
+                fontSize: 12, fontWeight: 600, letterSpacing: "0.04em",
                 padding: "8px 14px", borderRadius: 999,
-                border: "none",
-                background: "var(--brand)",
-                color: "#fff",
+                border: `0.5px solid ${inverted ? "var(--text-on-dark-3)" : "var(--text2)"}`,
+                background: "transparent",
+                color: viewAllColor,
                 display: "inline-flex", alignItems: "center", gap: 6,
               }}>
+              <span aria-hidden style={{ fontSize: 10 }}>▶</span>
               Screen
             </button>
           )}
