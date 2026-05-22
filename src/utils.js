@@ -202,6 +202,18 @@ export const FORCE_OTHER_BRANDS = new Set([
   "Elgin", "Marvin", "Wakmann", "Caravelle", "Pro Hunter",
 ]);
 
+// Hard-excluded brands — applied at scrape-merge time in merge.py's
+// EXCLUDED_BRANDS set; mirrored here for display in the Admin
+// dashboard so Mark can see his accumulated curation rules without
+// grepping the backend. Keep this list in lockstep with the
+// merge.py copy (Mark spec 2026-05-22). Listings in these brands
+// never make it into listings.json — frontend filters never see
+// them.
+export const EXCLUDED_BRANDS = new Set([
+  "Franck Muller", "Hublot", "Gucci", "Harry Winston",
+  "Corum", "Scatola Del Tempo",
+]);
+
 // Sold items in these brands are hidden from Listings > All sold
 // UNLESS the user has hearted them (in which case the saved set
 // keeps the entry visible). Mark's curation pass 2026-05-05 — the
