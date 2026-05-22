@@ -807,23 +807,39 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
           );
         })}
 
-        {/* Load more — only when there's more in the filtered set */}
+        {/* Infinite scroll sentinel — replaces the Load more button
+            (Mark spec 2026-05-22: "yes to infinite scroll loading as
+            scroll"). IntersectionObserver bumps pageSize whenever
+            this node enters the viewport. Same callback-ref pattern
+            App.js uses for the Listings grid (see App.js loaderRef).
+            Footer text reads "Loading more…" while there's still
+            corpus left, then "All N shown" once we've reached the
+            end. */}
         {!loading && pageSize < filtered.length && (
-          <div style={{ textAlign: "center", padding: "16px 0 24px" }}>
-            <button
-              onClick={() => setPageSize(s => s + RESULTS_PAGE_SIZE)}
-              style={{
-                padding: "10px 20px",
-                borderRadius: 6,
-                border: "0.5px solid var(--border)",
-                background: "var(--surface)",
-                color: "var(--text2)",
-                cursor: "pointer",
-                fontFamily: "inherit",
-                fontSize: 13,
-              }}>
-              Show {Math.min(RESULTS_PAGE_SIZE, filtered.length - pageSize)} more
-            </button>
+          <div
+            ref={(node) => {
+              if (!node) return;
+              const obs = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting) {
+                  setPageSize(s => s + RESULTS_PAGE_SIZE);
+                }
+              }, { threshold: 0.1, rootMargin: "200px" });
+              obs.observe(node);
+              return () => obs.disconnect();
+            }}
+            style={{
+              textAlign: "center", padding: "24px 0",
+              color: "var(--text3)", fontSize: 12, fontFamily: "inherit",
+            }}>
+            Loading more…
+          </div>
+        )}
+        {!loading && pageSize >= filtered.length && filtered.length > 0 && (
+          <div style={{
+            textAlign: "center", padding: "24px 0",
+            color: "var(--text3)", fontSize: 12, fontFamily: "inherit",
+          }}>
+            All {filtered.length.toLocaleString()} shown
           </div>
         )}
       </div>
