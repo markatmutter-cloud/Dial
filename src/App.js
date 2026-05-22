@@ -85,6 +85,25 @@ const LOUPETHIS_LOTS_URL = "/loupethis_lots.json";
 // more for the commentary and watch background" + "bring these
 // into sold archive ... not just the prose."
 const HAIRSPRING_FINDS_URL = "/hairspring_finds.json";
+// Editorial corpus URLs for Search-all (PR_φ2 2026-05-22). When the
+// user opens the cross-tab Search-all destination, we lazy-fetch each
+// source's meta JSON in parallel and add an Articles strip to the
+// strip view. Mirrors the SOURCES list in EditorialView.js but kept
+// independent here — search-all needs only meta records (no bodies)
+// and shouldn't have a circular import with EditorialView. If a new
+// editorial source ships, add it here too — both lists stay in sync.
+const EDITORIAL_SOURCE_URLS = [
+  "/hairspring_finds.json",
+  "/bring_a_loupe.json",
+  "/rolex_magazine.json",
+  "/onthedash.json",
+  "/bulang_watch_talks.json",
+  "/hodinkee_reference_points.json",
+  "/acollectedman_journal.json",
+  "/woe_dispatch.json",
+  "/screwdowncrown.json",
+  "/fratello.json",
+];
 // Hodinkee Shop archive — frozen since Feb 2023 (Hodinkee shut the
 // vintage-watch shop). 2,346 products, 99.96% sold. Per-product
 // editorial writeup + structured Fine Print (Maker/Model/Reference/
@@ -243,6 +262,13 @@ export default function Watchlist() {
   // sub-tab's lazy fetch) AND projects into the Sold-archive view
   // (via `hodinkeeShopItems` memo below).
   const [hodinkeeShopState, setHodinkeeShopState] = useState({});
+  // Search-all article corpus (PR_φ2 2026-05-22). Empty until the
+  // user first opens the cross-tab Search-all destination, then
+  // lazy-fetched. Each entry already has `_source: { key, label,
+  // publication, column }` injected so the strip can display source
+  // attribution without re-importing the EditorialView SOURCES list.
+  const [searchAllArticles, setSearchAllArticles] = useState([]);
+  const [searchAllArticlesLoaded, setSearchAllArticlesLoaded] = useState(false);
   // Sub-tab inside Watchlist > Auction lots: upcoming vs past.
   // Sub-tab on the Watchlist tab. Three values: "listings" (dealer
   // items you've hearted) or "searches" (saved searches editor). The
@@ -748,6 +774,43 @@ export default function Watchlist() {
   // render <SearchResultsView/> in place of the regular tab content.
   // Clearing search or tab nav unsets it (see effects below).
   const [searchAllActive, setSearchAllActive] = useState(false);
+  // Lazy article corpus loader (PR_φ2 2026-05-22). Fires the first
+  // time the user opens Search-all. Each source's meta JSON is
+  // ~50–200 KB; fetching all in parallel takes ~1-2s on a fast
+  // connection. Results are concatenated with a `_source` marker
+  // so the strip can show attribution. Bodies are NOT loaded —
+  // search-all only needs title/brand/ref/image for the strip.
+  useEffect(() => {
+    if (!searchAllActive || searchAllArticlesLoaded) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const fetched = await Promise.all(
+          EDITORIAL_SOURCE_URLS.map(async (url) => {
+            try {
+              const r = await fetch(url);
+              if (!r.ok) return [];
+              const arr = await r.json();
+              if (!Array.isArray(arr)) return [];
+              // Strip the source key from the URL path for a label.
+              const key = url.replace(/^\//, "").replace(/\.json$/, "");
+              return arr.map(a => ({ ...a, _source: { key, label: key } }));
+            } catch (e) {
+              console.warn("editorial fetch failed", url, e);
+              return [];
+            }
+          })
+        );
+        if (cancelled) return;
+        const all = fetched.flat();
+        setSearchAllArticles(all);
+        setSearchAllArticlesLoaded(true);
+      } catch (e) {
+        console.warn("editorial corpus aggregate fetch failed", e);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [searchAllActive, searchAllArticlesLoaded]);
   // Tracks the URL of the auction whose "Add to list" / "Review"
   // mutation is currently in flight so the calendar row buttons
   // can show disabled state. Single-slot — we don't expect two
@@ -3318,6 +3381,7 @@ export default function Watchlist() {
       search={search}
       setSearch={setSearch}
       mainFeedItems={mainFeedItems}
+      articles={searchAllArticles}
       auctionLotItems={auctionLotItems}
       isMobile={isMobile}
       gridStyle={gridStyle}
@@ -3341,6 +3405,10 @@ export default function Watchlist() {
       onViewAllSold={() => {
         setSearchAllActive(false);
         setTab("listings"); setListingsSubTab("sold"); setPage(1);
+      }}
+      onViewAllArticles={() => {
+        setSearchAllActive(false);
+        setTab("references"); setReferencesSubTab("editorial"); setPage(1);
       }}
       onExit={() => {
         setSearchAllActive(false);

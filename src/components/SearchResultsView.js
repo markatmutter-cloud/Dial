@@ -4,14 +4,17 @@ import { Card } from "./Card";
 // Cross-tab search results — the "Search all" destination (PR_W v1,
 // 2026-05-22). When the user picks "Search all" from the Home
 // dropdown / mobile overlay, the regular tab content is replaced
-// with this view: three horizontal scrollable strips of cards
-// (Live listings · Live auctions · Archive sold), each filtered by
-// the search query. Each strip has a "View all" CTA that jumps to
-// the corresponding tab+sub-tab with the search preserved.
+// with this view: FOUR horizontal scrollable strips of cards
+// (Live listings · Live auctions · Archive sold · Articles), each
+// filtered by the query. Each strip has a "View all" CTA that
+// jumps to the corresponding tab+sub-tab with the search preserved.
 //
-// Editorial articles aren't yet included — the corpus is loaded
-// lazily inside EditorialView. v2 will lift that to App.js and add
-// a fourth strip.
+// PR_φ2 2026-05-22 added the Articles strip — App.js lazy-fetches
+// the editorial corpus when searchAllActive flips true (parallel
+// fetch across all SOURCE URLs, meta records only, no bodies).
+// Cards in the Articles strip render via ArticleCard's image+title
+// shape using the same items-grid Strip used to use; the article
+// projection (kind='article') flows through.
 //
 // Filter scope per Mark's spec (2026-05-21): Brand / Source apply
 // per-strip using each tab's own catalogue. Price applies to
@@ -35,6 +38,25 @@ function matchesQuery(item, q) {
     item.reference_no,
     item.model,
     item.model_line,
+  ].filter(Boolean).join(" ").toLowerCase();
+  return haystack.includes(q);
+}
+
+// PR_φ2 2026-05-22: article fields differ slightly from listing
+// fields — title is the article title; excerpt + author live in
+// nested fields; brand/reference_no are still flat. Use a slim
+// per-shape haystack so we don't double-match on listing-only keys.
+function matchesArticleQuery(article, q) {
+  if (!q) return true;
+  const haystack = [
+    article.title,
+    article.brand,
+    article.reference_no,
+    article.model,
+    article.model_line,
+    article.author,
+    article.excerpt,
+    article._source && article._source.label,
   ].filter(Boolean).join(" ").toLowerCase();
   return haystack.includes(q);
 }
@@ -118,6 +140,7 @@ export function SearchResultsView({
   setSearch,
   mainFeedItems,
   auctionLotItems,
+  articles,
   isMobile,
   gridStyle,
   watchlist,
@@ -132,6 +155,7 @@ export function SearchResultsView({
   onViewAllLive,
   onViewAllAuctions,
   onViewAllSold,
+  onViewAllArticles,
   onExit,
 }) {
   const q = (search || "").trim().toLowerCase();
@@ -160,7 +184,16 @@ export function SearchResultsView({
     return arr;
   }, [mainFeedItems, auctionLotItems, hidden, q]);
 
-  const totalHits = liveListings.length + liveAuctions.length + soldItems.length;
+  // PR_φ2 2026-05-22: article matches across the editorial corpus.
+  // App.js lazy-fetches the source JSONs the first time
+  // searchAllActive flips true; articles is [] until that resolves.
+  const articleHits = useMemo(() => {
+    if (!Array.isArray(articles) || articles.length === 0) return [];
+    return articles.filter(a => matchesArticleQuery(a, q));
+  }, [articles, q]);
+
+  const totalHits = liveListings.length + liveAuctions.length
+    + soldItems.length + articleHits.length;
 
   // PR_φ1 2026-05-22: inline-edit affordance for the query echo. Click
   // the "moonphase" header → swap to an editable input (same chrome
@@ -184,10 +217,13 @@ export function SearchResultsView({
   // PR_φ1 2026-05-22: strip-order is dynamic by hit count desc; empty
   // strips are dropped entirely (no "No matches" clutter). Each entry
   // owns its render props so the iteration loop stays clean.
+  // PR_φ2 2026-05-22: articles strip uses kind='article' so the loop
+  // can dispatch between Card (listings) and ArticleStrip (articles).
   const stripDefs = [
-    { key: "live", heading: "Live listings", count: liveListings.length, items: liveListings, onViewAll: onViewAllLive },
-    { key: "auctions", heading: "Live auctions", count: liveAuctions.length, items: liveAuctions, onViewAll: onViewAllAuctions },
-    { key: "sold", heading: "Archive (Sold)", count: soldItems.length, items: soldItems, onViewAll: onViewAllSold },
+    { key: "live", heading: "Live listings", kind: "listing", count: liveListings.length, items: liveListings, onViewAll: onViewAllLive },
+    { key: "auctions", heading: "Live auctions", kind: "listing", count: liveAuctions.length, items: liveAuctions, onViewAll: onViewAllAuctions },
+    { key: "sold", heading: "Archive (Sold)", kind: "listing", count: soldItems.length, items: soldItems, onViewAll: onViewAllSold },
+    { key: "articles", heading: "Articles", kind: "article", count: articleHits.length, items: articleHits, onViewAll: onViewAllArticles },
   ].filter(s => s.count > 0)
     .sort((a, b) => b.count - a.count);
 
@@ -298,30 +334,118 @@ export function SearchResultsView({
           textAlign: "center",
           color: "var(--text3)", fontSize: 14,
         }}>
-          No matches across listings, auctions, or archive. Try a different query.
+          No matches across listings, auctions, archive, or articles. Try a different query.
         </div>
       )}
 
       {stripDefs.map(s => (
-        <Strip
-          key={s.key}
-          heading={s.heading}
-          count={s.count}
-          items={s.items}
-          onViewAll={s.onViewAll}
-          isMobile={isMobile}
-          gridStyle={gridStyle}
-          watchlist={watchlist}
-          handleWish={handleWish}
-          hidden={hidden}
-          toggleHide={toggleHide}
-          primaryCurrency={primaryCurrency}
-          openCollectionPicker={openCollectionPicker}
-          handleShare={handleShare}
-          isAdmin={isAdmin}
-          onClickListing={onClickListing}
-        />
+        s.kind === "article" ? (
+          <ArticleStrip
+            key={s.key}
+            heading={s.heading}
+            count={s.count}
+            items={s.items}
+            onViewAll={s.onViewAll}
+            isMobile={isMobile}
+          />
+        ) : (
+          <Strip
+            key={s.key}
+            heading={s.heading}
+            count={s.count}
+            items={s.items}
+            onViewAll={s.onViewAll}
+            isMobile={isMobile}
+            gridStyle={gridStyle}
+            watchlist={watchlist}
+            handleWish={handleWish}
+            hidden={hidden}
+            toggleHide={toggleHide}
+            primaryCurrency={primaryCurrency}
+            openCollectionPicker={openCollectionPicker}
+            handleShare={handleShare}
+            isAdmin={isAdmin}
+            onClickListing={onClickListing}
+          />
+        )
       ))}
     </div>
+  );
+}
+
+// PR_φ2 2026-05-22: slim article-strip variant. Different shape from
+// the listings Strip — articles have image + title + source/date,
+// no price / heart / dealer-link. Tiles open the article URL in a
+// new tab. Capped at STRIP_MAX with a View all that lands on
+// Collecting > Editorial with the search query preserved.
+function ArticleStrip({ heading, count, items, onViewAll, isMobile }) {
+  const visible = items.slice(0, STRIP_MAX);
+  return (
+    <section style={{ padding: isMobile ? "16px 0" : "20px 0" }}>
+      <div style={{
+        display: "flex", alignItems: "baseline", justifyContent: "space-between",
+        padding: isMobile ? "0 16px 10px" : "0 20px 12px",
+      }}>
+        <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
+          <h2 style={{
+            margin: 0, fontSize: isMobile ? 16 : 18, fontWeight: 600,
+            color: "var(--text1)", fontFamily: "inherit",
+          }}>{heading}</h2>
+          <span style={{ fontSize: 12, color: "var(--text3)" }}>{count.toLocaleString()}</span>
+        </div>
+        {count > STRIP_MAX && onViewAll && (
+          <button onClick={onViewAll}
+            style={{
+              background: "transparent", border: "0.5px solid var(--border)",
+              borderRadius: 18, padding: "6px 14px",
+              fontFamily: "inherit", fontSize: 13, fontWeight: 500,
+              color: "var(--text1)", cursor: "pointer",
+              display: "flex", alignItems: "center", gap: 6,
+            }}>
+            View all <span aria-hidden style={{ fontSize: 13 }}>→</span>
+          </button>
+        )}
+      </div>
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: isMobile
+          ? "repeat(auto-fill, minmax(140px, 1fr))"
+          : "repeat(auto-fill, minmax(180px, 1fr))",
+        gap: 10,
+        padding: isMobile ? "0 16px" : "0 20px",
+      }}>
+        {visible.map(a => (
+          <a key={a.url} href={a.url} target="_blank" rel="noopener noreferrer"
+            style={{
+              display: "flex", flexDirection: "column",
+              textDecoration: "none", color: "inherit",
+              background: "var(--surface)",
+              border: "0.5px solid var(--border)",
+              borderRadius: 8, overflow: "hidden",
+            }}>
+            {a.image && (
+              <div style={{ width: "100%", aspectRatio: "16 / 10", background: "var(--bg)" }}>
+                <img src={a.image} alt="" loading="lazy"
+                  style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+              </div>
+            )}
+            <div style={{ padding: "10px 12px 12px", display: "flex", flexDirection: "column", gap: 4 }}>
+              <div style={{
+                fontSize: 10, fontWeight: 600, color: "var(--text3)",
+                textTransform: "uppercase", letterSpacing: 0.4,
+              }}>
+                {(a._source && a._source.label) || a.source || ""}
+              </div>
+              <div style={{
+                fontSize: 13, fontWeight: 600, color: "var(--text1)",
+                lineHeight: 1.3,
+                display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+              }}>{a.title}</div>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
   );
 }
