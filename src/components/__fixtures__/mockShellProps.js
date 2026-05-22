@@ -101,6 +101,7 @@ export function buildMockShellProps(overrides = {}) {
     listingsSubTabsJSX: <div data-testid="listings-sub-tabs" />,
     lotMigrationBannerJSX: null,
     userLimitBannerJSX: null,
+    identityBandJSX: null,
     challengeReceiverJSX: null,
     listReceiverJSX: null,
     shareActive: false,

@@ -54,6 +54,7 @@ export function DesktopShell(props) {
     referencesTabJSX, collectionsTabJSX,
     lotMigrationBannerJSX,
     userLimitBannerJSX,
+    identityBandJSX,
     shareActive,
     challengeShareActive,
     listShareActive,
@@ -346,22 +347,14 @@ export function DesktopShell(props) {
       {/* Auctions-only pill retired 2026-05-04 — Watchlist > Saved
           auctions sub-tab covers it. */}
 
-      {/* Filtered count — pushed right via marginLeft auto. Mirrors
-          the count Mobile already shows at the head of its sort row;
-          surfaced at the top so the user doesn't have to scroll to
-          the bottom of an infinite-scroll list to see how many
-          matched. Only renders on tabs that have a filterable list
-          (skip on Watchlist sub-tabs that don't render allFiltered). */}
-      <span style={{
-        marginLeft: "auto", flexShrink: 0,
-        fontSize: 12, color: "var(--text3)", fontFamily: "inherit",
-        whiteSpace: "nowrap", padding: "0 6px",
-      }}>
-        {(displayedCount || 0).toLocaleString()} {displayedCount === 1 ? "watch" : "watches"}
-      </span>
-
+      {/* Filtered count was retired from the filter row 2026-05-21 (PR_Y).
+          The identity band below the controls row now carries section
+          identity + count for every tab. Clear-all stays at the right
+          edge of the filter row since it's an action against the
+          chips immediately above. */}
       {hasFilters && (
         <button onClick={resetFilters} style={{
+          marginLeft: "auto",
           fontSize: 13, padding: "6px 12px", borderRadius: 20, cursor: "pointer",
           fontFamily: "inherit", whiteSpace: "nowrap",
           border: "none", outline: "none",
@@ -580,6 +573,13 @@ export function DesktopShell(props) {
               recipient gets a clean first-impression page. */}
           {!anyShareActive && (
             <>
+              {/* Identity band — colored slab carrying section
+                  identity (label + count). Rendered inside the
+                  scroll container so it bleeds edge-to-edge via the
+                  parent's 20px horizontal padding (negative margins
+                  in IdentityBand) and scrolls with content. App.js
+                  builds the per-tab/sub-tab content; null on Home. */}
+              {identityBandJSX}
               {/* (Ending-soon pinned section retired 2026-05-04 —
                   Watchlist > Saved auctions sub-tab IS the
                   ending-soon view now.) */}
