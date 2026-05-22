@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { Card } from "./Card";
 import { SearchIcon } from "./icons";
 import { MoonPhaseIndicator } from "./MoonPhaseIndicator";
@@ -128,20 +129,42 @@ function LiveCounts({ counts }) {
 function HomeSearchBar({ onSubmit, isMobile, dealerSources, onJumpToDealer }) {
   const [draft, setDraft] = useState("");
   const [focused, setFocused] = useState(false);
+  // Mobile-only: separate overlay state so the inline input loses focus
+  // when the overlay mounts (otherwise iOS shows the keyboard against
+  // the wrong input). PR_Z 2026-05-21.
+  const [mobileOverlay, setMobileOverlay] = useState(false);
   const wrapRef = useRef(null);
+  const overlayInputRef = useRef(null);
   const fire = (target) => {
     const q = draft.trim();
     onSubmit(q, target);
     setDraft("");
     setFocused(false);
+    setMobileOverlay(false);
+  };
+  const closeMobileOverlay = () => {
+    setMobileOverlay(false);
+    setFocused(false);
   };
 
-  // Click-outside dismiss. mousedown not click so the popover row's
-  // own click still fires (mousedown-on-row → blur on input → click
-  // on row; without this guard the popover would unmount before the
-  // click lands).
+  // When the mobile overlay opens, focus its input on the next tick so
+  // iOS Safari raises the keyboard. Blur the inline input first so the
+  // browser doesn't keep two focused inputs.
   useEffect(() => {
-    if (!focused) return undefined;
+    if (!mobileOverlay) return undefined;
+    const id = setTimeout(() => {
+      if (overlayInputRef.current) overlayInputRef.current.focus();
+    }, 30);
+    return () => clearTimeout(id);
+  }, [mobileOverlay]);
+
+  // Click-outside dismiss (desktop popover only — mobile uses the
+  // Cancel button + tap-target rows on the overlay). mousedown not
+  // click so the popover row's own click still fires (mousedown-on-row
+  // → blur on input → click on row; without this guard the popover
+  // would unmount before the click lands).
+  useEffect(() => {
+    if (!focused || mobileOverlay) return undefined;
     const onDown = (e) => {
       if (wrapRef.current && !wrapRef.current.contains(e.target)) {
         setFocused(false);
@@ -149,7 +172,7 @@ function HomeSearchBar({ onSubmit, isMobile, dealerSources, onJumpToDealer }) {
     };
     document.addEventListener("mousedown", onDown);
     return () => document.removeEventListener("mousedown", onDown);
-  }, [focused]);
+  }, [focused, mobileOverlay]);
 
   const trimmed = draft.trim();
   const showPopover = focused && trimmed.length > 0;
@@ -197,7 +220,18 @@ function HomeSearchBar({ onSubmit, isMobile, dealerSources, onJumpToDealer }) {
             <input
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
-              onFocus={() => setFocused(true)}
+              onFocus={(e) => {
+                setFocused(true);
+                // PR_Z 2026-05-21: on mobile, take the user into a
+                // full-screen search overlay (Spotify pattern). The
+                // inline popover doesn't work on mobile because the
+                // iOS keyboard covers it. Blur the inline input so
+                // iOS hands focus to the overlay's input cleanly.
+                if (isMobile) {
+                  e.target.blur();
+                  setMobileOverlay(true);
+                }
+              }}
               onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); fire("live"); } }}
               placeholder={isMobile ? "Reference or brand…" : "Reference, brand, model…"}
               style={{ flex: 1, border: "none", background: "transparent", fontSize: isMobile ? 14 : 15, color: "var(--text1)", outline: "none", fontFamily: "inherit", minWidth: 0, padding: isMobile ? "11px 0" : "13px 0" }}
@@ -224,11 +258,9 @@ function HomeSearchBar({ onSubmit, isMobile, dealerSources, onJumpToDealer }) {
             Search <span aria-hidden style={{ fontSize: 14 }}>→</span>
           </button>
         </div>
-        {/* Typeahead popover — appears on the first keystroke. Three
-            rows pointing at Listings / Auctions / Sold sub-tabs. The
-            user's query echoes on the right of each row so the
-            destination is unambiguous before they click. */}
-        {showPopover && (
+        {/* Typeahead popover — desktop only. Mobile uses the Spotify-
+            pattern overlay further down (PR_Z 2026-05-21). */}
+        {showPopover && !isMobile && (
           <div role="listbox"
             style={{
               position: "absolute", top: "calc(100% + 6px)", left: 0, right: 0,
@@ -286,6 +318,132 @@ function HomeSearchBar({ onSubmit, isMobile, dealerSources, onJumpToDealer }) {
           </div>
         )}
       </div>
+      {/* Mobile search-focus overlay (Spotify pattern). When the input
+          gets focus on mobile, replace the page with a full-viewport
+          search surface: input at the top (under safe-area), target
+          options as full-width tappable cards filling the space above
+          the keyboard. Solves the iOS keyboard covering the inline
+          popover (Mark report 2026-05-21). */}
+      {isMobile && mobileOverlay && typeof document !== "undefined" && createPortal(
+        <div style={{
+          position: "fixed", inset: 0, zIndex: 200,
+          background: "var(--bg)",
+          display: "flex", flexDirection: "column",
+        }}>
+          {/* Top bar — input + Cancel. paddingTop respects PWA status
+              bar via safe-area-inset. */}
+          <div style={{
+            display: "flex", alignItems: "center", gap: 10,
+            padding: "10px 12px",
+            paddingTop: "calc(env(safe-area-inset-top, 0px) + 10px)",
+            borderBottom: "0.5px solid var(--border)",
+            flexShrink: 0,
+          }}>
+            <div style={{
+              display: "flex", alignItems: "center", gap: 8,
+              background: "var(--surface)", borderRadius: 10,
+              padding: "10px 14px", flex: 1, minWidth: 0,
+            }}>
+              <SearchIcon />
+              <input
+                ref={overlayInputRef}
+                value={draft}
+                onChange={(e) => setDraft(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); fire("live"); } }}
+                placeholder="Reference, brand, dealer…"
+                style={{
+                  flex: 1, border: "none", background: "transparent",
+                  fontSize: 16, color: "var(--text1)", outline: "none",
+                  fontFamily: "inherit", minWidth: 0,
+                }}
+              />
+              {draft && (
+                <button onClick={() => setDraft("")} aria-label="Clear"
+                  style={{ background: "none", border: "none", cursor: "pointer",
+                          color: "var(--text3)", padding: 2, flexShrink: 0,
+                          display: "flex", alignItems: "center" }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              )}
+            </div>
+            <button onClick={closeMobileOverlay}
+              style={{
+                background: "none", border: "none", cursor: "pointer",
+                color: "var(--text2)", fontSize: 14, fontWeight: 500,
+                fontFamily: "inherit", padding: "8px 4px",
+                flexShrink: 0, whiteSpace: "nowrap",
+              }}>
+              Cancel
+            </button>
+          </div>
+          {/* Options list — always visible above the keyboard. Each
+              row spans the full width and is a clear tap target. */}
+          <div style={{ flex: 1, overflowY: "auto", padding: "8px 0 0" }}>
+            <div style={{
+              padding: "12px 16px 8px",
+              fontSize: 10, fontWeight: 600,
+              letterSpacing: "0.18em", textTransform: "uppercase",
+              color: "var(--text3)",
+            }}>
+              Search in
+            </div>
+            {targets.map(([key, label, hint]) => (
+              <button key={key}
+                onClick={() => fire(key)}
+                style={{
+                  display: "flex", alignItems: "center", justifyContent: "space-between",
+                  width: "100%", gap: 12,
+                  padding: "14px 16px",
+                  background: "transparent", border: "none",
+                  borderTop: "0.5px solid var(--border)",
+                  cursor: "pointer", fontFamily: "inherit", textAlign: "left",
+                }}>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 3 }}>
+                  <span style={{ fontSize: 15, fontWeight: 600, color: "var(--text1)" }}>{label}</span>
+                  <span style={{ fontSize: 12, color: "var(--text3)" }}>{hint}</span>
+                </div>
+                {trimmed && (
+                  <span style={{ fontSize: 12, color: "var(--text2)", fontStyle: "italic", flexShrink: 0 }}>
+                    "{echo}"
+                  </span>
+                )}
+              </button>
+            ))}
+            {dealerMatches.length > 0 && (
+              <>
+                <div style={{
+                  padding: "16px 16px 8px",
+                  borderTop: "0.5px solid var(--border)",
+                  fontSize: 10, fontWeight: 600,
+                  letterSpacing: "0.18em", textTransform: "uppercase",
+                  color: "var(--text3)",
+                }}>
+                  Dealers matching
+                </div>
+                {dealerMatches.map((name) => (
+                  <button key={name}
+                    onClick={() => { jumpToDealer(name); setMobileOverlay(false); }}
+                    style={{
+                      display: "flex", alignItems: "center", justifyContent: "space-between",
+                      width: "100%", gap: 12,
+                      padding: "14px 16px",
+                      background: "transparent", border: "none",
+                      borderTop: "0.5px solid var(--border)",
+                      cursor: "pointer", fontFamily: "inherit", textAlign: "left",
+                    }}>
+                    <span style={{ fontSize: 15, fontWeight: 500, color: "var(--text1)" }}>{name}</span>
+                    <span style={{ fontSize: 12, color: "var(--text3)" }}>Browse listings →</span>
+                  </button>
+                ))}
+              </>
+            )}
+          </div>
+        </div>,
+        document.body
+      )}
     </section>
   );
 }
