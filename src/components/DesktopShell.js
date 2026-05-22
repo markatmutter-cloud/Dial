@@ -84,6 +84,73 @@ export function DesktopShell(props) {
   // because horizontal real estate is the constraint, not tap targets.
   const dtPill = (active) => pillBase(active, { compact: true });
 
+  // Search composite — moved out of the top bar 2026-05-21 (Mark spec):
+  // sits in the filter row on every non-Home tab (in line with sort +
+  // chips). Where the filter row doesn't render today (Watchlist sub-
+  // tabs without filterable lists, Watchbox, Collecting/Editorial,
+  // Admin), it falls through to a slim standalone row below the sub-
+  // tabs so the search stays in roughly the same vertical position
+  // across tabs. Mobile keeps the top-bar search (deferred — own
+  // session). Behavior unchanged: type filters current tab as today.
+  const searchPlaceholder = tab === "references"
+    ? "Search articles by title, author, body…"
+    : "Search reference or brand...";
+  const searchComposite = (
+    <div style={{ display: "flex", alignItems: "center", gap: 8,
+                  background: "var(--surface)", borderRadius: 10,
+                  padding: "6px 12px", flex: 1, minWidth: 0, maxWidth: 420 }}>
+      <SearchIcon />
+      <input value={search} onChange={e => setSearch(e.target.value)}
+        onKeyDown={e => { if (e.key === "Enter") e.target.blur(); }}
+        placeholder={searchPlaceholder}
+        style={{ flex: 1, border: "none", background: "transparent",
+                 fontSize: 13, color: "var(--text1)", outline: "none",
+                 fontFamily: "inherit", minWidth: 0 }} />
+      {search && user && (
+        <button onClick={openFavPrompt}
+          aria-label={currentIsSaved ? "Already saved" : "Save search as favorite"}
+          title={currentIsSaved ? "Saved to favorites" : "Save as favorite search"}
+          disabled={currentIsSaved}
+          style={{ flexShrink: 0, background: "none", border: "none",
+                  cursor: currentIsSaved ? "default" : "pointer",
+                  color: currentIsSaved ? "var(--brand)" : "var(--text2)",
+                  padding: "2px 4px", fontFamily: "inherit",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  gap: 5, fontSize: 12, fontWeight: 500 }}>
+          <svg width="14" height="14" viewBox="0 0 24 24"
+            fill={currentIsSaved ? "currentColor" : "none"}
+            stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+          <span>{currentIsSaved ? "Saved" : "Save"}</span>
+        </button>
+      )}
+      {search && (
+        <button onClick={() => setSearch("")} aria-label="Clear search"
+          style={{ flexShrink: 0, background: "none", border: "none",
+                  cursor: "pointer", color: "var(--text3)", padding: 2,
+                  fontFamily: "inherit", display: "flex",
+                  alignItems: "center", justifyContent: "center" }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      )}
+    </div>
+  );
+
+  // Slim row used on non-Home tabs that don't render the full filter
+  // row today. Keeps the search at a consistent vertical position
+  // across the app.
+  const searchOnlyRowJSX = (
+    <div style={{ display: "flex", alignItems: "center", padding: "8px 20px",
+                  borderBottom: "0.5px solid var(--border)", flexShrink: 0 }}>
+      {searchComposite}
+    </div>
+  );
+
   const filterRowJSX = (() => {
     // Source + Brand expansion panel — chip cluster shown directly
     // below the filter row when either pill is active. Inline-expand
@@ -114,6 +181,11 @@ export function DesktopShell(props) {
     <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 20px",
                   borderBottom: expandedSource || expandedBrand || expandedModel ? "none" : "0.5px solid var(--border)",
                   flexShrink: 0, flexWrap: "wrap", position: "relative" }}>
+      {/* Search — leftmost cluster (2026-05-21, Mark spec): in line
+          with sort + filter chips. Behavior unchanged from when it
+          lived in the top bar. */}
+      {searchComposite}
+
       {/* Status segment retired 2026-05-04 — both Listings AND
           Watchlist now have sub-tabs that cover Live / Sold. */}
 
@@ -434,50 +506,13 @@ export function DesktopShell(props) {
             </button>
           ))}
         </div>
-        {/* Top-bar search is suppressed on Home (Mark spec 2026-05-11):
-            the HomeTab editorial hero owns the search composite.
-            On Collecting (Mark spec 2026-05-21 v2): the global
-            search is RE-ENABLED but the placeholder swaps to
-            "Search articles…" so the same input serves the
-            Editorial sub-tab. The in-Editorial search input was
-            retired in lockstep — single source of truth, search
-            travels across tabs. */}
-        {tab === "home" ? (
-          <div style={{ flex: 1 }} />
-        ) : (
-        <div style={{ flex: 1, display: "flex", justifyContent: "center" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, background: "var(--surface)", borderRadius: 10, padding: "8px 12px", width: "100%", maxWidth: 640 }}>
-            <SearchIcon />
-            <input value={search} onChange={e => setSearch(e.target.value)}
-              onKeyDown={e => { if (e.key === "Enter") e.target.blur(); }}
-              placeholder={tab === "references" ? "Search articles by title, author, body…" : "Search reference or brand..."} style={{ flex: 1, border: "none", background: "transparent", fontSize: 13, color: "var(--text1)", outline: "none", fontFamily: "inherit", minWidth: 0 }} />
-            {search && user && (
-              <button onClick={openFavPrompt} aria-label={currentIsSaved ? "Already saved" : "Save search as favorite"}
-                title={currentIsSaved ? "Saved to favorites" : "Save as favorite search"}
-                disabled={currentIsSaved}
-                style={{ flexShrink: 0, background: "none", border: "none",
-                        cursor: currentIsSaved ? "default" : "pointer",
-                        color: currentIsSaved ? "var(--brand)" : "var(--text2)",
-                        padding: "2px 4px", fontFamily: "inherit",
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        gap: 5, fontSize: 12, fontWeight: 500 }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill={currentIsSaved ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                </svg>
-                <span>{currentIsSaved ? "Saved" : "Save"}</span>
-              </button>
-            )}
-            {search && (
-              <button onClick={() => setSearch("")} aria-label="Clear search"
-                style={{ flexShrink: 0, background: "none", border: "none", cursor: "pointer",
-                        color: "var(--text3)", padding: 2, fontFamily: "inherit",
-                        display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-              </button>
-            )}
-          </div>
-        </div>
-        )}
+        {/* Top-bar search relocated 2026-05-21 (Mark spec): now lives
+            inside the filter row (in line with sort + filter chips) on
+            every non-Home tab. Home keeps its editorial hero search.
+            Mobile still uses the top-bar pattern — relocating that is
+            a separate session. The flex spacer below pushes the About
+            link + auth chrome to the right edge of the bar. */}
+        <div style={{ flex: 1 }} />
         {/* About link — top-right area, before the auth chrome.
             Was previously next to the top-left wordmark; relocated
             2026-05-11 so it lives in the same zone as sign-in (per
@@ -507,21 +542,24 @@ export function DesktopShell(props) {
           the four collections-style sub-tabs are now part of
           watchSubTabsJSX. Prop kept on destructure for backward
           compat with the mock fixture. */}
-      {anyShareActive || tab === "home" ? null : (
-        (tab === "listings" && showListingsFilterRow) ||
-        inListsDrillIn ||
-        (tab === "watchlist" && watchTopTab !== "searches" &&
-          watchTopTab !== "my-collection" && watchTopTab !== "wishlist" &&
-          watchTopTab !== "lists" && watchTopTab !== "challenges")
-      )
-        ? filterRowJSX
-        : null
-      /* Filter-row spacer dropped 2026-05-14 (Mark feedback): on
-         Watchlists sub-tabs (Lists / Searches / My Watches /
-         Challenges) the empty placeholder row read as wasted space.
-         Tabs that genuinely need the filter row (Listings,
-         in-list drill-in) still render it; everywhere else, content
-         starts directly under the sub-tab strip. */}
+      {(() => {
+        if (anyShareActive || tab === "home") return null;
+        const showFullFilterRow =
+          (tab === "listings" && showListingsFilterRow) ||
+          inListsDrillIn ||
+          (tab === "watchlist" && watchTopTab !== "searches" &&
+            watchTopTab !== "my-collection" && watchTopTab !== "wishlist" &&
+            watchTopTab !== "lists" && watchTopTab !== "challenges");
+        // Full filter row carries search + chips + sort. Tabs without
+        // an applicable chip set fall through to a slim search-only
+        // row so the search stays at the same vertical position
+        // across the app (Mark spec 2026-05-21). Listings calendar
+        // sub-tab is the one exception — no search there either
+        // (the calendar isn't a searchable surface).
+        if (showFullFilterRow) return filterRowJSX;
+        if (tab === "listings" && listingsSubTab === "calendar") return null;
+        return searchOnlyRowJSX;
+      })()}
       <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
         {/* Top padding is 0 on Watchlist so the sub-tab strip sits flush
             against the filter pill row. Listings keeps the breathing room. */}
