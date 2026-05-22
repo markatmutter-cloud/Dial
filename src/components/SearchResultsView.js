@@ -61,34 +61,17 @@ function matchesArticleQuery(article, q) {
   return haystack.includes(q);
 }
 
-function Strip({ heading, count, items, onViewAll, isMobile, gridStyle, watchlist, handleWish, hidden, toggleHide, primaryCurrency, openCollectionPicker, handleShare, isAdmin, onClickListing }) {
-  if (items.length === 0) {
-    return (
-      <section style={{ padding: isMobile ? "16px 0" : "20px 0" }}>
-        <div style={{
-          display: "flex", alignItems: "baseline", justifyContent: "space-between",
-          padding: isMobile ? "0 16px 8px" : "0 20px 10px",
-        }}>
-          <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
-            <h2 style={{
-              margin: 0, fontSize: isMobile ? 16 : 18, fontWeight: 600,
-              color: "var(--text1)", fontFamily: "inherit",
-            }}>{heading}</h2>
-            <span style={{ fontSize: 12, color: "var(--text3)" }}>0</span>
-          </div>
-        </div>
-        <div style={{
-          padding: isMobile ? "12px 16px" : "12px 20px",
-          color: "var(--text3)", fontSize: 13, fontStyle: "italic",
-        }}>
-          No matches.
-        </div>
-      </section>
-    );
-  }
+function Strip({ heading, count, items, onViewAll, isMobile, watchlist, handleWish, hidden, toggleHide, primaryCurrency, openCollectionPicker, handleShare, isAdmin, onClickListing }) {
+  // Empty-strip render dropped 2026-05-22: parent already filters out
+  // zero-hit strips via .filter(s => s.count > 0). If items.length is
+  // 0 here it's a defensive no-op rather than the "No matches" slug.
+  if (items.length === 0) return null;
   const visible = items.slice(0, STRIP_MAX);
   return (
     <section style={{ padding: isMobile ? "16px 0" : "20px 0" }}>
+      {/* Header row — heading + count on left, View all on right.
+          Matches Home's SectionStrip header so the surface reads as
+          a Home-style slider rather than a tab content grid. */}
       <div style={{
         display: "flex", alignItems: "baseline", justifyContent: "space-between",
         padding: isMobile ? "0 16px 10px" : "0 20px 12px",
@@ -113,22 +96,38 @@ function Strip({ heading, count, items, onViewAll, isMobile, gridStyle, watchlis
           </button>
         )}
       </div>
+      {/* Horizontal-scrollable strip — mirrors Home's SectionStrip
+          layout (PR_φ-slider 2026-05-22 per Mark's original spec).
+          Mobile tiles ~38% / 170px max so 2.5 fit on a phone; desktop
+          tiles fixed 210px with several visible per viewport. */}
       <div style={{
-        ...gridStyle,
-        padding: isMobile ? "0 16px" : "0 20px",
+        display: "flex", gap: 1, overflowX: "auto", overflowY: "hidden",
+        padding: isMobile ? "0 16px 4px" : "0 20px 4px",
+        scrollSnapType: "x mandatory",
+        WebkitOverflowScrolling: "touch",
+        scrollbarWidth: "none", msOverflowStyle: "none",
+        background: "var(--border)",
       }}>
         {visible.map(item => (
-          <Card key={item.id}
-            item={item}
-            wished={!!watchlist[item.id]}
-            onWish={handleWish}
-            onHide={isAdmin ? toggleHide : undefined}
-            isHidden={!!hidden[item.id]}
-            onAddToCollection={openCollectionPicker}
-            primaryCurrency={primaryCurrency}
-            onShare={handleShare}
-            onClickListing={onClickListing}
-          />
+          <div key={item.id} style={isMobile ? {
+            flex: "0 0 38%", maxWidth: 170, scrollSnapAlign: "start",
+            background: "var(--card-bg)", position: "relative",
+          } : {
+            flex: "0 0 210px", scrollSnapAlign: "start",
+            background: "var(--card-bg)", position: "relative",
+          }}>
+            <Card
+              item={item}
+              wished={!!watchlist[item.id]}
+              onWish={handleWish}
+              onHide={isAdmin ? toggleHide : undefined}
+              isHidden={!!hidden[item.id]}
+              onAddToCollection={openCollectionPicker}
+              primaryCurrency={primaryCurrency}
+              onShare={handleShare}
+              onClickListing={onClickListing}
+            />
+          </div>
         ))}
       </div>
     </section>
@@ -218,18 +217,17 @@ export function SearchResultsView({
   }, []);
   const canEdit = typeof setSearch === "function";
 
-  // PR_φ1 2026-05-22: strip-order is dynamic by hit count desc; empty
-  // strips are dropped entirely (no "No matches" clutter). Each entry
-  // owns its render props so the iteration loop stays clean.
-  // PR_φ2 2026-05-22: articles strip uses kind='article' so the loop
-  // can dispatch between Card (listings) and ArticleStrip (articles).
+  // Strip order — fixed sequence per Mark spec 2026-05-22:
+  // live → auctions → articles → sold. Was dynamic by hit-count desc
+  // (PR_φ1) which moved things around per query; fixed sequence makes
+  // the surface predictable. Empty strips still drop entirely so the
+  // user only sees strips that have hits.
   const stripDefs = [
     { key: "live", heading: "Live listings", kind: "listing", count: liveListings.length, items: liveListings, onViewAll: onViewAllLive },
     { key: "auctions", heading: "Live auctions", kind: "listing", count: liveAuctions.length, items: liveAuctions, onViewAll: onViewAllAuctions },
-    { key: "sold", heading: "Archive (Sold)", kind: "listing", count: soldItems.length, items: soldItems, onViewAll: onViewAllSold },
     { key: "articles", heading: "Articles", kind: "article", count: articleHits.length, items: articleHits, onViewAll: onViewAllArticles },
-  ].filter(s => s.count > 0)
-    .sort((a, b) => b.count - a.count);
+    { key: "sold", heading: "Archive (Sold)", kind: "listing", count: soldItems.length, items: soldItems, onViewAll: onViewAllSold },
+  ].filter(s => s.count > 0);
 
   return (
     <div style={{ paddingBottom: isMobile ? 32 : 40 }}>
@@ -404,22 +402,27 @@ function ArticleStrip({ heading, count, items, onViewAll, isMobile }) {
           </button>
         )}
       </div>
+      {/* Horizontal-scrollable strip — mirrors Strip + Home pattern. */}
       <div style={{
-        display: "grid",
-        gridTemplateColumns: isMobile
-          ? "repeat(auto-fill, minmax(140px, 1fr))"
-          : "repeat(auto-fill, minmax(180px, 1fr))",
-        gap: 10,
-        padding: isMobile ? "0 16px" : "0 20px",
+        display: "flex", gap: 1, overflowX: "auto", overflowY: "hidden",
+        padding: isMobile ? "0 16px 4px" : "0 20px 4px",
+        scrollSnapType: "x mandatory",
+        WebkitOverflowScrolling: "touch",
+        scrollbarWidth: "none", msOverflowStyle: "none",
+        background: "var(--border)",
       }}>
         {visible.map(a => (
           <a key={a.url} href={a.url} target="_blank" rel="noopener noreferrer"
-            style={{
+            style={isMobile ? {
+              flex: "0 0 38%", maxWidth: 170, scrollSnapAlign: "start",
               display: "flex", flexDirection: "column",
               textDecoration: "none", color: "inherit",
-              background: "var(--surface)",
-              border: "0.5px solid var(--border)",
-              borderRadius: 8, overflow: "hidden",
+              background: "var(--card-bg)",
+            } : {
+              flex: "0 0 210px", scrollSnapAlign: "start",
+              display: "flex", flexDirection: "column",
+              textDecoration: "none", color: "inherit",
+              background: "var(--card-bg)",
             }}>
             {a.image && (
               <div style={{ width: "100%", aspectRatio: "16 / 10", background: "var(--bg)" }}>
