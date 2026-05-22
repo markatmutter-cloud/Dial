@@ -1226,12 +1226,17 @@ export default function Watchlist() {
     for (const [k, v] of Object.entries(c)) root.style.setProperty(k, v);
   }, [c]);
 
-  // Dynamic PWA theme-color — Mark spec 2026-05-22: "(and on PWA
-  // strip for landing page)". Olive identifies the chrome zone on
-  // non-Home tabs (matches the in-page colored chrome via PR_β).
-  // Home flips to the page bg color so the iOS status-bar strip
-  // matches Home's neutral chrome — single editorial moment, no
-  // identity strip above. White in light, dark surface in dark mode.
+  // Dynamic PWA theme-color + html background — Mark spec 2026-05-22.
+  // Olive identifies the chrome zone on non-Home tabs (matches PR_β).
+  // Two surfaces driven from one effect:
+  //   1. <meta name="theme-color"> drives the iOS PWA status-bar
+  //      strip + Android Chrome address bar. Three meta tags (default
+  //      / light / dark) updated by media attr.
+  //   2. <html> background — iOS Safari over-scroll bounce reveals
+  //      this element's bg (NOT body's). Mark report: bounce at top
+  //      shows white sliver between olive chrome and content. Setting
+  //      html bg = olive on non-Home makes bounce-reveal continuous
+  //      with the chrome.
   useEffect(() => {
     if (typeof document === "undefined") return;
     const onHome = tab === "home";
@@ -1246,7 +1251,10 @@ export default function Watchlist() {
       else if (media.includes("light")) m.setAttribute("content", lightColor);
       else if (media.includes("dark"))  m.setAttribute("content", darkColor);
     });
-  }, [tab]);
+    document.documentElement.style.background = onHome
+      ? (dark ? darkHome : lightHome)
+      : oliveColor;
+  }, [tab, dark]);
 
   // Auction lots projected into the main listings feed. Two sources
   // get merged by URL key:
