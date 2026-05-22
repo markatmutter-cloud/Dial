@@ -51,24 +51,24 @@ function EditorialHero({ isMobile, dark }) {
   // Collecting where it's an identity cue, not on Home.
   return (
     <section style={{
-      // PR 2026-05-22 γ: top bar suppressed on Home → hero sits at
-      // the top of the viewport. PR 2026-05-22 (Mark report
-      // "masthead looks dominating - 50% screen, can't see one row
-      // of watches fully on laptop"): compress the hero so the
-      // first strip lands above the fold on a laptop viewport.
-      padding: isMobile ? "6px 16px 8px" : "8px 16px 12px",
+      // PR 2026-05-22 rebalance (Mark report: hero too small after
+      // #507 compression; band too tall after #508 padding bump).
+      // Bring the hero back up — bigger wordmark + moonphase, less
+      // top padding so the whole composition sits closer to the
+      // top of the viewport.
+      padding: isMobile ? "4px 16px 6px" : "4px 16px 10px",
       textAlign: "center",
     }}>
       <div style={{
         display: "flex", justifyContent: "center",
-        marginBottom: isMobile ? 6 : 8,
+        marginBottom: isMobile ? 6 : 10,
       }}>
-        <MoonPhaseIndicator size={isMobile ? 80 : 110} dark={dark} />
+        <MoonPhaseIndicator size={isMobile ? 100 : 150} dark={dark} />
       </div>
       <h1 style={{
         margin: isMobile ? "0 0 6px" : "0 0 10px",
         fontFamily: "inherit",
-        fontSize: isMobile ? 24 : 36,
+        fontSize: isMobile ? 28 : 48,
         fontWeight: 500,
         letterSpacing: isMobile ? "0.14em" : "0.16em",
         // PR_δ2 2026-05-22: wordmark in brand olive — threads the brand
@@ -80,11 +80,11 @@ function EditorialHero({ isMobile, dark }) {
       }}>
         Watchlist
       </h1>
-      {/* Short olive kicker rule (PR #501) — tightened to read as
-          a continuation of the wordmark rather than a separator. */}
+      {/* Short olive kicker rule (PR #501) — sized to the wordmark
+          beneath it so it reads as a continuation, not a separator. */}
       <div style={{
         height: 2,
-        width: isMobile ? 44 : 64,
+        width: isMobile ? 52 : 80,
         background: "var(--brand-olive-text)",
         margin: "0 auto",
       }} />
@@ -975,8 +975,8 @@ export function HomeTab(props) {
           alignItems: "center",
           gap: 8,
           padding: isMobile
-            ? "calc(env(safe-area-inset-top, 0px) + 8px) 16px 0"
-            : "10px 20px 0",
+            ? "calc(env(safe-area-inset-top, 0px) + 4px) 16px 0"
+            : "6px 20px 0",
         }}>
           {openAbout && (
             <button onClick={openAbout} style={{
@@ -1006,17 +1006,15 @@ export function HomeTab(props) {
         marginLeft: -shellPad,
         marginRight: -shellPad,
         background: "var(--brand-olive-tint-12)",
-        // PR 2026-05-22 (Mark report: "search bar could be a little
-        // lower — weight feels like it's at the top"). More gap
-        // between tabs row + search bar so the search sits visually
-        // mid-band, and more bottom padding so the band doesn't end
-        // tight under the search. Tabs row stays close to the top.
-        padding: isMobile ? "8px 16px 16px" : "10px 20px 20px",
-        marginBottom: isMobile ? 16 : 22,
+        // PR 2026-05-22 rebalance: tighter band so the hero (now
+        // bigger) is the visual anchor and the band reads as a slim
+        // nav strip rather than a substantial second section.
+        padding: isMobile ? "6px 16px 8px" : "8px 20px 10px",
+        marginBottom: isMobile ? 14 : 18,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        gap: isMobile ? 12 : 16,
+        gap: isMobile ? 8 : 10,
       }}>
         {homeMastheadTabs && (
           <div style={{
