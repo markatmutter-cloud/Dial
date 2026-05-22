@@ -134,9 +134,9 @@ export function MobileShell(props) {
             as the wordmark home-tap affordance. */}
         {(tab !== "home" || anyShareActive || searchAllActive) && (
         <div style={{
-          padding: "4px 16px 4px",
-          paddingTop: "calc(env(safe-area-inset-top, 0px) + 4px)",
-          display: "flex", alignItems: "baseline",
+          padding: "8px 16px 8px",
+          paddingTop: "calc(env(safe-area-inset-top, 0px) + 8px)",
+          display: "flex", alignItems: "center",
           justifyContent: "space-between", gap: 12,
           // PR_β experiment 2026-05-22: olive chrome zone (extends
           // the iOS PWA theme-color strip into the brand + tabs rows).
