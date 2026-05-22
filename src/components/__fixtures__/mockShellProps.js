@@ -43,6 +43,7 @@ export function buildMockShellProps(overrides = {}) {
     modelsExpanded: false,
     visibleModels: [],
     listingsSubTab: "live",
+    referencesSubTab: "editorial",
     hasFilters: false,
     activeFiltersStripJSX: null,
     hiddenItems: [],

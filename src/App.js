@@ -4099,6 +4099,7 @@ export default function Watchlist() {
     drawerOpen,
     filterBrands, filterSources, filterModels,
     listingsSubTab,
+    referencesSubTab,
     hasFilters, hiddenItems,
     maxPriceText, minPriceText,
     filterHearted,
