@@ -465,7 +465,7 @@ export default function Watchlist() {
   // (Mark spec, "while at it, move the challenge tab from watchlist
   // to collecting"). Challenges sits as a Collecting sub-tab
   // alongside Editorial / Size compare / Links.
-  const REFERENCES_SUB_VALUES = ["editorial", "challenges", "size", "links"];
+  const REFERENCES_SUB_VALUES = ["editorial", "screening", "challenges", "size", "links"];
   const [referencesSubTab, setReferencesSubTab] = useState(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
@@ -3719,6 +3719,7 @@ export default function Watchlist() {
       }}>
         {[
           ["editorial",  "Editorial"],
+          ["screening",  "Screening"],
           ["challenges", "Challenges"],
           ["size",       "Size comparison"],
           ["links",      "Links"],
@@ -3951,6 +3952,22 @@ export default function Watchlist() {
       primaryCurrency={primaryCurrency}
       pendingChallengeDrillId={pendingChallengeDrillId}
       clearPendingChallengeDrill={() => setPendingChallengeDrillId(null)}
+      // Screening landing (PR 2026-05-22): destination that lists
+      // pools (auction catalogs, lists, shared lists) as cards.
+      // Auction tap → existing handleReviewCatalog (bulk-add +
+      // drill-in + auto-Review). List tap → setPendingReviewListId
+      // + nav to Watchlists > Lists (CollectionsTab routes the
+      // rest, same wire as the auction calendar already uses).
+      auctions={auctions}
+      lotCountsByAuctionUrl={lotCountsByAuctionUrl}
+      onReviewAuctionCatalog={handleReviewCatalog}
+      onScreeningOpenList={(listId) => {
+        if (!listId) return;
+        setPendingReviewListId(listId);
+        setTab("watchlist");
+        setWatchTopTab("lists");
+        setPage(1);
+      }}
     />
   );
 

@@ -3,6 +3,7 @@ import { SizeCompare } from "./SizeCompare";
 import { Links } from "./Links";
 import { EditorialView } from "./EditorialView";
 import { ChallengesView } from "./ChallengesView";
+import { ScreeningView } from "./ScreeningView";
 
 // Collecting tab (internal `tab="references"`, UI label "Collecting").
 // Restructured 2026-05-18 (Mark spec) from a resource-button list
@@ -57,6 +58,12 @@ export function ReferencesTab({
   primaryCurrency,
   pendingChallengeDrillId,
   clearPendingChallengeDrill,
+  // Screening surface (PR 2026-05-22) — collector-leisure
+  // destination that lists screening pools.
+  auctions,
+  lotCountsByAuctionUrl,
+  onReviewAuctionCatalog,
+  onScreeningOpenList,
 }) {
   // Tab re-tap → return to default sub-tab. App.js bumps
   // `tabResetTick` whenever the user clicks the active main tab
@@ -89,6 +96,19 @@ export function ReferencesTab({
       <div style={{ paddingTop: 4 }}>
         <Links allListings={allListings || []} onBack={null} />
       </div>
+    );
+  } else if (current === "screening") {
+    body = (
+      <ScreeningView
+        auctions={auctions}
+        lotCounts={lotCountsByAuctionUrl}
+        collections={collectionsApi?.collections}
+        itemsByCollection={collectionsApi?.itemsByCollection}
+        userId={user?.id || null}
+        onReviewAuction={onReviewAuctionCatalog}
+        onReviewList={onScreeningOpenList}
+        isMobile={isMobile}
+      />
     );
   } else if (current === "challenges") {
     // PR 2026-05-22: Challenges moved here from Watchlists tab.
