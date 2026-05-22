@@ -3,7 +3,7 @@ import { SearchIcon, TabIcon } from "./icons";
 import { Chip } from "./Chip";
 import { AboutModal } from "./AboutModal";
 import { SignInPromptModal } from "./SignInPromptModal";
-import { pillBase } from "../styles";
+import { pillBase, tabPill } from "../styles";
 
 // Desktop shell — receives everything the desktop branch needs from
 // App.js as a single props bag. Stage 2 of recommendation #1 (extracted
@@ -492,29 +492,25 @@ export function DesktopShell(props) {
             Watchlist
           </button>
         )}
-        <div style={{ display: "flex", gap: 6, alignItems: "center", flexShrink: 0, marginLeft: 4 }}>
-          {/* 2026-05-07 IA pass:
-              - 2A.1 renamed UI labels: Watchlist → Saved, Cool Stuff
-                → Learn (URL key `?tab=watchlist`, `?tab=references`,
-                state vars unchanged — internal/external naming
-                divergence documented in CLAUDE.md).
-              - 2A.2 collapsed standalone Collections tab into Saved.
-                Its sub-tabs (my-collection / wishlist / lists /
-                challenges) are now part of the Saved sub-tab strip.
-                `?tab=collections` redirects to `?tab=watchlist`. */}
-          {[["listings", "Listings"], ["watchlist", "Watchlists"], ["references", "Collecting"]].map(([key, label]) => (
-            <button key={key} onClick={() => setTab(key)} style={{
-              padding: "6px 14px", borderRadius: 20, border: "0.5px solid var(--border)", cursor: "pointer",
-              fontFamily: "inherit", fontSize: 13,
-              background: tab === key ? "var(--text1)" : "var(--surface)",
-              color: tab === key ? "var(--bg)" : "var(--text2)",
-              fontWeight: tab === key ? 600 : 500,
-              display: "flex", alignItems: "center", gap: 6,
-            }}>
-              <TabIcon kind={key} />
-              {label}
-            </button>
-          ))}
+        <div style={{ display: "flex", gap: 18, alignItems: "center", flexShrink: 0, marginLeft: 8 }}>
+          {/* PR_ε1 2026-05-22: filled-pill active state → underline
+              pattern via tabPill. Unifies the active metaphor with
+              mobile main tabs + every sub-tab strip (also tabPill).
+              Sets the desktop chrome up for olive top bar in PR_ε2
+              by passing through onOlive when the top bar flips. */}
+          {[["listings", "Listings"], ["watchlist", "Watchlists"], ["references", "Collecting"]].map(([key, label]) => {
+            const active = tab === key;
+            return (
+              <button key={key} onClick={() => setTab(key)} style={{
+                ...tabPill(active),
+                padding: "10px 0",
+                display: "flex", alignItems: "center", gap: 6,
+              }}>
+                <TabIcon kind={key} />
+                {label}
+              </button>
+            );
+          })}
         </div>
         {/* Top-bar search relocated 2026-05-21 (Mark spec): now lives
             inside the filter row (in line with sort + filter chips) on
