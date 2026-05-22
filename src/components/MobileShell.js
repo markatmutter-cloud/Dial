@@ -26,6 +26,7 @@ export function MobileShell(props) {
     currentIsSaved, drawerOpen,
     filterBrands, filterSources, filterModels,
     listingsSubTab,
+    referencesSubTab,
     hasFilters, hiddenItems,
     maxPriceText, minPriceText,
     filterHearted,
@@ -171,7 +172,11 @@ export function MobileShell(props) {
           // Home keeps neutral page bg so the editorial moment
           // (hero + recently-added strips) carries first paint.
           background: tab === "home" ? "var(--bg)" : "var(--brand-olive)",
-          borderBottom: tab === "home" ? "0.5px solid var(--border)" : "none",
+          // borderBottom removed on Home 2026-05-22 (Mark spec:
+          // "there is a feint line under the tabs which I want
+          // gone"). Editorial hero below carries enough visual
+          // weight that no divider is needed.
+          borderBottom: "none",
         }}>
           <div style={{
             display: "flex", gap: 0,
@@ -251,12 +256,16 @@ export function MobileShell(props) {
         {!anyShareActive && identityBandJSX}
         {/* Search row — hidden on:
             - The entire Watchlists tab (Mark spec 2026-05-21).
-            - Listings > Auction calendar sub-tab (Mark spec
-              2026-05-22: "auction calendar subtab shouldn't have a
-              search bar"). Calendar is a month-grouped list of
-              upcoming sales — search across calendar entries
-              isn't a useful affordance. */}
-        {tab !== "watchlist" && !(tab === "listings" && listingsSubTab === "calendar") && (
+            - Listings > Auction calendar (Mark spec 2026-05-22).
+            - Collecting > Size comparison + Links (Mark spec
+              2026-05-22: "no need to have search on size
+              comparison or links"). Editorial keeps search (its
+              filter strip has its own inline input on desktop;
+              mobile uses the shell search row here). */}
+        {tab !== "watchlist"
+          && !(tab === "listings" && listingsSubTab === "calendar")
+          && !(tab === "references" && (referencesSubTab === "size" || referencesSubTab === "links"))
+          && (
         <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 16px 4px", borderBottom: "0.5px solid var(--border)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, background: "transparent", border: "0.5px solid var(--border)", borderRadius: 10, padding: "8px 12px", flex: 1, minWidth: 0 }}>
             <SearchIcon />

@@ -593,7 +593,16 @@ export function DesktopShell(props) {
       <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
         {/* Top padding is 0 on Watchlist so the sub-tab strip sits flush
             against the filter pill row. Listings keeps the breathing room. */}
-        <div data-desktop-main style={{ flex: 1, overflowY: "auto", padding: `${tab === "watchlist" ? 0 : 14}px 20px 32px` }}>
+        <div data-desktop-main style={{ flex: 1, overflowY: "auto",
+          // Top padding zeroed on tabs whose first child IS a sticky
+          // filter strip (Collecting Editorial) or whose content
+          // doesn't need breathing room from the chrome (Watchlist
+          // collections sub-tabs). Keeps the filter strip flush with
+          // the sub-tab strip above — Mark report 2026-05-22:
+          // "search is different Y height between listings and
+          // collecting tab" was driven by this 14px gap.
+          padding: `${(tab === "watchlist" || tab === "references") ? 0 : 14}px 20px 32px`,
+        }}>
           {/* Share-receive surface — self-contained component. */}
           {shareReceiverJSX}
           {/* Watch Challenges receive surface (v1.5). */}
