@@ -22,7 +22,7 @@ export function DesktopShell(props) {
     aboutModalOpen, activeFilterPop,
     brandsExpanded, sourcesExpanded, setSourcesExpanded,
     currentIsSaved,
-    filterBrands, filterSources, filterModels,
+    filterBrands, filterSources, filterModels, filterSaleUrls,
     effectiveBrandsCount = 0, effectiveSourcesCount = 0, effectiveModelsCount = 0,
     listingsSubTab,
     allFiltered, displayedCount,
@@ -39,7 +39,10 @@ export function DesktopShell(props) {
     setMaxPriceText, setMinPriceText,
     setFilterHearted, setPage, setSearch, setSignInPromptOpen, setSort,
     setTab,
-    toggleBrand, toggleHide, toggleSource, toggleModel,
+    toggleBrand, toggleHide, toggleSource, toggleModel, toggleSaleUrl,
+    // Sale filter (PR 2026-05-22): list of active sales for the
+    // dropdown + the lot counts so the chip can show counts.
+    auctions, lotCountsByAuctionUrl, setFilterSaleUrls,
     // Pre-built JSX
     addSearchModalJSX,
     authJSX, baseStyle,
@@ -237,10 +240,11 @@ export function DesktopShell(props) {
     const expandedSource = activeFilterPop === "source";
     const expandedBrand  = activeFilterPop === "brand";
     const expandedModel  = activeFilterPop === "model";
+    const expandedSale   = activeFilterPop === "sale";
     return (
     <>
     <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 20px",
-                  borderBottom: expandedSource || expandedBrand || expandedModel ? "none" : "0.5px solid var(--border)",
+                  borderBottom: expandedSource || expandedBrand || expandedModel || expandedSale ? "none" : "0.5px solid var(--border)",
                   flexShrink: 0, flexWrap: "wrap", position: "relative" }}>
       {/* Search — leftmost cluster (2026-05-21, Mark spec): in line
           with sort + filter chips. Behavior unchanged from when it
@@ -403,6 +407,15 @@ export function DesktopShell(props) {
           Model{(filterModels?.length || 0) > 0 ? ` · ${filterModels.length}` : ""}
         </button>
       )}
+      {/* Sale filter — Listings > Live auctions only (PR 2026-05-22
+          auction IA). Lots are bucketed by closing-time bands; the
+          Sale chip lets you drill into a specific catalog. */}
+      {tab === "listings" && listingsSubTab === "auctions" && (
+        <button onClick={() => setActiveFilterPop(p => p === "sale" ? null : "sale")}
+          style={dtPill((filterSaleUrls?.length || 0) > 0 || activeFilterPop === "sale")}>
+          Sale{(filterSaleUrls?.length || 0) > 0 ? ` · ${filterSaleUrls.length}` : ""}
+        </button>
+      )}
 
       {/* Auctions-only pill retired 2026-05-04 — Watchlist > Saved
           auctions sub-tab covers it. */}
@@ -541,6 +554,52 @@ export function DesktopShell(props) {
         )}
       </div>
     )}
+    {expandedSale && (() => {
+      // Sale picker — active sales only, sorted closing-soonest.
+      // Skips sales with zero lots (the chip wouldn't be useful).
+      const active = ((auctions || []) || []).filter(a =>
+        a && a.url && ((lotCountsByAuctionUrl || {})[a.url] || 0) > 0
+      ).filter(a => {
+        // Skip past sales (date_end > 1 day ago).
+        const end = a.dateEnd ? new Date(a.dateEnd).getTime() : 0;
+        if (!end) return true;
+        return end > Date.now() - 86400000;
+      }).sort((a, b) => {
+        const da = a.dateEnd ? new Date(a.dateEnd).getTime() : 0;
+        const db = b.dateEnd ? new Date(b.dateEnd).getTime() : 0;
+        return da - db;
+      });
+      return (
+        <div style={expansionPanelStyle}>
+          {active.length === 0 ? (
+            <span style={{ fontSize: 12, color: "var(--text3)" }}>
+              No active sales with lots.
+            </span>
+          ) : (
+            <>
+              {active.map(a => {
+                const isOn = (filterSaleUrls || []).includes(a.url);
+                const count = (lotCountsByAuctionUrl || {})[a.url] || 0;
+                const label = `${a.house || ""}${a.title ? " · " + a.title : ""}`.trim()
+                  + (a.dateLabel ? ` · ${a.dateLabel}` : "")
+                  + ` · ${count}`;
+                return (
+                  <Chip key={a.url} label={label} active={isOn}
+                    onClick={() => toggleSaleUrl && toggleSaleUrl(a.url)} />
+                );
+              })}
+              {(filterSaleUrls?.length || 0) > 0 && (
+                <button onClick={() => setFilterSaleUrls && setFilterSaleUrls([])} style={{
+                  marginLeft: "auto", fontSize: 12, padding: "4px 10px", borderRadius: 6,
+                  border: "0.5px solid var(--border)", background: "transparent",
+                  color: "var(--text2)", cursor: "pointer", fontFamily: "inherit",
+                }}>Clear</button>
+              )}
+            </>
+          )}
+        </div>
+      );
+    })()}
     </>
     );
   })();
