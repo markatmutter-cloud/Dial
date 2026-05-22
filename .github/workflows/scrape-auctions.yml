@@ -27,7 +27,10 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install requests
+        # curl-cffi is used by the Bonhams enumerator only (TLS-finger-
+        # print impersonation needed to clear Cloudflare's GHA-IP
+        # challenge). See auction_lots_scraper.py.
+        run: pip install requests curl-cffi
 
       - name: Run Antiquorum auctions scraper
         continue-on-error: true

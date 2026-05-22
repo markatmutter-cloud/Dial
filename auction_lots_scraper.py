@@ -1208,6 +1208,40 @@ BONHAMS_BUILDID_RE = re.compile(r'"buildId":"([^"]+)"')
 BONHAMS_SALE_URL_RE = re.compile(r"/auction/(\d+)/([^/?#]+)/?")
 
 
+# Bonhams' Cloudflare configuration applies a stricter bot challenge
+# to GitHub Actions IPs than to residential IPs — the plain `requests`
+# library 403s from CI because Cloudflare inspects the TLS finger-
+# print (JA3), not just HTTP headers. curl-cffi impersonates Chrome's
+# real TLS handshake and clears the challenge. We use it ONLY for
+# Bonhams fetches; the other houses (Antiquorum, Christie's, Sotheby's,
+# Phillips, Monaco Legend) work fine with plain `requests`.
+try:
+    from curl_cffi import requests as _curl_cffi_requests
+    _BONHAMS_IMPERSONATE = "chrome"
+    _BONHAMS_FETCH_OK = True
+except ImportError:
+    _curl_cffi_requests = None
+    _BONHAMS_IMPERSONATE = None
+    _BONHAMS_FETCH_OK = False
+
+
+def _bonhams_fetch(url, accept="text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8"):
+    """Fetch one Bonhams URL via curl-cffi (Chrome TLS impersonation).
+    Falls back to plain `requests` if curl-cffi isn't installed —
+    expected only on dev machines where the Cloudflare-from-GHA
+    challenge doesn't apply anyway.
+    Returns the response object (compatible with requests.Response
+    for .text / .json() / .raise_for_status() / .status_code)."""
+    if _curl_cffi_requests is not None:
+        return _curl_cffi_requests.get(
+            url,
+            impersonate=_BONHAMS_IMPERSONATE,
+            headers={"Accept": accept, "Accept-Language": "en-US,en;q=0.9"},
+            timeout=30,
+        )
+    return requests.get(url, headers={**HEADERS, "Accept": accept}, timeout=30)
+
+
 def _bonhams_lot_to_record(lot, auction_obj, sale_url):
     """Map a Bonhams /_next/data auctionLots[] entry into the canonical
     auction-lot record shape (matches Christie's / Sotheby's / Phillips
@@ -1309,7 +1343,7 @@ def enumerate_bonhams(sale_url, sale=None):
     sale-page HTML on every run so we're never stuck on a stale id.
     """
     try:
-        r = requests.get(sale_url, headers=HEADERS, timeout=30)
+        r = _bonhams_fetch(sale_url)
         r.raise_for_status()
     except Exception as e:
         print(f"  [Bonhams] sale page fetch failed: {e}")
@@ -1327,10 +1361,9 @@ def enumerate_bonhams(sale_url, sale=None):
     json_url_base = (
         f"https://www.bonhams.com/_next/data/{build_id}/auction/{sale_id}/{slug}.json"
     )
-    json_headers = {**HEADERS, "Accept": "application/json"}
 
     try:
-        pr = requests.get(json_url_base, headers=json_headers, timeout=30)
+        pr = _bonhams_fetch(json_url_base, accept="application/json")
         pr.raise_for_status()
         page1 = pr.json()
     except Exception as e:
@@ -1347,10 +1380,9 @@ def enumerate_bonhams(sale_url, sale=None):
     for page_idx in range(2, pages_needed + 1):
         try:
             time.sleep(PER_LOT_SLEEP_SECONDS)
-            pr = requests.get(
+            pr = _bonhams_fetch(
                 f"{json_url_base}?page={page_idx}",
-                headers=json_headers,
-                timeout=30,
+                accept="application/json",
             )
             pr.raise_for_status()
             payload = pr.json()

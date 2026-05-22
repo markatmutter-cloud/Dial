@@ -874,8 +874,23 @@ def scrape_bonhams_lot(url):
     Mirrors the shape of scrape_christies_lot / scrape_sothebys_lot
     so this function is interchangeable with them at every call
     site (manual-URL tracking, future per-lot essay fetches, etc.).
+
+    Uses curl-cffi (Chrome TLS impersonation) when available — Bonhams
+    Cloudflare 403s plain `requests` from GitHub Actions IPs because
+    it inspects the TLS fingerprint, not just HTTP headers. Falls
+    back to plain `requests` if curl-cffi isn't installed.
     """
-    r = requests.get(url, headers=HEADERS, timeout=30)
+    try:
+        from curl_cffi import requests as _cf
+        r = _cf.get(
+            url,
+            impersonate="chrome",
+            headers={"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                     "Accept-Language": "en-US,en;q=0.9"},
+            timeout=30,
+        )
+    except ImportError:
+        r = requests.get(url, headers=HEADERS, timeout=30)
     r.raise_for_status()
     m = re.search(r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>', r.text, re.S)
     if not m:
