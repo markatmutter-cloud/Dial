@@ -23,6 +23,10 @@ Per-house enumeration:
                carries title, price, image, status, brand-group)
   Christie's → window.chrComponents.lots.data.lots inline JSON
                (full per-lot data, no per-lot fetch needed)
+  Monaco Legend → server-rendered Laravel/Livewire HTML; per-lot
+               <section class="lot[ sold]" data-id data-num data-est>
+               with embedded title/brand/estimation/sold-price.
+               One sale-page fetch covers every lot.
   Sotheby's  → __NEXT_DATA__.props.pageProps.algoliaJson.hits
                (paginates via &page=N URL param, ~48 hits/page)
   Phillips   → seldon-object-tile data-testid attributes give lot URLs;
@@ -30,7 +34,6 @@ Per-house enumeration:
                Capped at PHILLIPS_LOTS_PER_SALE/sale to bound CI time.
 
 Houses we skip (lot-level scraping not viable today):
-  Monaco Legend  — SPA, no server-rendered lot list
   Heritage       — DataDome + Cloudflare bot wall on every subdomain
 
 Run: python3 auction_lots_scraper.py
@@ -1367,6 +1370,218 @@ def enumerate_bonhams(sale_url, sale=None):
     return [(u, {k: v for k, v in d.items() if not k.startswith("_")}) for u, d in out]
 
 
+# ── Monaco Legend ───────────────────────────────────────────────────────
+
+MLA_SECTION_RE = re.compile(
+    r'<section\s+class="(lot[^"]*)"\s+'
+    r'data-id="(\d+)"\s+data-num="(\d+)"\s+'
+    r'data-est="([^"]*)"\s+data-year="([^"]*)"'
+)
+MLA_TITLE_RE   = re.compile(r"<span class='lot-title'>([^<]+)</span>")
+MLA_BRAND_RE   = re.compile(r"<span class='lot-brand'>([^<]+)</span>")
+MLA_EST_RE     = re.compile(r"<p class='lot-estimation'>([^<]+)</p>")
+MLA_SOLD_RE    = re.compile(r'<span class="bid-price">([^<]+)</span>')
+MLA_IMG_RE     = re.compile(r'(https://cdn\.monacolegendauctions\.com/[a-z0-9-]+)/')
+MLA_URL_RE     = re.compile(r'href="(https://www\.monacolegendauctions\.com/auction/[^"]+/lot-\d+)"')
+
+
+def _mla_parse_estimation(text):
+    """Monaco Legend estimation strings come in three currency flavours:
+        'Fr. 25\\'000 \xe2\x80\x93\xe2\x81\xa8 50\\'000'   (CHF, apostrophe-separated)
+        '\xe2\x82\xac 8.000 \xe2\x80\x93\xe2\x81\xa8 16.000'      (EUR, dot-separated)
+        'US$ 5,000 - 10,000'                  (rare; comma-separated)
+    Returns (currency_iso, low_int, high_int) — None values on parse fail.
+    """
+    if not text:
+        return None, None, None
+    # HTML entity normalise + collapse whitespace
+    t = (text.replace("&#8211;", "-").replace("&#8288;", "")
+              .replace("–", "-").replace("—", "-").replace("⁠", "")
+              .replace("\xa0", " "))
+    t = re.sub(r"\s+", " ", t).strip()
+    # Detect currency from leading token
+    currency = None
+    if t.startswith("Fr"):
+        currency = "CHF"
+    elif t.startswith("€") or t.startswith("EUR"):
+        currency = "EUR"
+    elif t.startswith("US$") or t.startswith("$"):
+        currency = "USD"
+    elif t.startswith("\xa3") or t.startswith("GBP"):
+        currency = "GBP"
+    # Strip the currency token before number parsing
+    body = re.sub(r"^(?:Fr\.|€|EUR|US\$|\$|GBP|\xa3)\s*", "", t, flags=re.I)
+    # Drop apostrophe/dot/space thousand separators, keep digits + dash
+    nums = re.findall(r"\d[\d',. ]*", body)
+    def _clean(n):
+        # Keep digits only — apostrophes, dots, commas, spaces are all
+        # thousand separators across the three formats Monaco Legend uses
+        digits = re.sub(r"[^\d]", "", n)
+        return int(digits) if digits else None
+    if len(nums) >= 2:
+        return currency, _clean(nums[0]), _clean(nums[1])
+    if len(nums) == 1:
+        v = _clean(nums[0])
+        return currency, v, v
+    return currency, None, None
+
+
+def _mla_parse_sold_price(text, currency_hint=None):
+    """Sold-price string like ' € 9.750' or 'Fr. 9\\'750'. Returns
+    (currency_iso, amount_int) — currency falls back to hint."""
+    if not text:
+        return currency_hint, None
+    t = (text.replace("&#8211;", "-").replace("&#8288;", "")
+              .replace("–", "-").replace("\xa0", " "))
+    t = re.sub(r"\s+", " ", t).strip()
+    cur = currency_hint
+    if t.startswith("Fr"):
+        cur = "CHF"
+    elif t.startswith("€"):
+        cur = "EUR"
+    elif t.startswith("US$") or t.startswith("$"):
+        cur = "USD"
+    body = re.sub(r"^(?:Fr\.|€|EUR|US\$|\$|GBP|\xa3)\s*", "", t, flags=re.I)
+    nums = re.findall(r"\d[\d',. ]*", body)
+    if nums:
+        digits = re.sub(r"[^\d]", "", nums[0])
+        return cur, (int(digits) if digits else None)
+    return cur, None
+
+
+def enumerate_monaco_legend(sale_url, sale=None):
+    """Return a list of (url, lot dict) tuples for a Monaco Legend sale.
+
+    Monaco Legend's site is Laravel + Livewire — fully server-rendered
+    HTML where every lot appears as a `<section class="lot[ sold[
+    reserved[ temp-import]]]" data-id data-num data-est data-year>`.
+    Inside each section live:
+      <span class='lot-brand'>...</span>
+      <span class='lot-title'>...</span>
+      <p class='lot-estimation'>Fr. 25'000 – 50'000</p>
+      <span class="bid-price"> € 9.750</span>     (past sales only)
+      <a href=".../auction/<slug>/lot-<N>">
+
+    One sale-page fetch covers every lot — typical sale is 100-300
+    lots, the HTML weighs in around 1.3-1.7 MB. No per-lot fetches
+    needed for catalog-level fields; the manual-URL `scrape_monaco_
+    legend_lot` path remains for richer per-lot data (full description,
+    additionalProperty list, etc.) when Mark tracks specific lots.
+
+    Pre-2026-05-22 CLAUDE.md described MLA as "SPA, no server-rendered
+    lot list" — that was stale (or about an earlier version of the
+    site). Today MLA is genuinely server-rendered with clean
+    structural anchors.
+    """
+    try:
+        r = requests.get(sale_url, headers=HEADERS, timeout=30)
+        r.raise_for_status()
+    except Exception as e:
+        print(f"  [Monaco Legend] sale page fetch failed: {e}")
+        return []
+    html = r.text
+
+    sections = list(MLA_SECTION_RE.finditer(html))
+    if not sections:
+        print("  [Monaco Legend] no <section class=\"lot\"> blocks found")
+        return []
+    print(f"  [Monaco Legend] {len(sections)} lot section(s) on sale page")
+
+    auction_title = (sale or {}).get("title") or ""
+    auction_end = (sale or {}).get("dateEnd") or (sale or {}).get("dateStart") or None
+
+    out = []
+    for i, m in enumerate(sections):
+        cls, lot_id, lot_num, est_low_field, year = m.groups()
+        end_idx = sections[i + 1].start() if i + 1 < len(sections) else m.start() + 8000
+        block = html[m.start():end_idx]
+
+        url_m = MLA_URL_RE.search(block)
+        if not url_m:
+            continue
+        url = url_m.group(1)
+
+        title_m = MLA_TITLE_RE.search(block)
+        brand_m = MLA_BRAND_RE.search(block)
+        est_m   = MLA_EST_RE.search(block)
+        sold_m  = MLA_SOLD_RE.search(block)
+        img_m   = MLA_IMG_RE.search(block)
+
+        title = (title_m.group(1) if title_m else "").replace("&quot;", '"').strip()
+        brand = (brand_m.group(1) if brand_m else "").strip() or None
+        estimation_raw = (est_m.group(1) if est_m else "").strip()
+        currency, low, high = _mla_parse_estimation(estimation_raw)
+
+        sold_currency, sold_price = (None, None)
+        if "sold" in cls.lower() and sold_m:
+            sold_currency, sold_price = _mla_parse_sold_price(sold_m.group(1), currency)
+
+        status = "ended" if "sold" in cls.lower() else "active"
+        currency = sold_currency or currency or "EUR"   # MLA's primary currency
+
+        display_title = title
+        if brand and not display_title.lower().startswith(brand.lower()):
+            display_title = f"{brand}. {display_title}"
+        if not display_title:
+            display_title = brand or "Untitled"
+
+        if is_excluded_title(display_title):
+            continue
+
+        image = (img_m.group(1) if img_m else None)
+
+        rec = {
+            "house": "Monaco Legend",
+            "lot_id": lot_id,
+            "lot_number": lot_num,
+            "title": display_title[:240],
+            "maker": brand,
+            "reference_no": None,
+            "model_name": None,
+            "description": display_title[:600],
+            "currency": currency,
+            "estimate_low": low,
+            "estimate_high": high,
+            "starting_price": None,
+            "current_bid": None,
+            "sold_price": sold_price,
+            "estimate_low_usd":  to_usd(low,  currency),
+            "estimate_high_usd": to_usd(high, currency),
+            "starting_price_usd": None,
+            "current_bid_usd":    None,
+            "sold_price_usd":    to_usd(sold_price, currency),
+            "status": status,
+            "image": image,
+            "auction_title": auction_title,
+            "auction_start": (sale or {}).get("dateStart"),
+            "auction_end":   auction_end,
+            "auction_url":   sale_url,
+            "scraped_at":    time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        }
+
+        # Structured-field extraction (reference_no / model / year /
+        # case_material) via the shared per-house parser.
+        try:
+            extra = extract_lot_structured_fields("Monaco Legend", rec.get("title") or "", rec.get("description") or "")
+            if isinstance(extra, dict):
+                for k, v in extra.items():
+                    if v and not rec.get(k):
+                        rec[k] = v
+        except Exception:
+            pass
+        # Canonical brand resolution — fold "Rolex SA" / "ROLEX" etc into "Rolex".
+        if rec.get("maker"):
+            try:
+                bb = resolve_brand(rec)
+                if bb:
+                    rec["maker"] = bb
+            except Exception:
+                pass
+
+        out.append((url, rec))
+    return out
+
+
 def _strip_html(s):
     """Strip HTML tags, collapse whitespace. Used for Sotheby's essay
     fields which arrive as HTML-formatted prose."""
@@ -1817,6 +2032,7 @@ ENUMERATORS = {
     "Antiquorum":    (enumerate_antiquorum,  ("catalog.antiquorum.swiss", "live.antiquorum.swiss/auctions/")),
     "Bonhams":       (enumerate_bonhams,     ("bonhams.com/auction/",)),
     "Christie's":    (enumerate_christies,   ("christies.com/en/auction/",)),
+    "Monaco Legend": (enumerate_monaco_legend, ("monacolegendauctions.com/auction/",)),
     "Sotheby's":     (enumerate_sothebys,    ("sothebys.com/en/buy/auction/",)),
     "Phillips":      (enumerate_phillips,    ("phillips.com/auction/",)),
 }
