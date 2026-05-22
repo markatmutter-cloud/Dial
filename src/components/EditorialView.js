@@ -149,11 +149,12 @@ const SOURCES = [
     column: null,
     url: "/screwdowncrown.json",
     bodies_url: "/screwdowncrown_bodies.json",
-    // Subscription publication on Substack. We surface only the
-    // publicly-accessible posts (audience='everyone') here — paid
-    // content stays out of the public corpus. `subscribe_url`
-    // amplifies the publisher; consumers can render a "Subscribe to
-    // <publication>" CTA when this source is filtered on.
+    // Subscription publication on Substack. Every post since 2019 is
+    // link-discoverable in the corpus; paid records carry `is_paid:
+    // true` and ship only the public preview body (Substack handles
+    // the paywall on click-through). `subscribe_url` amplifies the
+    // publisher; consumers can render a "Subscribe to <publication>"
+    // CTA when this source is filtered on.
     publication_url: "https://www.screwdowncrown.com/",
     subscribe_url: "https://www.screwdowncrown.com/subscribe",
   },

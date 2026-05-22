@@ -1261,7 +1261,7 @@ Listings > Sold archive (dual-track — see below).
 | Hodinkee Reference Points | `hodinkee_reference_points` | editorial (Sun) | 10 |
 | A Collected Man Journal | `acollectedman_journal` | editorial (Sun) | 160 |
 | Watches of Espionage (WOE Dispatch) | `woe_dispatch` | editorial (Sun) | 294 |
-| Screw Down Crown (Substack, free posts only) | `screwdowncrown` | editorial (Sun) | 79 |
+| Screw Down Crown (Substack, free + paid since 2019) | `screwdowncrown` | editorial (Sun) | 261 |
 | Fratello Watches (brand-allowlist filtered) | `fratello` | editorial (Sun) | ~3,600 |
 
 ### Body-split persistence — `editorial_corpus_io.py`
@@ -1363,12 +1363,16 @@ adding a new source:
   Espionage" (no per-article bylines).
 - **Screw Down Crown** (Substack): standard Substack `<div class="available-content">`
   body wrapper. Discovery via public `/api/v1/archive?sort=new&offset=N&limit=20`
-  endpoint with `audience` field filter — keep only `audience='everyone'`.
-  Paid posts (`audience='only_paid'` / `'founding'`) are logged and skipped;
-  the personal-corpus loader (separate, for Mark's Substack export only)
-  ingests those into a `personal_only=true` corpus that never surfaces
-  verbatim. Manifest entry carries `publication_url` + `subscribe_url`
-  for publisher amplification.
+  endpoint. **Every post since 2019 is in scope** (free + paid). Each
+  record carries `is_paid: bool` derived from the archive API's
+  `audience` field (`everyone` → false; `only_paid`/`founding` → true).
+  Paid posts ship with whatever public preview Substack exposes (the
+  `available-content` div is paywalled away on most paid posts, so
+  `body_text` is typically empty — title + URL + date + image are the
+  discoverability surface). Click-through hits Substack which handles
+  the paywall as normal. Free posts still gate on the 200-char body
+  floor; paid posts are accepted with empty body. Manifest entry carries
+  `publication_url` + `subscribe_url` for publisher amplification.
   **`MIN_PUBLISHED_DATE = '2019-01-01'`** — the publication pivoted to
   watches in 2019; older archive (back to 2012) was on different topics
   and is filtered out at discovery time. The personal-corpus loader for
