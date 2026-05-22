@@ -181,14 +181,55 @@ def _is_footer_paragraph(text: str) -> bool:
     return any(p in low for p in _FOOTER_PATTERNS)
 
 
+def _extract_paragraphs(html: str) -> list[str]:
+    """Pull substantive paragraphs from an HTML doc. Shared between the
+    direct Christie's story HTML extraction and the Shorthand fallback."""
+    out: list[str] = []
+    for m in re.finditer(r"<p(?:\s[^>]*)?>(.+?)</p>", html, re.S):
+        text = re.sub(r"<[^>]+>", " ", m.group(1))
+        text = unescape(text)
+        text = re.sub(r"\s+", " ", text).strip()
+        if len(text) < 80:
+            continue
+        if _is_footer_paragraph(text):
+            continue
+        out.append(text)
+    return out
+
+
+def _extract_shorthand_src(html: str) -> str:
+    """Return the bare Shorthand Social URL for a Shorthand-templated
+    story, or empty string if this isn't one. Christie's offloads long-
+    form scrollytelling articles to christies.shorthandstories.com — the
+    static HTML on christies.com is just an embed shell with no article
+    paragraphs. The embed script URL appears as
+    `<script src="https://christies.shorthandstories.com/<slug>/embed.js">`;
+    strip the `/embed.js` suffix to get the renderable bare URL.
+    """
+    m = re.search(
+        r'(https?://[a-z0-9-]+\.shorthandstories\.com/[a-z0-9-]+)/embed\.js',
+        html, re.I,
+    )
+    if not m:
+        return ""
+    return m.group(1) + "/"
+
+
 def parse_article(html: str, url: str) -> dict | None:
     """Pull title / author / date / image / body from a Christie's story.
 
-    Christie's doesn't expose JSON-LD NewsArticle markup on stories pages
-    the way Hodinkee does, but it embeds a large Sitecore JSS payload as
-    an inline script and exposes the key metadata via standard og: and
-    article: meta tags. We don't parse the JSS blob — just grep the meta
-    tags + collect <p> bodies.
+    Christie's exposes the key metadata via standard og: + article:
+    meta tags (we don't need to parse the inline Sitecore JSS blob for
+    those). Body extraction has two paths:
+
+      1. Default: <p> tags within the Christie's story HTML.
+      2. Shorthand fallback: a subset of stories use the "Shorthand
+         Story Page" template — Christie's offloads them to
+         christies.shorthandstories.com and the static HTML on
+         christies.com contains only the embed shell with no article
+         paragraphs. When the direct extraction yields <300 chars,
+         we detect the Shorthand src in the HTML and re-fetch the
+         bare URL to extract from there.
     """
     if not html:
         return None
@@ -236,19 +277,21 @@ def parse_article(html: str, url: str) -> dict | None:
     if not published_at:
         published_at = _meta("article:published_time")[:10] or ""
 
-    # Body: all <p> tags with substantive plaintext, in source order.
-    blocks: list[str] = []
-    for m in re.finditer(r"<p(?:\s[^>]*)?>(.+?)</p>", html, re.S):
-        text = re.sub(r"<[^>]+>", " ", m.group(1))
-        text = unescape(text)
-        text = re.sub(r"\s+", " ", text).strip()
-        if len(text) < 80:
-            continue
-        if _is_footer_paragraph(text):
-            continue
-        blocks.append(text)
-
+    # Body — direct extraction first; Shorthand fallback if it's a
+    # Shorthand-templated story (christies.com page is just the embed
+    # shell + the real text is on christies.shorthandstories.com).
+    blocks = _extract_paragraphs(html)
     body_text = "\n\n".join(blocks)
+    shorthand_url = ""
+    if len(body_text) < 300:
+        shorthand_url = _extract_shorthand_src(html)
+        if shorthand_url:
+            print(f"    Shorthand fallback → {shorthand_url}")
+            time.sleep(DETAIL_SLEEP)
+            shorthand_html = fetch(shorthand_url)
+            if shorthand_html:
+                blocks = _extract_paragraphs(shorthand_html)
+                body_text = "\n\n".join(blocks)
     if len(body_text) < 300:
         return None
 
