@@ -437,6 +437,19 @@ export function imgSrc(url) {
     if (PROXIED_IMG_HOSTS.some(h => u.hostname.endsWith(h))) {
       return `/api/img?u=${encodeURIComponent(url)}`;
     }
+    // Monaco Legend's CDN is Uploadcare. The scraper saves URLs as
+    // bare UUIDs (`cdn.monacolegendauctions.com/<UUID>`) which return
+    // 404 — Uploadcare requires a path operation suffix to serve the
+    // image. Append `/-/format/auto/` so the CDN serves webp/avif when
+    // the browser supports it (~30-50% smaller than the original
+    // jpeg) plus `/-/resize/800x/` to downscale at the CDN edge.
+    // Cheap perceived-perf win on the Live auctions tab.
+    // Backend follow-up: update the Monaco scraper to write the
+    // transformation suffix into the stored URL so this rewrite
+    // becomes a no-op.
+    if (u.hostname === "cdn.monacolegendauctions.com" && !u.pathname.includes("/-/")) {
+      return url.replace(/\/?$/, "/-/resize/800x/-/format/auto/");
+    }
   } catch { /* malformed URL — fall through to the raw value */ }
   return url;
 }
