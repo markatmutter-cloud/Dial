@@ -122,62 +122,84 @@ export function MobileShell(props) {
             twice. Trimmed vertical padding 6/4 → 2/2 and dropped the
             28px min-height; the wordmark's own line-height takes the
             row height, no minimum needed. */}
-        {/* Row 1 — brand row: wordmark on the left, About + auth on the
-            right. Mobile shell redesign 2026-05-21 (PR_Y2). */}
+        {/* Row 1 — brand row (wordmark + auth/menu). Suppressed on
+            Home (Mark feedback 2026-05-21: "could tabs and login
+            circle be aligned - wasting space"). On Home the row was
+            [empty span] [M] and the tabs row was [tabs] [empty] —
+            both wasted opposite halves. Tabs + M merge into Row 2
+            below when on Home; brand row stays on every other tab
+            as the wordmark home-tap affordance. */}
+        {tab !== "home" && (
         <div style={{
           padding: "2px 16px 2px",
           paddingTop: "calc(env(safe-area-inset-top, 0px) + 2px)",
           display: "flex", alignItems: "baseline",
           justifyContent: "space-between", gap: 12,
         }}>
-          {tab !== "home" ? (
-            <button onClick={() => { setTab("home"); setPage(1); }}
-              style={{ background: "none", border: "none", cursor: "pointer",
-                      padding: 0, paddingLeft: "0.14em", fontFamily: "inherit",
-                      fontSize: 14, fontWeight: 500, letterSpacing: "0.14em",
-                      textTransform: "uppercase",
-                      color: "var(--text1)" }}>
-              Watchlist
-            </button>
-          ) : <span />}
+          <button onClick={() => { setTab("home"); setPage(1); }}
+            style={{ background: "none", border: "none", cursor: "pointer",
+                    padding: 0, paddingLeft: "0.14em", fontFamily: "inherit",
+                    fontSize: 14, fontWeight: 500, letterSpacing: "0.14em",
+                    textTransform: "uppercase",
+                    color: "var(--text1)" }}>
+            Watchlist
+          </button>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             {authJSX}
           </div>
         </div>
-        {/* Row 2 — main tab pills. */}
+        )}
+        {/* Row 2 — main tab pills. On Home, doubles as the brand row:
+            picks up safe-area-inset-top padding (was on the suppressed
+            Row 1) and renders M / hamburger on the right via
+            justify-content: space-between. */}
         <div style={{
           display: "flex",
-          gap: 0,
-          padding: "0 16px",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 8,
+          padding: tab === "home"
+            ? `calc(env(safe-area-inset-top, 0px) + 4px) 16px 0`
+            : "0 16px",
           borderBottom: "0.5px solid var(--border)",
-          overflowX: "auto",
-          WebkitOverflowScrolling: "touch",
-          scrollbarWidth: "none",
-          msOverflowStyle: "none",
         }}>
-          {[["listings", "Listings"], ["watchlist", "Watchlists"], ["references", "Collecting"]].map(([key, label]) => {
-            const active = tab === key;
-            return (
-              <button key={key}
-                onClick={() => { setTab(key); if (key === "listings") setSearch(""); }}
-                style={{
-                  padding: "8px 14px 8px 0",
-                  marginRight: 18,
-                  background: "transparent",
-                  border: "none",
-                  borderBottom: active ? "2px solid var(--text1)" : "2px solid transparent",
-                  cursor: "pointer",
-                  fontFamily: "inherit",
-                  fontSize: 14,
-                  fontWeight: active ? 600 : 500,
-                  color: active ? "var(--text1)" : "var(--text2)",
-                  whiteSpace: "nowrap",
-                  letterSpacing: "0.01em",
-                }}>
-                {label}
-              </button>
-            );
-          })}
+          <div style={{
+            display: "flex", gap: 0,
+            overflowX: "auto",
+            WebkitOverflowScrolling: "touch",
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
+            flex: 1, minWidth: 0,
+          }}>
+            {[["listings", "Listings"], ["watchlist", "Watchlists"], ["references", "Collecting"]].map(([key, label]) => {
+              const active = tab === key;
+              return (
+                <button key={key}
+                  onClick={() => { setTab(key); if (key === "listings") setSearch(""); }}
+                  style={{
+                    padding: "8px 14px 8px 0",
+                    marginRight: 18,
+                    background: "transparent",
+                    border: "none",
+                    borderBottom: active ? "2px solid var(--text1)" : "2px solid transparent",
+                    cursor: "pointer",
+                    fontFamily: "inherit",
+                    fontSize: 14,
+                    fontWeight: active ? 600 : 500,
+                    color: active ? "var(--text1)" : "var(--text2)",
+                    whiteSpace: "nowrap",
+                    letterSpacing: "0.01em",
+                  }}>
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+          {tab === "home" && (
+            <div style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
+              {authJSX}
+            </div>
+          )}
         </div>
         {/* Sticky stack: search row (with filter + dark-mode buttons) and
             sort/clear pills row. Stays pinned to the viewport top so
