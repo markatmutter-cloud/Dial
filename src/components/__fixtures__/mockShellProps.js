@@ -103,6 +103,8 @@ export function buildMockShellProps(overrides = {}) {
     lotMigrationBannerJSX: null,
     userLimitBannerJSX: null,
     identityBandJSX: null,
+    searchAllResultsJSX: null,
+    searchAllActive: false,
     challengeReceiverJSX: null,
     listReceiverJSX: null,
     shareActive: false,

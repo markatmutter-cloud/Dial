@@ -47,6 +47,7 @@ import { DesktopShell } from "./components/DesktopShell";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { ConfirmHost } from "./components/ConfirmModal";
 import { IdentityBand } from "./components/IdentityBand";
+import { SearchResultsView } from "./components/SearchResultsView";
 import { tabPill, innerToggleButton, actionButton } from "./styles";
 
 // Same-origin paths — Vercel serves everything in /public at the
@@ -741,6 +742,10 @@ export default function Watchlist() {
   // session's open seeds the next session's lastVisit.
   const { lastVisit, newSince, markSeen: markFeedSeen } = useLastVisit();
   const [feedScreenerOpen, setFeedScreenerOpen] = useState(false);
+  // PR_W (2026-05-22): "Search all" destination. When true, shells
+  // render <SearchResultsView/> in place of the regular tab content.
+  // Clearing search or tab nav unsets it (see effects below).
+  const [searchAllActive, setSearchAllActive] = useState(false);
   // Tracks the URL of the auction whose "Add to list" / "Review"
   // mutation is currently in flight so the calendar row buttons
   // can show disabled state. Single-slot — we don't expect two
@@ -814,6 +819,9 @@ export default function Watchlist() {
     setShareActive(false);
     setChallengeShareActive(false);
     setListShareActive(false);
+    // PR_W (2026-05-22): tab change exits the cross-tab Search-all
+    // destination so the destination tab renders its normal content.
+    setSearchAllActive(false);
     setShareReceiveResetTick((n) => n + 1);
     if (newTab === tab) {
       // Already on this tab — bump the reset counter so child
@@ -3217,6 +3225,48 @@ export default function Watchlist() {
     ? auctionCalendarJSX
     : listingsGridJSX;
 
+  // PR_W (2026-05-22): cross-tab "Search all" destination. Renders
+  // three strips (Live listings / Live auctions / Archive sold)
+  // each filtered by the query, with "View all" links jumping to
+  // the corresponding tab+sub-tab with the search preserved.
+  // Editorial strip deferred to v2 (corpus loaded lazily in
+  // EditorialView; lifting that up is its own change).
+  const searchAllResultsJSX = (
+    <SearchResultsView
+      search={search}
+      mainFeedItems={mainFeedItems}
+      auctionLotItems={auctionLotItems}
+      isMobile={isMobile}
+      gridStyle={gridStyle}
+      watchlist={watchlist}
+      handleWish={handleWish}
+      hidden={hidden}
+      toggleHide={toggleHide}
+      primaryCurrency={primaryCurrency}
+      openCollectionPicker={user ? openCollectionPicker : undefined}
+      handleShare={handleShare}
+      isAdmin={isAdmin}
+      onClickListing={onClickListing}
+      onViewAllLive={() => {
+        setSearchAllActive(false);
+        setTab("listings"); setListingsSubTab("live"); setPage(1);
+      }}
+      onViewAllAuctions={() => {
+        setSearchAllActive(false);
+        setTab("listings"); setListingsSubTab("auctions"); setPage(1);
+      }}
+      onViewAllSold={() => {
+        setSearchAllActive(false);
+        setTab("listings"); setListingsSubTab("sold"); setPage(1);
+      }}
+      onExit={() => {
+        setSearchAllActive(false);
+        setSearch("");
+        setTab("home"); setPage(1);
+      }}
+    />
+  );
+
   // Identity band — colored slab under the controls row on every
   // non-Home tab (Mark spec 2026-05-21). Green for Listings +
   // Watchlists (favicon-hourglass vibe via --accent-positive); dark
@@ -3484,7 +3534,16 @@ export default function Watchlist() {
         // Commit the typed query to App.js's existing `search` state
         // (which feeds `allFiltered`) and land on the chosen sub-tab.
         // Target values match listingsSubTab: live / auctions / sold.
+        // PR_W (2026-05-22): target="all" opens the cross-tab strip
+        // results view (SearchResultsView) instead of routing to a
+        // specific Listings sub-tab.
         setSearch(query);
+        if (target === "all") {
+          setSearchAllActive(true);
+          setPage(1);
+          return;
+        }
+        setSearchAllActive(false);
         setTab("listings");
         setListingsSubTab(target);
         setPage(1);
@@ -4112,6 +4171,12 @@ export default function Watchlist() {
     // tab/sub-tab in App.js so the shells just render it; null on
     // Home and during share-receive surfaces.
     identityBandJSX,
+    // PR_W (2026-05-22): cross-tab Search-all destination. When
+    // `searchAllActive` is true, shells render this in place of
+    // the regular tab content (and hide sub-tabs / band / filter
+    // chrome). Main tab bar stays visible so the user can exit.
+    searchAllResultsJSX,
+    searchAllActive,
     // Whether a share-receive landing surface is taking over the
     // content area. Shells gate their normal tab content on any of
     // these flags — single-listing shares (#63), challenge shares

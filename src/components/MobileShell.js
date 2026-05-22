@@ -68,6 +68,8 @@ export function MobileShell(props) {
     lotMigrationBannerJSX,
     userLimitBannerJSX,
     identityBandJSX,
+    searchAllResultsJSX,
+    searchAllActive,
     shareActive,
     challengeShareActive,
     listShareActive,
@@ -212,8 +214,11 @@ export function MobileShell(props) {
             row above so auth stays accessible.
 
             Other tabs keep the sticky search at the top — filter
-            chrome needs to stay reachable at any scroll depth. */}
-        {tab !== "home" && (
+            chrome needs to stay reachable at any scroll depth.
+
+            PR_W (2026-05-22): also hidden when in cross-tab Search-all
+            destination — SearchResultsView has its own header + Exit. */}
+        {tab !== "home" && !searchAllActive && (
         <div style={{ position: "sticky", top: 0, zIndex: 20, background: "var(--bg)" }}>
         {/* Sub-tabs strip — anchored at the TOP of the sticky stack
             2026-05-21 (PR_Y3, Mark feedback). Sub-tabs sit above the
@@ -479,7 +484,8 @@ export function MobileShell(props) {
                 tab (`tab === "watchlist"`) via the `watchlistTabJSX`
                 prop, which App.js dispatches between Watchlist and
                 Collections content based on the active sub-tab. */}
-            {tab === "home" ? homeTabJSX
+            {searchAllActive ? searchAllResultsJSX
+              : tab === "home" ? homeTabJSX
               : tab === "listings" ? listingsTabContentJSX
               : tab === "references" ? referencesTabJSX
               : tab === "admin" ? adminTabJSX
