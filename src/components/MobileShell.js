@@ -1,5 +1,5 @@
 import React from "react";
-import { SearchIcon, FilterIcon, TabIcon } from "./icons";
+import { SearchIcon, FilterIcon } from "./icons";
 import { Chip } from "./Chip";
 import { AboutModal } from "./AboutModal";
 import { SignInPromptModal } from "./SignInPromptModal";
@@ -121,28 +121,28 @@ export function MobileShell(props) {
             twice. Trimmed vertical padding 6/4 → 2/2 and dropped the
             28px min-height; the wordmark's own line-height takes the
             row height, no minimum needed. */}
-        <div style={{ padding: "2px 16px 2px", display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12 }}>
-          {tab !== "home" ? (
-            // Smaller-but-editorial wordmark on other tabs — matches
-            // the Home hero's weight + tracking + uppercase, just
-            // shrunk so it sits inside the top bar (Mark spec
-            // 2026-05-11). Padding-left preserves the trailing
-            // letter-spacing visually so the wordmark reads centered.
-            <button onClick={() => { setTab("home"); setPage(1); }}
-              style={{ background: "none", border: "none", cursor: "pointer",
-                      padding: 0, paddingLeft: "0.14em", fontFamily: "inherit",
-                      fontSize: 14, fontWeight: 300, letterSpacing: "0.14em",
-                      textTransform: "uppercase",
-                      color: "var(--text1)" }}>
-              Watchlist
-            </button>
-          ) : <span />}
-          {/* Top-right cluster. On Home (mobile) the sticky search row
-              below is suppressed (Mark spec 2026-05-20: "search bar
-              under the logo on mobile like on the desktop site"), so
-              the M circle / auth lives here alongside About. Other
-              tabs keep About-only here and auth in the sticky search
-              row beneath. */}
+        {/* Row 1 — brand row: wordmark on the left, About + auth on the
+            right. Mobile shell redesign 2026-05-21 (PR_Y2): the main-nav
+            tab pills (Listings / Watchlists / Collecting) lifted from
+            the now-retired fixed bottom nav up here as Row 2. Bottom-
+            area PWA/Safari fight goes away entirely. Wordmark stays as
+            the home-tap affordance on every tab (including Home, which
+            previously hid it — but with main tabs in the top stack
+            there's no longer a reason to special-case Home). */}
+        <div style={{
+          padding: "2px 16px 2px",
+          paddingTop: "calc(env(safe-area-inset-top, 0px) + 2px)",
+          display: "flex", alignItems: "baseline",
+          justifyContent: "space-between", gap: 12,
+        }}>
+          <button onClick={() => { setTab("home"); setPage(1); }}
+            style={{ background: "none", border: "none", cursor: "pointer",
+                    padding: 0, paddingLeft: "0.14em", fontFamily: "inherit",
+                    fontSize: 14, fontWeight: 300, letterSpacing: "0.14em",
+                    textTransform: "uppercase",
+                    color: "var(--text1)" }}>
+            Watchlist
+          </button>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <button onClick={() => setAboutModalOpen(true)}
               style={{ background: "none", border: "none", cursor: "pointer",
@@ -151,8 +151,47 @@ export function MobileShell(props) {
                       letterSpacing: "0.04em" }}>
               About
             </button>
-            {tab === "home" && authJSX}
+            {authJSX}
           </div>
+        </div>
+        {/* Row 2 — main tab pills (NEW, PR_Y2). Underline-active styling
+            same as a sub-tab strip; left-aligned with a thin
+            border-bottom that the sub-tab strip's own border picks up.
+            Three keys: listings, watchlist, references — the same set
+            the retired bottom nav carried. */}
+        <div style={{
+          display: "flex",
+          gap: 0,
+          padding: "0 16px",
+          borderBottom: "0.5px solid var(--border)",
+          overflowX: "auto",
+          WebkitOverflowScrolling: "touch",
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+        }}>
+          {[["listings", "Listings"], ["watchlist", "Watchlists"], ["references", "Collecting"]].map(([key, label]) => {
+            const active = tab === key;
+            return (
+              <button key={key}
+                onClick={() => { setTab(key); if (key === "listings") setSearch(""); }}
+                style={{
+                  padding: "8px 14px 8px 0",
+                  marginRight: 18,
+                  background: "transparent",
+                  border: "none",
+                  borderBottom: active ? "2px solid var(--text1)" : "2px solid transparent",
+                  cursor: "pointer",
+                  fontFamily: "inherit",
+                  fontSize: 14,
+                  fontWeight: active ? 600 : 500,
+                  color: active ? "var(--text1)" : "var(--text2)",
+                  whiteSpace: "nowrap",
+                  letterSpacing: "0.01em",
+                }}>
+                {label}
+              </button>
+            );
+          })}
         </div>
         {/* Sticky stack: search row (with filter + dark-mode buttons) and
             sort/clear pills row. Stays pinned to the viewport top so
@@ -218,7 +257,6 @@ export function MobileShell(props) {
               <FilterIcon />
             </button>
           )}
-          {authJSX}
         </div>
         {/* Home + search-with-content: render an inline tappable CTA
             that submits the query to Listings. Without it, typing into
@@ -260,16 +298,21 @@ export function MobileShell(props) {
             row above + sub-tab strip below each carry their own
             border, so removing the spacer doesn't break the divider
             chain. Small one-time jump on switch is the tradeoff.) */}
+        {/* Sub-tab strips — Listings strip on tab=listings, the
+            unified Saved strip on tab=watchlist (combines the
+            Watchlist + old Collections sub-tabs after Bundle 2A.2
+            collapsed Collections into Saved). Anchored ABOVE the
+            sort/filter row 2026-05-21 (PR_Y2): when a sub-tab has no
+            filters, the row below collapses but the sub-tab strip
+            stays at the same y-position — eliminates the "sub-tabs
+            jump" jitter Mark flagged. */}
+        {!anyShareActive && listingsSubTabsJSX}
+        {!anyShareActive && watchSubTabsJSX}
         {!anyShareActive && !noFilterableList && (
         <div style={{ display: "flex", gap: 6, padding: "4px 16px 6px", borderBottom: "0.5px solid var(--border)", position: "relative", alignItems: "center", overflowX: "auto", overflowY: "hidden", WebkitOverflowScrolling: "touch", scrollbarWidth: "none", msOverflowStyle: "none" }}>
-          {/* Fixed-width count slot (2026-05-09) so the pills don't
-              jitter horizontally when the count drops from 4-digit
-              (3309) to 3-digit (136) on filter toggles. Right-align
-              within the slot so the digit comma stays consistent. */}
-          <span style={{
-            fontSize: 12, color: "var(--text3)", marginRight: 2, flexShrink: 0,
-            minWidth: 38, textAlign: "right",
-          }}>{displayedCount}</span>
+          {/* Count chip retired from the sort row 2026-05-21 (PR_Y).
+              The identity band below carries section count for every
+              tab now — no need for the redundant fixed-width slot. */}
           {/* Saved hearted-sub-tab toggle (Listings/Auctions/Sold)
               prepended into the filter row on Saved + a hearted
               sub-tab. Thin divider after the cluster so it visually
@@ -363,14 +406,6 @@ export function MobileShell(props) {
           )}
         </div>
         )}
-        {/* Sub-tab strips — Listings strip on tab=listings, the
-            unified Saved strip on tab=watchlist (which now combines
-            the Watchlist + old Collections sub-tabs after Bundle 2A.2
-            collapsed Collections into Saved). Lifted into the sticky
-            stack so they survive scroll. Hidden during share-receive
-            landing for the same reason as the sort row above. */}
-        {!anyShareActive && listingsSubTabsJSX}
-        {!anyShareActive && watchSubTabsJSX}
         {/* watchHeartedToggleJSX is embedded inside the sort/filter
             row above (2026-05-08 — Mark feedback) so the
             Listings/Auctions/Sold pills sit on the same line as
@@ -402,7 +437,7 @@ export function MobileShell(props) {
             challenge), skip the regular tab content so the recipient
             sees a clean first-impression page. */}
         {!anyShareActive && (
-          <div style={{ padding: `${tab === "watchlist" ? 0 : 12}px 16px 100px` }}>
+          <div style={{ padding: `${tab === "watchlist" ? 0 : 12}px 16px 32px` }}>
             {/* Identity band — colored slab carrying section identity.
                 Rendered inside the scroll container so it bleeds
                 edge-to-edge via the parent's 16px horizontal padding
@@ -431,67 +466,10 @@ export function MobileShell(props) {
         {collectionEditModalJSX}
         {collectionPickerModalJSX}
         {settingsModalJSX}
-        {/* Bottom tab bar. The container reserves the iOS home-indicator
-            safe area PLUS a fixed extra padding, so the buttons aren't
-            hugging the home bar when the app is launched standalone from
-            the home screen. */}
-        {/* Bottom nav background uses --surface (slightly lifted from
-            --bg) so light-mode contrast against the page content is
-            visible. Pre-2026-05-07 this used --bg, which made the
-            bar disappear into the page in light mode (Mark feedback).
-            Border on top is doubled (1px) for the same reason. Dark
-            mode is unchanged in feel since --surface is dark there. */}
-        {/* Bottom nav: paddingBottom uses env(safe-area-inset-bottom)
-            for the iPhone home indicator. Bumped to +12 (was +4) on
-            2026-05-09 — in iOS PWA standalone mode the previous 4px
-            was tight enough that taps on the active tab pill caught
-            the system swipe-up gesture, sometimes invoking Siri
-            instead of the pill. +12 keeps the nav clear of the
-            indicator without burning real estate in Safari (where
-            env() resolves to 0). */}
-        {/* Bottom nav, iter 3 — Mark report: 0.55-alpha olive read
-            as grey because #3b4a36 is a desaturated army-olive by
-            design; on a white page bg the transparency mutes it
-            further. Now SOLID #3b4a36 at full alpha and 2px so the
-            favicon green is unmistakable. Wider 0.30-alpha drop
-            shadow underneath for depth. */}
-        <div style={{
-          position: "fixed", bottom: 0, left: 0, right: 0,
-          // z-index 100 sits above the ArticleCard heart overlay
-          // (zIndex: 2) and the EditorialView sticky filter
-          // (zIndex: 20). Without an explicit z-index, scrolling
-          // cards paint over the fixed nav (Mark report 2026-05-21:
-          // hearts on Editorial cards showing through the tab pills).
-          zIndex: 100,
-          display: "flex",
-          background: "var(--surface)",
-          borderTop: "0.5px solid var(--border)",
-          // 2026-05-12 (Mark feedback): most users hit the site via
-          // mobile browser, NOT the PWA bookmark, so `env(safe-area-
-          // inset-bottom)` resolves to 0 for the majority. The
-          // previous +12px baseline left a fat gap below the pills in
-          // browser mode. Trim to +4 — still clears the iOS home
-          // indicator in PWA mode (env() adds its 34px), and reads
-          // tight without burning real estate in Safari.
-          paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 4px)",
-        }}>
-          {/* 3-pill mobile bottom nav: Listings / Watchlists / Collecting.
-              Home is reached via the wordmark; Watchbox via the avatar
-              dropdown; Admin is desktop-only. The Share tab briefly
-              lived here as a 4th pill 2026-05-11 → 2026-05-14, then
-              retired (see CLAUDE.md "Top-level Share tab — RETIRED"). */}
-          {[["listings", "Listings"], ["watchlist", "Watchlists"], ["references", "Collecting"]].map(([key, label]) => (
-            // Button padding 8/6 → 6/4: same density argument as the
-            // container padding above.
-            <button key={key} onClick={() => { setTab(key); if (key === "listings") setSearch(""); }} style={{ flex: 1, padding: "6px 0 4px", border: "none", background: "transparent", cursor: "pointer", fontFamily: "inherit", fontSize: 13, color: tab === key ? "var(--text1)" : "var(--text3)", fontWeight: tab === key ? 500 : 400, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-
-              {tab === key
-                ? <div style={{ width: 4, height: 4, borderRadius: "50%", background: "var(--brand)" }} />
-                : <TabIcon kind={key} />}
-              <span>{label}</span>
-            </button>
-          ))}
-        </div>
+        {/* Fixed bottom nav retired 2026-05-21 (PR_Y2): main tabs lifted
+            into the top stack as Row 2. PWA mode no longer fights the
+            iOS home indicator; Safari mode no longer leaves a phantom
+            gap when the URL bar moves to the bottom. */}
 
 
         {/* Mobile drawer */}
