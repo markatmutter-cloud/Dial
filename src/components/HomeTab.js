@@ -179,9 +179,10 @@ function HomeSearchBar({ onSubmit, isMobile, dealerSources, onJumpToDealer }) {
   const echo = trimmed.length > 24 ? trimmed.slice(0, 24) + "…" : trimmed;
 
   const targets = [
-    ["live",     "Listings", "Live dealer items"],
-    ["auctions", "Auctions", "Active auction lots"],
-    ["sold",     "Sold",     "Archive of sold items"],
+    ["all",      "Search all", "Across Listings, Auctions, Sold"],
+    ["live",     "Listings",   "Live dealer items"],
+    ["auctions", "Auctions",   "Active auction lots"],
+    ["sold",     "Sold",       "Archive of sold items"],
   ];
 
   // Dealer name typeahead — case-insensitive substring match. Caps at

@@ -56,6 +56,8 @@ export function DesktopShell(props) {
     lotMigrationBannerJSX,
     userLimitBannerJSX,
     identityBandJSX,
+    searchAllResultsJSX,
+    searchAllActive,
     shareActive,
     challengeShareActive,
     listShareActive,
@@ -530,14 +532,16 @@ export function DesktopShell(props) {
           Hidden when a share-receive landing surface is taking over
           the content area, since the recipient has no use for the
           sub-tab + filter row chrome until they dismiss / save. */}
-      {!anyShareActive && listingsSubTabsJSX}
-      {!anyShareActive && watchSubTabsJSX}
-      {!anyShareActive && referencesSubTabsJSX}
+      {!anyShareActive && !searchAllActive && listingsSubTabsJSX}
+      {!anyShareActive && !searchAllActive && watchSubTabsJSX}
+      {!anyShareActive && !searchAllActive && referencesSubTabsJSX}
       {/* Identity band — moved to chrome stack 2026-05-21 (PR_Y4,
           Mark spec: "search and filter pills below the black block").
           Band reads as the section header between sub-tabs and the
-          tools below, rather than scrolling inside the content. */}
-      {!anyShareActive && identityBandJSX}
+          tools below, rather than scrolling inside the content.
+          PR_W (2026-05-22): hidden when in cross-tab Search-all
+          destination (SearchResultsView has its own header). */}
+      {!anyShareActive && !searchAllActive && identityBandJSX}
       {/* watchHeartedToggleJSX is embedded inside filterRowJSX below
           (2026-05-08 — Mark feedback) so the Listings/Auctions/Sold
           pills sit on the same line as Date/Price/$Min/Source/Brand
@@ -547,7 +551,7 @@ export function DesktopShell(props) {
           watchSubTabsJSX. Prop kept on destructure for backward
           compat with the mock fixture. */}
       {(() => {
-        if (anyShareActive || tab === "home") return null;
+        if (anyShareActive || searchAllActive || tab === "home") return null;
         const showFullFilterRow =
           (tab === "listings" && showListingsFilterRow) ||
           inListsDrillIn ||
@@ -601,7 +605,8 @@ export function DesktopShell(props) {
                   `watchlistTabJSX` prop, which App.js dispatches
                   between Watchlist and Collections content based on
                   the active sub-tab. */}
-              {tab === "home" ? homeTabJSX
+              {searchAllActive ? searchAllResultsJSX
+                : tab === "home" ? homeTabJSX
                 : tab === "listings" ? listingsTabContentJSX
                 : tab === "references" ? referencesTabJSX
                 : tab === "admin" ? adminTabJSX
