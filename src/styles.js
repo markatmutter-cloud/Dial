@@ -55,17 +55,27 @@ export const innerToggleButton = (active) => ({
 // `marginBottom: -1` pulls the underline down to overlap the strip's
 // 0.5px borderBottom, so the active indicator pierces the divider
 // cleanly instead of floating above it.
-export const tabPill = (active) => ({
-  padding: "10px 4px",
-  border: "none", outline: "none",
-  background: "transparent",
-  cursor: "pointer", fontFamily: "inherit", fontSize: 13,
-  fontWeight: active ? 600 : 500,
-  color: active ? "var(--text1)" : "var(--text3)",
-  borderBottom: active ? "2px solid var(--text1)" : "2px solid transparent",
-  borderRadius: 0,
-  marginBottom: -1,
-});
+export const tabPill = (active, opts = {}) => {
+  // PR_β-A 2026-05-22: `onOlive` flips active/inactive colors for the
+  // colored-chrome zone (white-on-olive instead of dark-on-white).
+  // Used by mobile sub-tab strips when the chrome above is olive.
+  const onOlive = opts.onOlive === true;
+  return {
+    padding: "10px 4px",
+    border: "none", outline: "none",
+    background: "transparent",
+    cursor: "pointer", fontFamily: "inherit", fontSize: 13,
+    fontWeight: active ? 600 : 500,
+    color: onOlive
+      ? (active ? "#ffffff" : "rgba(255,255,255,0.65)")
+      : (active ? "var(--text1)" : "var(--text3)"),
+    borderBottom: onOlive
+      ? (active ? "2px solid #ffffff" : "2px solid transparent")
+      : (active ? "2px solid var(--text1)" : "2px solid transparent"),
+    borderRadius: 0,
+    marginBottom: -1,
+  };
+};
 
 // Compact action buttons used in tab headers, list-drill-in toolbars,
 // and inline editors (Share / Manage / Rename / Delete / + From feed /
