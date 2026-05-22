@@ -193,6 +193,11 @@ export function MobileShell(props) {
             {[["listings", "Listings"], ["watchlist", "Watchlists"], ["references", "Collecting"]].map(([key, label]) => {
               const active = tab === key;
               const onOlive = tab !== "home" || anyShareActive || searchAllActive;
+              // PR 2026-05-22 chrome harmonization (Mark spec): active
+              // state on neutral chrome picks up --brand-olive-text
+              // (matches the Home wordmark color); on olive chrome
+              // active stays white. Same rule applied to tabPill in
+              // styles.js so the sub-tab strips below match.
               return (
                 <button key={key}
                   onClick={() => { setTab(key); if (key === "listings") setSearch(""); }}
@@ -202,15 +207,15 @@ export function MobileShell(props) {
                     background: "transparent",
                     border: "none",
                     borderBottom: active
-                      ? `2px solid ${onOlive ? "#ffffff" : "var(--text1)"}`
+                      ? `2px solid ${onOlive ? "#ffffff" : "var(--brand-olive-text)"}`
                       : "2px solid transparent",
                     cursor: "pointer",
                     fontFamily: "inherit",
                     fontSize: 14,
                     fontWeight: active ? 600 : 500,
                     color: active
-                      ? (onOlive ? "#ffffff" : "var(--text1)")
-                      : (onOlive ? "rgba(255,255,255,0.65)" : "var(--text2)"),
+                      ? (onOlive ? "#ffffff" : "var(--brand-olive-text)")
+                      : (onOlive ? "rgba(255,255,255,0.65)" : "var(--text3)"),
                     whiteSpace: "nowrap",
                     letterSpacing: "0.01em",
                   }}>

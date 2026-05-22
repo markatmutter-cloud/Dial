@@ -67,6 +67,12 @@ export const tabPill = (active, opts = {}) => {
   // PR_β-A 2026-05-22: `onOlive` flips active/inactive colors for the
   // colored-chrome zone (white-on-olive instead of dark-on-white).
   // Used by mobile sub-tab strips when the chrome above is olive.
+  //
+  // PR 2026-05-22 chrome harmonization (Mark spec): on neutral chrome
+  // (Home + sub-tab strips that sit below olive), active state picks
+  // up `var(--brand-olive-text)` instead of `var(--text1)`. Ties the
+  // active tab visually to the wordmark color on landing without
+  // introducing a separate token. On olive chrome, white stays white.
   const onOlive = opts.onOlive === true;
   return {
     padding: "10px 4px",
@@ -74,12 +80,13 @@ export const tabPill = (active, opts = {}) => {
     background: "transparent",
     cursor: "pointer", fontFamily: "inherit", fontSize: 13,
     fontWeight: active ? 600 : 500,
+    letterSpacing: "0.01em",
     color: onOlive
       ? (active ? "#ffffff" : "rgba(255,255,255,0.65)")
-      : (active ? "var(--text1)" : "var(--text3)"),
+      : (active ? "var(--brand-olive-text)" : "var(--text3)"),
     borderBottom: onOlive
       ? (active ? "2px solid #ffffff" : "2px solid transparent")
-      : (active ? "2px solid var(--text1)" : "2px solid transparent"),
+      : (active ? "2px solid var(--brand-olive-text)" : "2px solid transparent"),
     borderRadius: 0,
     marginBottom: -1,
   };

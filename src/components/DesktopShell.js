@@ -648,13 +648,17 @@ export function DesktopShell(props) {
             2026-05-11 so it lives in the same zone as sign-in (per
             the Fratello/Hodinkee reference patterns Mark sent: brand
             on one side, account/about on the other). Color flips to
-            white-on-olive when the top bar is olive (PR_ε2). */}
+            white-on-olive when the top bar is olive (PR_ε2).
+            PR 2026-05-22 chrome harmonization (Mark spec): bumped
+            font 12 → 13, weight 500 (matches tabPill inactive), drop
+            the 0.04em letter-spacing so chrome reads as one type
+            family across wordmark / tabs / About / auth pill. */}
         <button onClick={() => setAboutModalOpen(true)}
           style={{ background: "none", border: "none", cursor: "pointer",
-                  padding: "6px 8px", fontFamily: "inherit", fontSize: 12,
-                  fontWeight: 500,
-                  color: onOlive ? "rgba(255,255,255,0.85)" : "var(--text2)",
-                  letterSpacing: "0.04em", flexShrink: 0 }}>
+                  padding: "6px 8px", fontFamily: "inherit", fontSize: 13,
+                  fontWeight: 500, letterSpacing: "0.01em",
+                  color: onOlive ? "rgba(255,255,255,0.85)" : "var(--text3)",
+                  flexShrink: 0 }}>
           About
         </button>
         {authJSX}
