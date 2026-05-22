@@ -123,48 +123,28 @@ export function MobileShell(props) {
             28px min-height; the wordmark's own line-height takes the
             row height, no minimum needed. */}
         {/* Row 1 — brand row: wordmark on the left, About + auth on the
-            right. Mobile shell redesign 2026-05-21 (PR_Y2): the main-nav
-            tab pills (Listings / Watchlists / Collecting) lifted from
-            the now-retired fixed bottom nav up here as Row 2. Bottom-
-            area PWA/Safari fight goes away entirely. Wordmark stays as
-            the home-tap affordance on every tab (including Home, which
-            previously hid it — but with main tabs in the top stack
-            there's no longer a reason to special-case Home). */}
+            right. Mobile shell redesign 2026-05-21 (PR_Y2). */}
         <div style={{
           padding: "2px 16px 2px",
           paddingTop: "calc(env(safe-area-inset-top, 0px) + 2px)",
           display: "flex", alignItems: "baseline",
           justifyContent: "space-between", gap: 12,
         }}>
-          {/* Wordmark hidden on Home — the editorial hero below carries
-              the brand mark (Mark feedback 2026-05-21: "two wordmarks
-              seems a little redundant"). The hamburger / avatar on the
-              right is the home-tap affordance via the menu. */}
           {tab !== "home" ? (
             <button onClick={() => { setTab("home"); setPage(1); }}
               style={{ background: "none", border: "none", cursor: "pointer",
                       padding: 0, paddingLeft: "0.14em", fontFamily: "inherit",
-                      fontSize: 14, fontWeight: 300, letterSpacing: "0.14em",
+                      fontSize: 14, fontWeight: 500, letterSpacing: "0.14em",
                       textTransform: "uppercase",
                       color: "var(--text1)" }}>
               Watchlist
             </button>
           ) : <span />}
-          {/* About button retired from the inline brand row 2026-05-21
-              (PR_Y3, Mark spec): About is now inside the menu that the
-              avatar / hamburger opens, so the brand row stays compact.
-              Signed-in users see the M-circle dropdown (About + Sign
-              out + Watchbox + Settings); signed-out users see a
-              hamburger that opens the same menu with About + Sign in. */}
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             {authJSX}
           </div>
         </div>
-        {/* Row 2 — main tab pills (NEW, PR_Y2). Underline-active styling
-            same as a sub-tab strip; left-aligned with a thin
-            border-bottom that the sub-tab strip's own border picks up.
-            Three keys: listings, watchlist, references — the same set
-            the retired bottom nav carried. */}
+        {/* Row 2 — main tab pills. */}
         <div style={{
           display: "flex",
           gap: 0,
@@ -198,7 +178,6 @@ export function MobileShell(props) {
               </button>
             );
           })}
-        </div>
         {/* Sticky stack: search row (with filter + dark-mode buttons) and
             sort/clear pills row. Stays pinned to the viewport top so
             filters are one tap away at any scroll depth.
@@ -229,6 +208,13 @@ export function MobileShell(props) {
             section header is the first thing below the navigation and
             the search/filters apply to that named section. */}
         {!anyShareActive && identityBandJSX}
+        {/* Search row — hidden on the entire Watchlists tab (Mark spec
+            2026-05-21): "not sure we need search for saved lists or
+            searches or challenge (so none of the watchlist tab)".
+            Saved-listings/auctions/sold sub-tabs lose search too. If
+            users ask for it back on filterable sub-tabs, re-add a
+            `watchTopTab in (listings, auctions, sold)` exception. */}
+        {tab !== "watchlist" && (
         <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 16px 4px", borderBottom: "0.5px solid var(--border)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, background: "var(--surface)", borderRadius: 10, padding: "8px 12px", flex: 1, minWidth: 0 }}>
             <SearchIcon />
@@ -280,6 +266,7 @@ export function MobileShell(props) {
             </button>
           )}
         </div>
+        )}
         {/* Home + search-with-content: render an inline tappable CTA
             that submits the query to Listings. Without it, typing into
             the mobile sticky search bar on Home produces no visible

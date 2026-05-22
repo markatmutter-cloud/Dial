@@ -86,7 +86,7 @@ function EditorialHero({ isMobile }) {
         margin: isMobile ? "0 0 12px" : "0 0 22px",
         fontFamily: "inherit",
         fontSize: isMobile ? 30 : 56,
-        fontWeight: 400,
+        fontWeight: 500,
         letterSpacing: isMobile ? "0.14em" : "0.16em",
         color: "var(--text1)",
         textTransform: "uppercase",
