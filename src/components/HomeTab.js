@@ -462,7 +462,18 @@ function SectionStrip({ heading, descriptor, items, onViewAll, onScreen, screenC
               desktop can get bigger") — at 1280+ viewports the 16px
               heading didn't carry against 210px-wide tiles, the eye
               skipped past the section labels entirely. */}
-          <h2 style={{ margin: 0, fontSize: isMobile ? 16 : 22, fontWeight: 600, color: headingColor, letterSpacing: "-0.2px" }}>
+          <h2 style={{
+            margin: 0,
+            // PR_γ 2026-05-22: serif touch on Home strip headings —
+            // gives the strips ("Recently added", "Recently hearted",
+            // "Recently sold", "Ending next at auction") an editorial
+            // pulse. System serif stack — no new typefaces shipped.
+            fontFamily: "Georgia, 'Iowan Old Style', 'Times New Roman', serif",
+            fontSize: isMobile ? 18 : 24,
+            fontWeight: 500,
+            color: headingColor,
+            letterSpacing: "-0.2px",
+          }}>
             {heading}
           </h2>
           {descriptor && (
