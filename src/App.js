@@ -46,7 +46,9 @@ import { MobileShell } from "./components/MobileShell";
 import { DesktopShell } from "./components/DesktopShell";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { ConfirmHost } from "./components/ConfirmModal";
-import { IdentityBand } from "./components/IdentityBand";
+// IdentityBand import retired 2026-05-22 — component file still in
+// the repo for git history, no current call site.
+// import { IdentityBand } from "./components/IdentityBand";
 import { SearchResultsView } from "./components/SearchResultsView";
 import { tabPill, innerToggleButton, actionButton } from "./styles";
 
@@ -3267,70 +3269,20 @@ export default function Watchlist() {
     />
   );
 
-  // Identity band — colored slab under the controls row on every
-  // non-Home tab (Mark spec 2026-05-21). Green for Listings +
-  // Watchlists (favicon-hourglass vibe via --accent-positive); dark
-  // for Collecting (replaces the retired FEATURED slab on Editorial).
-  // Carries section label · count. +action affordances (+ New search
-  // etc.) move into the band's right slot in a follow-up PR.
+  // Identity band — RETIRED 2026-05-22 (Mark spec). PR_β extended
+  // the olive chrome zone through brand + main-tabs + sub-tabs, so
+  // the sub-tab strip itself now visually identifies the section.
+  // The separate band below was doing a duplicate job. Mark: "the
+  // identity bars could be taken off now right?"
   //
-  // Returns null on Home (no band there) and during share/challenge/
-  // list receive flows (those surfaces own the full content area).
-  const identityBandJSX = (() => {
-    if (tab === "home") return null;
-    if (shareActive || challengeShareActive || listShareActive) return null;
-
-    // Olive (favicon-hourglass background) for Listings + Watchlists;
-    // dark slab for Collecting (matches retired FEATURED).
-    const oliveTone = "olive";
-    const darkTone  = "dark";
-
-    if (tab === "listings") {
-      if (listingsSubTab === "live") {
-        return <IdentityBand tone={oliveTone} label="Live listings" count={allFiltered.length} isMobile={isMobile} pad={0}/>;
-      }
-      if (listingsSubTab === "auctions") {
-        return <IdentityBand tone={oliveTone} label="Live auctions" count={allFiltered.length} isMobile={isMobile} pad={0}/>;
-      }
-      if (listingsSubTab === "sold") {
-        return <IdentityBand tone={oliveTone} label="Archive" count={`${allFiltered.length.toLocaleString()} sold`} isMobile={isMobile} pad={0}/>;
-      }
-      if (listingsSubTab === "calendar") {
-        // Match AuctionCalendar's status fields: live + upcoming
-        // are both "future or in-flight"; past is the archive.
-        const list = auctions || [];
-        const upcoming = list.filter(a => a.status === "live" || a.status === "upcoming").length;
-        const archived = list.filter(a => a.status === "past").length;
-        return <IdentityBand tone={oliveTone} label="Auction calendar" count={`${upcoming} upcoming · ${archived} archived`} isMobile={isMobile} pad={0}/>;
-      }
-    }
-
-    if (tab === "watchlist") {
-      if (watchTopTab === "listings")  return <IdentityBand tone={oliveTone} label="Saved listings" isMobile={isMobile} pad={0}/>;
-      if (watchTopTab === "auctions")  return <IdentityBand tone={oliveTone} label="Saved auctions" isMobile={isMobile} pad={0}/>;
-      if (watchTopTab === "sold")      return <IdentityBand tone={oliveTone} label="Saved sold" isMobile={isMobile} pad={0}/>;
-      if (watchTopTab === "searches")  return <IdentityBand tone={oliveTone} label="Saved searches" count={(savedSearchStats || []).length} isMobile={isMobile} pad={0}/>;
-      if (watchTopTab === "lists")     return <IdentityBand tone={oliveTone} label="Your lists" isMobile={isMobile} pad={0}/>;
-      if (watchTopTab === "challenges") return <IdentityBand tone={oliveTone} label="Challenges" isMobile={isMobile} pad={0}/>;
-      if (watchTopTab === "wishlist")  return <IdentityBand tone={oliveTone} label="Wishlist" isMobile={isMobile} pad={0}/>;
-    }
-
-    if (tab === "watchbox") {
-      return <IdentityBand tone={oliveTone} label="Your watchbox" isMobile={isMobile} pad={0}/>;
-    }
-
-    if (tab === "references") {
-      if (referencesSubTab === "editorial") return <IdentityBand tone={darkTone} label="Editorial" isMobile={isMobile} pad={0}/>;
-      if (referencesSubTab === "size")      return <IdentityBand tone={darkTone} label="Size comparison" isMobile={isMobile} pad={0}/>;
-      if (referencesSubTab === "links")     return <IdentityBand tone={darkTone} label="Directory" isMobile={isMobile} pad={0}/>;
-    }
-
-    if (tab === "admin") {
-      return <IdentityBand tone={darkTone} label="Site stats" isMobile={isMobile} pad={0}/>;
-    }
-
-    return null;
-  })();
+  // Count display ("3,548 watches") moves back to the filter row's
+  // right edge — see DesktopShell + MobileShell filter rows.
+  //
+  // Const kept (= null) so shells still destructure
+  // `identityBandJSX` without conditional logic at the call site.
+  // Git history (#433 shipped it; this PR retired it) is the
+  // reference for the old shape if it ever needs to come back.
+  const identityBandJSX = null;
 
 
   // Save-current-search modal. Opened by the heart in the search input.

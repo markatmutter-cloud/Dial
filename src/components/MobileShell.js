@@ -144,7 +144,7 @@ export function MobileShell(props) {
           <button onClick={() => { setTab("home"); setPage(1); }}
             style={{ background: "none", border: "none", cursor: "pointer",
                     padding: 0, paddingLeft: "0.14em", fontFamily: "inherit",
-                    fontSize: 14, fontWeight: 500, letterSpacing: "0.14em",
+                    fontSize: 14, fontWeight: 600, letterSpacing: "0.14em",
                     textTransform: "uppercase",
                     color: "#ffffff" }}>
             Watchlist
@@ -351,9 +351,16 @@ export function MobileShell(props) {
             sub-tab below. */}
         {!anyShareActive && !noFilterableList && (
         <div style={{ display: "flex", gap: 6, padding: "4px 16px 6px", borderBottom: "0.5px solid var(--border)", position: "relative", alignItems: "center", overflowX: "auto", overflowY: "hidden", WebkitOverflowScrolling: "touch", scrollbarWidth: "none", msOverflowStyle: "none" }}>
-          {/* Count chip retired from the sort row 2026-05-21 (PR_Y).
-              The identity band below carries section count for every
-              tab now — no need for the redundant fixed-width slot. */}
+          {/* Count chip — RESTORED 2026-05-22 (Mark spec, after
+              retiring the identity band that briefly carried this
+              role per PR_Y1). Back at the leading edge of the sort
+              row. Fixed-width so the pills don't jitter horizontally
+              when the count drops from 4-digit to 3-digit on filter
+              toggles. */}
+          <span style={{
+            fontSize: 12, color: "var(--text3)", marginRight: 2, flexShrink: 0,
+            minWidth: 38, textAlign: "right",
+          }}>{displayedCount}</span>
           {/* Saved hearted-sub-tab toggle (Listings/Auctions/Sold)
               prepended into the filter row on Saved + a hearted
               sub-tab. Thin divider after the cluster so it visually
