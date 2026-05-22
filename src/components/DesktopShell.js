@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { SearchIcon, TabIcon } from "./icons";
 import { Chip } from "./Chip";
 import { AboutModal } from "./AboutModal";
@@ -88,18 +88,144 @@ export function DesktopShell(props) {
   // because horizontal real estate is the constraint, not tap targets.
   const dtPill = (active) => pillBase(active, { compact: true });
 
-  // Search composite — moved out of the top bar 2026-05-21 (Mark spec):
-  // sits in the filter row on every non-Home tab (in line with sort +
-  // chips). Where the filter row doesn't render today (Watchlist sub-
-  // tabs without filterable lists, Watchbox, Collecting/Editorial,
-  // Admin), it falls through to a slim standalone row below the sub-
-  // tabs so the search stays in roughly the same vertical position
-  // across tabs. Mobile keeps the top-bar search (deferred — own
-  // session). Behavior unchanged: type filters current tab as today.
+  // Top-bar search — PR_ε1.5 2026-05-22. Returns to the top bar as an
+  // expanding icon-then-input pattern (replaces PR_V's filter-row
+  // search). Rationale: density (no row gain), editorial pattern
+  // (Hodinkee / Chrono24 / GitHub), olive-top-bar inheritance for
+  // PR_ε2, single source of truth (Editorial's inline input from
+  // PR #442 reverts). Mobile keeps the Spotify overlay from PR_Z —
+  // same icon, different surface.
+  const [searchExpanded, setSearchExpanded] = useState(false);
+  const topBarInputRef = useRef(null);
+  // Auto-focus on expand. Defer one tick so the layout reflows before
+  // focus lands (otherwise iOS-style virtual keyboards / focus rings
+  // animate from the wrong position).
+  useEffect(() => {
+    if (!searchExpanded) return undefined;
+    const t = setTimeout(() => {
+      if (topBarInputRef.current) topBarInputRef.current.focus();
+    }, 30);
+    return () => clearTimeout(t);
+  }, [searchExpanded]);
+  // Auto-expand when state has a non-empty search (e.g. someone
+  // followed a saved-search link). Keeps the input visible until
+  // explicitly collapsed via Esc.
+  useEffect(() => {
+    if (search && !searchExpanded) setSearchExpanded(true);
+    // intentionally not auto-collapsing on empty search — user can
+    // keep typing without the input vanishing under them.
+  }, [search]); // eslint-disable-line
+  // Global / shortcut + Esc-to-collapse. Skipped when an input or
+  // textarea is already focused (don't hijack typing into other fields).
+  useEffect(() => {
+    const onKey = (e) => {
+      const tag = (e.target.tagName || "").toLowerCase();
+      const inField = tag === "input" || tag === "textarea" || e.target.isContentEditable;
+      if (e.key === "/" && !inField) {
+        e.preventDefault();
+        setSearchExpanded(true);
+      } else if (e.key === "Escape" && searchExpanded) {
+        setSearchExpanded(false);
+        if (topBarInputRef.current) topBarInputRef.current.blur();
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [searchExpanded]);
   const searchPlaceholder = tab === "references"
     ? "Search articles by title, author, body…"
     : "Search reference or brand...";
-  const searchComposite = (
+  // Top-bar search JSX — collapsed icon button OR expanded inline input.
+  // Width grows from ~32px (icon-only) to 320px on expand. Esc collapses.
+  const topBarSearchJSX = (
+    <div style={{ position: "relative", flexShrink: 0, display: "flex", alignItems: "center" }}>
+      {!searchExpanded ? (
+        <button
+          onClick={() => setSearchExpanded(true)}
+          aria-label="Search"
+          title="Search ( / )"
+          style={{ background: "none", border: "none", cursor: "pointer",
+                  padding: "6px 8px", color: "var(--text2)",
+                  display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <SearchIcon />
+        </button>
+      ) : (
+        <div style={{ display: "flex", alignItems: "center", gap: 8,
+                      background: "transparent",
+                      border: "0.5px solid var(--border)",
+                      borderRadius: 10,
+                      padding: "6px 12px",
+                      width: 320, minWidth: 0,
+                      transition: "width 0.18s ease" }}>
+          <SearchIcon />
+          <input
+            ref={topBarInputRef}
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === "Enter") e.target.blur();
+              if (e.key === "Escape") { setSearchExpanded(false); e.target.blur(); }
+            }}
+            placeholder={searchPlaceholder}
+            style={{ flex: 1, border: "none", background: "transparent",
+                     fontSize: 13, color: "var(--text1)", outline: "none",
+                     fontFamily: "inherit", minWidth: 0 }}
+          />
+          {search && user && (
+            <button onClick={openFavPrompt}
+              aria-label={currentIsSaved ? "Already saved" : "Save search as favorite"}
+              title={currentIsSaved ? "Saved to favorites" : "Save as favorite search"}
+              disabled={currentIsSaved}
+              style={{ flexShrink: 0, background: "none", border: "none",
+                      cursor: currentIsSaved ? "default" : "pointer",
+                      color: currentIsSaved ? "var(--brand)" : "var(--text2)",
+                      padding: "2px 4px", fontFamily: "inherit",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      gap: 5, fontSize: 12, fontWeight: 500 }}>
+              <svg width="14" height="14" viewBox="0 0 24 24"
+                fill={currentIsSaved ? "currentColor" : "none"}
+                stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+              <span>{currentIsSaved ? "Saved" : "Save"}</span>
+            </button>
+          )}
+          {search && (
+            <button onClick={() => setSearch("")} aria-label="Clear search"
+              style={{ flexShrink: 0, background: "none", border: "none",
+                      cursor: "pointer", color: "var(--text3)", padding: 2,
+                      fontFamily: "inherit", display: "flex",
+                      alignItems: "center", justifyContent: "center" }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          )}
+          <button
+            onClick={() => { setSearch(""); setSearchExpanded(false); }}
+            aria-label="Close search"
+            title="Close ( Esc )"
+            style={{ flexShrink: 0, background: "none", border: "none",
+                    cursor: "pointer", color: "var(--text3)", padding: 2,
+                    marginLeft: 2,
+                    fontFamily: "inherit", display: "flex",
+                    alignItems: "center", justifyContent: "center" }}>
+            {/* Chevron-left as the "tuck back" affordance */}
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="15 18 9 12 15 6"/>
+            </svg>
+          </button>
+        </div>
+      )}
+    </div>
+  );
+  // PR_ε1.5 retires searchComposite from the filter row. Keep the
+  // declaration here ONLY as a no-op so future-self doesn't reach for
+  // it expecting filter-row search. Empty fragment.
+  const searchComposite = null;
     // PR_γ 2026-05-22: hairline border + transparent bg instead of
     // grey-surface fill. Lighter visual weight; reads more
     // "publication" than "app input".
@@ -512,13 +638,14 @@ export function DesktopShell(props) {
             );
           })}
         </div>
-        {/* Top-bar search relocated 2026-05-21 (Mark spec): now lives
-            inside the filter row (in line with sort + filter chips) on
-            every non-Home tab. Home keeps its editorial hero search.
-            Mobile still uses the top-bar pattern — relocating that is
-            a separate session. The flex spacer below pushes the About
-            link + auth chrome to the right edge of the bar. */}
+        {/* Top-bar search relocated AGAIN 2026-05-22 (PR_ε1.5): back
+            to the top bar as an expanding icon → input pattern. Sits
+            in the account zone alongside About + Watchbox. Replaces
+            the filter-row search (PR_V from 2026-05-21). Mobile
+            unchanged (Spotify overlay from PR_Z). On non-Home tabs
+            only — Home has its own editorial hero search. */}
         <div style={{ flex: 1 }} />
+        {tab !== "home" && topBarSearchJSX}
         {/* About link — top-right area, before the auth chrome.
             Was previously next to the top-left wordmark; relocated
             2026-05-11 so it lives in the same zone as sign-in (per
@@ -571,20 +698,12 @@ export function DesktopShell(props) {
         // sub-tab is the one exception — no search there either
         // (the calendar isn't a searchable surface).
         if (showFullFilterRow) return filterRowJSX;
-        if (tab === "listings" && listingsSubTab === "calendar") return null;
-        // Collecting (Editorial) renders its own filter strip with
-        // search inline (PR 2026-05-21 — "filter not in line with
-        // search still"). Skip the shell's search row so it doesn't
-        // stack above EditorialView's strip.
-        if (tab === "references") return null;
-        // Watchlists tab — Mark spec 2026-05-22: "remove search from
-        // watchlist tab" (extends the mobile-side hide from #440 to
-        // desktop too). None of the Watchlists sub-tabs filter the
-        // watch corpus — Lists / Searches / Challenges are
-        // collections-of-things; saved-item sub-tabs filter the user's
-        // hearts which is a small set the search would rarely help.
-        if (tab === "watchlist") return null;
-        return searchOnlyRowJSX;
+        // Everything else: no shell-level filter/search row. Search
+        // lives in the top bar now (PR_ε1.5 2026-05-22) so the slim
+        // searchOnlyRowJSX is no longer needed. Tabs that only had
+        // search (Watchlist, Collecting, Listings calendar) just
+        // drop the row entirely.
+        return null;
       })()}
       <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
         {/* Top padding is 0 on Watchlist so the sub-tab strip sits flush

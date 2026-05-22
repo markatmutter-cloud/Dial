@@ -570,46 +570,12 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
             from the shell — adding an input here on mobile would be
             redundant. Shell skips its own search row on tab=references
             so this is the single source on Collecting. */}
-        {!isMobile && (
-          <div style={{
-            display: "flex", alignItems: "center", gap: 8,
-            // PR_γ 2026-05-22: hairline border instead of surface fill.
-            background: "transparent",
-            border: "0.5px solid var(--border)",
-            borderRadius: 10,
-            padding: "6px 12px", flex: 1, minWidth: 0, maxWidth: 420,
-          }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" strokeWidth="2" strokeLinecap="round"
-              style={{ color: "var(--text3)", flexShrink: 0 }} aria-hidden="true">
-              <circle cx="11" cy="11" r="7"/>
-              <line x1="21" y1="21" x2="16.5" y2="16.5"/>
-            </svg>
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter") e.target.blur(); }}
-              placeholder="Search articles by title, author, body…"
-              style={{
-                flex: 1, border: "none", background: "transparent",
-                fontSize: 13, color: "var(--text1)", outline: "none",
-                fontFamily: "inherit", minWidth: 0,
-              }}
-            />
-            {search && (
-              <button onClick={() => setSearch("")} aria-label="Clear"
-                style={{ flexShrink: 0, background: "none", border: "none",
-                        cursor: "pointer", color: "var(--text3)", padding: 2,
-                        display: "flex", alignItems: "center" }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                  <line x1="18" y1="6" x2="6" y2="18"/>
-                  <line x1="6" y1="6" x2="18" y2="18"/>
-                </svg>
-              </button>
-            )}
-          </div>
-        )}
+        {/* Inline search input retired 2026-05-22 (PR_ε1.5). The
+            top-bar search (DesktopShell topBarSearchJSX) is now the
+            single source of truth for search on Collecting too —
+            context-aware via the same `search` state. Mobile already
+            went through the Spotify overlay (PR_Z); desktop now
+            mirrors that pattern with an expanding icon-then-input. */}
         {/* Sort pill — cycles Date ↓ / Date ↑ when no query is typed,
             expands to Relevance / Date ↓ / Date ↑ when a query is active. */}
         <button
