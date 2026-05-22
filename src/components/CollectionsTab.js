@@ -707,15 +707,12 @@ function CollectionSummary({ label, count, totalUSD }) {
     }}>
       {cards.map(([title, value, hint]) => (
         <div key={title} style={{
-          padding: "10px 12px",
-          borderRadius: 10,
-          background: "var(--surface)",
-          border: "0.5px solid var(--border)",
+          padding: "4px 4px 12px",
         }}>
-          <div style={{ fontSize: 10, fontWeight: 600, color: "var(--text3)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+          <div style={{ fontSize: 10, fontWeight: 600, color: "var(--text3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
             {title}
           </div>
-          <div style={{ fontSize: 18, fontWeight: 600, color: "var(--text1)", marginTop: 2 }}>
+          <div style={{ fontSize: 22, fontWeight: 600, color: "var(--text1)", marginTop: 4, letterSpacing: "-0.2px" }}>
             {value}
           </div>
           {hint && <div style={{ fontSize: 11, color: "var(--text3)", marginTop: 2 }}>{hint}</div>}
