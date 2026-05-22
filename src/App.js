@@ -3226,13 +3226,13 @@ export default function Watchlist() {
 
     if (tab === "listings") {
       if (listingsSubTab === "live") {
-        return <IdentityBand tone={oliveTone} label="Live listings" count={allFiltered.length} isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
+        return <IdentityBand tone={oliveTone} label="Live listings" count={allFiltered.length} isMobile={isMobile} pad={0}/>;
       }
       if (listingsSubTab === "auctions") {
-        return <IdentityBand tone={oliveTone} label="Live auctions" count={allFiltered.length} isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
+        return <IdentityBand tone={oliveTone} label="Live auctions" count={allFiltered.length} isMobile={isMobile} pad={0}/>;
       }
       if (listingsSubTab === "sold") {
-        return <IdentityBand tone={oliveTone} label="Archive" count={`${allFiltered.length.toLocaleString()} sold`} isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
+        return <IdentityBand tone={oliveTone} label="Archive" count={`${allFiltered.length.toLocaleString()} sold`} isMobile={isMobile} pad={0}/>;
       }
       if (listingsSubTab === "calendar") {
         // Match AuctionCalendar's status fields: live + upcoming
@@ -3240,32 +3240,32 @@ export default function Watchlist() {
         const list = auctions || [];
         const upcoming = list.filter(a => a.status === "live" || a.status === "upcoming").length;
         const archived = list.filter(a => a.status === "past").length;
-        return <IdentityBand tone={oliveTone} label="Auction calendar" count={`${upcoming} upcoming · ${archived} archived`} isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
+        return <IdentityBand tone={oliveTone} label="Auction calendar" count={`${upcoming} upcoming · ${archived} archived`} isMobile={isMobile} pad={0}/>;
       }
     }
 
     if (tab === "watchlist") {
-      if (watchTopTab === "listings")  return <IdentityBand tone={oliveTone} label="Saved listings" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
-      if (watchTopTab === "auctions")  return <IdentityBand tone={oliveTone} label="Saved auctions" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
-      if (watchTopTab === "sold")      return <IdentityBand tone={oliveTone} label="Saved sold" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
-      if (watchTopTab === "searches")  return <IdentityBand tone={oliveTone} label="Saved searches" count={(savedSearchStats || []).length} isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
-      if (watchTopTab === "lists")     return <IdentityBand tone={oliveTone} label="Your lists" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
-      if (watchTopTab === "challenges") return <IdentityBand tone={oliveTone} label="Challenges" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
-      if (watchTopTab === "wishlist")  return <IdentityBand tone={oliveTone} label="Wishlist" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
+      if (watchTopTab === "listings")  return <IdentityBand tone={oliveTone} label="Saved listings" isMobile={isMobile} pad={0}/>;
+      if (watchTopTab === "auctions")  return <IdentityBand tone={oliveTone} label="Saved auctions" isMobile={isMobile} pad={0}/>;
+      if (watchTopTab === "sold")      return <IdentityBand tone={oliveTone} label="Saved sold" isMobile={isMobile} pad={0}/>;
+      if (watchTopTab === "searches")  return <IdentityBand tone={oliveTone} label="Saved searches" count={(savedSearchStats || []).length} isMobile={isMobile} pad={0}/>;
+      if (watchTopTab === "lists")     return <IdentityBand tone={oliveTone} label="Your lists" isMobile={isMobile} pad={0}/>;
+      if (watchTopTab === "challenges") return <IdentityBand tone={oliveTone} label="Challenges" isMobile={isMobile} pad={0}/>;
+      if (watchTopTab === "wishlist")  return <IdentityBand tone={oliveTone} label="Wishlist" isMobile={isMobile} pad={0}/>;
     }
 
     if (tab === "watchbox") {
-      return <IdentityBand tone={oliveTone} label="Your watchbox" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
+      return <IdentityBand tone={oliveTone} label="Your watchbox" isMobile={isMobile} pad={0}/>;
     }
 
     if (tab === "references") {
-      if (referencesSubTab === "editorial") return <IdentityBand tone={darkTone} label="Editorial" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
-      if (referencesSubTab === "size")      return <IdentityBand tone={darkTone} label="Size comparison" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
-      if (referencesSubTab === "links")     return <IdentityBand tone={darkTone} label="Directory" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
+      if (referencesSubTab === "editorial") return <IdentityBand tone={darkTone} label="Editorial" isMobile={isMobile} pad={0}/>;
+      if (referencesSubTab === "size")      return <IdentityBand tone={darkTone} label="Size comparison" isMobile={isMobile} pad={0}/>;
+      if (referencesSubTab === "links")     return <IdentityBand tone={darkTone} label="Directory" isMobile={isMobile} pad={0}/>;
     }
 
     if (tab === "admin") {
-      return <IdentityBand tone={darkTone} label="Site stats" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
+      return <IdentityBand tone={darkTone} label="Site stats" isMobile={isMobile} pad={0}/>;
     }
 
     return null;

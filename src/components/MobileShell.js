@@ -223,6 +223,12 @@ export function MobileShell(props) {
         {!anyShareActive && listingsSubTabsJSX}
         {!anyShareActive && watchSubTabsJSX}
         {!anyShareActive && referencesSubTabsJSX}
+        {/* Identity band — moved into the sticky chrome stack 2026-05-21
+            (PR_Y4, Mark spec: "search and filter pills below the black
+            block"). Sits between sub-tabs and the search row so the
+            section header is the first thing below the navigation and
+            the search/filters apply to that named section. */}
+        {!anyShareActive && identityBandJSX}
         <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 16px 4px", borderBottom: "0.5px solid var(--border)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, background: "var(--surface)", borderRadius: 10, padding: "8px 12px", flex: 1, minWidth: 0 }}>
             <SearchIcon />
@@ -452,13 +458,9 @@ export function MobileShell(props) {
             sees a clean first-impression page. */}
         {!anyShareActive && (
           <div style={{ padding: `${tab === "watchlist" ? 0 : 12}px 16px 32px` }}>
-            {/* Identity band — colored slab carrying section identity.
-                Rendered inside the scroll container so it bleeds
-                edge-to-edge via the parent's 16px horizontal padding
-                (negative margins in IdentityBand) and scrolls with
-                content. Mobile shell layout swap to follow in PR_Y2;
-                this slot stays put. */}
-            {identityBandJSX}
+            {/* identityBandJSX moved into the sticky chrome stack
+                2026-05-21 (PR_Y4) — sits between sub-tabs and the
+                search row up there. Scroll content starts clean. */}
             {/* (Ending-soon pinned section retired 2026-05-04 —
                 Watchlist > Saved auctions sub-tab IS the ending-soon
                 view now.) */}
