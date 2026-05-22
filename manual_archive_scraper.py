@@ -80,47 +80,128 @@ def enumerate_phillips_uncapped(sale_url):
 
 
 def scrape_sale(sale):
-    """Walk one historical sale and return {url: lot_dict} for every lot."""
+    """Walk one historical sale and return {url: lot_dict} for every lot.
+
+    Dispatches by URL — same routing rule as the live comprehensive
+    scrape's ENUMERATORS map. The orchestrator's per-house enumerators
+    already handle archive sales correctly (they read realised prices
+    from the catalog page just like they do for live sales), so we
+    re-use them rather than maintaining a parallel archive path.
+    """
     sale_url = sale["url"]
     house = sale.get("house", "")
     sale_date = sale.get("date")  # YYYY-MM-DD or None
     sale_title = sale.get("title")
 
-    if "phillips.com/auctions/auction/" not in sale_url and "phillips.com/auction/" not in sale_url:
-        print(f"[skip] only Phillips archive URLs supported in v1: {sale_url}")
-        return {}
-
     print(f"\n[{house}] {sale_url}")
     if sale_title:
         print(f"  {sale_title}")
 
-    urls = enumerate_phillips_uncapped(sale_url)
-    print(f"  {len(urls)} lot URL(s) found")
+    out: dict = {}
 
-    out = {}
-    for i, url in enumerate(urls, 1):
+    if "phillips.com/auctions/auction/" in sale_url or "phillips.com/auction/" in sale_url:
+        # Phillips per-lot detail path — pre-existing archive route.
+        # WAF-safe because we're going through per-lot fetches on
+        # archive sales (the comprehensive Turbo-Stream path is for
+        # active sales). The 0.4s sleep below polices it.
+        urls = enumerate_phillips_uncapped(sale_url)
+        print(f"  {len(urls)} lot URL(s) found")
+        for i, url in enumerate(urls, 1):
+            try:
+                data = al.scrape_phillips_lot(url)
+            except Exception as e:
+                print(f"    [{i}/{len(urls)}] FAIL {url}: {e}")
+                continue
+            if als.is_excluded_title(data.get("title")):
+                print(f"    [{i}/{len(urls)}] skip excluded {url}")
+                continue
+            if sale_date and not data.get("auction_end"):
+                data["auction_end"] = sale_date
+            if sale_title and not data.get("auction_title"):
+                data["auction_title"] = sale_title
+            out[url] = data
+            sold = data.get("sold_price")
+            cur = data.get("currency", "")
+            title = (data.get("title") or "")[:60]
+            print(f"    [{i}/{len(urls)}] {sold or '—':>7} {cur}  {title}")
+            time.sleep(0.4)
+        return out
+
+    if "live.antiquorum.swiss/auctions/" in sale_url or "catalog.antiquorum.swiss/" in sale_url:
+        # Antiquorum archive: re-use the live enumerator. Live URLs go
+        # straight through (?limit=1000 added if missing); catalog URLs
+        # bridge to live via the helper, same as the comprehensive
+        # scrape. enumerate_antiquorum already routes post-sale URLs
+        # through the catalog enumerator when needed, so this works
+        # for sales whose live page has archived.
+        tuples = als.enumerate_antiquorum(sale_url, {
+            "url": sale_url,
+            "title": sale_title,
+            "dateEnd": sale_date,
+        })
+        print(f"  {len(tuples)} lot(s) from Antiquorum enumerator")
+        for url, data in tuples:
+            if als.is_excluded_title(data.get("title")):
+                continue
+            if sale_date and not data.get("auction_end"):
+                data["auction_end"] = sale_date
+            if sale_title and not data.get("auction_title"):
+                data["auction_title"] = sale_title
+            # Antiquorum lot statuses sometimes come back as "sold" /
+            # "passed" / "withdrawn" rather than "ended"/"active".
+            # Normalize past-sale lots to "ended" for the frontend
+            # filter, matching how the comprehensive scraper would
+            # have classified them.
+            raw = (data.get("status") or "").lower()
+            if raw in {"sold", "passed", "withdrawn", "unsold", "bi"}:
+                data["status"] = "ended"
+            out[url] = data
+            sold = data.get("sold_price")
+            cur = data.get("currency", "")
+            title = (data.get("title") or "")[:60]
+            print(f"    {sold or '—':>9} {cur}  {title}")
+        return out
+
+    if "christies.com/en/auction/" in sale_url:
+        # Christie's archive: re-use the live enumerator. The
+        # window.chrComponents.lots blob carries realised prices on
+        # ended sales the same way it does on live ones; the pagina-
+        # tion-via-?page=N trick handles sales of any size.
+        tuples = als.enumerate_christies(sale_url, {
+            "url": sale_url,
+            "title": sale_title,
+            "dateEnd": sale_date,
+        })
+        print(f"  {len(tuples)} lot(s) from Christie's enumerator")
+        # Force status="ended" on past-sale lots — Christie's archive
+        # blob keeps `status="active"` indefinitely for some lots even
+        # 2+ years post-sale (the per-lot status field isn't flipped
+        # in their catalog template). The registry date is the
+        # source of truth for "is this auction over?".
+        from datetime import date as _date
+        sale_is_past = False
         try:
-            data = al.scrape_phillips_lot(url)
-        except Exception as e:
-            print(f"    [{i}/{len(urls)}] FAIL {url}: {e}")
-            continue
-        if als.is_excluded_title(data.get("title")):
-            print(f"    [{i}/{len(urls)}] skip excluded {url}")
-            continue
-        # Stamp the sale date so the projection has a real soldAt /
-        # auction_end value to sort on. Phillips archive lots don't
-        # carry the date in their HTML; the registry is the source
-        # of truth.
-        if sale_date and not data.get("auction_end"):
-            data["auction_end"] = sale_date
-        if sale_title and not data.get("auction_title"):
-            data["auction_title"] = sale_title
-        out[url] = data
-        sold = data.get("sold_price")
-        cur = data.get("currency", "")
-        title = (data.get("title") or "")[:60]
-        print(f"    [{i}/{len(urls)}] {sold or '—':>7} {cur}  {title}")
-        time.sleep(0.4)  # be a polite citizen on the archive
+            if sale_date:
+                sale_is_past = _date.fromisoformat(sale_date) < _date.today()
+        except (ValueError, TypeError):
+            pass
+        for url, data in tuples:
+            if als.is_excluded_title(data.get("title")):
+                continue
+            if sale_date and not data.get("auction_end"):
+                data["auction_end"] = sale_date
+            if sale_title and not data.get("auction_title"):
+                data["auction_title"] = sale_title
+            if sale_is_past:
+                data["status"] = "ended"
+            out[url] = data
+            sold = data.get("sold_price")
+            cur = data.get("currency", "")
+            title = (data.get("title") or "")[:60]
+            print(f"    {sold or '—':>9} {cur}  {title}")
+        return out
+
+    print(f"[skip] no archive route for {sale_url}")
     return out
 
 
