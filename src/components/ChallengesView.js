@@ -251,7 +251,10 @@ export function ChallengesView({
             const isDraft = c.state === "draft";
             // Disc tint carries the draft-vs-complete signal —
             // gold for draft, blue for complete.
-            const accent = isDraft ? "var(--accent-warn)" : "var(--brand)";
+            // PR 2026-05-22: completed challenges use the brand olive
+            // (matches the Lists icon family); drafts keep the warn-gold
+            // to signal in-progress state.
+            const accent = isDraft ? "var(--accent-warn)" : "var(--brand-olive)";
             const subtitle = c.targetCount && c.budget ? (
               <>
                 {picks.length} of {c.targetCount} picks
@@ -281,7 +284,9 @@ export function ChallengesView({
                   <span style={{
                     marginLeft: 8, fontSize: 10, fontWeight: 500,
                     padding: "2px 6px", borderRadius: 4,
-                    background: "var(--brand-tint-10)", color: "var(--brand)",
+                    // PR 2026-05-22: olive treatment for the sender
+                    // attribution chip — matches the Watchlists family.
+                    background: "var(--brand-olive-tint-12)", color: "var(--brand-olive)",
                   }}>from {c.senderName}</span>
                 )}
               </>

@@ -2405,8 +2405,10 @@ function ListsView({
           style={{
             display: "inline-flex", alignItems: "center", gap: 4,
             padding: "2px 8px", borderRadius: 999,
-            background: "var(--brand-tint-12)",
-            color: "var(--brand)",
+            // PR 2026-05-22: olive treatment for the reaction count
+            // chip — matches the disc-tint of the row's icon above.
+            background: "var(--brand-olive-tint-12)",
+            color: "var(--brand-olive)",
             fontSize: 11, fontWeight: 600, lineHeight: 1.3,
           }}>
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -2752,15 +2754,19 @@ const menuItemStyle = (color) => ({
 });
 
 // ── Inline icons (SVG) ──────────────────────────────────────────
+// PR 2026-05-22: stroke color swapped var(--brand) → var(--brand-olive)
+// across the Lists-view icon family per Mark spec ("all these icons
+// — can you add them to UI review — green?"). Single olive thread
+// across Watchlists sub-tabs (Lists, Searches, Challenges).
 const inboxIcon = (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brand-olive)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/>
     <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
   </svg>
 );
 
 const folderIcon = (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brand-olive)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
   </svg>
 );
@@ -2768,7 +2774,7 @@ const folderIcon = (
 // Two-people icon for lists shared with at least one accepted
 // collaborator. 2026-05-10 Mark spec.
 const usersIcon = (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brand-olive)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
     <circle cx="9" cy="7" r="4"/>
     <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
@@ -2777,7 +2783,7 @@ const usersIcon = (
 );
 
 const eyeOffIcon = (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brand-olive)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M17.94 17.94A10.06 10.06 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
     <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
     <path d="M14.12 14.12A3 3 0 1 1 9.88 9.88"/>
@@ -2786,16 +2792,16 @@ const eyeOffIcon = (
 );
 
 const heartIcon = (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="var(--brand)" stroke="var(--brand)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="var(--brand-olive)" stroke="var(--brand-olive)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
   </svg>
 );
 // Thumbs-up icon for the My-reactions synthetic row (PR_K). Matches
 // the reaction-strip emoji set conceptually (👍 / ❤️ / ❌) while
 // keeping the row visually consistent with the other synthetic-row
-// icons (line-art SVG, brand color).
+// icons (line-art SVG, olive accent).
 const thumbsUpIcon = (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brand-olive)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>
   </svg>
 );
@@ -2804,7 +2810,7 @@ const thumbsUpIcon = (
 // reads as "saved reading material" — visually distinct from the
 // solid heart on the Saved (watches) row above it.
 const bookmarkIcon = (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brand-olive)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
   </svg>
 );

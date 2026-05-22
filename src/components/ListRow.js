@@ -35,7 +35,7 @@ import React from "react";
 //                are valid HTML (a <button> can't contain other
 //                buttons). Click handlers stop propagation so they
 //                don't drill in.
-export function ListRow({ icon, accent = "var(--brand)", title, subtitle, onClick, ariaLabel, actions }) {
+export function ListRow({ icon, accent = "var(--brand-olive)", title, subtitle, onClick, ariaLabel, actions }) {
   const tint = ACCENT_TINTS[accent] || ACCENT_TINTS["var(--brand)"];
   const rowStyle = {
     display: "flex", alignItems: "center", justifyContent: "space-between",
@@ -123,9 +123,11 @@ const iconActionBtnStyle = {
   fontFamily: "inherit",
 };
 
-// Disc-tint lookup keyed by stroke accent. Two tones for now (brand
-// blue + draft gold); add new entries as new surfaces adopt the row.
+// Disc-tint lookup keyed by stroke accent. Olive is the Watchlists
+// default (PR 2026-05-22). Brand-blue retained for legacy callers;
+// gold for draft-state challenges.
 const ACCENT_TINTS = {
+  "var(--brand-olive)": "var(--brand-olive-tint-12)",
   "var(--brand)": "var(--brand-tint-08)",
   "#c9a227": "var(--accent-warn-tint-10)",
 };
