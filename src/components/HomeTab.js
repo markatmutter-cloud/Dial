@@ -68,7 +68,7 @@ function EditorialHero({ isMobile, dark }) {
       <h1 style={{
         margin: isMobile ? "0 0 8px" : "0 0 14px",
         fontFamily: "inherit",
-        fontSize: isMobile ? 30 : 56,
+        fontSize: isMobile ? 40 : 56,
         fontWeight: 500,
         letterSpacing: isMobile ? "0.14em" : "0.16em",
         // PR_δ2 2026-05-22: wordmark in brand olive — threads the brand
@@ -84,7 +84,7 @@ function EditorialHero({ isMobile, dark }) {
           beneath it so it reads as a continuation, not a separator. */}
       <div style={{
         height: 2,
-        width: isMobile ? 56 : 96,
+        width: isMobile ? 72 : 96,
         background: "var(--brand-olive-text)",
         margin: "0 auto",
       }} />
