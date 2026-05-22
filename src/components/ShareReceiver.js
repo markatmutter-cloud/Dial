@@ -57,11 +57,12 @@ export function ShareReceiver({
 }) {
   const [shareIntent, setShareIntent] = useState(null);
   const [busy, setBusy] = useState(false);
-  // Image-load failure flag. The dealer's image URL can 404 between
-  // scrape and share-open (sold listing, dealer cleared inventory).
-  // Without this fallback the pane rendered empty (Mark report
-  // 2026-05-21 with screenshot of an MVV Watches share).
-  const [imgFailed, setImgFailed] = useState(false);
+  // imgFailed state moved to FocusedShareCard (where it's actually
+  // used) on 2026-05-22 — was declared here orphaned since PR #408,
+  // causing a "Can't find variable: imgFailed" ReferenceError every
+  // time a recipient opened the share-receive surface. Scope was
+  // wrong but the bug shipped because nothing in the test suite
+  // mounts FocusedShareCard with shareIntent populated.
 
   // Parse URL on mount. useEffect (not useState lazy init) so the
   // first render is always shareIntent=null — no fights with
@@ -276,6 +277,12 @@ function FocusedShareCard({
   onClickListing,
   fmtPriceLine,
 }) {
+  // Image-load failure flag. The dealer's image URL can 404 between
+  // scrape and share-open (sold listing, dealer cleared inventory).
+  // Hotfix 2026-05-22 — was in ShareReceiver's scope (PR #408)
+  // which threw ReferenceError at render time. State belongs in
+  // the component that consumes it.
+  const [imgFailed, setImgFailed] = useState(false);
   return (
     <div style={{
       display: "grid",
