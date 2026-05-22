@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { supabase } from "../supabase";
 import { Card } from "./Card";
-import { daysOnSale } from "../utils";
+import { daysOnSale, FORCE_OTHER_BRANDS, SUPPRESS_AT_SOLD_BRANDS, EXCLUDED_BRANDS } from "../utils";
 import { confirm } from "./ConfirmModal";
 
 // Admin-only source-quality dashboard. Surfaces the data the Epic 0
@@ -936,12 +936,13 @@ export function AdminTab({ watchItems, hiddenItems }) {
           Jump to
         </span>
         {[
-          ["sec-source",   "Sources"],
-          ["sec-brand",    "Brands"],
-          ["sec-fastest",  "Fastest sales"],
-          ["sec-house",    "Auction houses"],
-          ["sec-limits",   "User limits"],
-          ["sec-cleanup",  "Collection cleanup"],
+          ["sec-source",     "Sources"],
+          ["sec-brand",      "Brands"],
+          ["sec-curation",   "Curation rules"],
+          ["sec-fastest",    "Fastest sales"],
+          ["sec-house",      "Auction houses"],
+          ["sec-limits",     "User limits"],
+          ["sec-cleanup",    "Collection cleanup"],
         ].map(([id, label]) => (
           <a key={id} href={`#${id}`} style={{
             fontSize: 12, padding: "4px 10px", borderRadius: 12,
@@ -1129,6 +1130,81 @@ export function AdminTab({ watchItems, hiddenItems }) {
         <strong style={{ color: "var(--text2)" }}> Top dealer</strong> = the source with the
         most listings (live + cycled) for that brand.
       </div>
+
+      {/* ── Curation rules ─────────────────────────────────────────── */}
+      {/* Mark spec 2026-05-22: surface the brand curation rules
+          set by hand in code so Mark can see his accumulated lists
+          without grepping. Read-only — editing happens in
+          utils.js / merge.py. Three lists:
+          - Excluded brands: dropped at scrape-merge in merge.py.
+          - Forced into Other: brand chip rolled up (frontend-only).
+          - Suppressed when sold: hidden from All sold unless the
+            user has hearted the listing. */}
+      <div id="sec-curation" style={{
+        display: "flex", alignItems: "baseline", gap: 12, flexWrap: "wrap",
+        marginTop: 32, marginBottom: 14,
+      }}>
+        <h1 style={{ fontSize: 18, fontWeight: 600, color: "var(--text1)", margin: 0 }}>
+          Curation rules
+        </h1>
+        <span style={{ fontSize: 12, color: "var(--text2)" }}>
+          Brand lists you've set in code — read-only mirror
+        </span>
+      </div>
+      {[
+        {
+          title: "Excluded brands",
+          subtitle: "Dropped at scrape-merge — listings never reach the feed",
+          items: Array.from(EXCLUDED_BRANDS).sort(),
+          source: "merge.py · EXCLUDED_BRANDS",
+        },
+        {
+          title: "Forced into Other",
+          subtitle: "Brand chip rolled into Other (frontend-only) — listings still appear",
+          items: Array.from(FORCE_OTHER_BRANDS).sort(),
+          source: "src/utils.js · FORCE_OTHER_BRANDS",
+        },
+        {
+          title: "Suppressed when sold",
+          subtitle: "Hidden from Listings > Archive (Sold) unless you've hearted the listing",
+          items: Array.from(SUPPRESS_AT_SOLD_BRANDS).sort(),
+          source: "src/utils.js · SUPPRESS_AT_SOLD_BRANDS",
+        },
+      ].map(({ title, subtitle, items, source }) => (
+        <div key={title} style={{ marginBottom: 18 }}>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap", marginBottom: 8 }}>
+            <h2 style={{ fontSize: 14, fontWeight: 600, color: "var(--text1)", margin: 0 }}>
+              {title}
+            </h2>
+            <span style={{ fontSize: 11, color: "var(--text3)", fontVariantNumeric: "tabular-nums" }}>
+              {items.length}
+            </span>
+            <span style={{ fontSize: 11, color: "var(--text3)", marginLeft: "auto", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace" }}>
+              {source}
+            </span>
+          </div>
+          <p style={{ margin: "0 0 8px", fontSize: 12, color: "var(--text2)" }}>
+            {subtitle}
+          </p>
+          {items.length > 0 ? (
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+              {items.map(name => (
+                <span key={name} style={{
+                  fontSize: 12, padding: "4px 10px", borderRadius: 12,
+                  background: "var(--surface)", color: "var(--text2)",
+                  border: "0.5px solid var(--border)",
+                }}>
+                  {name}
+                </span>
+              ))}
+            </div>
+          ) : (
+            <span style={{ fontSize: 12, color: "var(--text3)", fontStyle: "italic" }}>
+              No rules.
+            </span>
+          )}
+        </div>
+      ))}
 
       {/* ── Fastest sales ──────────────────────────────────────────── */}
       {/* Per-listing rank (2026-05-09 — Mark request "show me the
