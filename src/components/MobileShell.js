@@ -133,17 +133,20 @@ export function MobileShell(props) {
             as the wordmark home-tap affordance. */}
         {tab !== "home" && (
         <div style={{
-          padding: "2px 16px 2px",
-          paddingTop: "calc(env(safe-area-inset-top, 0px) + 2px)",
+          padding: "4px 16px 4px",
+          paddingTop: "calc(env(safe-area-inset-top, 0px) + 4px)",
           display: "flex", alignItems: "baseline",
           justifyContent: "space-between", gap: 12,
+          // PR_β experiment 2026-05-22: olive chrome zone (extends
+          // the iOS PWA theme-color strip into the brand + tabs rows).
+          background: "var(--brand-olive)",
         }}>
           <button onClick={() => { setTab("home"); setPage(1); }}
             style={{ background: "none", border: "none", cursor: "pointer",
                     padding: 0, paddingLeft: "0.14em", fontFamily: "inherit",
                     fontSize: 14, fontWeight: 500, letterSpacing: "0.14em",
                     textTransform: "uppercase",
-                    color: "var(--text1)" }}>
+                    color: "#ffffff" }}>
             Watchlist
           </button>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -163,7 +166,8 @@ export function MobileShell(props) {
           padding: tab === "home"
             ? `calc(env(safe-area-inset-top, 0px) + 4px) 16px 0`
             : "0 16px",
-          borderBottom: "0.5px solid var(--border)",
+          // PR_β experiment: olive chrome zone.
+          background: "var(--brand-olive)",
         }}>
           <div style={{
             display: "flex", gap: 0,
@@ -183,12 +187,14 @@ export function MobileShell(props) {
                     marginRight: 18,
                     background: "transparent",
                     border: "none",
-                    borderBottom: active ? "2px solid var(--text1)" : "2px solid transparent",
+                    // PR_β: white-on-olive active state; inactive
+                    // tabs faded with rgba so they read as secondary.
+                    borderBottom: active ? "2px solid #ffffff" : "2px solid transparent",
                     cursor: "pointer",
                     fontFamily: "inherit",
                     fontSize: 14,
                     fontWeight: active ? 600 : 500,
-                    color: active ? "var(--text1)" : "var(--text2)",
+                    color: active ? "#ffffff" : "rgba(255,255,255,0.65)",
                     whiteSpace: "nowrap",
                     letterSpacing: "0.01em",
                   }}>
