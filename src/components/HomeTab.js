@@ -227,7 +227,17 @@ function HomeSearchBar({ onSubmit, onLiveQuery, isMobile, dealerSources, onJumpT
 
   return (
     <section style={{
-      padding: isMobile ? "0 16px 28px" : "0 16px 36px",
+      // PR 2026-05-22: bottom padding zeroed out. This section used
+      // to be a standalone block beneath the wordmark with built-in
+      // 28-36px of breathing room below it. After the masthead
+      // restructure (#502), HomeSearchBar lives INSIDE the olive
+      // band — that hidden bottom padding was silently expanding
+      // the space below the search bar regardless of the band's
+      // own padding/gap, which is why every "shift the search
+      // lower" attempt drifted back to centered. The olive band
+      // now owns the surrounding spacing; this section just renders
+      // the input.
+      padding: 0,
       maxWidth: 720,
       margin: "0 auto",
       width: "100%",
