@@ -671,34 +671,14 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
 
       {/* Featured strip — top N most-recent articles, shown only when
           no filter / no search is active.
-          Density refinement (Mark feedback 2026-05-21): the prior
-          full-block dark treatment carried 4-8 cards on a dark slab,
-          which felt too dense. New pattern is HEADER BAND ONLY — the
-          dark surface is just the "FEATURED · most recent" label row
-          (~52px tall), cards sit below on standard background.
-          Section signal stays clear; visual weight halves. */}
+          The "FEATURED · most recent" dark slab above the cards was
+          retired in PR_Y (2026-05-21) — the shell-level IdentityBand
+          (label "Editorial", dark tone) now carries that role for
+          consistency with every other tab. The larger-first card
+          grid stays as the visual cue that these are surfaced
+          items; no label slab needed. */}
       {showFeatured && featured.length > 0 && (
         <div style={{ marginBottom: 24 }}>
-          {/* Dark header band — full-width via negative horizontal
-              margins through the scroll container's padding. */}
-          <div style={{
-            background: "var(--text1)",
-            color: "var(--bg)",
-            padding: isMobile ? "14px 14px" : "16px 20px",
-            marginLeft: isMobile ? -14 : -20,
-            marginRight: isMobile ? -14 : -20,
-            marginBottom: 14,
-            display: "flex", alignItems: "baseline", gap: 10,
-          }}>
-            <div style={{
-              fontSize: 12, fontWeight: 700,
-              letterSpacing: "0.14em", textTransform: "uppercase",
-              color: "var(--bg)",
-            }}>Featured</div>
-            <div style={{ fontSize: 12, color: "var(--bg)", opacity: 0.55 }}>
-              · most recent
-            </div>
-          </div>
           <div style={{
             display: "grid",
             gridTemplateColumns: isMobile

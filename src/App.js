@@ -46,6 +46,7 @@ import { MobileShell } from "./components/MobileShell";
 import { DesktopShell } from "./components/DesktopShell";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { ConfirmHost } from "./components/ConfirmModal";
+import { IdentityBand } from "./components/IdentityBand";
 import { tabPill, innerToggleButton, actionButton } from "./styles";
 
 // Same-origin paths — Vercel serves everything in /public at the
@@ -3136,6 +3137,69 @@ export default function Watchlist() {
     ? auctionCalendarJSX
     : listingsGridJSX;
 
+  // Identity band — colored slab under the controls row on every
+  // non-Home tab (Mark spec 2026-05-21). Green for Listings +
+  // Watchlists (favicon-hourglass vibe via --accent-positive); dark
+  // for Collecting (replaces the retired FEATURED slab on Editorial).
+  // Carries section label · count. +action affordances (+ New search
+  // etc.) move into the band's right slot in a follow-up PR.
+  //
+  // Returns null on Home (no band there) and during share/challenge/
+  // list receive flows (those surfaces own the full content area).
+  const identityBandJSX = (() => {
+    if (tab === "home") return null;
+    if (shareActive || challengeShareActive || listShareActive) return null;
+
+    const greenTone = "green";
+    const darkTone  = "dark";
+
+    if (tab === "listings") {
+      if (listingsSubTab === "live") {
+        return <IdentityBand tone={greenTone} label="Live listings" count={allFiltered.length} isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
+      }
+      if (listingsSubTab === "auctions") {
+        return <IdentityBand tone={greenTone} label="Live auctions" count={allFiltered.length} isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
+      }
+      if (listingsSubTab === "sold") {
+        return <IdentityBand tone={greenTone} label="Archive" count={`${allFiltered.length.toLocaleString()} sold`} isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
+      }
+      if (listingsSubTab === "calendar") {
+        // Match AuctionCalendar's status fields: live + upcoming
+        // are both "future or in-flight"; past is the archive.
+        const list = auctions || [];
+        const upcoming = list.filter(a => a.status === "live" || a.status === "upcoming").length;
+        const archived = list.filter(a => a.status === "past").length;
+        return <IdentityBand tone={greenTone} label="Auction calendar" count={`${upcoming} upcoming · ${archived} archived`} isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
+      }
+    }
+
+    if (tab === "watchlist") {
+      if (watchTopTab === "listings")  return <IdentityBand tone={greenTone} label="Saved listings" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
+      if (watchTopTab === "auctions")  return <IdentityBand tone={greenTone} label="Saved auctions" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
+      if (watchTopTab === "sold")      return <IdentityBand tone={greenTone} label="Saved sold" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
+      if (watchTopTab === "searches")  return <IdentityBand tone={greenTone} label="Saved searches" count={(savedSearchStats || []).length} isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
+      if (watchTopTab === "lists")     return <IdentityBand tone={greenTone} label="Your lists" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
+      if (watchTopTab === "challenges") return <IdentityBand tone={greenTone} label="Challenges" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
+      if (watchTopTab === "wishlist")  return <IdentityBand tone={greenTone} label="Wishlist" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
+    }
+
+    if (tab === "watchbox") {
+      return <IdentityBand tone={greenTone} label="Your watchbox" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
+    }
+
+    if (tab === "references") {
+      if (referencesSubTab === "editorial")       return <IdentityBand tone={darkTone} label="Editorial" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
+      if (referencesSubTab === "sizecomparison")  return <IdentityBand tone={darkTone} label="Size comparison" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
+      if (referencesSubTab === "links")           return <IdentityBand tone={darkTone} label="Directory" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
+    }
+
+    if (tab === "admin") {
+      return <IdentityBand tone={darkTone} label="Site stats" isMobile={isMobile} pad={isMobile ? 16 : 20}/>;
+    }
+
+    return null;
+  })();
+
 
   // Save-current-search modal. Opened by the heart in the search input.
   // Single-field form (label) — query comes from the live search field.
@@ -3923,6 +3987,11 @@ export default function Watchlist() {
     adminTabJSX, referencesTabJSX, collectionsTabJSX, homeTabJSX,
     lotMigrationBannerJSX,
     userLimitBannerJSX,
+    // Unified header band (PR_Y, 2026-05-21). Colored slab beneath
+    // the controls row carrying section identity. Built per active
+    // tab/sub-tab in App.js so the shells just render it; null on
+    // Home and during share-receive surfaces.
+    identityBandJSX,
     // Whether a share-receive landing surface is taking over the
     // content area. Shells gate their normal tab content on any of
     // these flags — single-listing shares (#63), challenge shares

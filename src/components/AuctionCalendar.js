@@ -139,9 +139,6 @@ export function AuctionCalendar({
     return keys.map(key => ({ key, label: fmtMonthBand(key), items: buckets.get(key) }));
   }, [pastAuctions]);
 
-  const liveCount = auctions.filter(a => a.status === "live").length;
-  const upcomingCount = auctions.filter(a => a.status === "upcoming").length;
-
   if (auctions.length === 0) {
     return (
       <div style={{ padding: "60px 0", textAlign: "center" }}>
@@ -156,12 +153,11 @@ export function AuctionCalendar({
 
   return (
     <div>
-      <div style={{ fontSize: 12, color: "var(--text3)", marginBottom: 18 }}>
-        {liveCount > 0
-          ? `${liveCount} live now · ${upcomingCount} upcoming · ${pastAuctions.length} archived`
-          : `${upcomingCount} upcoming · ${pastAuctions.length} archived`}
-      </div>
-
+      {/* "N upcoming · M archived" counts line retired 2026-05-21 (PR_Y).
+          The shell-level identity band on the Calendar sub-tab now
+          carries those counts in its colored slab. Live-now count
+          ("3 live now") was rare enough that we don't surface it
+          separately — month groups make it visually obvious. */}
       {upcomingGroups.map((group, idx) => (
         <MonthBlock key={group.key} group={group} firstBlock={idx === 0}
           lotCounts={lotCounts}

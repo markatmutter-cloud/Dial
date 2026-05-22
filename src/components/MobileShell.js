@@ -66,6 +66,7 @@ export function MobileShell(props) {
     referencesTabJSX, collectionsTabJSX,
     lotMigrationBannerJSX,
     userLimitBannerJSX,
+    identityBandJSX,
     shareActive,
     challengeShareActive,
     listShareActive,
@@ -402,6 +403,13 @@ export function MobileShell(props) {
             sees a clean first-impression page. */}
         {!anyShareActive && (
           <div style={{ padding: `${tab === "watchlist" ? 0 : 12}px 16px 100px` }}>
+            {/* Identity band — colored slab carrying section identity.
+                Rendered inside the scroll container so it bleeds
+                edge-to-edge via the parent's 16px horizontal padding
+                (negative margins in IdentityBand) and scrolls with
+                content. Mobile shell layout swap to follow in PR_Y2;
+                this slot stays put. */}
+            {identityBandJSX}
             {/* (Ending-soon pinned section retired 2026-05-04 —
                 Watchlist > Saved auctions sub-tab IS the ending-soon
                 view now.) */}
