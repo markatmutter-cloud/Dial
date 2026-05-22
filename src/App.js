@@ -18,7 +18,6 @@ import { useViewSettings } from "./hooks/useViewSettings";
 import { useFilters } from "./hooks/useFilters";
 import { useHomeHidden } from "./hooks/useHomeHidden";
 import { useRecentSearches } from "./hooks/useRecentSearches";
-import { useLastVisit } from "./hooks/useLastVisit";
 import { ListReviewMode } from "./components/ListReviewMode";
 import { Card } from "./components/Card";
 import { ActiveFiltersStrip } from "./components/ActiveFiltersStrip";
@@ -787,13 +786,15 @@ export default function Watchlist() {
   // pattern — one-bit mirror; the ListReceiver component owns its
   // own intent state.
   const [listShareActive, setListShareActive] = useState(false);
-  // Feed-screening (Mark spec 2026-05-14): the user can review new
-  // listings since their last visit via the same screening primitive
-  // used on shared lists. lastVisit is the PREVIOUS session's open
-  // timestamp; useLastVisit bumps storage to NOW on mount so this
-  // session's open seeds the next session's lastVisit.
-  const { lastVisit, newSince, markSeen: markFeedSeen } = useLastVisit();
-  const [feedScreenerOpen, setFeedScreenerOpen] = useState(false);
+  // Feed-screening retired 2026-05-22 — the Home banner + per-strip
+  // "Screen N new" pill that fed it were removed (PRs #283 / #507);
+  // nothing renders openFeedScreener anymore. Audit confirmed the
+  // entry-point is dead, so the feedScreenerOpen state, feedScreenerItems
+  // memo, lastVisit hook, and `mode="feed"` branch in ListReviewMode
+  // all went out together. Re-enable by re-introducing one of:
+  //   (a) Collecting > Screening "New since last visit" pool card
+  //   (b) banner above Home strips
+  // Both would re-read `dial_last_visit_ts` (or a new key).
   // PR_W (2026-05-22): "Search all" destination. When true, shells
   // render <SearchResultsView/> in place of the regular tab content.
   // Clearing search or tab nav unsets it (see effects below).
@@ -1937,22 +1938,11 @@ export default function Watchlist() {
     }
   }, [user, collectionsApi, lotsByAuctionUrl]);
 
-  // Feed-screening queue (Mark spec 2026-05-14): live, non-hidden
-  // items added since the user's last visit, sorted newest first
-  // and capped at 50. Auction lots included (they show up in the
-  // unified main feed). Hidden items skipped — explicit "don't show
-  // me this again" signal. Hearted items kept so the user can see
-  // what they've already saved across visits.
-  const feedScreenerItems = useMemo(() => {
-    if (!lastVisit) return [];
-    const live = mainFeedItems.filter(i => !i.sold && !hidden[i.id]);
-    live.sort((a, b) => {
-      const fa = a.firstSeen ? new Date(a.firstSeen).getTime() : 0;
-      const fb = b.firstSeen ? new Date(b.firstSeen).getTime() : 0;
-      return fb - fa;
-    });
-    return newSince(live, 50);
-  }, [mainFeedItems, hidden, lastVisit, newSince]);
+  // (feedScreenerItems memo retired 2026-05-22 alongside the
+  // feed-mode entry points. Was computing "live non-hidden items
+  // since last visit, capped at 50" — re-introduce when the
+  // Collecting > Screening surface adds a "New since last visit"
+  // pool card.)
 
   // Sources for the filter UI, split by kind so the sidebar/drawer can
   // group them under Dealers / Auction houses sub-headers. SOURCES is
@@ -3861,16 +3851,9 @@ export default function Watchlist() {
       isAdmin={isAdmin}
       user={user}
       compact={compact}
-      // Feed-screening entry banner: only renders when there's a real
-      // diff to review (lastVisit present + items to screen).
-      lastVisit={lastVisit}
-      feedScreenerItemsCount={feedScreenerItems.length}
-      // Bump markFeedSeen on OPEN (not just close): the moment the
-      // user taps Start screening, treat the queue as "notified" —
-      // banner clears immediately, regardless of whether they
-      // complete the queue or bail mid-review. Mark report
-      // 2026-05-15: re-running review left the banner stuck.
-      openFeedScreener={() => { markFeedSeen(); setFeedScreenerOpen(true); }}
+      // (Feed-screening props retired 2026-05-22 — banner + Screen
+      // pill that consumed them are gone. HomeTab destructures the
+      // names but no surface renders them now.)
       dark={dark}
       // Masthead-nav: chrome moved into HomeTab on Home (PR 2026-05-22
       // γ). Tabs + auth render below the wordmark in an olive-bleed
@@ -4478,11 +4461,6 @@ export default function Watchlist() {
     // Drill-in mirror so the shell can show the filter row when
     // we're inside a list (Watchlists > Lists > [list]).
     colDrillInId,
-    // Feed-screening (new listings since last visit). HomeTab reads
-    // these to render the entry banner.
-    lastVisit,
-    feedScreenerItemsCount: feedScreenerItems.length,
-    openFeedScreener: () => { markFeedSeen(); setFeedScreenerOpen(true); },
   };
 
   return (
@@ -4491,28 +4469,6 @@ export default function Watchlist() {
         ? <MobileShell {...shellProps} />
         : <DesktopShell {...shellProps} />}
       <ConfirmHost />
-
-      {feedScreenerOpen && (
-        <ListReviewMode
-          mode="feed"
-          items={feedScreenerItems}
-          watchlist={watchlist}
-          handleWish={handleWish}
-          primaryCurrency={primaryCurrency}
-          reactionsByItem={new Map()}
-          onToggleReaction={() => {}}
-          // Per-card affordances (Mark feedback 2026-05-14): the
-          // screener was heart-only; add the standard ⋯ menu via
-          // these three props so users can also Add to list / Share
-          // / View listing without leaving the screener.
-          openCollectionPicker={user ? openCollectionPicker : undefined}
-          onShare={handleShare}
-          onClose={() => {
-            setFeedScreenerOpen(false);
-            markFeedSeen();
-          }}
-        />
-      )}
     </ErrorBoundary>
   );
 }
