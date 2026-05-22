@@ -141,11 +141,15 @@ export function MobileShell(props) {
           // PR_β experiment 2026-05-22: olive chrome zone (extends
           // the iOS PWA theme-color strip into the brand + tabs rows).
           background: "var(--brand-olive)",
+          // PR_δ3 2026-05-22: hairline below brand row to anchor
+          // the wordmark+M without introducing a darker olive band.
+          borderBottom: "1px solid rgba(255,255,255,0.12)",
         }}>
           <button onClick={() => { setTab("home"); setPage(1); }}
             style={{ background: "none", border: "none", cursor: "pointer",
                     padding: 0, paddingLeft: "0.14em", fontFamily: "inherit",
-                    fontSize: 14, fontWeight: 600, letterSpacing: "0.14em",
+                    // PR_δ3 2026-05-22: 600 → 700 to anchor on olive.
+                    fontSize: 14, fontWeight: 700, letterSpacing: "0.14em",
                     textTransform: "uppercase",
                     color: "#ffffff" }}>
             Watchlist
