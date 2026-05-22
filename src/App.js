@@ -2730,7 +2730,11 @@ export default function Watchlist() {
           }}>
           <span style={{
             width: 28, height: 28, borderRadius: "50%",
-            background: "var(--text1)", color: "var(--bg)",
+            // PR_ε5 2026-05-22: olive disc + white letter. Threads
+            // brand color through the avatar affordance. Olive vs
+            // olive contrast on PR_ε2's olive top bar is handled in
+            // that PR by flipping the disc to white-on-olive there.
+            background: "var(--brand-olive)", color: "#ffffff",
             display: "inline-flex", alignItems: "center", justifyContent: "center",
             fontSize: 13, fontWeight: 600,
             flexShrink: 0,
@@ -2751,8 +2755,11 @@ export default function Watchlist() {
           style={{
             width: 40, height: 40, borderRadius: "50%",
             border: "0.5px solid var(--border)",
-            background: "var(--surface)",
-            color: "var(--text1)", cursor: "pointer", fontFamily: "inherit",
+            // PR_ε5 2026-05-22: olive avatar + white letter (mobile).
+            // Matches desktop variant; matches the olive thread we
+            // shipped on Home wordmark / Watchbox CTA / Search button.
+            background: "var(--brand-olive)",
+            color: "#ffffff", cursor: "pointer", fontFamily: "inherit",
             fontSize: 14, fontWeight: 600,
             display: "flex", alignItems: "center", justifyContent: "center",
             flexShrink: 0,
@@ -2796,7 +2803,8 @@ export default function Watchlist() {
                     fontSize: 14, fontWeight: 600, borderRadius: 10 }}>
             <span style={{
               width: 30, height: 30, borderRadius: "50%",
-              background: "var(--text1)", color: "var(--bg)",
+              // PR_ε5 2026-05-22: olive disc to match the avatar.
+              background: "var(--brand-olive)", color: "#ffffff",
               display: "inline-flex", alignItems: "center", justifyContent: "center",
               flexShrink: 0,
             }}>
@@ -2834,8 +2842,10 @@ export default function Watchlist() {
                         fontSize: 13, fontWeight: 500, borderRadius: 6 }}>
                 <span>Site stats</span>
                 <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.18em",
-                              textTransform: "uppercase", color: "var(--bg)",
-                              background: "var(--text1)",
+                              textTransform: "uppercase", color: "#ffffff",
+                              // PR_ε5 2026-05-22: olive Admin badge — same
+                              // brand-thread treatment as the avatar disc.
+                              background: "var(--brand-olive)",
                               padding: "2px 6px", borderRadius: 4 }}>
                   Admin
                 </span>

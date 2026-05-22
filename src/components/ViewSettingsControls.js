@@ -36,8 +36,11 @@ const segmentBtn = (active, compact) => ({
   padding: compact ? "7px 10px" : "10px 12px",
   borderRadius: 8,
   border: "0.5px solid var(--border)",
-  background: active ? "var(--text1)" : "var(--card-bg)",
-  color: active ? "var(--bg)" : "var(--text1)",
+  // PR_ε5 2026-05-22: olive active state across VIEW SETTINGS pills
+  // (Currency / Theme / Columns). Matches the avatar + Watchbox disc
+  // + Admin badge — single brand-thread color across user surfaces.
+  background: active ? "var(--brand-olive)" : "var(--card-bg)",
+  color: active ? "#ffffff" : "var(--text1)",
   cursor: "pointer", fontFamily: "inherit",
   fontSize: compact ? 12 : 13,
   fontWeight: active ? 600 : 500,
