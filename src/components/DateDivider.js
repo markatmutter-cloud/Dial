@@ -28,7 +28,7 @@
 
 import React from "react";
 
-export default function DateDivider({ label, total, isFirst = false }) {
+export default function DateDivider({ label, total, isFirst = false, meta, onClick }) {
   return (
     <div style={{
       gridColumn: "1/-1",
@@ -47,21 +47,39 @@ export default function DateDivider({ label, total, isFirst = false }) {
       display: "flex",
       alignItems: "baseline",
       gap: 6,
-    }}>
+      cursor: onClick ? "pointer" : "default",
+    }}
+    onClick={onClick}>
       <span style={{
         fontSize: 13,
         fontWeight: 600,
         color: "var(--brand-olive-text)",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
+        minWidth: 0,
+        flex: meta ? 1 : "0 1 auto",
       }}>
         {label}
       </span>
-      {total != null && (
+      {total != null && !meta && (
         <span style={{
           fontSize: 12,
           color: "var(--text3)",
           fontVariantNumeric: "tabular-nums",
         }}>
           · {Number(total).toLocaleString()}
+        </span>
+      )}
+      {meta && (
+        <span style={{
+          fontSize: 12,
+          color: "var(--text3)",
+          fontVariantNumeric: "tabular-nums",
+          whiteSpace: "nowrap",
+          flexShrink: 0,
+        }}>
+          {meta}
         </span>
       )}
     </div>
