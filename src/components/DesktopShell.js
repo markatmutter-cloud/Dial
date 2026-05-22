@@ -137,6 +137,13 @@ export function DesktopShell(props) {
     : "Search reference or brand...";
   // Top-bar search JSX — collapsed icon button OR expanded inline input.
   // Width grows from ~32px (icon-only) to 320px on expand. Esc collapses.
+  // PR_ε2 2026-05-22: colors flip when the top bar is olive (every tab
+  // except Home — icon button is rendered only on non-Home anyway).
+  const topBarOnOlive = tab !== "home";
+  const tbBorderColor = topBarOnOlive ? "rgba(255,255,255,0.3)" : "var(--border)";
+  const tbTextColor   = topBarOnOlive ? "#ffffff" : "var(--text1)";
+  const tbIconColor   = topBarOnOlive ? "rgba(255,255,255,0.85)" : "var(--text2)";
+  const tbMutedColor  = topBarOnOlive ? "rgba(255,255,255,0.65)" : "var(--text3)";
   const topBarSearchJSX = (
     <div style={{ position: "relative", flexShrink: 0, display: "flex", alignItems: "center" }}>
       {!searchExpanded ? (
@@ -145,18 +152,19 @@ export function DesktopShell(props) {
           aria-label="Search"
           title="Search ( / )"
           style={{ background: "none", border: "none", cursor: "pointer",
-                  padding: "6px 8px", color: "var(--text2)",
+                  padding: "6px 8px", color: tbIconColor,
                   display: "flex", alignItems: "center", justifyContent: "center" }}>
           <SearchIcon />
         </button>
       ) : (
         <div style={{ display: "flex", alignItems: "center", gap: 8,
                       background: "transparent",
-                      border: "0.5px solid var(--border)",
+                      border: `0.5px solid ${tbBorderColor}`,
                       borderRadius: 10,
                       padding: "6px 12px",
                       width: 320, minWidth: 0,
-                      transition: "width 0.18s ease" }}>
+                      transition: "width 0.18s ease",
+                      color: tbIconColor }}>
           <SearchIcon />
           <input
             ref={topBarInputRef}
@@ -168,7 +176,7 @@ export function DesktopShell(props) {
             }}
             placeholder={searchPlaceholder}
             style={{ flex: 1, border: "none", background: "transparent",
-                     fontSize: 13, color: "var(--text1)", outline: "none",
+                     fontSize: 13, color: tbTextColor, outline: "none",
                      fontFamily: "inherit", minWidth: 0 }}
           />
           {search && user && (
@@ -178,7 +186,7 @@ export function DesktopShell(props) {
               disabled={currentIsSaved}
               style={{ flexShrink: 0, background: "none", border: "none",
                       cursor: currentIsSaved ? "default" : "pointer",
-                      color: currentIsSaved ? "var(--brand)" : "var(--text2)",
+                      color: currentIsSaved ? "var(--brand)" : tbIconColor,
                       padding: "2px 4px", fontFamily: "inherit",
                       display: "flex", alignItems: "center", justifyContent: "center",
                       gap: 5, fontSize: 12, fontWeight: 500 }}>
@@ -193,7 +201,7 @@ export function DesktopShell(props) {
           {search && (
             <button onClick={() => setSearch("")} aria-label="Clear search"
               style={{ flexShrink: 0, background: "none", border: "none",
-                      cursor: "pointer", color: "var(--text3)", padding: 2,
+                      cursor: "pointer", color: tbMutedColor, padding: 2,
                       fontFamily: "inherit", display: "flex",
                       alignItems: "center", justifyContent: "center" }}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
@@ -208,7 +216,7 @@ export function DesktopShell(props) {
             aria-label="Close search"
             title="Close ( Esc )"
             style={{ flexShrink: 0, background: "none", border: "none",
-                    cursor: "pointer", color: "var(--text3)", padding: 2,
+                    cursor: "pointer", color: tbMutedColor, padding: 2,
                     marginLeft: 2,
                     fontFamily: "inherit", display: "flex",
                     alignItems: "center", justifyContent: "center" }}>
@@ -551,35 +559,48 @@ export function DesktopShell(props) {
 
   return (
     <div style={{ ...baseStyle, display: "flex", flexDirection: "column", height: "100vh", overflow: "hidden" }}>
-      {/* Full-width top bar */}
-      <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 20px", borderBottom: "0.5px solid var(--border)", flexShrink: 0 }}>
+      {/* Full-width top bar — PR_ε2 2026-05-22: olive chrome on every
+          non-Home tab. Mirrors the mobile chrome zone (PRs #445/#446)
+          and threads the brand color through the desktop nav band. On
+          Home the bar stays neutral so the editorial hero (moonphase +
+          olive WATCHLIST + olive Search button) carries the first
+          paint. Border-bottom dropped when olive: the color flip is
+          its own divider against the neutral working surface below. */}
+      {(() => {
+        const onOlive = tab !== "home";
+        return (
+        <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 20px",
+                      borderBottom: onOlive ? "none" : "0.5px solid var(--border)",
+                      background: onOlive ? "var(--brand-olive)" : undefined,
+                      flexShrink: 0 }}>
         {/* Top wordmark hidden on Home (editorial hero in body is the
             brand mark there). On every other tab: smaller-but-
             editorial — matches the Home hero's weight + tracking +
             uppercase, shrunk to fit inside the top bar (Mark spec
             2026-05-11). Padding-left preserves visual centering
-            against the trailing letter-spacing. */}
+            against the trailing letter-spacing. Weight bumped 600 →
+            700 in PR_ε2 (same rule as mobile δ3 — heavier wordmark
+            anchors better on olive). */}
         {tab !== "home" && (
           <button onClick={() => { setTab("home"); setPage(1); }}
             style={{ background: "none", border: "none", cursor: "pointer",
                     padding: 0, paddingLeft: "0.16em", fontFamily: "inherit",
-                    fontSize: 18, fontWeight: 600, letterSpacing: "0.16em",
+                    fontSize: 18, fontWeight: 700, letterSpacing: "0.16em",
                     textTransform: "uppercase",
-                    color: "var(--text1)", flexShrink: 0 }}>
+                    color: "#ffffff", flexShrink: 0 }}>
             Watchlist
           </button>
         )}
         <div style={{ display: "flex", gap: 18, alignItems: "center", flexShrink: 0, marginLeft: 8 }}>
           {/* PR_ε1 2026-05-22: filled-pill active state → underline
-              pattern via tabPill. Unifies the active metaphor with
-              mobile main tabs + every sub-tab strip (also tabPill).
-              Sets the desktop chrome up for olive top bar in PR_ε2
-              by passing through onOlive when the top bar flips. */}
+              pattern via tabPill. PR_ε2 2026-05-22: passes onOlive so
+              the active underline + text flip to white when the top
+              bar is olive. */}
           {[["listings", "Listings"], ["watchlist", "Watchlists"], ["references", "Collecting"]].map(([key, label]) => {
             const active = tab === key;
             return (
               <button key={key} onClick={() => setTab(key)} style={{
-                ...tabPill(active),
+                ...tabPill(active, { onOlive }),
                 padding: "10px 0",
                 display: "flex", alignItems: "center", gap: 6,
               }}>
@@ -601,16 +622,20 @@ export function DesktopShell(props) {
             Was previously next to the top-left wordmark; relocated
             2026-05-11 so it lives in the same zone as sign-in (per
             the Fratello/Hodinkee reference patterns Mark sent: brand
-            on one side, account/about on the other). */}
+            on one side, account/about on the other). Color flips to
+            white-on-olive when the top bar is olive (PR_ε2). */}
         <button onClick={() => setAboutModalOpen(true)}
           style={{ background: "none", border: "none", cursor: "pointer",
                   padding: "6px 8px", fontFamily: "inherit", fontSize: 12,
-                  fontWeight: 500, color: "var(--text2)",
+                  fontWeight: 500,
+                  color: onOlive ? "rgba(255,255,255,0.85)" : "var(--text2)",
                   letterSpacing: "0.04em", flexShrink: 0 }}>
           About
         </button>
         {authJSX}
-      </div>
+        </div>
+        );
+      })()}
       {/* Sub-tab strips — Listings on tab=listings, Watchlist on
           tab=watchlist. Sit between main tabs and the filter row.
           Hidden when a share-receive landing surface is taking over
