@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { SizeCompare } from "./SizeCompare";
 import { Links } from "./Links";
 import { EditorialView } from "./EditorialView";
+import { ChallengesView } from "./ChallengesView";
 
 // Collecting tab (internal `tab="references"`, UI label "Collecting").
 // Restructured 2026-05-18 (Mark spec) from a resource-button list
@@ -48,6 +49,14 @@ export function ReferencesTab({
   // from props (shared with the global listings search).
   search,
   setSearch,
+  // Challenges plumbing (PR 2026-05-22, moved from Watchlists →
+  // Collecting). Same props ChallengesView consumed when it lived
+  // in CollectionsTab.
+  collectionsApi,
+  hidden,
+  primaryCurrency,
+  pendingChallengeDrillId,
+  clearPendingChallengeDrill,
 }) {
   // Tab re-tap → return to default sub-tab. App.js bumps
   // `tabResetTick` whenever the user clicks the active main tab
@@ -80,6 +89,25 @@ export function ReferencesTab({
       <div style={{ paddingTop: 4 }}>
         <Links allListings={allListings || []} onBack={null} />
       </div>
+    );
+  } else if (current === "challenges") {
+    // PR 2026-05-22: Challenges moved here from Watchlists tab.
+    // Same component (ChallengesView) and same prop bag it
+    // consumed under CollectionsTab — just a different mount point.
+    body = (
+      <ChallengesView
+        user={user}
+        isAuthConfigured={isAuthConfigured}
+        signInWithGoogle={signInWithGoogle}
+        collectionsApi={collectionsApi}
+        allListings={allListings}
+        watchlist={watchlist}
+        hidden={hidden}
+        primaryCurrency={primaryCurrency}
+        handleShare={handleShare}
+        pendingChallengeDrillId={pendingChallengeDrillId}
+        clearPendingChallengeDrill={clearPendingChallengeDrill}
+      />
     );
   } else {
     // editorial (default)
