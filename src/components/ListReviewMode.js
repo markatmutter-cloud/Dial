@@ -508,7 +508,7 @@ export function ListReviewMode({
         <div style={{
           height: "100%",
           width: total > 0 ? `${(Math.min(idx, total) / total) * 100}%` : "0%",
-          background: "var(--brand)",
+          background: "var(--brand-olive-text)",
           transition: "width 200ms ease",
         }} />
       </div>
@@ -557,7 +557,7 @@ export function ListReviewMode({
         {!done && current && (
           <>
             <EdgeWash side="left" color="rgba(30,30,30,1)" label="Pass" opacity={washOpacity(-1)} />
-            <EdgeWash side="right" color="var(--brand)" label="Yes" opacity={washOpacity(1)} />
+            <EdgeWash side="right" color="var(--brand-olive-text)" label="Yes" opacity={washOpacity(1)} />
           </>
         )}
 
@@ -1188,7 +1188,7 @@ function RecapView({ tally, total, ownerName, listName, onClose, mode }) {
         maxWidth: isFeed ? 240 : 340,
       }}>
         {!isFeed && (
-          <TallyCard label="Yes" value={tally.yes} color="var(--brand)" />
+          <TallyCard label="Yes" value={tally.yes} color="var(--brand-olive-text)" />
         )}
         <TallyCard label="Hearted" value={tally.hearted} color="var(--heart)" />
         <TallyCard label="Pass" value={tally.pass} color="var(--text2)" />
@@ -1246,7 +1246,7 @@ function TallyCard({ label, value, color }) {
 
 const topLinkStyle = {
   border: "none", background: "transparent", cursor: "pointer",
-  color: "var(--brand)",
+  color: "var(--brand-olive-text)",
   fontFamily: SANS_STACK,
   fontSize: 14, padding: 0,
   display: "flex", alignItems: "center", gap: 4,
@@ -1271,7 +1271,7 @@ const subtleLinkStyle = {
 // aggregate cluster in the list view.
 function TallyChip({ emoji, count }) {
   const color = emoji === "❤️" ? "var(--heart)"
-              : emoji === "👍" ? "var(--brand)"
+              : emoji === "👍" ? "var(--brand-olive-text)"
               : "var(--text3)";
   return (
     <span style={{
@@ -1324,8 +1324,8 @@ function reactionBtnStyle(kind, active) {
   if (kind === "yes") {
     return {
       padding: "14px 20px",
-      border: "1px solid var(--brand)",
-      background: "var(--brand)",
+      border: "1px solid var(--brand-olive-text)",
+      background: "var(--brand-olive-text)",
       color: "#fff",
       fontFamily: SANS_STACK,
       fontSize: 14, fontWeight: 600,
@@ -1335,7 +1335,7 @@ function reactionBtnStyle(kind, active) {
       minHeight: 52,
       // Subtle press-state shadow so it feels like a CTA, not flat.
       boxShadow: active
-        ? "inset 0 0 0 2px var(--brand), 0 0 0 1px var(--brand)"
+        ? "inset 0 0 0 2px var(--brand-olive-text), 0 0 0 1px var(--brand-olive-text)"
         : "0 1px 2px rgba(0,0,0,0.08)",
     };
   }
@@ -1428,7 +1428,7 @@ function primaryBtnStyle() {
     width: "100%",
     padding: "12px 20px",
     border: "none",
-    background: "var(--brand)", color: "#fff",
+    background: "var(--brand-olive-text)", color: "#fff",
     borderRadius: 8,
     fontFamily: SANS_STACK,
     fontSize: 13, fontWeight: 500,
