@@ -57,7 +57,14 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install requests
+        # curl-cffi is used by the Bonhams enumerator only — Cloudflare
+        # on Bonhams blocks the plain `requests` library from GHA IPs
+        # with a 403 because it checks TLS fingerprint (JA3), not just
+        # HTTP headers. curl-cffi impersonates Chrome's real TLS hand-
+        # shake so the same request from GHA clears the bot challenge.
+        # Other houses (Antiquorum, Christie's, Sotheby's, Phillips,
+        # Monaco Legend) continue to use plain `requests`.
+        run: pip install requests curl-cffi
 
       - name: Run comprehensive auction-lot scraper
         # Reads the existing public/auctions.json (last refreshed by
