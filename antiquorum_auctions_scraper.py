@@ -10,13 +10,25 @@ appears as a block containing: location, date range (e.g. "May 9th
 -10th, 2026" or a single day), and a title ("Important Modern &
 Vintage Timepieces" is the standard watch sale).
 
-This scrapes the calendar only — not individual lots. Lot-level
-scraping is a future phase (requires visiting catalog.antiquorum.swiss
-per sale, and many lots aren't previewable until shortly before the
-auction).
+URL resolution per sale (preference order):
+  1. catalog.antiquorum.swiss/en/auctions/<slug>/lots — constructed
+     from location + date by build_catalog_url(). HEAD-probed for 200.
+  2. live.antiquorum.swiss/auctions/<short-id>/<slug> — discovered by
+     matching the sale against the live-host upcoming index
+     (fetch_live_upcoming_index). Used when (1) HEADs non-200, which
+     typically means the catalog hasn't been published yet (Antiquorum
+     publishes catalogs 3–5 days before the sale, but the live
+     surface is up earlier).
+  3. Generic upcoming-auctions landing page — final fallback when
+     neither (1) nor (2) yields a real catalog. has_catalog=False so
+     the comprehensive lot scraper skips this row.
+
+Both catalog and live URLs are enumerable by the same
+`enumerate_antiquorum` path in auction_lots_scraper.py.
 """
 import requests
 import csv
+import json
 import re
 import sys
 from datetime import datetime, date
@@ -24,6 +36,7 @@ from datetime import datetime, date
 URL = "https://www.antiquorum.swiss/en/auctions/upcoming"
 UPCOMING_PAGE = "https://www.antiquorum.swiss/upcoming-auctions-and-viewings/"
 CATALOG_BASE = "https://catalog.antiquorum.swiss/en/auctions"
+LIVE_HOST = "https://live.antiquorum.swiss"
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
@@ -83,6 +96,102 @@ def strip_tags(html):
     return re.sub(r'<[^>]+>', ' ', html)
 
 
+def fetch_live_upcoming_index():
+    """Pull the inline `upcomingAuctions.result_page` list from
+    `live.antiquorum.swiss/`. Each entry is one upcoming live sale and
+    carries `_detail_url` (the path under live.antiquorum.swiss),
+    `title`, and `time_start` (ISO datetime).
+
+    Used as a fallback when build_catalog_url's guess HEADs non-200 —
+    typically because the catalog hasn't been published yet (Antiquorum
+    publishes catalog pages 3–5 days before the sale, but the live
+    surface is up earlier). Returns a list of dicts with the keys
+    `detail_url`, `title`, `time_start`, or an empty list on failure.
+
+    Memoize-by-caller: scrape() calls this once at the start.
+    """
+    try:
+        r = requests.get(LIVE_HOST + "/", headers=HEADERS, timeout=30)
+        r.raise_for_status()
+    except Exception as e:
+        print(f"  [Antiquorum] live-host index fetch failed: {e}")
+        return []
+    # The page embeds a Vue/React hydration blob; the upcomingAuctions
+    # array is inside a much larger JSON object. Grep the array by
+    # anchor token rather than trying to parse the whole envelope —
+    # cheaper and resilient to envelope changes.
+    m = re.search(r'"upcomingAuctions"\s*:\s*\{"result_page"\s*:\s*(\[)', r.text)
+    if not m:
+        return []
+    # Walk forward from the opening bracket, balance bracket depth.
+    start = m.end() - 1   # position of `[`
+    depth = 0
+    end = None
+    in_str = False
+    esc = False
+    for i in range(start, len(r.text)):
+        ch = r.text[i]
+        if in_str:
+            if esc:
+                esc = False
+            elif ch == "\\":
+                esc = True
+            elif ch == '"':
+                in_str = False
+            continue
+        if ch == '"':
+            in_str = True
+            continue
+        if ch == "[":
+            depth += 1
+        elif ch == "]":
+            depth -= 1
+            if depth == 0:
+                end = i + 1
+                break
+    if end is None:
+        return []
+    try:
+        arr = json.loads(r.text[start:end])
+    except Exception as e:
+        print(f"  [Antiquorum] live-host JSON parse failed: {e}")
+        return []
+    out = []
+    for entry in arr:
+        if not isinstance(entry, dict):
+            continue
+        detail = entry.get("_detail_url") or ""
+        if not detail.startswith("/auctions/"):
+            continue
+        out.append({
+            "detail_url":  LIVE_HOST + detail,
+            "title":       entry.get("title") or "",
+            "time_start":  entry.get("time_start") or "",
+        })
+    return out
+
+
+def find_live_url_for_sale(live_index, location, date_start):
+    """Match one of our calendar-scraper rows against the live-host
+    index by (date_start, location-in-title). Returns the live URL
+    string or None. ``location`` is the Antiquorum display name
+    (e.g. ``"Hong Kong"``); the live blob's `title` contains
+    ``"Antiquorum Hong Kong"`` so a case-insensitive contains check
+    is sufficient.
+    """
+    if not (live_index and location and date_start):
+        return None
+    needle = location.lower()
+    for entry in live_index:
+        # Match the date prefix (YYYY-MM-DD) — Antiquorum's
+        # `time_start` is a full ISO datetime in UTC.
+        if not entry.get("time_start", "").startswith(date_start):
+            continue
+        if needle in entry.get("title", "").lower():
+            return entry["detail_url"]
+    return None
+
+
 def scrape():
     print(f"Fetching {URL} ...")
     r = requests.get(URL, headers=HEADERS, timeout=30)
@@ -105,6 +214,12 @@ def scrape():
         r'(Important Modern\s*&\s*Vintage Timepieces)'
     )
 
+    # Live-host index — used as a fallback when the catalog URL guess
+    # HEADs non-200. Fetched ONCE per scrape run; matched per-sale by
+    # (date_start, location-in-title).
+    live_index = fetch_live_upcoming_index()
+    print(f"  live-host index: {len(live_index)} upcoming sale(s)")
+
     results = []
     seen = set()
     for m in pattern.finditer(text):
@@ -121,16 +236,11 @@ def scrape():
             continue
         seen.add(key)
 
-        # Always HEAD-probe the catalog URL — no day-window gate. The
-        # previous `0 <= days_until <= 60` gate meant the moment a
-        # sale ended (days_until went negative), the scraper reverted
-        # to the generic UPCOMING_PAGE for that sale. Downstream
-        # auction_lots_scraper couldn't enumerate it, sold prices
-        # never made it into our data, hearted-by-users lots
-        # rendered as still-active forever (Mark report 2026-05-11).
-        # Antiquorum's catalog pages stay up for years post-sale —
-        # if HEAD returns 200, the URL is good; if 404, we naturally
-        # fall back to the generic page.
+        # Catalog URL guess via the URL-template. Catalog pages stay up
+        # for years post-sale, so a 200 here is good both pre- and
+        # post-sale. Non-200 typically means the catalog hasn't been
+        # published yet — Antiquorum tends to publish catalogs 3–5 days
+        # before the sale, but the live surface goes up much earlier.
         candidate = build_catalog_url(location, date_str)
         has_catalog = False
         url = UPCOMING_PAGE
@@ -144,6 +254,19 @@ def scrape():
                 print(f"    catalog check {hr.status_code} for {candidate}")
         except Exception as e:
             print(f"    catalog check failed: {e}")
+
+        # Fallback: when catalog URL didn't resolve, look the sale up in
+        # the live-host upcoming index. The live URL is enumerable by
+        # the same `enumerate_antiquorum` path (it already accepts
+        # live.antiquorum.swiss/auctions/ — see auction_lots_scraper
+        # ENUMERATORS), so we can promote has_catalog=True and let the
+        # comprehensive scrape walk lots on the next cron run.
+        if not has_catalog:
+            live_url = find_live_url_for_sale(live_index, location, start)
+            if live_url:
+                url = live_url
+                has_catalog = True
+                print(f"    live-host fallback: {live_url}")
 
         results.append({
             'house':       'Antiquorum',
