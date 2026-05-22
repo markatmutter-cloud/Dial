@@ -321,7 +321,7 @@ export function DesktopShell(props) {
               if (sort === "date") setSort("date-asc");
               else if (sort === "date-asc") setSort("date");
               else setSort("date");
-            }} style={{ ...pillBase(isDate, { compact: true, surface: true }), fontWeight: isDate ? 600 : 500 }}>{label}</button>
+            }} style={{ ...pillBase(isDate, { compact: true }), fontWeight: isDate ? 600 : 500 }}>{label}</button>
           );
         })()}
         {(() => {
@@ -334,7 +334,7 @@ export function DesktopShell(props) {
               if (sort === "price-desc") setSort("price-asc");
               else if (sort === "price-asc") setSort("price-desc");
               else setSort("price-desc");
-            }} style={{ ...pillBase(isPrice, { compact: true, surface: true }), fontWeight: isPrice ? 600 : 500 }}>{label}</button>
+            }} style={{ ...pillBase(isPrice, { compact: true }), fontWeight: isPrice ? 600 : 500 }}>{label}</button>
           );
         })()}
         {/* Lot # pill retired 2026-05-07 (Mark feedback): the
