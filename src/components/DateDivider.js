@@ -17,14 +17,21 @@
 // block and sticky binds to it instead of the page scroll. Both call
 // sites drop overflow/border-radius from their wrappers.
 //
-// Negative top/bottom margins (-1px) mask the 1px hairline gaps that
-// gridStyle's `gap: 1 + background: var(--border)` would otherwise
-// render above and below the full-width divider row. Without these,
-// the divider looks "framed" by light grey lines. Mark report 2026-
-// 05-22: "they all have see through gaps. this has come up maybe 10
-// times previously" — the gap is intrinsic to the hairline-grid
-// trick; any full-bleed row needs to eat its surrounding gaps the
-// same way.
+// **Gap-mask via absolute-positioned child elements** (PR 2026-05-22
+// after #524's box-shadow approach proved insufficient — Mark report
+// "still got a gap on the headers"). The earlier strategies failed
+// because:
+//   - Negative margin (-1px) only covers the gap when the divider is
+//     in NORMAL flow. As soon as `position: sticky` engages, the
+//     margin doesn't translate to visual offset, so the gridStyle
+//     hairline reappears.
+//   - `box-shadow: 0 -2px 0 var(--bg)` paints outside the box, but
+//     gets clipped by overflow constraints somewhere in the stack
+//     and doesn't reliably cover the gap in sticky state.
+// The reliable fix: render two absolutely-positioned mask divs as
+// children of the divider, each painted `var(--bg)`, extending
+// above + below the divider into the gridStyle gap region. These
+// move with the divider as it sticks, so the mask is always present.
 
 import React from "react";
 
@@ -39,25 +46,38 @@ export default function DateDivider({ label, total, isFirst = false, meta, onCli
       padding: isFirst ? "8px 14px 10px" : "14px 14px 10px",
       borderTop: isFirst ? "none" : "0.5px solid var(--border)",
       borderBottom: "0.5px solid var(--border)",
-      // Eat the 1px gridStyle gaps above + below so the divider reads
-      // as one continuous band, not a band sandwiched between two
-      // hairlines (see comment above).
-      marginTop: isFirst ? 0 : -1,
-      marginBottom: -1,
-      // Sticky-engagement leak fix (Mark report 2026-05-22 "peek
-      // through to the image"). When the divider is position:sticky,
-      // negative margin doesn't translate into the sticky-positioned
-      // rendering — so a 1px sliver of card image bleeds through the
-      // grid hairline above the divider. A 2px var(--bg) box-shadow
-      // outside the box paints over that sliver without affecting
-      // layout.
-      boxShadow: "0 -2px 0 var(--bg), 0 2px 0 var(--bg)",
       display: "flex",
       alignItems: "baseline",
       gap: 6,
       cursor: onClick ? "pointer" : "default",
     }}
     onClick={onClick}>
+      {/* Top gap-mask — paints var(--bg) into the 1px gridStyle gap
+          above the divider. Absolute-positioned so it travels with
+          the sticky element. left/right inset by 0 covers the full
+          grid width. Pointer-events disabled so click-through works. */}
+      {!isFirst && (
+        <div aria-hidden style={{
+          position: "absolute",
+          top: -3,
+          left: 0,
+          right: 0,
+          height: 3,
+          background: "var(--bg)",
+          pointerEvents: "none",
+        }} />
+      )}
+      {/* Bottom gap-mask — same role, paints into the gap below the
+          divider so cards beneath don't bleed through. */}
+      <div aria-hidden style={{
+        position: "absolute",
+        bottom: -3,
+        left: 0,
+        right: 0,
+        height: 3,
+        background: "var(--bg)",
+        pointerEvents: "none",
+      }} />
       <span style={{
         fontSize: 13,
         fontWeight: 600,
