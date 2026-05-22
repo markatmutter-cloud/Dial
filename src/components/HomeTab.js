@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { Card } from "./Card";
-import { SearchIcon } from "./icons";
+import { SearchIcon, TabIcon } from "./icons";
 import { MoonPhaseIndicator } from "./MoonPhaseIndicator";
 
 // Home tab — phase 4 polish (2026-05-11).
@@ -971,37 +971,17 @@ export function HomeTab(props) {
   const shellPad = isMobile ? 16 : 20;
 
   return (
-    <div style={{ paddingBottom: 0 }}>
-      {/* PR 2026-05-22 (Mark feedback on #502): About + auth pill
-          moved out of the centered masthead band into a slim utility
-          row at the top-right above the hero. Reads as the "Subscribe
-          / Sign in" utility strip seen on Vogue / Wired / Hodinkee
-          above the masthead — quiet, peripheral, doesn't compete with
-          the central hero + nav. Tabs + search stay in the band. */}
-      {(homeMastheadAuthJSX || openAbout) && (
-        <div style={{
-          display: "flex",
-          justifyContent: "flex-end",
-          alignItems: "center",
-          gap: 8,
-          padding: isMobile
-            ? "calc(env(safe-area-inset-top, 0px) + 4px) 16px 0"
-            : "6px 20px 0",
-        }}>
-          {openAbout && (
-            <button onClick={openAbout} style={{
-              background: "transparent", border: "none",
-              cursor: "pointer", fontFamily: "inherit",
-              fontSize: 13, fontWeight: 500, letterSpacing: "0.01em",
-              color: "var(--text3)",
-              padding: "6px 8px",
-            }}>
-              About
-            </button>
-          )}
-          {homeMastheadAuthJSX}
-        </div>
-      )}
+    <div style={{
+      paddingBottom: 0,
+      // Safe-area-inset on mobile now that the utility row above the
+      // hero is gone — About + Watchbox moved into the olive band
+      // below to give Watchbox a consistent olive background across
+      // all tabs (Mark feedback 2026-05-22: "currently when I
+      // navigate to the tabs it catches my eye as it looks like it
+      // jumps up and right" — perceived as motion because Watchbox
+      // flipped from white-context to olive-context).
+      paddingTop: isMobile ? "env(safe-area-inset-top, 0px)" : 0,
+    }}>
       <EditorialHero isMobile={isMobile} dark={dark} />
       {/* Masthead nav block — PR 2026-05-22 (Mark γ). The persistent
           top-bar chrome (tabs / About / auth pill) is suppressed on
@@ -1031,27 +1011,68 @@ export function HomeTab(props) {
       }}>
         {homeMastheadTabs && (
           <div style={{
+            width: "100%",
             display: "flex",
-            gap: isMobile ? 18 : 28,
             alignItems: "center",
-            flexWrap: "wrap",
-            justifyContent: "center",
+            justifyContent: "space-between",
+            gap: 12,
           }}>
-            {homeMastheadTabs.map(([key, label]) => (
-              <button key={key}
-                onClick={() => homeGoToTab && homeGoToTab(key)}
-                style={{
+            {/* Left spacer — mirrors the right-side auth cluster so
+                the tabs stay visually centered in the band. flex:1
+                each side, tabs in the middle. */}
+            <div style={{ flex: 1, minWidth: 0 }} />
+            {/* Tabs — Mark feedback 2026-05-22: match the non-Home
+                top-bar tabs which carry icons + label. Same TabIcon
+                helper used by DesktopShell so the symbol vocabulary
+                is consistent across surfaces. */}
+            <div style={{
+              display: "flex",
+              gap: isMobile ? 14 : 22,
+              alignItems: "center",
+              flexShrink: 0,
+            }}>
+              {homeMastheadTabs.map(([key, label]) => (
+                <button key={key}
+                  onClick={() => homeGoToTab && homeGoToTab(key)}
+                  style={{
+                    background: "transparent", border: "none",
+                    cursor: "pointer", fontFamily: "inherit",
+                    fontSize: isMobile ? 14 : 13,
+                    fontWeight: 500,
+                    letterSpacing: "0.01em",
+                    color: "var(--text2)",
+                    padding: 0,
+                    display: "inline-flex", alignItems: "center", gap: 6,
+                  }}>
+                  <TabIcon kind={key} />
+                  {label}
+                </button>
+              ))}
+            </div>
+            {/* Right cluster — About link + auth pill. Mark feedback
+                2026-05-22: putting Watchbox here (in the olive band
+                row) means the pill sits on olive on every tab, no
+                background flip when navigating off Home. */}
+            <div style={{
+              flex: 1, minWidth: 0,
+              display: "flex",
+              justifyContent: "flex-end",
+              alignItems: "center",
+              gap: 8,
+            }}>
+              {openAbout && !isMobile && (
+                <button onClick={openAbout} style={{
                   background: "transparent", border: "none",
                   cursor: "pointer", fontFamily: "inherit",
-                  fontSize: isMobile ? 14 : 13,
-                  fontWeight: 500,
-                  letterSpacing: "0.01em",
-                  color: "var(--text2)",
-                  padding: 0,
+                  fontSize: 13, fontWeight: 500, letterSpacing: "0.01em",
+                  color: "var(--text3)",
+                  padding: "6px 8px",
                 }}>
-                {label}
-              </button>
-            ))}
+                  About
+                </button>
+              )}
+              {homeMastheadAuthJSX}
+            </div>
           </div>
         )}
         {homeSearchSubmit && (
