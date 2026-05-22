@@ -22,8 +22,11 @@ describe("MobileShell", () => {
     expect(screen.getAllByRole("button", { name: /watchlist/i }).length).toBeGreaterThanOrEqual(1);
   });
 
-  test("renders the Filters icon button when not on Searches/Calendar sub-tabs", () => {
-    render(<MobileShell {...buildMockShellProps({ watchTopTab: "listings" })} />);
+  test("renders the Filters icon button on a filterable tab", () => {
+    // 2026-05-21 (PR #440): search row + Filters icon hidden on the
+    // entire Watchlists tab per Mark spec. Switched the assertion to
+    // tab=listings (Live sub-tab) so it tests the still-present case.
+    render(<MobileShell {...buildMockShellProps({ tab: "listings", listingsSubTab: "live" })} />);
     expect(screen.getByLabelText("Filters")).toBeInTheDocument();
   });
 
