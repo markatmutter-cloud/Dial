@@ -61,14 +61,14 @@ function EditorialHero({ isMobile, dark }) {
     }}>
       <div style={{
         display: "flex", justifyContent: "center",
-        marginBottom: isMobile ? 6 : 10,
+        marginBottom: isMobile ? 8 : 14,
       }}>
-        <MoonPhaseIndicator size={isMobile ? 100 : 150} dark={dark} />
+        <MoonPhaseIndicator size={isMobile ? 120 : 200} dark={dark} />
       </div>
       <h1 style={{
-        margin: isMobile ? "0 0 6px" : "0 0 10px",
+        margin: isMobile ? "0 0 8px" : "0 0 14px",
         fontFamily: "inherit",
-        fontSize: isMobile ? 28 : 48,
+        fontSize: isMobile ? 30 : 56,
         fontWeight: 500,
         letterSpacing: isMobile ? "0.14em" : "0.16em",
         // PR_δ2 2026-05-22: wordmark in brand olive — threads the brand
@@ -84,7 +84,7 @@ function EditorialHero({ isMobile, dark }) {
           beneath it so it reads as a continuation, not a separator. */}
       <div style={{
         height: 2,
-        width: isMobile ? 52 : 80,
+        width: isMobile ? 56 : 96,
         background: "var(--brand-olive-text)",
         margin: "0 auto",
       }} />
