@@ -498,7 +498,16 @@ def load_csv(path, source_name, currency='USD'):
                 'img': r.get('img', ''),
                 'sold': parse_bool(r.get('sold', False)),
                 'priceOnRequest': price_on_request,
-                'desc': desc_full[:1500],
+                # `desc` carried full dealer-description text (up to 1500
+                # chars) for the reference matcher's input. Mark perf
+                # report 2026-05-21: the field was bloating listings.json
+                # to 7.7MB on the wire, of which 3.3MB was description
+                # text the frontend never renders. Reference matching
+                # happens BEFORE this dict is built (see
+                # `parse_dealer_description` above), so dropping desc
+                # here doesn't affect matcher coverage. Restoring a 200-
+                # char preview later is a one-line change if needed.
+                'desc': '',
             }
             # Spread structured fields (reference_no, model_name, year,
             # material, case_size, dial, movement, etc.) only when the
