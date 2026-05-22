@@ -1780,24 +1780,17 @@ export default function Watchlist() {
   // results filter live as they type. When empty, exits the strip
   // view so they return to Home.
   const homeSearchLiveQuery = useCallback((q) => {
+    // Mark feedback 2026-05-22: "on the search feature it's a bit
+    // weird when you start typing that you're suddenly in a
+    // different page. Only go to the page when you click search —
+    // stay on landing until then." So this used to flip
+    // searchAllActive=true on each keystroke (live strip view); now
+    // it only updates homeLiveQuery for the dropdown count chips.
+    // The user has to press Enter or pick a target to actually
+    // navigate. Counts still update live as a useful side-effect
+    // without ripping them off Home.
     setHomeLiveQuery(q);
-    if (q) {
-      setSearch(q);
-      setSearchAllActive(true);
-      setPage(1);
-    } else {
-      setSearch("");
-      setSearchAllActive(false);
-    }
-  }, [setSearch, setSearchAllActive, setPage]);
-
-  // Whenever Search-all closes (by ANY path — tab nav, Exit button,
-  // homeSearchLiveQuery clearing, etc.), drop the Home live-query
-  // state too so a stale draft doesn't compute counts in the
-  // background. Pairs with homeSearchLiveQuery's setHomeLiveQuery("").
-  useEffect(() => {
-    if (!searchAllActive) setHomeLiveQuery("");
-  }, [searchAllActive]);
+  }, []);
 
   // Auction-calendar action handlers (Mark spec 2026-05-14).
   // CRITICAL: these useCallbacks MUST live ABOVE the `loading` /

@@ -650,7 +650,12 @@ export function DesktopShell(props) {
             unchanged (Spotify overlay from PR_Z). On non-Home tabs
             only — Home has its own editorial hero search. */}
         <div style={{ flex: 1 }} />
-        {onOlive && topBarSearchJSX}
+        {/* PR 2026-05-22 (Mark feedback): two search inputs visible
+            on the Search-all page (top-bar expanding + SearchResultsView's
+            sticky header). Hide the top-bar one when Search-all is
+            active — the body's input is the canonical surface for
+            editing the query in that context. */}
+        {onOlive && !searchAllActive && topBarSearchJSX}
         {/* About link — top-right area, before the auth chrome.
             Was previously next to the top-left wordmark; relocated
             2026-05-11 so it lives in the same zone as sign-in (per

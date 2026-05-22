@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { Card } from "./Card";
-import { SearchIcon } from "./icons";
+import { SearchIcon, TabIcon } from "./icons";
 import { MoonPhaseIndicator } from "./MoonPhaseIndicator";
 
 // Home tab — phase 4 polish (2026-05-11).
@@ -61,14 +61,14 @@ function EditorialHero({ isMobile, dark }) {
     }}>
       <div style={{
         display: "flex", justifyContent: "center",
-        marginBottom: isMobile ? 6 : 10,
+        marginBottom: isMobile ? 8 : 14,
       }}>
-        <MoonPhaseIndicator size={isMobile ? 100 : 150} dark={dark} />
+        <MoonPhaseIndicator size={isMobile ? 120 : 200} dark={dark} />
       </div>
       <h1 style={{
-        margin: isMobile ? "0 0 6px" : "0 0 10px",
+        margin: isMobile ? "0 0 8px" : "0 0 14px",
         fontFamily: "inherit",
-        fontSize: isMobile ? 28 : 48,
+        fontSize: isMobile ? 30 : 56,
         fontWeight: 500,
         letterSpacing: isMobile ? "0.14em" : "0.16em",
         // PR_δ2 2026-05-22: wordmark in brand olive — threads the brand
@@ -84,7 +84,7 @@ function EditorialHero({ isMobile, dark }) {
           beneath it so it reads as a continuation, not a separator. */}
       <div style={{
         height: 2,
-        width: isMobile ? 52 : 80,
+        width: isMobile ? 56 : 96,
         background: "var(--brand-olive-text)",
         margin: "0 auto",
       }} />
@@ -227,7 +227,17 @@ function HomeSearchBar({ onSubmit, onLiveQuery, isMobile, dealerSources, onJumpT
 
   return (
     <section style={{
-      padding: isMobile ? "0 16px 28px" : "0 16px 36px",
+      // PR 2026-05-22: bottom padding zeroed out. This section used
+      // to be a standalone block beneath the wordmark with built-in
+      // 28-36px of breathing room below it. After the masthead
+      // restructure (#502), HomeSearchBar lives INSIDE the olive
+      // band — that hidden bottom padding was silently expanding
+      // the space below the search bar regardless of the band's
+      // own padding/gap, which is why every "shift the search
+      // lower" attempt drifted back to centered. The olive band
+      // now owns the surrounding spacing; this section just renders
+      // the input.
+      padding: 0,
       maxWidth: 720,
       margin: "0 auto",
       width: "100%",
@@ -961,37 +971,17 @@ export function HomeTab(props) {
   const shellPad = isMobile ? 16 : 20;
 
   return (
-    <div style={{ paddingBottom: 0 }}>
-      {/* PR 2026-05-22 (Mark feedback on #502): About + auth pill
-          moved out of the centered masthead band into a slim utility
-          row at the top-right above the hero. Reads as the "Subscribe
-          / Sign in" utility strip seen on Vogue / Wired / Hodinkee
-          above the masthead — quiet, peripheral, doesn't compete with
-          the central hero + nav. Tabs + search stay in the band. */}
-      {(homeMastheadAuthJSX || openAbout) && (
-        <div style={{
-          display: "flex",
-          justifyContent: "flex-end",
-          alignItems: "center",
-          gap: 8,
-          padding: isMobile
-            ? "calc(env(safe-area-inset-top, 0px) + 4px) 16px 0"
-            : "6px 20px 0",
-        }}>
-          {openAbout && (
-            <button onClick={openAbout} style={{
-              background: "transparent", border: "none",
-              cursor: "pointer", fontFamily: "inherit",
-              fontSize: 13, fontWeight: 500, letterSpacing: "0.01em",
-              color: "var(--text3)",
-              padding: "6px 8px",
-            }}>
-              About
-            </button>
-          )}
-          {homeMastheadAuthJSX}
-        </div>
-      )}
+    <div style={{
+      paddingBottom: 0,
+      // Safe-area-inset on mobile now that the utility row above the
+      // hero is gone — About + Watchbox moved into the olive band
+      // below to give Watchbox a consistent olive background across
+      // all tabs (Mark feedback 2026-05-22: "currently when I
+      // navigate to the tabs it catches my eye as it looks like it
+      // jumps up and right" — perceived as motion because Watchbox
+      // flipped from white-context to olive-context).
+      paddingTop: isMobile ? "env(safe-area-inset-top, 0px)" : 0,
+    }}>
       <EditorialHero isMobile={isMobile} dark={dark} />
       {/* Masthead nav block — PR 2026-05-22 (Mark γ). The persistent
           top-bar chrome (tabs / About / auth pill) is suppressed on
@@ -1006,39 +996,83 @@ export function HomeTab(props) {
         marginLeft: -shellPad,
         marginRight: -shellPad,
         background: "var(--brand-olive-tint-12)",
-        // PR 2026-05-22 rebalance: tighter band so the hero (now
-        // bigger) is the visual anchor and the band reads as a slim
-        // nav strip rather than a substantial second section.
+        // PR 2026-05-22 visual-balance pass: the tabs row carries
+        // more visual weight than the matching empty space below the
+        // search bar, so the search reads as sitting "too high" in
+        // the band. Bump the gap above the search (tabs → search)
+        // and keep bottom padding tight so the search lands visually
+        // lower-of-center — balanced against the heavier tabs above.
         padding: isMobile ? "6px 16px 8px" : "8px 20px 10px",
         marginBottom: isMobile ? 14 : 18,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        gap: isMobile ? 8 : 10,
+        gap: isMobile ? 14 : 18,
       }}>
         {homeMastheadTabs && (
           <div style={{
+            width: "100%",
             display: "flex",
-            gap: isMobile ? 18 : 28,
             alignItems: "center",
-            flexWrap: "wrap",
-            justifyContent: "center",
+            justifyContent: "space-between",
+            gap: 12,
           }}>
-            {homeMastheadTabs.map(([key, label]) => (
-              <button key={key}
-                onClick={() => homeGoToTab && homeGoToTab(key)}
-                style={{
+            {/* Left spacer — mirrors the right-side auth cluster so
+                the tabs stay visually centered in the band. flex:1
+                each side, tabs in the middle. */}
+            <div style={{ flex: 1, minWidth: 0 }} />
+            {/* Tabs — Mark feedback 2026-05-22: match the non-Home
+                top-bar tabs which carry icons + label. Same TabIcon
+                helper used by DesktopShell so the symbol vocabulary
+                is consistent across surfaces. */}
+            <div style={{
+              display: "flex",
+              gap: isMobile ? 14 : 22,
+              alignItems: "center",
+              flexShrink: 0,
+            }}>
+              {homeMastheadTabs.map(([key, label]) => (
+                <button key={key}
+                  onClick={() => homeGoToTab && homeGoToTab(key)}
+                  style={{
+                    background: "transparent", border: "none",
+                    cursor: "pointer", fontFamily: "inherit",
+                    fontSize: isMobile ? 14 : 13,
+                    fontWeight: 500,
+                    letterSpacing: "0.01em",
+                    color: "var(--text2)",
+                    padding: 0,
+                    display: "inline-flex", alignItems: "center", gap: 6,
+                  }}>
+                  <TabIcon kind={key} />
+                  {label}
+                </button>
+              ))}
+            </div>
+            {/* Right cluster — About link + auth pill. Mark feedback
+                2026-05-22: putting Watchbox here (in the olive band
+                row) means the pill sits on olive on every tab, no
+                background flip when navigating off Home. */}
+            <div style={{
+              flex: 1, minWidth: 0,
+              display: "flex",
+              justifyContent: "flex-end",
+              alignItems: "center",
+              gap: 8,
+            }}>
+              {openAbout && !isMobile && (
+                <button onClick={openAbout} style={{
                   background: "transparent", border: "none",
                   cursor: "pointer", fontFamily: "inherit",
-                  fontSize: isMobile ? 14 : 13,
-                  fontWeight: 500,
-                  letterSpacing: "0.01em",
-                  color: "var(--text2)",
-                  padding: 0,
+                  fontSize: 13, fontWeight: 500, letterSpacing: "0.01em",
+                  color: "var(--text3)",
+                  padding: "6px 8px",
                 }}>
-                {label}
-              </button>
-            ))}
+                  About
+                </button>
+              )}
+              {homeMastheadAuthJSX}
+            </div>
           </div>
         )}
         {homeSearchSubmit && (
