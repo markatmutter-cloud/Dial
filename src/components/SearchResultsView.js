@@ -46,8 +46,9 @@ function matchesQuery(item, q) {
 // fields — title is the article title; excerpt + author live in
 // nested fields; brand/reference_no are still flat. Use a slim
 // per-shape haystack so we don't double-match on listing-only keys.
-function matchesArticleQuery(article, q) {
+function matchesArticleQuery(article, q, bodies) {
   if (!q) return true;
+  const body = bodies && article.url ? bodies[article.url] : null;
   const haystack = [
     article.title,
     article.brand,
@@ -56,6 +57,7 @@ function matchesArticleQuery(article, q) {
     article.model_line,
     article.author,
     article.excerpt,
+    body,
     article._source && article._source.label,
   ].filter(Boolean).join(" ").toLowerCase();
   return haystack.includes(q);
@@ -144,6 +146,7 @@ export function SearchResultsView({
   mainFeedItems,
   auctionLotItems,
   articles,
+  articleBodies,
   isMobile,
   gridStyle,
   watchlist,
@@ -259,8 +262,8 @@ export function SearchResultsView({
   // searchAllActive flips true; articles is [] until that resolves.
   const articleHits = useMemo(() => {
     if (!Array.isArray(articles) || articles.length === 0) return [];
-    return articles.filter(a => matchesArticleQuery(a, q));
-  }, [articles, q]);
+    return articles.filter(a => matchesArticleQuery(a, q, articleBodies));
+  }, [articles, q, articleBodies]);
 
   const totalHits = liveListings.length + liveAuctions.length
     + soldItems.length + articleHits.length;
