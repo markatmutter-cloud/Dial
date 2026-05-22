@@ -1006,15 +1006,18 @@ export function HomeTab(props) {
         marginLeft: -shellPad,
         marginRight: -shellPad,
         background: "var(--brand-olive-tint-12)",
-        // PR 2026-05-22 rebalance: tighter band so the hero (now
-        // bigger) is the visual anchor and the band reads as a slim
-        // nav strip rather than a substantial second section.
+        // PR 2026-05-22 visual-balance pass: the tabs row carries
+        // more visual weight than the matching empty space below the
+        // search bar, so the search reads as sitting "too high" in
+        // the band. Bump the gap above the search (tabs → search)
+        // and keep bottom padding tight so the search lands visually
+        // lower-of-center — balanced against the heavier tabs above.
         padding: isMobile ? "6px 16px 8px" : "8px 20px 10px",
         marginBottom: isMobile ? 14 : 18,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        gap: isMobile ? 8 : 10,
+        gap: isMobile ? 14 : 18,
       }}>
         {homeMastheadTabs && (
           <div style={{
