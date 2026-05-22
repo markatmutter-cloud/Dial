@@ -54,6 +54,10 @@ export function IdentityBand({
       padding: isMobile ? "10px 14px" : "12px 18px",
       marginLeft: sideMargin,
       marginRight: sideMargin,
+      // 8px top breathing room from the sub-tabs strip above
+      // (Mark feedback 2026-05-21: "also close to the subtabs").
+      // No bottom margin — filter row below has its own top padding.
+      marginTop: 8,
       marginBottom: 0,
       borderRadius: 8,
       display: "flex", alignItems: "center", gap: 10,
