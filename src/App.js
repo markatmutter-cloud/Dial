@@ -2711,30 +2711,36 @@ export default function Watchlist() {
           Mobile keeps the small initial circle to preserve the
           tight top-bar layout — the dropdown reveals Watchbox as
           its highlighted primary entry. */}
-      {!isMobile ? (
+      {/* PR_ε2 2026-05-22: avatar disc + letter colors INVERT when the
+          top bar is olive (every tab except Home, both viewports). On
+          neutral top bar (Home): olive disc + white letter. On olive
+          top bar (non-Home): white disc + olive letter. Single rule;
+          fixes the mobile regression from ε5 where olive disc on
+          olive chrome was invisible. */}
+      {(() => {
+        const onOliveBar = tab !== "home";
+        const discBg     = onOliveBar ? "#ffffff" : "var(--brand-olive)";
+        const discFg     = onOliveBar ? "var(--brand-olive)" : "#ffffff";
+        const pillBorder = onOliveBar ? "rgba(255,255,255,0.3)" : "var(--border)";
+        const pillText   = onOliveBar ? "#ffffff" : "var(--text1)";
+        const pillOpenBg = onOliveBar ? "rgba(255,255,255,0.12)" : "var(--surface)";
+        return !isMobile ? (
         <button onClick={() => setShowUserMenu(o => !o)}
           aria-label="Watchbox · Account menu"
           title="Watchbox · Account menu"
           style={{
-            // Mark feedback 2026-05-15: brand-blue read as a CTA
-            // shout. Dropped to neutral (border + dark initial disc)
-            // so it sits as a navigation affordance, not an alert.
             display: "flex", alignItems: "center", gap: 8,
             height: 36, padding: "2px 14px 2px 4px",
             borderRadius: 999,
-            border: "0.5px solid var(--border)",
-            background: showUserMenu ? "var(--surface)" : "transparent",
-            color: "var(--text1)", cursor: "pointer", fontFamily: "inherit",
+            border: `0.5px solid ${pillBorder}`,
+            background: showUserMenu ? pillOpenBg : "transparent",
+            color: pillText, cursor: "pointer", fontFamily: "inherit",
             flexShrink: 0,
             transition: "background 120ms ease",
           }}>
           <span style={{
             width: 28, height: 28, borderRadius: "50%",
-            // PR_ε5 2026-05-22: olive disc + white letter. Threads
-            // brand color through the avatar affordance. Olive vs
-            // olive contrast on PR_ε2's olive top bar is handled in
-            // that PR by flipping the disc to white-on-olive there.
-            background: "var(--brand-olive)", color: "#ffffff",
+            background: discBg, color: discFg,
             display: "inline-flex", alignItems: "center", justifyContent: "center",
             fontSize: 13, fontWeight: 600,
             flexShrink: 0,
@@ -2743,7 +2749,7 @@ export default function Watchlist() {
           </span>
           <span style={{
             fontSize: 13, fontWeight: 600, letterSpacing: "0.01em",
-            color: "var(--text1)",
+            color: pillText,
           }}>
             Watchbox
           </span>
@@ -2754,19 +2760,17 @@ export default function Watchlist() {
           title="Watchbox · Account menu"
           style={{
             width: 40, height: 40, borderRadius: "50%",
-            border: "0.5px solid var(--border)",
-            // PR_ε5 2026-05-22: olive avatar + white letter (mobile).
-            // Matches desktop variant; matches the olive thread we
-            // shipped on Home wordmark / Watchbox CTA / Search button.
-            background: "var(--brand-olive)",
-            color: "#ffffff", cursor: "pointer", fontFamily: "inherit",
+            border: `0.5px solid ${pillBorder}`,
+            background: discBg,
+            color: discFg, cursor: "pointer", fontFamily: "inherit",
             fontSize: 14, fontWeight: 600,
             display: "flex", alignItems: "center", justifyContent: "center",
             flexShrink: 0,
           }}>
           {userInitial.toUpperCase()}
         </button>
-      )}
+        );
+      })()}
       {showUserMenu && (
         <div style={{
           position: "absolute", right: 0, top: isMobile ? 46 : 42, zIndex: 50,
