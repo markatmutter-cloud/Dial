@@ -449,6 +449,12 @@ export function MobileShell(props) {
             shadow underneath for depth. */}
         <div style={{
           position: "fixed", bottom: 0, left: 0, right: 0,
+          // z-index 100 sits above the ArticleCard heart overlay
+          // (zIndex: 2) and the EditorialView sticky filter
+          // (zIndex: 20). Without an explicit z-index, scrolling
+          // cards paint over the fixed nav (Mark report 2026-05-21:
+          // hearts on Editorial cards showing through the tab pills).
+          zIndex: 100,
           display: "flex",
           background: "var(--surface)",
           borderTop: "0.5px solid var(--border)",
