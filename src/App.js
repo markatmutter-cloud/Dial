@@ -1166,9 +1166,11 @@ export default function Watchlist() {
     // subtle brand thread against the black page bg instead of the
     // brighter light-mode olive that competed for attention.
     "--brand-olive": "#2a3527",
-    // Text-on-bg variant — dark mode needs a lighter sage so olive
-    // reads on black. Used for Home wordmark hero etc.
-    "--brand-olive-text": "#a8b3a0",
+    // Text-on-bg variant — Mark spec 2026-05-22: "on landing page
+    // in darkmode keep the wordmark green the same" — same full
+    // olive in dark mode as light mode. Lower contrast on black
+    // is intentional; reads as a subtle/muted editorial hero.
+    "--brand-olive-text": "#3b4a36",
     // Disc-tint variant (translucent olive) for icon discs + chips
     // in the Watchlists family. Dark mode uses the lighter sage at
     // higher opacity so it reads against #000.
@@ -3242,28 +3244,31 @@ export default function Watchlist() {
         {visibleWithDividers.map((entry, idx) => (
           entry.kind === "divider" ? (
             <div key={`div-${idx}-${entry.label}`} style={{
-              // Density pass 2026-05-22 (Mark report: "for a whole
-              // screen I can only see one row of watches feels poor
-              // value"). Dropped the var(--surface) bg + heavy
-              // padding (14-28px top → 4-12px) and converted the
-              // label to the typographic-only treatment used elsewhere
-              // post-PR_δ1. Hairline top-border carries the group
-              // separation without the slab weight.
+              // PR 2026-05-22 redesign: the previous uppercase letter-
+              // spaced treatment (post-density pass) read as a chip
+              // rather than a section header — Mark report "look like
+              // they've gone weird on formatting." Switched to a clean
+              // sentence-case section header (sentence-case, 14/600,
+              // olive accent for the label) with a thin top-rule above
+              // (and no border-bottom) so groups read as separated
+              // sections in an editorial feed, not as floating labels.
               gridColumn: "1/-1",
-              padding: idx === 0 ? "0 4px 6px" : "12px 4px 6px",
+              padding: idx === 0 ? "4px 4px 10px" : "20px 4px 10px",
               display: "flex", alignItems: "baseline", gap: 12,
-              borderBottom: "0.5px solid var(--border)",
-              marginBottom: 4,
+              borderTop: idx === 0 ? "none" : "0.5px solid var(--border)",
+              marginBottom: 6,
             }}>
               <span style={{
-                fontSize: 11, fontWeight: 600, color: "var(--text2)",
-                textTransform: "uppercase", letterSpacing: "0.08em",
+                fontSize: 14, fontWeight: 600,
+                color: "var(--brand-olive)",
+                marginTop: idx === 0 ? 0 : 10,
               }}>
                 {entry.label}
               </span>
               <span style={{
-                fontSize: 11, color: "var(--text3)", marginLeft: "auto",
+                fontSize: 12, color: "var(--text3)", marginLeft: "auto",
                 fontVariantNumeric: "tabular-nums",
+                marginTop: idx === 0 ? 0 : 10,
               }}>
                 {entry.total.toLocaleString()}
               </span>
