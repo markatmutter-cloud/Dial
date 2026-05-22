@@ -3311,6 +3311,7 @@ export default function Watchlist() {
   const searchAllResultsJSX = (
     <SearchResultsView
       search={search}
+      setSearch={setSearch}
       mainFeedItems={mainFeedItems}
       auctionLotItems={auctionLotItems}
       isMobile={isMobile}
