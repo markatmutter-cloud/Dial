@@ -592,29 +592,38 @@ export function DesktopShell(props) {
         // `tab` is "home" (e.g. user landed via a /share link with
         // no prior nav). Fix 2026-05-22 — Mark report "still old
         // interface at the top" on share + search-all surfaces.
-        const onOlive = tab !== "home" || anyShareActive || searchAllActive;
+        // Top bar is now olive on every tab (PR 2026-05-22) — Home
+        // gets a minimal version (just About + auth pill, no
+        // wordmark + no tabs) so the M circle anchors at viewport
+        // top-right same as non-Home. Chrome colors stay on the
+        // white-on-olive treatment.
+        const onOlive = true;
         // PR 2026-05-22 γ — Home masthead restructure. On Home (and
         // not over a receive/search-all destination), the persistent
         // top-bar chrome is suppressed entirely; tabs / About / auth
         // render under the wordmark inside HomeTab's olive-bleed
         // masthead band. Top bar collapses to nothing so the hero
         // is the first thing in the viewport.
-        const suppressTopBar = tab === "home" && !anyShareActive && !searchAllActive;
-        if (suppressTopBar) return null;
+        // PR 2026-05-22 (Mark feedback "same location on all tabs
+        // top right so it doesn't move around"): keep the olive top
+        // bar even on Home, but render only About + auth pill in it.
+        // No wordmark (editorial hero owns the brand mark on Home);
+        // no tabs (they live in the masthead band under the hero).
+        // Just the right-side affordances at viewport top-right so
+        // the M circle anchors in the same place as on every other
+        // tab.
+        const minimalTopBar = tab === "home" && !anyShareActive && !searchAllActive;
         return (
         <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 20px",
                       borderBottom: onOlive ? "none" : "0.5px solid var(--border)",
-                      background: onOlive ? "var(--brand-olive)" : undefined,
+                      // Olive bg on Home too so the M sits on the same
+                      // background as it does on non-Home — kills the
+                      // perceived "jump" when navigating.
+                      background: "var(--brand-olive)",
                       flexShrink: 0 }}>
         {/* Top wordmark hidden on Home (editorial hero in body is the
-            brand mark there). On every other tab: smaller-but-
-            editorial — matches the Home hero's weight + tracking +
-            uppercase, shrunk to fit inside the top bar (Mark spec
-            2026-05-11). Padding-left preserves visual centering
-            against the trailing letter-spacing. Weight bumped 600 →
-            700 in PR_ε2 (same rule as mobile δ3 — heavier wordmark
-            anchors better on olive). */}
-        {onOlive && (
+            brand mark there) AND on the minimal Home top bar. */}
+        {onOlive && !minimalTopBar && (
           <button onClick={() => { setTab("home"); setPage(1); }}
             style={{ background: "none", border: "none", cursor: "pointer",
                     padding: 0, paddingLeft: "0.16em", fontFamily: "inherit",
@@ -624,16 +633,15 @@ export function DesktopShell(props) {
             Watchlist
           </button>
         )}
+        {/* Tabs cluster — hidden on minimal Home top bar (tabs live
+            in the masthead band under the hero on Home). */}
+        {!minimalTopBar && (
         <div style={{ display: "flex", gap: 18, alignItems: "center", flexShrink: 0, marginLeft: 8 }}>
-          {/* PR_ε1 2026-05-22: filled-pill active state → underline
-              pattern via tabPill. PR_ε2 2026-05-22: passes onOlive so
-              the active underline + text flip to white when the top
-              bar is olive. */}
           {[["listings", "Listings"], ["watchlist", "Watchlists"], ["references", "Collecting"]].map(([key, label]) => {
             const active = tab === key;
             return (
               <button key={key} onClick={() => setTab(key)} style={{
-                ...tabPill(active, { onOlive }),
+                ...tabPill(active, { onOlive: true }),
                 padding: "10px 0",
                 display: "flex", alignItems: "center", gap: 6,
               }}>
@@ -643,6 +651,7 @@ export function DesktopShell(props) {
             );
           })}
         </div>
+        )}
         {/* Top-bar search relocated AGAIN 2026-05-22 (PR_ε1.5): back
             to the top bar as an expanding icon → input pattern. Sits
             in the account zone alongside About + Watchbox. Replaces
@@ -655,7 +664,10 @@ export function DesktopShell(props) {
             sticky header). Hide the top-bar one when Search-all is
             active — the body's input is the canonical surface for
             editing the query in that context. */}
-        {onOlive && !searchAllActive && topBarSearchJSX}
+        {/* Top-bar search hidden on Home (masthead band owns the
+            search there) AND on Search-all (its own sticky header
+            owns the input). */}
+        {!minimalTopBar && !searchAllActive && topBarSearchJSX}
         {/* About link — top-right area, before the auth chrome.
             Was previously next to the top-left wordmark; relocated
             2026-05-11 so it lives in the same zone as sign-in (per

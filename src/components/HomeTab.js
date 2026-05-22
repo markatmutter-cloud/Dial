@@ -996,83 +996,50 @@ export function HomeTab(props) {
         marginLeft: -shellPad,
         marginRight: -shellPad,
         background: "var(--brand-olive-tint-12)",
-        // PR 2026-05-22 visual-balance pass: the tabs row carries
-        // more visual weight than the matching empty space below the
-        // search bar, so the search reads as sitting "too high" in
-        // the band. Bump the gap above the search (tabs → search)
-        // and keep bottom padding tight so the search lands visually
-        // lower-of-center — balanced against the heavier tabs above.
-        padding: isMobile ? "6px 16px 8px" : "8px 20px 10px",
+        // PR 2026-05-22 (Mark spec, "distribute vertically"): equal
+        // top padding, gap, and bottom padding — same idea as
+        // PowerPoint's Distribute Vertically. Tabs row + search bar
+        // each occupy ~half the band's vertical content area,
+        // separated and bracketed by equal whitespace.
+        padding: isMobile ? "14px 16px" : "16px 20px",
         marginBottom: isMobile ? 14 : 18,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        gap: isMobile ? 14 : 18,
+        gap: isMobile ? 14 : 16,
       }}>
         {homeMastheadTabs && (
           <div style={{
-            width: "100%",
             display: "flex",
             alignItems: "center",
-            justifyContent: "space-between",
-            gap: 12,
+            justifyContent: "center",
+            gap: isMobile ? 14 : 22,
+            flexWrap: "wrap",
           }}>
-            {/* Left spacer — mirrors the right-side auth cluster so
-                the tabs stay visually centered in the band. flex:1
-                each side, tabs in the middle. */}
-            <div style={{ flex: 1, minWidth: 0 }} />
             {/* Tabs — Mark feedback 2026-05-22: match the non-Home
                 top-bar tabs which carry icons + label. Same TabIcon
                 helper used by DesktopShell so the symbol vocabulary
-                is consistent across surfaces. */}
-            <div style={{
-              display: "flex",
-              gap: isMobile ? 14 : 22,
-              alignItems: "center",
-              flexShrink: 0,
-            }}>
-              {homeMastheadTabs.map(([key, label]) => (
-                <button key={key}
-                  onClick={() => homeGoToTab && homeGoToTab(key)}
-                  style={{
-                    background: "transparent", border: "none",
-                    cursor: "pointer", fontFamily: "inherit",
-                    fontSize: isMobile ? 14 : 13,
-                    fontWeight: 500,
-                    letterSpacing: "0.01em",
-                    color: "var(--text2)",
-                    padding: 0,
-                    display: "inline-flex", alignItems: "center", gap: 6,
-                  }}>
-                  <TabIcon kind={key} />
-                  {label}
-                </button>
-              ))}
-            </div>
-            {/* Right cluster — About link + auth pill. Mark feedback
-                2026-05-22: putting Watchbox here (in the olive band
-                row) means the pill sits on olive on every tab, no
-                background flip when navigating off Home. */}
-            <div style={{
-              flex: 1, minWidth: 0,
-              display: "flex",
-              justifyContent: "flex-end",
-              alignItems: "center",
-              gap: 8,
-            }}>
-              {openAbout && !isMobile && (
-                <button onClick={openAbout} style={{
+                is consistent across surfaces.
+                About + Watchbox moved BACK to a top utility row
+                above the hero 2026-05-22 (after the in-band version
+                broke "same position on all tabs"). */}
+            {homeMastheadTabs.map(([key, label]) => (
+              <button key={key}
+                onClick={() => homeGoToTab && homeGoToTab(key)}
+                style={{
                   background: "transparent", border: "none",
                   cursor: "pointer", fontFamily: "inherit",
-                  fontSize: 13, fontWeight: 500, letterSpacing: "0.01em",
-                  color: "var(--text3)",
-                  padding: "6px 8px",
+                  fontSize: isMobile ? 14 : 13,
+                  fontWeight: 500,
+                  letterSpacing: "0.01em",
+                  color: "var(--text2)",
+                  padding: 0,
+                  display: "inline-flex", alignItems: "center", gap: 6,
                 }}>
-                  About
-                </button>
-              )}
-              {homeMastheadAuthJSX}
-            </div>
+                <TabIcon kind={key} />
+                {label}
+              </button>
+            ))}
           </div>
         )}
         {homeSearchSubmit && (
