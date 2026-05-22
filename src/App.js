@@ -316,6 +316,11 @@ export default function Watchlist() {
   // picks WatchlistTab for the watchlist-style subs and CollectionsTab
   // for the collections-style subs.
   const SUB_VALUES_WATCHLIST = ["listings", "auctions", "sold", "searches"];
+  // PR 2026-05-22: "challenges" moved from Watchlists to Collecting.
+  // Kept in SUB_VALUES_COLLECTIONS for the moment so the internal
+  // CollectionsTab routing (challenges → ChallengesView) still
+  // dispatches; legacy `?tab=watchlist&sub=challenges` URLs get
+  // redirected to `?tab=references&sub=challenges` on init.
   const SUB_VALUES_COLLECTIONS = ["my-collection", "wishlist", "lists", "challenges"];
   const SUB_VALUES = [...SUB_VALUES_WATCHLIST, ...SUB_VALUES_COLLECTIONS];
   // Bundle 2A.2b (2026-05-08) — the three hearted sub-tabs
@@ -334,6 +339,12 @@ export default function Watchlist() {
     const normalize = (v) => {
       if (v === "calendar") return "listings";
       if (v === "my-collection") return "lists";
+      // PR 2026-05-22: "challenges" moved off Watchlists → Collecting.
+      // A user whose localStorage still holds "challenges" would
+      // land on a sub-tab with no pill. Coerce to "lists" (default
+      // Watchlists landing). Old URL params with sub=challenges
+      // still redirect via the setTab init above.
+      if (v === "challenges") return "lists";
       return v;
     };
     if (typeof window !== "undefined") {
@@ -450,7 +461,11 @@ export default function Watchlist() {
   // URL key: `?tab=learn&sub=<value>`. localStorage:
   // `dial_references_sub_tab`. Default = "editorial" (new headline
   // surface).
-  const REFERENCES_SUB_VALUES = ["editorial", "size", "links"];
+  // PR 2026-05-22: Challenges moved from Watchlists to Collecting
+  // (Mark spec, "while at it, move the challenge tab from watchlist
+  // to collecting"). Challenges sits as a Collecting sub-tab
+  // alongside Editorial / Size compare / Links.
+  const REFERENCES_SUB_VALUES = ["editorial", "challenges", "size", "links"];
   const [referencesSubTab, setReferencesSubTab] = useState(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
@@ -459,6 +474,13 @@ export default function Watchlist() {
       if ((tParam === "learn" || tParam === "references") &&
           REFERENCES_SUB_VALUES.includes(sub)) {
         return sub;
+      }
+      // Legacy URL: `?tab=watchlist&sub=challenges` should land on
+      // Collecting > Challenges (the tab init above redirected
+      // tab → "references"; this completes the redirect by setting
+      // the sub-tab too).
+      if (tParam === "watchlist" && sub === "challenges") {
+        return "challenges";
       }
     }
     try {
@@ -512,6 +534,11 @@ export default function Watchlist() {
       // Legacy redirect: ?tab=watchlist&sub=my-collection points at
       // the old sub-tab home for My Watches. Now lands on Watchbox.
       if (t === "watchlist" && sub === "my-collection") return "watchbox";
+      // Legacy redirect (PR 2026-05-22): ?tab=watchlist&sub=challenges
+      // points at the old Watchlists location for Challenges. Now
+      // lands on Collecting > Challenges (?tab=references&sub=challenges
+      // — referencesSubTab init below catches the same param).
+      if (t === "watchlist" && sub === "challenges") return "references";
       // External → internal redirect: ?tab=saved / ?tab=learn /
       // ?tab=collections (legacy) all map to internal values.
       if (URL_TAB_TO_INTERNAL[t]) return URL_TAB_TO_INTERNAL[t];
@@ -3691,9 +3718,10 @@ export default function Watchlist() {
         msOverflowStyle: "none",
       }}>
         {[
-          ["editorial", "Editorial"],
-          ["size",      "Size comparison"],
-          ["links",     "Links"],
+          ["editorial",  "Editorial"],
+          ["challenges", "Challenges"],
+          ["size",       "Size comparison"],
+          ["links",      "Links"],
         ].map(([key, label]) => {
           const active = referencesSubTab === key;
           return (
@@ -3817,7 +3845,7 @@ export default function Watchlist() {
       // Manage-your-collection callout CTAs — three sub-tabs of Saved.
       goToSavedLists={() => { setTab("watchlist"); setWatchTopTab("lists"); setPage(1); }}
       goToMyWatches={() => { setTab("watchbox"); setPage(1); }}
-      goToChallenges={() => { setTab("watchlist"); setWatchTopTab("challenges"); setPage(1); }}
+      goToChallenges={() => { setTab("references"); setReferencesSubTab("challenges"); setPage(1); }}
       // Footer routes
       openAbout={() => setAboutModalOpen(true)}
       signInWithGoogle={triggerSignInPrompt}
@@ -3915,6 +3943,14 @@ export default function Watchlist() {
       // tabs; placeholder adapts via the shells.
       search={search}
       setSearch={setSearch}
+      // Challenges plumbing (PR 2026-05-22, moved here from
+      // CollectionsTab/Watchlists). Same prop bag ChallengesView
+      // consumed before; just routed to the new mount point.
+      collectionsApi={collectionsApi}
+      hidden={hidden}
+      primaryCurrency={primaryCurrency}
+      pendingChallengeDrillId={pendingChallengeDrillId}
+      clearPendingChallengeDrill={clearPendingChallengeDrill}
     />
   );
 
@@ -4082,7 +4118,9 @@ export default function Watchlist() {
       {[
         ["lists",      "Lists"],
         ["searches",   "Searches"],
-        ["challenges", "Challenges"],
+        // "challenges" moved to Collecting (PR 2026-05-22). Pill
+        // removed; legacy `?tab=watchlist&sub=challenges` URLs
+        // redirect to `?tab=references&sub=challenges` on init.
       ].map(([key, label]) => {
         const active = watchTopTab === key;
         return (
@@ -4282,16 +4320,13 @@ export default function Watchlist() {
       resetTick={shareReceiveResetTick}
       onTakenChallenge={(id) => {
         // Drop the recipient straight into their freshly-created
-        // challenge. Bundle 2A.2 (2026-05-07): Collections tab
-        // collapsed into Saved; challenges live at
-        // `?tab=watchlist&sub=challenges`. setTabWithReceiveEscape
-        // clears URL params + dismisses the receive surface;
-        // setting watchTopTab to "challenges" lands the user on
-        // the right sub-tab; CollectionsTab + ChallengesView each
-        // read pendingChallengeDrillId to drill in.
+        // challenge. PR 2026-05-22: Challenges moved from Watchlists
+        // to Collecting; receive flow now lands on
+        // ?tab=references&sub=challenges. ReferencesTab forwards
+        // pendingChallengeDrillId to ChallengesView for the drill-in.
         setPendingChallengeDrillId(id);
-        setWatchTopTab("challenges");
-        setTabWithReceiveEscape("watchlist");
+        setReferencesSubTab("challenges");
+        setTabWithReceiveEscape("references");
       }}
     />
   );
