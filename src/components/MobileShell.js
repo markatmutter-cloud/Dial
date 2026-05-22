@@ -166,8 +166,12 @@ export function MobileShell(props) {
           padding: tab === "home"
             ? `calc(env(safe-area-inset-top, 0px) + 4px) 16px 0`
             : "0 16px",
-          // PR_β experiment: olive chrome zone.
-          background: "var(--brand-olive)",
+          // Olive chrome on every tab EXCEPT Home (Mark spec
+          // 2026-05-22: "undo the green on the landing page").
+          // Home keeps neutral page bg so the editorial moment
+          // (hero + recently-added strips) carries first paint.
+          background: tab === "home" ? "var(--bg)" : "var(--brand-olive)",
+          borderBottom: tab === "home" ? "0.5px solid var(--border)" : "none",
         }}>
           <div style={{
             display: "flex", gap: 0,
@@ -179,6 +183,7 @@ export function MobileShell(props) {
           }}>
             {[["listings", "Listings"], ["watchlist", "Watchlists"], ["references", "Collecting"]].map(([key, label]) => {
               const active = tab === key;
+              const onOlive = tab !== "home";
               return (
                 <button key={key}
                   onClick={() => { setTab(key); if (key === "listings") setSearch(""); }}
@@ -187,14 +192,16 @@ export function MobileShell(props) {
                     marginRight: 18,
                     background: "transparent",
                     border: "none",
-                    // PR_β: white-on-olive active state; inactive
-                    // tabs faded with rgba so they read as secondary.
-                    borderBottom: active ? "2px solid #ffffff" : "2px solid transparent",
+                    borderBottom: active
+                      ? `2px solid ${onOlive ? "#ffffff" : "var(--text1)"}`
+                      : "2px solid transparent",
                     cursor: "pointer",
                     fontFamily: "inherit",
                     fontSize: 14,
                     fontWeight: active ? 600 : 500,
-                    color: active ? "#ffffff" : "rgba(255,255,255,0.65)",
+                    color: active
+                      ? (onOlive ? "#ffffff" : "var(--text1)")
+                      : (onOlive ? "rgba(255,255,255,0.65)" : "var(--text2)"),
                     whiteSpace: "nowrap",
                     letterSpacing: "0.01em",
                   }}>
