@@ -51,7 +51,12 @@ function EditorialHero({ isMobile, dark }) {
   // Collecting where it's an identity cue, not on Home.
   return (
     <section style={{
-      padding: isMobile ? "12px 16px 14px" : "22px 16px 22px",
+      // PR 2026-05-22 γ: top bar suppressed on Home → hero sits at
+      // the top of the viewport. Add safe-area-inset-top on mobile
+      // so the moonphase clears the iOS status bar / notch.
+      padding: isMobile
+        ? "calc(env(safe-area-inset-top, 0px) + 12px) 16px 14px"
+        : "22px 16px 22px",
       textAlign: "center",
     }}>
       <div style={{
@@ -810,6 +815,12 @@ export function HomeTab(props) {
     user, compact,
     feedScreenerItemsCount, openFeedScreener,
     dark,
+    // Masthead-nav props — top-bar chrome suppressed on Home, these
+    // render the equivalent block inside the olive-bleed band below
+    // the wordmark (PR 2026-05-22 γ).
+    homeMastheadTabs,
+    homeGoToTab,
+    homeMastheadAuthJSX,
   } = props;
 
   // The shell adds horizontal padding around its main content (16px
@@ -821,22 +832,82 @@ export function HomeTab(props) {
   return (
     <div style={{ paddingBottom: 0 }}>
       <EditorialHero isMobile={isMobile} dark={dark} />
-      {/* Hero search bar — under the wordmark on every viewport.
-          Mark feedback 2026-05-20: "would love to have the search
-          bar under the logo on mobile like on the desktop site."
-          Earlier (2026-05-11) the mobile hero search was suppressed
-          to avoid a duplicate alongside the sticky top-bar search.
-          Now the mobile sticky search is itself suppressed on Home
-          (MobileShell), so the hero is the single canonical entry
-          point on both viewports. */}
-      {homeSearchSubmit && (
-        <HomeSearchBar
-          onSubmit={homeSearchSubmit}
-          isMobile={isMobile}
-          dealerSources={homeDealerSources}
-          onJumpToDealer={homeJumpToDealer}
-        />
-      )}
+      {/* Masthead nav block — PR 2026-05-22 (Mark γ). The persistent
+          top-bar chrome (tabs / About / auth pill) is suppressed on
+          Home in the shells; everything moves under the wordmark in
+          a single olive-bleed band. Tabs + search + auth/about
+          stacked, framed by an olive-tint background that bleeds
+          edge-to-edge via negative margins (the shell adds 16-20px
+          horizontal padding, we escape it with -shellPad).
+          Brand thread + magazine-cover layout: hero on top, all
+          navigation + search clustered below as one band. */}
+      <div style={{
+        marginLeft: -shellPad,
+        marginRight: -shellPad,
+        background: "var(--brand-olive-tint-12)",
+        padding: isMobile ? "16px 16px 18px" : "20px 20px 24px",
+        marginBottom: isMobile ? 24 : 36,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: isMobile ? 14 : 18,
+      }}>
+        {homeMastheadTabs && (
+          <div style={{
+            display: "flex",
+            gap: isMobile ? 18 : 28,
+            alignItems: "center",
+            flexWrap: "wrap",
+            justifyContent: "center",
+          }}>
+            {homeMastheadTabs.map(([key, label]) => (
+              <button key={key}
+                onClick={() => homeGoToTab && homeGoToTab(key)}
+                style={{
+                  background: "transparent", border: "none",
+                  cursor: "pointer", fontFamily: "inherit",
+                  fontSize: isMobile ? 14 : 13,
+                  fontWeight: 500,
+                  letterSpacing: "0.01em",
+                  color: "var(--text2)",
+                  padding: 0,
+                }}>
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
+        {homeSearchSubmit && (
+          <div style={{ width: "100%", maxWidth: isMobile ? "none" : 720 }}>
+            <HomeSearchBar
+              onSubmit={homeSearchSubmit}
+              isMobile={isMobile}
+              dealerSources={homeDealerSources}
+              onJumpToDealer={homeJumpToDealer}
+            />
+          </div>
+        )}
+        {(homeMastheadAuthJSX || openAbout) && (
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+          }}>
+            {openAbout && (
+              <button onClick={openAbout} style={{
+                background: "transparent", border: "none",
+                cursor: "pointer", fontFamily: "inherit",
+                fontSize: 13, fontWeight: 500, letterSpacing: "0.01em",
+                color: "var(--text3)",
+                padding: "6px 8px",
+              }}>
+                About
+              </button>
+            )}
+            {homeMastheadAuthJSX}
+          </div>
+        )}
+      </div>
       <SectionStrip
         heading="Recently added"
         items={homeRecentAdded}
