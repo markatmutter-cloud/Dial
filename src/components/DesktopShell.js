@@ -16,11 +16,11 @@ import { pillBase, tabPill } from "../styles";
 export function DesktopShell(props) {
   const {
     // Catalog
-    BRANDS, BRANDS_SHOW, SOURCES,
+    BRANDS, BRANDS_SHOW, SOURCES, SOURCES_SHOW,
     DEALER_SOURCES, AUCTION_SOURCES,
     // State
     aboutModalOpen, activeFilterPop,
-    brandsExpanded,
+    brandsExpanded, sourcesExpanded, setSourcesExpanded,
     currentIsSaved,
     filterBrands, filterSources, filterModels,
     effectiveBrandsCount = 0, effectiveSourcesCount = 0, effectiveModelsCount = 0,
@@ -504,6 +504,21 @@ export function DesktopShell(props) {
               {showAuctionSources && visAuctions.map(s => (
                 <Chip key={s} label={s} active={filterSources.includes(s)} onClick={() => toggleSource(s)} />
               ))}
+              {/* +N more / Less expander — Mark report 2026-05-22:
+                  "sold tab — there are ten thousand listings but only
+                  a few sources in the filter — don't think filters
+                  are working." Brand panel had this expander; source
+                  panel was missing it, so anything past the first
+                  SOURCES_SHOW (8) sources was hidden behind a
+                  non-existent toggle. */}
+              {effectiveSourcesCount > (SOURCES_SHOW || 0) && (
+                <Chip
+                  label={sourcesExpanded ? "Less ↑" : `+${effectiveSourcesCount - (SOURCES_SHOW || 0)} more`}
+                  active={false}
+                  onClick={() => setSourcesExpanded(!sourcesExpanded)}
+                  blue
+                />
+              )}
               {filterSources.length > 0 && (
                 <button onClick={() => setFilterSources([])} style={{
                   marginLeft: "auto", fontSize: 12, padding: "4px 10px", borderRadius: 6,
