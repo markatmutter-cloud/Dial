@@ -66,7 +66,9 @@ function EditorialHero({ isMobile }) {
         fontSize: isMobile ? 30 : 56,
         fontWeight: 500,
         letterSpacing: isMobile ? "0.14em" : "0.16em",
-        color: "var(--text1)",
+        // PR_δ2 2026-05-22: wordmark in brand olive — threads the brand
+        // color into the neutral Home chrome without flooding the page.
+        color: "var(--brand-olive-text)",
         textTransform: "uppercase",
         textAlign: "center",
         paddingLeft: isMobile ? "0.14em" : "0.16em",

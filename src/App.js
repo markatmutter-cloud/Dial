@@ -1161,6 +1161,9 @@ export default function Watchlist() {
     // feedback 2026-05-21: the bright --accent-positive green didn't
     // match the favicon).
     "--brand-olive": "#3b4a36",
+    // Text-on-bg variant — dark mode needs a lighter sage so olive
+    // reads on black. Used for Home wordmark hero etc.
+    "--brand-olive-text": "#a8b3a0",
     // Brand-tint surfaces (subtle fills behind icons, chips, hover
     // states) and the gold accent used for status / warning hints
     // (Plan view over-budget, admin "earning its keep" chip, etc.).
@@ -1197,6 +1200,8 @@ export default function Watchlist() {
     // feedback 2026-05-21: the bright --accent-positive green didn't
     // match the favicon).
     "--brand-olive": "#3b4a36",
+    // Text-on-bg variant — light mode uses the full olive directly.
+    "--brand-olive-text": "#3b4a36",
     "--brand-tint-08": "rgba(24,95,165,0.08)",
     "--brand-tint-10": "rgba(24,95,165,0.10)",
     "--brand-tint-12": "rgba(24,95,165,0.12)",
