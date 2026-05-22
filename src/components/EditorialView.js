@@ -178,7 +178,7 @@ const SOURCES = [
 ];
 
 const BRAND_TOP_N = 24;       // Show top N brands in expansion panel; "+more" expander reveals the rest
-const RESULTS_PAGE_SIZE = 100; // 24 → 48 (2026-05-20) → 100 (2026-05-21). Mark spec: "100 articles then the load more message" — corpus is ~12k now, the larger initial slice lets users scroll meaningfully before hitting Load more.
+const RESULTS_PAGE_SIZE = 40; // 24 → 48 → 100 → 40 (2026-05-22). 100 was making Editorial slow to load (Mark report). Dropping to 40 cuts initial-paint card count 60%; Load more button picks up the rest in 40-card chunks. Body-text search is unaffected (it operates on the full corpus, not the visible page).
 const FEATURED_COUNT = 8;     // Most-recent articles surfaced in the hero strip (visible only when no search / no filters active).
 
 export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, handleWish, openCollectionPicker, handleShare, search: searchProp, setSearch: setSearchProp }) {
@@ -807,23 +807,39 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
           );
         })}
 
-        {/* Load more — only when there's more in the filtered set */}
+        {/* Infinite scroll sentinel — replaces the Load more button
+            (Mark spec 2026-05-22: "yes to infinite scroll loading as
+            scroll"). IntersectionObserver bumps pageSize whenever
+            this node enters the viewport. Same callback-ref pattern
+            App.js uses for the Listings grid (see App.js loaderRef).
+            Footer text reads "Loading more…" while there's still
+            corpus left, then "All N shown" once we've reached the
+            end. */}
         {!loading && pageSize < filtered.length && (
-          <div style={{ textAlign: "center", padding: "16px 0 24px" }}>
-            <button
-              onClick={() => setPageSize(s => s + RESULTS_PAGE_SIZE)}
-              style={{
-                padding: "10px 20px",
-                borderRadius: 6,
-                border: "0.5px solid var(--border)",
-                background: "var(--surface)",
-                color: "var(--text2)",
-                cursor: "pointer",
-                fontFamily: "inherit",
-                fontSize: 13,
-              }}>
-              Show {Math.min(RESULTS_PAGE_SIZE, filtered.length - pageSize)} more
-            </button>
+          <div
+            ref={(node) => {
+              if (!node) return;
+              const obs = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting) {
+                  setPageSize(s => s + RESULTS_PAGE_SIZE);
+                }
+              }, { threshold: 0.1, rootMargin: "200px" });
+              obs.observe(node);
+              return () => obs.disconnect();
+            }}
+            style={{
+              textAlign: "center", padding: "24px 0",
+              color: "var(--text3)", fontSize: 12, fontFamily: "inherit",
+            }}>
+            Loading more…
+          </div>
+        )}
+        {!loading && pageSize >= filtered.length && filtered.length > 0 && (
+          <div style={{
+            textAlign: "center", padding: "24px 0",
+            color: "var(--text3)", fontSize: 12, fontFamily: "inherit",
+          }}>
+            All {filtered.length.toLocaleString()} shown
           </div>
         )}
       </div>
@@ -916,21 +932,12 @@ export function ArticleCard({ article, isMobile, compact, cols, watchlist, handl
     }
   };
   const showMenu = !!(openCollectionPicker || handleShare);
-  // Density scaling — at high col counts (5-7), shrink typography and
-  // drop the excerpt entirely so the card stays readable inside a
-  // narrow tile. The `compact` flag from useViewSettings fires
-  // automatically at cols >= 4.
+  // Density scaling — shrink typography at high col counts so the
+  // card stays readable inside a narrow tile. The `compact` flag
+  // from useViewSettings fires automatically at cols >= 4. Excerpt
+  // line retired 2026-05-22 — see the JSX block below for context.
   const dense = compact || (cols && cols >= 5);
   const veryDense = cols && cols >= 6;
-  const excerptLineClamp = veryDense ? 0 : (dense ? 2 : 3);
-  const excerptChars = veryDense ? 0 : (dense ? 140 : 220);
-  // `excerpt` lives on the meta record (computed at scrape time by
-  // editorial_corpus_io.write_split). Truncate to the density-aware
-  // char target; the field is already short (~240 chars) so this is
-  // a no-op for the default card and a clean clip on dense layouts.
-  const excerpt = excerptChars > 0
-    ? (article.excerpt || "").slice(0, excerptChars).trim()
-    : "";
   const titleFontSize = veryDense ? 12 : (dense ? 13 : 15);
   const metaFontSize = veryDense ? 9 : (dense ? 10 : 11);
   const padding = dense ? "8px 10px 10px" : "12px 14px 14px";
@@ -999,15 +1006,14 @@ export function ArticleCard({ article, isMobile, compact, cols, watchlist, handl
             {article.author}
           </div>
         )}
-        {excerpt && excerptLineClamp > 0 && (
-          <div style={{
-            fontSize: dense ? 11 : 12, color: "var(--text2)", lineHeight: 1.45,
-            display: "-webkit-box",
-            WebkitLineClamp: excerptLineClamp,
-            WebkitBoxOrient: "vertical",
-            overflow: "hidden",
-          }}>{excerpt}…</div>
-        )}
+        {/* Excerpt retired 2026-05-22 (Mark spec): "the cards have a
+            preview of the text in the article - this is on mobile
+            and desktop and makes it look very cluttered. I think
+            just stick with title but search able to pick up text in
+            the articles as well." Body-text search remains intact —
+            bodies are lazy-loaded on first keystroke and matched
+            against `body_text`; cards just don't render the snippet
+            inline. */}
         {article.brand && !veryDense && (
           <div style={{
             marginTop: dense ? 2 : 4,
