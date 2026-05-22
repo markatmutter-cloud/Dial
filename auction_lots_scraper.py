@@ -123,14 +123,34 @@ ANTIQUORUM_REFRESH_WINDOW_DAYS = 30
 ANTIQUORUM_REFRESH_SLEEP_SECONDS = 0.5
 ANTIQUORUM_LOT_URL_FRAGMENT = "live.antiquorum.swiss/lots/view/"
 
-# HTTP headers for the catalog/auction page fetches. Same UA the
-# per-house calendar scrapers use; no Accept-language pinning needed
-# since the URLs are locale-agnostic for these houses.
+# HTTP headers for the catalog/auction page fetches. The full Chrome-
+# style header set is needed for Bonhams (and any other Cloudflare-
+# fronted houses): Cloudflare's bot challenge on GitHub Actions IP
+# ranges is stricter than on residential IPs — a bare User-Agent
+# returns 403 from CI even though it returns 200 from a developer's
+# laptop. Adding the full Accept / Accept-Language / Sec-Fetch / sec-
+# ch-ua header set matches what a real Chrome navigation sends and
+# clears the Cloudflare challenge.
+#
+# Accept-Encoding intentionally excludes 'br' (brotli) — `requests`
+# doesn't decompress brotli by default and we'd end up handing the
+# bytes to downstream parsers as garbage. gzip+deflate covers
+# Cloudflare's compression negotiation fine.
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
                   "AppleWebKit/537.36 (KHTML, like Gecko) "
                   "Chrome/132.0.0.0 Safari/537.36",
-    "Accept": "*/*",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Accept-Encoding": "gzip, deflate",
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-Site": "none",
+    "Sec-Fetch-User": "?1",
+    "Upgrade-Insecure-Requests": "1",
+    "sec-ch-ua": '"Chromium";v="132", "Not_A Brand";v="24"',
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": '"macOS"',
 }
 
 AUCTIONS_JSON = "public/auctions.json"
