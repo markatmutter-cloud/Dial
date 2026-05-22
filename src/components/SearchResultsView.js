@@ -200,18 +200,22 @@ export function SearchResultsView({
   // as the top-bar expanding search). Esc / blur reverts the view
   // (search still committed via onChange). When `setSearch` isn't
   // passed (legacy or read-only contexts) the click no-ops.
-  const [editing, setEditing] = useState(false);
+  // PR_φ-refresh 2026-05-22: query is always an editable input now
+  // (was click-to-edit). State retained as a no-op shape for forward
+  // compatibility — useEffect autofocuses once on mount.
+  // eslint-disable-next-line no-unused-vars
+  const [editing, setEditing] = useState(true);
   const inputRef = useRef(null);
   useEffect(() => {
-    if (!editing) return undefined;
     const t = setTimeout(() => {
       if (inputRef.current) {
         inputRef.current.focus();
-        inputRef.current.select();
+        // Don't select() on mount — user landed here intentionally and
+        // probably wants to read the current query before refining.
       }
     }, 20);
     return () => clearTimeout(t);
-  }, [editing]);
+  }, []);
   const canEdit = typeof setSearch === "function";
 
   // PR_φ1 2026-05-22: strip-order is dynamic by hit count desc; empty
@@ -237,95 +241,89 @@ export function SearchResultsView({
       <div style={{
         position: "sticky", top: 0, zIndex: 5,
         background: "var(--bg)",
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        gap: 12, padding: isMobile ? "14px 16px 10px" : "18px 20px 12px",
+        padding: isMobile ? "14px 16px 10px" : "18px 20px 12px",
         borderBottom: "0.5px solid var(--border)",
       }}>
-        <div style={{ minWidth: 0, flex: 1 }}>
+        {/* Eyebrow row — section label on the left, Exit on the right.
+            Both small; the search input below is the visual anchor. */}
+        <div style={{
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          marginBottom: 8,
+        }}>
           <div style={{
             fontSize: 11, fontWeight: 600, letterSpacing: "0.14em",
             textTransform: "uppercase", color: "var(--text3)",
-            marginBottom: 4,
           }}>
             Search results
-          </div>
-          {editing && canEdit ? (
-            <div style={{
-              display: "flex", alignItems: "center", gap: 8,
-              background: "transparent",
-              border: "0.5px solid var(--border)",
-              borderRadius: 10,
-              padding: "6px 12px",
-              maxWidth: isMobile ? "100%" : 480,
-            }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" strokeWidth="2" strokeLinecap="round"
-                style={{ color: "var(--text3)", flexShrink: 0 }} aria-hidden="true">
-                <circle cx="11" cy="11" r="7"/>
-                <line x1="21" y1="21" x2="16.5" y2="16.5"/>
-              </svg>
-              <input
-                ref={inputRef}
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                onBlur={() => setEditing(false)}
-                onKeyDown={e => {
-                  if (e.key === "Enter") { e.target.blur(); }
-                  if (e.key === "Escape") { e.target.blur(); }
-                }}
-                placeholder="Search reference, brand, model…"
-                style={{ flex: 1, border: "none", background: "transparent",
-                         fontSize: isMobile ? 16 : 17, fontWeight: 600,
-                         color: "var(--text1)", outline: "none",
-                         fontFamily: "inherit", minWidth: 0 }}
-              />
-              {search && (
-                <button onClick={() => setSearch("")} aria-label="Clear search"
-                  style={{ flexShrink: 0, background: "none", border: "none",
-                          cursor: "pointer", color: "var(--text3)", padding: 2,
-                          fontFamily: "inherit", display: "flex",
-                          alignItems: "center", justifyContent: "center" }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                    <line x1="18" y1="6" x2="6" y2="18"/>
-                    <line x1="6" y1="6" x2="18" y2="18"/>
-                  </svg>
-                </button>
-              )}
-            </div>
-          ) : (
-            <button
-              onClick={() => canEdit && setEditing(true)}
-              title={canEdit ? "Edit search" : undefined}
-              style={{
-                background: "transparent", border: "none",
-                padding: 0, cursor: canEdit ? "pointer" : "default",
-                fontFamily: "inherit",
-                fontSize: isMobile ? 16 : 18, fontWeight: 600,
-                color: "var(--text1)",
-                textAlign: "left", display: "block", maxWidth: "100%",
-                overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-              }}>
-              “{search}”
+            {totalHits > 0 && (
               <span style={{
-                fontSize: 13, fontWeight: 400, color: "var(--text3)",
-                marginLeft: 10,
+                marginLeft: 10, fontWeight: 500, letterSpacing: "0.04em",
+                textTransform: "none", color: "var(--text3)",
+                fontVariantNumeric: "tabular-nums",
               }}>
                 {totalHits.toLocaleString()} match{totalHits === 1 ? "" : "es"}
               </span>
+            )}
+          </div>
+          <button onClick={onExit}
+            style={{
+              background: "transparent", border: "0.5px solid var(--border)",
+              borderRadius: 18, padding: "5px 12px",
+              fontFamily: "inherit", fontSize: 12, fontWeight: 500,
+              color: "var(--text2)", cursor: "pointer", flexShrink: 0,
+              whiteSpace: "nowrap",
+            }}>
+            Exit
+          </button>
+        </div>
+        {/* PR_φ-refresh 2026-05-22: query is always an editable input
+            (was a click-to-edit button). Cleaner affordance — same
+            chrome as the top-bar expanding search, sized up to read
+            as the page's primary input. Auto-focus when entering the
+            surface so the user can immediately refine without clicking. */}
+        <div style={{
+          display: "flex", alignItems: "center", gap: 8,
+          background: "transparent",
+          border: "0.5px solid var(--border)",
+          borderRadius: 10,
+          padding: "8px 14px",
+          maxWidth: isMobile ? "100%" : 520,
+        }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" strokeWidth="2" strokeLinecap="round"
+            style={{ color: "var(--text3)", flexShrink: 0 }} aria-hidden="true">
+            <circle cx="11" cy="11" r="7"/>
+            <line x1="21" y1="21" x2="16.5" y2="16.5"/>
+          </svg>
+          <input
+            ref={inputRef}
+            value={search}
+            onChange={e => canEdit && setSearch(e.target.value)}
+            readOnly={!canEdit}
+            onKeyDown={e => {
+              if (e.key === "Enter") { e.target.blur(); }
+              if (e.key === "Escape") { e.target.blur(); }
+            }}
+            placeholder="Search reference, brand, model…"
+            style={{ flex: 1, border: "none", background: "transparent",
+                     fontSize: isMobile ? 15 : 16, fontWeight: 600,
+                     color: "var(--text1)", outline: "none",
+                     fontFamily: "inherit", minWidth: 0 }}
+          />
+          {search && canEdit && (
+            <button onClick={() => setSearch("")} aria-label="Clear search"
+              style={{ flexShrink: 0, background: "none", border: "none",
+                      cursor: "pointer", color: "var(--text3)", padding: 2,
+                      fontFamily: "inherit", display: "flex",
+                      alignItems: "center", justifyContent: "center" }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
             </button>
           )}
         </div>
-        <button onClick={onExit}
-          style={{
-            background: "transparent", border: "0.5px solid var(--border)",
-            borderRadius: 18, padding: "6px 14px",
-            fontFamily: "inherit", fontSize: 13, fontWeight: 500,
-            color: "var(--text2)", cursor: "pointer", flexShrink: 0,
-            whiteSpace: "nowrap",
-          }}>
-          Exit
-        </button>
       </div>
 
       {stripDefs.length === 0 && (

@@ -594,7 +594,11 @@ function OrientationAnchors({ signedIn, onClickAnchor, onSignIn, signInCopy }) {
 
 const primaryBtnStyle = {
   border: "none",
-  background: "var(--brand)",
+  // PR 2026-05-22: olive primary CTA — matches the site-wide primary
+  // CTA olive treatment (styles.js actionButton primary variant).
+  // "Save to my list" was inline-styled brand-blue so it escaped the
+  // earlier sweep.
+  background: "var(--brand-olive)",
   color: "#fff",
   padding: "10px 20px",
   borderRadius: 8,

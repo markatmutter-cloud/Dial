@@ -206,7 +206,10 @@ export function AboutModal({ open, onClose, primaryCurrency }) {
                     <div style={featureVerb}>
                       <span style={{
                         width: 18, height: 18, borderRadius: 4,
-                        background: "var(--brand)", color: "#fff",
+                        // PR 2026-05-22: olive letter badge — matches the
+                        // site-wide olive thread (avatar, ADMIN, primary
+                        // CTAs, icon strokes, etc.).
+                        background: "var(--brand-olive)", color: "#fff",
                         fontSize: 11, fontWeight: 700,
                         display: "inline-flex", alignItems: "center", justifyContent: "center",
                       }}>{verb[0]}</span>
