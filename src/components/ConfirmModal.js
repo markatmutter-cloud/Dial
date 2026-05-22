@@ -72,6 +72,30 @@ export function ConfirmHost() {
     tone = "default",
   } = req;
 
+  // PR 2026-05-22 visual refresh (Mark feedback "modal could be
+  // better"): bumped typography + filled CTA buttons. Danger gets
+  // a solid red fill instead of red-on-transparent so destructive
+  // actions read as visibly weighted; default tone uses the olive
+  // primary (actionButton.primary is olive site-wide now).
+  const cancelStyle = {
+    ...actionButton({ variant: "subtle" }),
+    padding: "10px 16px",
+    fontSize: 13, fontWeight: 500,
+  };
+  const confirmStyle = tone === "danger"
+    ? {
+        padding: "10px 16px", borderRadius: 6,
+        fontFamily: "inherit", fontSize: 13, fontWeight: 600,
+        cursor: "pointer", whiteSpace: "nowrap",
+        border: "none",
+        background: "var(--danger)", color: "#fff",
+      }
+    : {
+        ...actionButton({ variant: "primary" }),
+        padding: "10px 18px",
+        fontSize: 13, fontWeight: 600,
+      };
+
   const overlay = (
     <div
       style={modalBackdrop}
@@ -80,21 +104,22 @@ export function ConfirmHost() {
       aria-modal="true"
       aria-labelledby={title ? "confirm-modal-title" : undefined}
     >
-      <div style={{ ...modalShell, maxWidth: 420 }}>
+      <div style={{ ...modalShell, maxWidth: 440 }}>
         {title && (
           <h2 id="confirm-modal-title" style={{
-            margin: "0 0 8px",
-            fontSize: 16, fontWeight: 600,
+            margin: "0 0 10px",
+            fontSize: 17, fontWeight: 600,
             color: "var(--text1)",
-            letterSpacing: "-0.005em",
+            letterSpacing: "-0.01em",
+            lineHeight: 1.3,
           }}>
             {title}
           </h2>
         )}
         {message && (
           <p style={{
-            margin: title ? "0 0 18px" : "0 0 18px",
-            fontSize: 13, lineHeight: 1.5,
+            margin: title ? "0 0 22px" : "0 0 22px",
+            fontSize: 14, lineHeight: 1.5,
             color: "var(--text2)",
           }}>
             {message}
@@ -104,13 +129,13 @@ export function ConfirmHost() {
           display: "flex", justifyContent: "flex-end",
           gap: 8, marginTop: 4,
         }}>
-          <button onClick={handleCancel} style={actionButton({ variant: "subtle" })}>
+          <button onClick={handleCancel} style={cancelStyle}>
             {cancelLabel}
           </button>
           <button
             onClick={handleConfirm}
             autoFocus
-            style={actionButton({ variant: tone === "danger" ? "danger" : "primary" })}
+            style={confirmStyle}
           >
             {confirmLabel}
           </button>

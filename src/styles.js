@@ -234,7 +234,9 @@ export const iconButton = ({ size = 40, active = false } = {}) => ({
 // still floats above all modals.
 export const modalBackdrop = {
   position: "fixed", inset: 0, zIndex: 2500,
-  background: "rgba(0,0,0,0.5)",
+  background: "rgba(0,0,0,0.55)",
+  backdropFilter: "blur(4px)",
+  WebkitBackdropFilter: "blur(4px)",
   display: "flex", alignItems: "center", justifyContent: "center",
   padding: 20,
 };
@@ -242,11 +244,15 @@ export const modalBackdrop = {
 // Centered modal card. Override `maxWidth` per-modal (Hidden = 720,
 // About = 440, Track = 520, FavSearch = 380). `padding` differs slightly
 // between modals (Track uses 20/22, others 22) — override as needed.
+// PR 2026-05-22 refresh (Mark feedback "modal could be better"):
+// pronounced radius + stronger drop shadow + slightly thicker border
+// for definition. The backdrop now blurs the page beneath, giving the
+// modal a clearer "this is the focus" elevation cue.
 export const modalShell = {
-  background: "var(--bg)", borderRadius: 12,
+  background: "var(--bg)", borderRadius: 16,
   border: "0.5px solid var(--border)",
-  padding: 22, width: "100%",
-  boxShadow: "0 12px 40px rgba(0,0,0,0.25)",
+  padding: 24, width: "100%",
+  boxShadow: "0 24px 64px rgba(0,0,0,0.32), 0 4px 12px rgba(0,0,0,0.08)",
 };
 
 // 36×36 close button (×) in the modal title row. Negative right margin
