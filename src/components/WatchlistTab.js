@@ -6,6 +6,7 @@ import { actionButton, signInButton, inputBase } from "../styles";
 import { EmptyState } from "./EmptyState";
 import { confirm } from "./ConfirmModal";
 import { ListRow } from "./ListRow";
+import DateDivider from "./DateDivider";
 
 
 
@@ -547,23 +548,18 @@ export function WatchlistTab(props) {
                 });
                 return (
                   <>
-                    <div style={{ ...gridStyle, borderRadius: 10, overflow: "hidden" }}>
+                    {/* Grid wrapper drops `overflow: hidden` + `borderRadius`
+                        so DateDivider inside can position:sticky against the
+                        page scroll. See App.js listingsGridJSX. */}
+                    <div style={gridStyle}>
                       {flat.map((entry, idx) => (
                         entry.kind === "divider" ? (
-                          <div key={`div-${idx}-${entry.label}`} style={{
-                            gridColumn: "1/-1",
-                            padding: entry.idx === 0 ? "14px 14px 12px" : "28px 14px 12px",
-                            display: "flex", alignItems: "baseline", gap: 12,
-                            borderBottom: "0.5px solid var(--border)",
-                            marginBottom: 4,
-                          }}>
-                            <span style={{ fontSize: 14, fontWeight: 600, color: "var(--text1)" }}>
-                              {entry.label}
-                            </span>
-                            <span style={{ fontSize: 12, color: "var(--text3)", marginLeft: "auto" }}>
-                              {entry.total.toLocaleString()}
-                            </span>
-                          </div>
+                          <DateDivider
+                            key={`div-${idx}-${entry.label}`}
+                            label={entry.label}
+                            total={entry.total}
+                            isFirst={entry.idx === 0}
+                          />
                         ) : (
                           <div key={entry.item.id}>{renderItem(entry.item)}</div>
                         )
