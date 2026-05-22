@@ -18,6 +18,9 @@ Per-house enumeration:
                (currently capped at one page since pagination 301s
                back to /lots; revisit when antiquorum's catalog
                server stops stripping ?page=N)
+  Bonhams    → /_next/data/<buildId>/auction/<id>/<slug>.json?page=N
+               (single fetch per page; pageProps.lotData.auctionLots
+               carries title, price, image, status, brand-group)
   Christie's → window.chrComponents.lots.data.lots inline JSON
                (full per-lot data, no per-lot fetch needed)
   Sotheby's  → __NEXT_DATA__.props.pageProps.algoliaJson.hits
@@ -27,9 +30,8 @@ Per-house enumeration:
                Capped at PHILLIPS_LOTS_PER_SALE/sale to bound CI time.
 
 Houses we skip (lot-level scraping not viable today):
-  Bonhams        — Cloudflare blocks `requests`
   Monaco Legend  — SPA, no server-rendered lot list
-  Heritage       — DataDome at TLS layer
+  Heritage       — DataDome + Cloudflare bot wall on every subdomain
 
 Run: python3 auction_lots_scraper.py
 Output: public/auction_lots.json
@@ -51,6 +53,7 @@ from auctionlots_scraper import (
     scrape_catalog_antiquorum_lot,
     scrape_phillips_lot,
     scrape_antiquorum_lot,
+    scrape_bonhams_lot,
     scrape_christies_lot,
     scrape_sothebys_lot,
     scrape_monaco_legend_lot,
@@ -1176,6 +1179,194 @@ def enumerate_sothebys(sale_url, sale=None):
     return out
 
 
+# ── Bonhams ─────────────────────────────────────────────────────────────
+
+BONHAMS_BUILDID_RE = re.compile(r'"buildId":"([^"]+)"')
+BONHAMS_SALE_URL_RE = re.compile(r"/auction/(\d+)/([^/?#]+)/?")
+
+
+def _bonhams_lot_to_record(lot, auction_obj, sale_url):
+    """Map a Bonhams /_next/data auctionLots[] entry into the canonical
+    auction-lot record shape (matches Christie's / Sotheby's / Phillips
+    output). Returns None on missing identifiers — keeps the union
+    file's URL keys well-formed."""
+    if not isinstance(lot, dict):
+        return None
+    auction_id = lot.get("auctionId") or auction_obj.get("iSaleNo")
+    lot_no = (lot.get("lotNo") or {}).get("full") or lot.get("lotId")
+    slug = lot.get("slug") or ""
+    if not (auction_id and lot_no and slug):
+        return None
+    url = f"https://www.bonhams.com/auction/{auction_id}/lot/{lot_no}/{slug}/"
+
+    title = (lot.get("title") or "").strip() or ((lot.get("image") or {}).get("caption") or "").strip()
+    if not title:
+        return None
+
+    # Brand group: Bonhams classifies lots into brand "groups" (e.g.
+    # ['Rolex']). First group is the canonical maker for our purposes.
+    groups = lot.get("groups") or []
+    maker = groups[0] if groups else None
+
+    price = lot.get("price") or {}
+    currency = (lot.get("currency") or {}).get("iso_code") or "USD"
+    low = price.get("estimateLow") or None
+    high = price.get("estimateHigh") or None
+
+    # hammerPremium is the realised all-in price (hammerPrice + buyer's
+    # premium). Mirror how Phillips / Christie's emit `sold_price` —
+    # the headline realised number, not the bare hammer.
+    sold_price = price.get("hammerPremium") or None
+    if sold_price == 0:
+        sold_price = None
+
+    # Status: per-lot flag, NOT the sale-level status. A single sale
+    # can mix SOLD / BI / withdrawn lots.
+    flags = lot.get("flags") or {}
+    is_ended = bool(flags.get("isAuctionEnded")) or (sold_price is not None)
+    status_raw = (lot.get("status") or "").upper()
+    if status_raw in {"SOLD", "BI", "WITHDRAWN", "UNSOLD"}:
+        is_ended = True
+
+    image = (lot.get("image") or {}).get("url") or None
+
+    auction_title = auction_obj.get("sSaleName")
+    dates = auction_obj.get("dates") or {}
+    start_obj = ((dates.get("start") or [{}])[0] or {}).get("date") or {}
+    auction_start = start_obj.get("datetime")
+    auction_end = (dates.get("end") or {}).get("datetime")
+
+    return {
+        "_url": url,
+        "house": "Bonhams",
+        "lot_id": lot.get("lotItemId") or lot.get("lotUniqueId"),
+        "lot_number": str(lot_no),
+        "title": title,
+        "maker": maker,
+        "reference_no": None,
+        "model_name": None,
+        "description": title[:600],
+        "currency": currency,
+        "estimate_low": low,
+        "estimate_high": high,
+        "starting_price": price.get("startingBidAmount") or None,
+        "current_bid": None,
+        "sold_price": sold_price,
+        "estimate_low_usd":  to_usd(low,  currency),
+        "estimate_high_usd": to_usd(high, currency),
+        "starting_price_usd": to_usd(price.get("startingBidAmount") or 0, currency) or None,
+        "current_bid_usd":    None,
+        "sold_price_usd":    to_usd(sold_price, currency),
+        "status": "ended" if is_ended else "active",
+        "image": image,
+        "auction_title": auction_title,
+        "auction_start": auction_start,
+        "auction_end":   auction_end,
+        "auction_url":   sale_url,
+        "scraped_at":    time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+    }
+
+
+def enumerate_bonhams(sale_url, sale=None):
+    """Return a list of (url, lot dict) tuples for a Bonhams sale.
+
+    Bonhams' Next.js front-end exposes the full per-sale lot list at
+    `/_next/data/<buildId>/auction/<saleId>/<slug>.json?page=N` —
+    each page returns 48 lots; auction.number_of_lots tells us how
+    many pages to walk. Single JSON fetch per page; per-lot detail
+    pages are NOT needed for catalog-level fields (title, brand,
+    estimate, image, sold-price-incl-premium are all in the sale
+    JSON).
+
+    Cloudflare on Bonhams is in passive proof-of-work mode (sets
+    __cf_bm but doesn't block), so this works cleanly from CI with a
+    browser-style User-Agent. No per-lot fetches means no WAF risk.
+
+    The buildId rotates on Bonhams deploys; we extract it from the
+    sale-page HTML on every run so we're never stuck on a stale id.
+    """
+    try:
+        r = requests.get(sale_url, headers=HEADERS, timeout=30)
+        r.raise_for_status()
+    except Exception as e:
+        print(f"  [Bonhams] sale page fetch failed: {e}")
+        return []
+    m = BONHAMS_BUILDID_RE.search(r.text)
+    if not m:
+        print("  [Bonhams] buildId not found in sale HTML")
+        return []
+    build_id = m.group(1)
+    url_m = BONHAMS_SALE_URL_RE.search(sale_url)
+    if not url_m:
+        print(f"  [Bonhams] sale URL pattern not recognised: {sale_url}")
+        return []
+    sale_id, slug = url_m.group(1), url_m.group(2)
+    json_url_base = (
+        f"https://www.bonhams.com/_next/data/{build_id}/auction/{sale_id}/{slug}.json"
+    )
+    json_headers = {**HEADERS, "Accept": "application/json"}
+
+    try:
+        pr = requests.get(json_url_base, headers=json_headers, timeout=30)
+        pr.raise_for_status()
+        page1 = pr.json()
+    except Exception as e:
+        print(f"  [Bonhams] page-1 JSON fetch failed: {e}")
+        return []
+    pp = page1.get("pageProps", {}) or {}
+    auction_obj = pp.get("auction") or {}
+    total = auction_obj.get("number_of_lots") or 0
+    lots = list((pp.get("lotData") or {}).get("auctionLots") or [])
+    page_size = max(len(lots), 1)
+    pages_needed = (total + page_size - 1) // page_size if total else 1
+    print(f"  [Bonhams] sale {sale_id}: {total} lots across {pages_needed} page(s)")
+
+    for page_idx in range(2, pages_needed + 1):
+        try:
+            time.sleep(PER_LOT_SLEEP_SECONDS)
+            pr = requests.get(
+                f"{json_url_base}?page={page_idx}",
+                headers=json_headers,
+                timeout=30,
+            )
+            pr.raise_for_status()
+            payload = pr.json()
+            page_lots = (payload.get("pageProps", {}).get("lotData") or {}).get("auctionLots") or []
+            lots.extend(page_lots)
+        except Exception as e:
+            print(f"  [Bonhams] page {page_idx} fetch failed: {e}")
+            continue
+
+    out = []
+    for lot in lots:
+        rec = _bonhams_lot_to_record(lot, auction_obj, sale_url)
+        if not rec:
+            continue
+        if is_excluded_title(rec.get("title")):
+            continue
+        # Structured-field extraction (reference_no / model / year /
+        # case_material / etc.) via the shared per-house parser.
+        try:
+            extra = extract_lot_structured_fields("Bonhams", rec.get("title") or "", rec.get("description") or "")
+            if isinstance(extra, dict):
+                for k, v in extra.items():
+                    if v and not rec.get(k):
+                        rec[k] = v
+        except Exception:
+            pass
+        # Canonical brand resolution (folds "Rolex SA" / "ROLEX" / etc
+        # into "Rolex"). Skip when the groups field already labelled it.
+        if not rec.get("maker"):
+            try:
+                brand = resolve_brand(rec)
+                if brand:
+                    rec["maker"] = brand
+            except Exception:
+                pass
+        out.append((rec["_url"], rec))
+    return [(u, {k: v for k, v in d.items() if not k.startswith("_")}) for u, d in out]
+
+
 def _strip_html(s):
     """Strip HTML tags, collapse whitespace. Used for Sotheby's essay
     fields which arrive as HTML-formatted prose."""
@@ -1621,6 +1812,7 @@ def _brace_match_json(text, start):
 
 ENUMERATORS = {
     "Antiquorum":    (enumerate_antiquorum,  ("catalog.antiquorum.swiss",)),
+    "Bonhams":       (enumerate_bonhams,     ("bonhams.com/auction/",)),
     "Christie's":    (enumerate_christies,   ("christies.com/en/auction/",)),
     "Sotheby's":     (enumerate_sothebys,    ("sothebys.com/en/buy/auction/",)),
     "Phillips":      (enumerate_phillips,    ("phillips.com/auction/",)),
@@ -1637,6 +1829,8 @@ def scrape_manual_url(url):
         return (url, scrape_antiquorum_lot(url))
     if "catalog.antiquorum.swiss/" in url and "/lots/" in url:
         return (url, scrape_catalog_antiquorum_lot(url))
+    if "bonhams.com/" in url and "/lot/" in url:
+        return (url, scrape_bonhams_lot(url))
     if "christies.com/" in url and "/lot/lot-" in url:
         return (url, scrape_christies_lot(url))
     if "sothebys.com/" in url and "/buy/auction/" in url:
