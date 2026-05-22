@@ -209,7 +209,8 @@ export default function Watchlist() {
     filterBrands,  setFilterBrands,
     filterModels,  setFilterModels,
     filterRefs,    setFilterRefs,
-    toggleSource, toggleBrand, toggleModel,
+    filterSaleUrls, setFilterSaleUrls,
+    toggleSource, toggleBrand, toggleModel, toggleSaleUrl,
     sort, setSort,
     search, setSearch,
     minPriceText, setMinPriceText,
@@ -2337,6 +2338,14 @@ export default function Watchlist() {
     if (filterSources.length > 0) its = its.filter(i => filterSources.includes(i.source));
     if (filterBrands.length > 0) its = its.filter(i => filterBrands.includes(displayBrand(i)));
     if (filterModels.length > 0) its = its.filter(i => filterModels.includes(i.model_line));
+    // Sale filter (PR 2026-05-22): narrows lots to specific
+    // auction catalog(s). Only meaningful on Live auctions sub-tab
+    // (only auction lots carry auction_url), but applying
+    // unconditionally is safe — non-lot items have no auction_url
+    // and would get filtered out, which matches the intent.
+    if (filterSaleUrls.length > 0) {
+      its = its.filter(i => i.auction_url && filterSaleUrls.includes(i.auction_url));
+    }
     if (search.trim()) {
       its = its.filter(i => matchesSearch(i, search));
     }
@@ -4454,7 +4463,7 @@ export default function Watchlist() {
     aboutModalOpen, activeFilterPop, allFiltered, displayedCount,
     brandsExpanded, currentIsSaved,
     drawerOpen,
-    filterBrands, filterSources, filterModels,
+    filterBrands, filterSources, filterModels, filterSaleUrls,
     listingsSubTab,
     referencesSubTab,
     hasFilters, hiddenItems,
@@ -4467,7 +4476,7 @@ export default function Watchlist() {
     handleWish, openFavPrompt, resetFilters,
     setAboutModalOpen, setActiveFilterPop, setBrandsExpanded,
     setDrawerOpen,
-    setFilterBrands, setFilterHearted, setFilterSources, setFilterModels,
+    setFilterBrands, setFilterHearted, setFilterSources, setFilterModels, setFilterSaleUrls,
     setListingsSubTab,
     setMaxPriceText, setMinPriceText,
     setPage, setSearch, setShowUserMenu, setSignInPromptOpen,
@@ -4478,7 +4487,10 @@ export default function Watchlist() {
     // receiver) rather than leaving the recipient stuck. Internal
     // setTab callsites in App.js use the raw setTab.
     setTab: setTabWithReceiveEscape,
-    toggleBrand, toggleHide, toggleSource, toggleModel,
+    toggleBrand, toggleHide, toggleSource, toggleModel, toggleSaleUrl,
+    // Sale filter (PR 2026-05-22): catalog of active sales for the
+    // Sale chip dropdown + lot counts.
+    auctions, lotCountsByAuctionUrl,
     // Style tokens / pre-built JSX
     addSearchModalJSX,
     authJSX, baseStyle,

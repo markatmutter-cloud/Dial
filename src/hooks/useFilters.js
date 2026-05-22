@@ -30,6 +30,12 @@ export function useFilters() {
   // reference index's labels. Picked from items via Epic 0 slice B
   // matcher integration.
   const [filterModels,  setFilterModels]  = useState([]);
+  // Sale filter (PR 2026-05-22 auction IA): multi-select of
+  // auction_url values. Active only on Listings > Live auctions
+  // sub-tab; narrows the lots grid to the selected sale(s) so the
+  // user can drill into a specific catalog without leaving the
+  // grid. Empty array = all sales.
+  const [filterSaleUrls, setFilterSaleUrls] = useState([]);
   // (filterAuctionsOnly state retired 2026-05-04 — both Listings AND
   // Watchlist now use sub-tabs that scope dealer vs auction items
   // up-front. The toggle's role is gone; predicate dispatch happens
@@ -104,6 +110,10 @@ export function useFilters() {
     (m) => setFilterModels(p => p.includes(m) ? p.filter(x => x !== m) : [...p, m]),
     []
   );
+  const toggleSaleUrl = useCallback(
+    (url) => setFilterSaleUrls(p => p.includes(url) ? p.filter(x => x !== url) : [...p, url]),
+    []
+  );
 
   // Parsed-to-int price bounds. minPrice defaults to 0 when empty;
   // maxPrice defaults to GLOBAL_MAX so the filter is a no-op until
@@ -124,6 +134,7 @@ export function useFilters() {
     filterBrands.length > 0 ||
     filterModels.length > 0 ||
     filterRefs.length > 0 ||
+    filterSaleUrls.length > 0 ||
     !!search ||
     newDays > 0 ||
     !!minPriceText ||
@@ -138,6 +149,7 @@ export function useFilters() {
     setFilterBrands([]);
     setFilterModels([]);
     setFilterRefs([]);
+    setFilterSaleUrls([]);
     setSearch("");
     setNewDays(0);
     setMinPriceText("");
@@ -151,7 +163,8 @@ export function useFilters() {
     filterBrands,  setFilterBrands,
     filterModels,  setFilterModels,
     filterRefs,    setFilterRefs,
-    toggleSource, toggleBrand, toggleModel,
+    filterSaleUrls, setFilterSaleUrls,
+    toggleSource, toggleBrand, toggleModel, toggleSaleUrl,
     // Sort + search
     sort, setSort,
     search, setSearch,
