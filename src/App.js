@@ -17,6 +17,7 @@ import { useFavSearchModal } from "./hooks/useFavSearchModal";
 import { useViewSettings } from "./hooks/useViewSettings";
 import { useFilters } from "./hooks/useFilters";
 import { useHomeHidden } from "./hooks/useHomeHidden";
+import { useRecentSearches } from "./hooks/useRecentSearches";
 import { useLastVisit } from "./hooks/useLastVisit";
 import { ListReviewMode } from "./components/ListReviewMode";
 import { Card } from "./components/Card";
@@ -731,6 +732,10 @@ export default function Watchlist() {
   // hidden / adminHidden and is unaffected. See useHomeHidden for
   // the rationale.
   const { ids: homeHidden, toggle: toggleHomeHide } = useHomeHidden();
+  // Recent-search history for the Home search bar. MRU-first array
+  // of up to 6 strings, persisted in localStorage. addRecent fires
+  // on Enter / target-pick / chip-tap from the dropdown.
+  const { recent: homeRecentSearches, add: homeAddRecentSearch, remove: homeRemoveRecentSearch } = useRecentSearches();
   // Admin gate, hoisted above toggleHide so the wrapper can decide
   // whether to propagate a per-user hide into the global blocklist.
   // Comma-separated emails in REACT_APP_ADMIN_EMAILS (Vercel + .env);
@@ -775,6 +780,11 @@ export default function Watchlist() {
   // render <SearchResultsView/> in place of the regular tab content.
   // Clearing search or tab nav unsets it (see effects below).
   const [searchAllActive, setSearchAllActive] = useState(false);
+  // Live-query state for the Home search bar. Drives the per-target
+  // count chips in the dropdown AND opens the Search-all strip view
+  // when 2+ chars are typed. Separate from `search` so deleting back
+  // to empty on Home doesn't leak a stale query into other surfaces.
+  const [homeLiveQuery, setHomeLiveQuery] = useState("");
   // Lazy article corpus loader (PR_φ2 2026-05-22). Fires the first
   // time the user opens Search-all. Each source's meta JSON is
   // ~50–200 KB; fetching all in parallel takes ~1-2s on a fast
@@ -1741,6 +1751,53 @@ export default function Watchlist() {
     }
     return m;
   }, [auctions]);
+
+  // Per-target match counts for the Home search dropdown. Recomputed
+  // on each homeLiveQuery change (the search-bar's onChange feeds it,
+  // gated to 2+ chars). matchesSearch is O(n × tokens) substring —
+  // ~10k items resolves in a few ms; no debounce needed.
+  // CRITICAL: this useMemo lives ABOVE the loading/loadError early
+  // returns to keep the hook count stable across the loading→ready
+  // transition (CLAUDE.md Things-to-never-do).
+  const homeSearchCounts = useMemo(() => {
+    if (!homeLiveQuery) return null;
+    const liveOnly = (i) => i && !i.sold;
+    const soldOnly = (i) => i && i.sold;
+    const liveMatches = items.filter(i => liveOnly(i) && matchesSearch(i, homeLiveQuery)).length;
+    const auctionMatches = auctionLotItems.filter(i => liveOnly(i) && matchesSearch(i, homeLiveQuery)).length;
+    const soldMatches = mainFeedItems.filter(i => soldOnly(i) && matchesSearch(i, homeLiveQuery)).length;
+    return {
+      all:      liveMatches + auctionMatches + soldMatches,
+      live:     liveMatches,
+      auctions: auctionMatches,
+      sold:     soldMatches,
+    };
+  }, [homeLiveQuery, items, auctionLotItems, mainFeedItems]);
+
+  // Live-query handler from HomeSearchBar. Receives "" or a 2+ char
+  // string (the search-bar gates that). When non-empty, opens the
+  // Search-all strip view with the query applied so the user sees
+  // results filter live as they type. When empty, exits the strip
+  // view so they return to Home.
+  const homeSearchLiveQuery = useCallback((q) => {
+    setHomeLiveQuery(q);
+    if (q) {
+      setSearch(q);
+      setSearchAllActive(true);
+      setPage(1);
+    } else {
+      setSearch("");
+      setSearchAllActive(false);
+    }
+  }, [setSearch, setSearchAllActive, setPage]);
+
+  // Whenever Search-all closes (by ANY path — tab nav, Exit button,
+  // homeSearchLiveQuery clearing, etc.), drop the Home live-query
+  // state too so a stale draft doesn't compute counts in the
+  // background. Pairs with homeSearchLiveQuery's setHomeLiveQuery("").
+  useEffect(() => {
+    if (!searchAllActive) setHomeLiveQuery("");
+  }, [searchAllActive]);
 
   // Auction-calendar action handlers (Mark spec 2026-05-14).
   // CRITICAL: these useCallbacks MUST live ABOVE the `loading` /
@@ -3775,6 +3832,16 @@ export default function Watchlist() {
       ]}
       homeGoToTab={(key) => { setTab(key); setPage(1); }}
       homeMastheadAuthJSX={authJSX}
+      // Search-bar augmentations (PR 2026-05-22): recent-search
+      // history surfaced on focus when input is empty, live per-
+      // target counts when typing, live strip filtering from 2+
+      // chars. See useRecentSearches + homeSearchCounts memo +
+      // homeSearchLiveQuery callback above.
+      homeRecentSearches={homeRecentSearches}
+      homeAddRecentSearch={homeAddRecentSearch}
+      homeRemoveRecentSearch={homeRemoveRecentSearch}
+      homeSearchCounts={homeSearchCounts}
+      homeSearchLiveQuery={homeSearchLiveQuery}
     />
   );
 

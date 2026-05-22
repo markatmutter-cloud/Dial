@@ -115,7 +115,7 @@ function LiveCounts({ counts }) {
 // the input with three target rows — Listings / Auctions / Sold —
 // so the user can pick which sub-tab they want before submitting.
 // Click outside or empty the input to dismiss.
-function HomeSearchBar({ onSubmit, isMobile, dealerSources, onJumpToDealer }) {
+function HomeSearchBar({ onSubmit, onLiveQuery, isMobile, dealerSources, onJumpToDealer, recentSearches, addRecentSearch, removeRecentSearch, counts }) {
   const [draft, setDraft] = useState("");
   const [focused, setFocused] = useState(false);
   // Mobile-only: separate overlay state so the inline input loses focus
@@ -126,10 +126,36 @@ function HomeSearchBar({ onSubmit, isMobile, dealerSources, onJumpToDealer }) {
   const overlayInputRef = useRef(null);
   const fire = (target) => {
     const q = draft.trim();
+    if (q && addRecentSearch) addRecentSearch(q);
     onSubmit(q, target);
     setDraft("");
     setFocused(false);
     setMobileOverlay(false);
+  };
+  // Recent-search chip click — fire the search directly without
+  // making the user retype. Defaults to Search-all so they land on
+  // the strip view (the most useful destination for a remembered
+  // query). Doesn't bump position because addRecentSearch already
+  // promotes on use.
+  const fireFromRecent = (q) => {
+    if (!q) return;
+    if (addRecentSearch) addRecentSearch(q);
+    onSubmit(q, "all");
+    setDraft("");
+    setFocused(false);
+    setMobileOverlay(false);
+  };
+  // Live-filter the strip view as the user types (Mark spec
+  // 2026-05-22): from the first 2 chars, open Search-all and
+  // narrow live as more characters arrive. Keystrokes call the
+  // parent's onLiveQuery with the current draft; the parent flips
+  // searchAllActive=true + setSearch. Below 2 chars we revert
+  // (closes the strip view if it's open from a previous type).
+  const handleDraftChange = (next) => {
+    setDraft(next);
+    if (!onLiveQuery) return;
+    const q = next.trim();
+    onLiveQuery(q.length >= 2 ? q : "");
   };
   const closeMobileOverlay = () => {
     setMobileOverlay(false);
@@ -164,8 +190,16 @@ function HomeSearchBar({ onSubmit, isMobile, dealerSources, onJumpToDealer }) {
   }, [focused, mobileOverlay]);
 
   const trimmed = draft.trim();
-  const showPopover = focused && trimmed.length > 0;
+  const hasRecent = !!(recentSearches && recentSearches.length > 0);
+  // Show the popover on focus when EITHER the user has started typing
+  // OR there's recent-search history to surface. Empty + no recent =
+  // no popover (don't render an empty dropdown shell).
+  const showPopover = focused && (trimmed.length > 0 || hasRecent);
   const echo = trimmed.length > 24 ? trimmed.slice(0, 24) + "…" : trimmed;
+  // Live-count formatter — `counts` is an object keyed by target
+  // (all / live / auctions / sold) with integer values. Missing /
+  // null values render no count chip.
+  const fmtCount = (n) => (n == null ? null : Number(n).toLocaleString());
 
   const targets = [
     ["all",      "Search all", "Across Listings, Auctions, Sold"],
@@ -209,7 +243,7 @@ function HomeSearchBar({ onSubmit, isMobile, dealerSources, onJumpToDealer }) {
             <SearchIcon />
             <input
               value={draft}
-              onChange={(e) => setDraft(e.target.value)}
+              onChange={(e) => handleDraftChange(e.target.value)}
               onFocus={(e) => {
                 setFocused(true);
                 // PR_Z 2026-05-21: on mobile, take the user into a
@@ -252,7 +286,13 @@ function HomeSearchBar({ onSubmit, isMobile, dealerSources, onJumpToDealer }) {
           </button>
         </div>
         {/* Typeahead popover — desktop only. Mobile uses the Spotify-
-            pattern overlay further down (PR_Z 2026-05-21). */}
+            pattern overlay further down (PR_Z 2026-05-21).
+            Two modes (PR 2026-05-22):
+              - Empty draft + recent history: surface recent searches
+                as one-tap chips ("Recent" section).
+              - Non-empty draft: target rows with live count chips
+                ("Listings · 23") so the user can see hit volume in
+                each category before pressing Enter. */}
         {showPopover && !isMobile && (
           <div role="listbox"
             style={{
@@ -261,10 +301,53 @@ function HomeSearchBar({ onSubmit, isMobile, dealerSources, onJumpToDealer }) {
               borderRadius: 10, overflow: "hidden", zIndex: 10,
               boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
             }}>
+            {trimmed.length === 0 && hasRecent ? (
+              <>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 14px 6px" }}>
+                  <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--text3)" }}>
+                    Recent
+                  </span>
+                </div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6, padding: "0 14px 12px" }}>
+                  {recentSearches.map((q) => (
+                    <span key={q} style={{
+                      display: "inline-flex", alignItems: "center", gap: 6,
+                      borderRadius: 999, border: "0.5px solid var(--border)",
+                      background: "var(--surface)",
+                    }}>
+                      <button
+                        onMouseDown={(e) => { e.preventDefault(); fireFromRecent(q); }}
+                        style={{
+                          background: "transparent", border: "none", cursor: "pointer",
+                          fontFamily: "inherit", fontSize: 13, color: "var(--text2)",
+                          padding: "6px 4px 6px 12px",
+                        }}>
+                        {q}
+                      </button>
+                      {removeRecentSearch && (
+                        <button
+                          onMouseDown={(e) => { e.preventDefault(); removeRecentSearch(q); }}
+                          aria-label={`Remove ${q} from recent searches`}
+                          style={{
+                            background: "transparent", border: "none", cursor: "pointer",
+                            color: "var(--text3)", padding: "4px 8px 4px 2px",
+                            display: "flex", alignItems: "center",
+                          }}>
+                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        </button>
+                      )}
+                    </span>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <>
             <div style={{ padding: "8px 14px 6px", fontSize: 10, fontWeight: 600, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--text3)" }}>
               Search in
             </div>
-            {targets.map(([key, label, hint], idx) => (
+            {targets.map(([key, label, hint], idx) => {
+              const count = counts ? fmtCount(counts[key]) : null;
+              return (
               <button key={key}
                 onMouseDown={(e) => { e.preventDefault(); fire(key); }}
                 role="option"
@@ -280,11 +363,19 @@ function HomeSearchBar({ onSubmit, isMobile, dealerSources, onJumpToDealer }) {
                   <span style={{ fontSize: 14, fontWeight: 600, color: "var(--text1)" }}>{label}</span>
                   <span style={{ fontSize: 11, color: "var(--text3)" }}>{hint}</span>
                 </div>
-                <span style={{ fontSize: 12, color: "var(--text2)", fontStyle: "italic", flexShrink: 0 }}>
-                  "{echo}"
-                </span>
+                <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexShrink: 0 }}>
+                  {count != null && (
+                    <span style={{ fontSize: 12, fontWeight: 600, color: "var(--brand-olive-text)", fontVariantNumeric: "tabular-nums" }}>
+                      {count}
+                    </span>
+                  )}
+                  <span style={{ fontSize: 12, color: "var(--text2)", fontStyle: "italic" }}>
+                    "{echo}"
+                  </span>
+                </div>
               </button>
-            ))}
+              );
+            })}
             {dealerMatches.length > 0 && (
               <>
                 <div style={{ padding: "10px 14px 6px", borderTop: "0.5px solid var(--border)", fontSize: 10, fontWeight: 600, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--text3)" }}>
@@ -306,6 +397,8 @@ function HomeSearchBar({ onSubmit, isMobile, dealerSources, onJumpToDealer }) {
                     <span style={{ fontSize: 11, color: "var(--text3)" }}>Browse listings →</span>
                   </button>
                 ))}
+              </>
+            )}
               </>
             )}
           </div>
@@ -341,7 +434,7 @@ function HomeSearchBar({ onSubmit, isMobile, dealerSources, onJumpToDealer }) {
               <input
                 ref={overlayInputRef}
                 value={draft}
-                onChange={(e) => setDraft(e.target.value)}
+                onChange={(e) => handleDraftChange(e.target.value)}
                 onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); fire("all"); } }}
                 placeholder="Reference, brand, dealer…"
                 style={{
@@ -373,8 +466,48 @@ function HomeSearchBar({ onSubmit, isMobile, dealerSources, onJumpToDealer }) {
             </button>
           </div>
           {/* Options list — always visible above the keyboard. Each
-              row spans the full width and is a clear tap target. */}
+              row spans the full width and is a clear tap target.
+              Two modes match the desktop popover: empty draft +
+              recent → recent-search chips; otherwise targets with
+              live counts. */}
           <div style={{ flex: 1, overflowY: "auto", padding: "8px 0 0" }}>
+            {trimmed.length === 0 && hasRecent ? (
+              <>
+                <div style={{
+                  padding: "12px 16px 8px",
+                  fontSize: 10, fontWeight: 600,
+                  letterSpacing: "0.18em", textTransform: "uppercase",
+                  color: "var(--text3)",
+                }}>
+                  Recent
+                </div>
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  {recentSearches.map((q) => (
+                    <button key={q}
+                      onClick={() => fireFromRecent(q)}
+                      style={{
+                        display: "flex", alignItems: "center", justifyContent: "space-between",
+                        width: "100%", gap: 12,
+                        padding: "14px 16px",
+                        background: "transparent", border: "none",
+                        borderTop: "0.5px solid var(--border)",
+                        cursor: "pointer", fontFamily: "inherit", textAlign: "left",
+                      }}>
+                      <span style={{ fontSize: 15, fontWeight: 500, color: "var(--text1)" }}>{q}</span>
+                      {removeRecentSearch && (
+                        <button
+                          onClick={(e) => { e.stopPropagation(); removeRecentSearch(q); }}
+                          aria-label={`Remove ${q}`}
+                          style={{ background: "transparent", border: "none", cursor: "pointer", color: "var(--text3)", padding: 4, display: "flex", alignItems: "center" }}>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        </button>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <>
             <div style={{
               padding: "12px 16px 8px",
               fontSize: 10, fontWeight: 600,
@@ -383,7 +516,9 @@ function HomeSearchBar({ onSubmit, isMobile, dealerSources, onJumpToDealer }) {
             }}>
               Search in
             </div>
-            {targets.map(([key, label, hint]) => (
+            {targets.map(([key, label, hint]) => {
+              const count = counts ? fmtCount(counts[key]) : null;
+              return (
               <button key={key}
                 onClick={() => fire(key)}
                 style={{
@@ -398,13 +533,21 @@ function HomeSearchBar({ onSubmit, isMobile, dealerSources, onJumpToDealer }) {
                   <span style={{ fontSize: 15, fontWeight: 600, color: "var(--text1)" }}>{label}</span>
                   <span style={{ fontSize: 12, color: "var(--text3)" }}>{hint}</span>
                 </div>
-                {trimmed && (
-                  <span style={{ fontSize: 12, color: "var(--text2)", fontStyle: "italic", flexShrink: 0 }}>
-                    "{echo}"
-                  </span>
-                )}
+                <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexShrink: 0 }}>
+                  {count != null && (
+                    <span style={{ fontSize: 13, fontWeight: 600, color: "var(--brand-olive-text)", fontVariantNumeric: "tabular-nums" }}>
+                      {count}
+                    </span>
+                  )}
+                  {trimmed && (
+                    <span style={{ fontSize: 12, color: "var(--text2)", fontStyle: "italic" }}>
+                      "{echo}"
+                    </span>
+                  )}
+                </div>
               </button>
-            ))}
+              );
+            })}
             {dealerMatches.length > 0 && (
               <>
                 <div style={{
@@ -431,6 +574,8 @@ function HomeSearchBar({ onSubmit, isMobile, dealerSources, onJumpToDealer }) {
                     <span style={{ fontSize: 12, color: "var(--text3)" }}>Browse listings →</span>
                   </button>
                 ))}
+              </>
+            )}
               </>
             )}
           </div>
@@ -799,6 +944,14 @@ export function HomeTab(props) {
     homeMastheadTabs,
     homeGoToTab,
     homeMastheadAuthJSX,
+    // Search-bar augmentations (PR 2026-05-22): recent-search history
+    // + live counts per target + live filtering on the strip view as
+    // the user types.
+    homeRecentSearches,
+    homeAddRecentSearch,
+    homeRemoveRecentSearch,
+    homeSearchCounts,
+    homeSearchLiveQuery,
   } = props;
 
   // The shell adds horizontal padding around its main content (16px
@@ -853,12 +1006,17 @@ export function HomeTab(props) {
         marginLeft: -shellPad,
         marginRight: -shellPad,
         background: "var(--brand-olive-tint-12)",
-        padding: isMobile ? "8px 16px 10px" : "10px 20px 12px",
+        // PR 2026-05-22 (Mark report: "search bar could be a little
+        // lower — weight feels like it's at the top"). More gap
+        // between tabs row + search bar so the search sits visually
+        // mid-band, and more bottom padding so the band doesn't end
+        // tight under the search. Tabs row stays close to the top.
+        padding: isMobile ? "8px 16px 16px" : "10px 20px 20px",
         marginBottom: isMobile ? 16 : 22,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        gap: isMobile ? 8 : 10,
+        gap: isMobile ? 12 : 16,
       }}>
         {homeMastheadTabs && (
           <div style={{
@@ -889,9 +1047,14 @@ export function HomeTab(props) {
           <div style={{ width: "100%", maxWidth: isMobile ? "none" : 720 }}>
             <HomeSearchBar
               onSubmit={homeSearchSubmit}
+              onLiveQuery={homeSearchLiveQuery}
               isMobile={isMobile}
               dealerSources={homeDealerSources}
               onJumpToDealer={homeJumpToDealer}
+              recentSearches={homeRecentSearches}
+              addRecentSearch={homeAddRecentSearch}
+              removeRecentSearch={homeRemoveRecentSearch}
+              counts={homeSearchCounts}
             />
           </div>
         )}
