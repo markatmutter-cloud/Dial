@@ -22,11 +22,17 @@ export function MoonPhaseIndicator({ size = 56 }) {
   const phaseUrl = moonPhaseImageUrl(now);
   const phaseLabel = moonPhaseName(now);
 
-  // Clip the bottom half so the empty wheel-back below the moon
-  // doesn't leave dead space between the eyebrow and the wordmark
-  // (Mark report 2026-05-21: with full square rendered, the gap to
-  // WATCHLIST was visually huge). Wrapper is half-height, img inside
-  // at full square — only the top half (moon + sky) shows.
+  // The source PNGs are 600×600 with the arc + moon occupying roughly
+  // y=18%..50% of the image height — the top 18% and bottom 50% are
+  // transparent padding. Earlier v2 clipped to top half, which still
+  // left ~18% of dead pixels ABOVE the arc, reading as a chunk of
+  // empty space between the URL bar and the eyebrow (Mark report
+  // 2026-05-21). Tighter crop: container height ≈ 32% of size, image
+  // shifted up by 18% of size via negative margin so the arc lands at
+  // the visible top edge. Halves the eyebrow's vertical footprint and
+  // removes the dead-space jitter without re-exporting any PNGs.
+  const containerH = Math.round(size * 0.32);
+  const topClip    = Math.round(size * 0.18);
   return (
     <span
       title={phaseLabel}
@@ -35,7 +41,7 @@ export function MoonPhaseIndicator({ size = 56 }) {
       style={{
         display: "inline-block",
         width: size,
-        height: size / 2,
+        height: containerH,
         overflow: "hidden",
         flexShrink: 0,
         lineHeight: 0,
@@ -48,6 +54,7 @@ export function MoonPhaseIndicator({ size = 56 }) {
           width: size,
           height: size,
           display: "block",
+          marginTop: -topClip,
         }}
       />
     </span>
