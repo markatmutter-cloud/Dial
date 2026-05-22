@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { SearchIcon, TabIcon } from "./icons";
 import { Chip } from "./Chip";
 import { AboutModal } from "./AboutModal";
@@ -95,43 +95,23 @@ export function DesktopShell(props) {
   // PR_ε2, single source of truth (Editorial's inline input from
   // PR #442 reverts). Mobile keeps the Spotify overlay from PR_Z —
   // same icon, different surface.
-  const [searchExpanded, setSearchExpanded] = useState(false);
   const topBarInputRef = useRef(null);
-  // Auto-focus on expand. Defer one tick so the layout reflows before
-  // focus lands (otherwise iOS-style virtual keyboards / focus rings
-  // animate from the wrong position).
-  useEffect(() => {
-    if (!searchExpanded) return undefined;
-    const t = setTimeout(() => {
-      if (topBarInputRef.current) topBarInputRef.current.focus();
-    }, 30);
-    return () => clearTimeout(t);
-  }, [searchExpanded]);
-  // Auto-expand when state has a non-empty search (e.g. someone
-  // followed a saved-search link). Keeps the input visible until
-  // explicitly collapsed via Esc.
-  useEffect(() => {
-    if (search && !searchExpanded) setSearchExpanded(true);
-    // intentionally not auto-collapsing on empty search — user can
-    // keep typing without the input vanishing under them.
-  }, [search]); // eslint-disable-line
-  // Global / shortcut + Esc-to-collapse. Skipped when an input or
-  // textarea is already focused (don't hijack typing into other fields).
+  // Global `/` shortcut — focuses the always-present search input.
+  // Skipped when an input/textarea is already focused (don't hijack
+  // typing in other fields). PR 2026-05-22: the search is always
+  // expanded now, so the shortcut just focuses (no expand state).
   useEffect(() => {
     const onKey = (e) => {
       const tag = (e.target.tagName || "").toLowerCase();
       const inField = tag === "input" || tag === "textarea" || e.target.isContentEditable;
       if (e.key === "/" && !inField) {
         e.preventDefault();
-        setSearchExpanded(true);
-      } else if (e.key === "Escape" && searchExpanded) {
-        setSearchExpanded(false);
-        if (topBarInputRef.current) topBarInputRef.current.blur();
+        if (topBarInputRef.current) topBarInputRef.current.focus();
       }
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [searchExpanded]);
+  }, []);
   const searchPlaceholder = tab === "references"
     ? "Search articles by title, author, body…"
     : "Search reference or brand...";
@@ -153,89 +133,64 @@ export function DesktopShell(props) {
   const tbTextColor   = "var(--text1)";
   const tbIconColor   = "var(--text2)";
   const tbMutedColor  = "var(--text3)";
+  // PR 2026-05-22: search bar is now ALWAYS expanded as an inline
+  // input (Mark spec: "I want the search bar to the right of the
+  // filters not hidden/collapsed and working how it already does").
+  // The icon → input toggle + "Close" chevron are retired. `/`
+  // shortcut now focuses (instead of expanding-then-focusing).
   const expandingSearchJSX = (
-    <div style={{ position: "relative", flexShrink: 0, display: "flex", alignItems: "center" }}>
-      {!searchExpanded ? (
-        <button
-          onClick={() => setSearchExpanded(true)}
-          aria-label="Search"
-          title="Search ( / )"
-          style={{ background: "none", border: "none", cursor: "pointer",
-                  padding: "6px 8px", color: tbIconColor,
-                  display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <SearchIcon />
+    <div style={{ display: "flex", alignItems: "center", gap: 8,
+                  background: "transparent",
+                  border: `0.5px solid ${tbBorderColor}`,
+                  borderRadius: 10,
+                  padding: "6px 12px",
+                  width: 320, minWidth: 0,
+                  color: tbIconColor }}>
+      <SearchIcon />
+      <input
+        ref={topBarInputRef}
+        value={search}
+        onChange={e => setSearch(e.target.value)}
+        onKeyDown={e => {
+          if (e.key === "Enter") e.target.blur();
+          if (e.key === "Escape") { setSearch(""); e.target.blur(); }
+        }}
+        placeholder={searchPlaceholder}
+        style={{ flex: 1, border: "none", background: "transparent",
+                 fontSize: 13, color: tbTextColor, outline: "none",
+                 fontFamily: "inherit", minWidth: 0 }}
+      />
+      {search && user && (
+        <button onClick={openFavPrompt}
+          aria-label={currentIsSaved ? "Already saved" : "Save search as favorite"}
+          title={currentIsSaved ? "Saved to favorites" : "Save as favorite search"}
+          disabled={currentIsSaved}
+          style={{ flexShrink: 0, background: "none", border: "none",
+                  cursor: currentIsSaved ? "default" : "pointer",
+                  color: currentIsSaved ? "var(--brand)" : tbIconColor,
+                  padding: "2px 4px", fontFamily: "inherit",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  gap: 5, fontSize: 12, fontWeight: 500 }}>
+          <svg width="14" height="14" viewBox="0 0 24 24"
+            fill={currentIsSaved ? "currentColor" : "none"}
+            stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+          <span>{currentIsSaved ? "Saved" : "Save"}</span>
         </button>
-      ) : (
-        <div style={{ display: "flex", alignItems: "center", gap: 8,
-                      background: "transparent",
-                      border: `0.5px solid ${tbBorderColor}`,
-                      borderRadius: 10,
-                      padding: "6px 12px",
-                      width: 320, minWidth: 0,
-                      transition: "width 0.18s ease",
-                      color: tbIconColor }}>
-          <SearchIcon />
-          <input
-            ref={topBarInputRef}
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            onKeyDown={e => {
-              if (e.key === "Enter") e.target.blur();
-              if (e.key === "Escape") { setSearchExpanded(false); e.target.blur(); }
-            }}
-            placeholder={searchPlaceholder}
-            style={{ flex: 1, border: "none", background: "transparent",
-                     fontSize: 13, color: tbTextColor, outline: "none",
-                     fontFamily: "inherit", minWidth: 0 }}
-          />
-          {search && user && (
-            <button onClick={openFavPrompt}
-              aria-label={currentIsSaved ? "Already saved" : "Save search as favorite"}
-              title={currentIsSaved ? "Saved to favorites" : "Save as favorite search"}
-              disabled={currentIsSaved}
-              style={{ flexShrink: 0, background: "none", border: "none",
-                      cursor: currentIsSaved ? "default" : "pointer",
-                      color: currentIsSaved ? "var(--brand)" : tbIconColor,
-                      padding: "2px 4px", fontFamily: "inherit",
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      gap: 5, fontSize: 12, fontWeight: 500 }}>
-              <svg width="14" height="14" viewBox="0 0 24 24"
-                fill={currentIsSaved ? "currentColor" : "none"}
-                stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-              </svg>
-              <span>{currentIsSaved ? "Saved" : "Save"}</span>
-            </button>
-          )}
-          {search && (
-            <button onClick={() => setSearch("")} aria-label="Clear search"
-              style={{ flexShrink: 0, background: "none", border: "none",
-                      cursor: "pointer", color: tbMutedColor, padding: 2,
-                      fontFamily: "inherit", display: "flex",
-                      alignItems: "center", justifyContent: "center" }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                <line x1="18" y1="6" x2="6" y2="18"/>
-                <line x1="6" y1="6" x2="18" y2="18"/>
-              </svg>
-            </button>
-          )}
-          <button
-            onClick={() => { setSearch(""); setSearchExpanded(false); }}
-            aria-label="Close search"
-            title="Close ( Esc )"
-            style={{ flexShrink: 0, background: "none", border: "none",
-                    cursor: "pointer", color: tbMutedColor, padding: 2,
-                    marginLeft: 2,
-                    fontFamily: "inherit", display: "flex",
-                    alignItems: "center", justifyContent: "center" }}>
-            {/* Chevron-left as the "tuck back" affordance */}
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="15 18 9 12 15 6"/>
-            </svg>
-          </button>
-        </div>
+      )}
+      {search && (
+        <button onClick={() => setSearch("")} aria-label="Clear search"
+          style={{ flexShrink: 0, background: "none", border: "none",
+                  cursor: "pointer", color: tbMutedColor, padding: 2,
+                  fontFamily: "inherit", display: "flex",
+                  alignItems: "center", justifyContent: "center" }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
       )}
     </div>
   );
