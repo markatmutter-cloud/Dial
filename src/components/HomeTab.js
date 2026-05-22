@@ -694,10 +694,10 @@ function ManageCallout({ goToSavedLists, goToMyWatches, goToChallenges, isMobile
         Watchbox
       </div>
       <h2 style={{ margin: 0, fontSize: isMobile ? 22 : 28, fontWeight: 600, color: "#ffffff", letterSpacing: "-0.3px" }}>
-        The shape of your collecting.
+        A record of your collecting.
       </h2>
       <p style={{ margin: "10px auto 0", maxWidth: 560, fontSize: 14, color: "var(--text-on-dark-2)", lineHeight: 1.5 }}>
-        Owned, sold, wishlisted, shortlisted — kept where you can revisit and rethink.
+        Shortlists, ownership history, references worth revisiting — kept together thoughtfully.
       </p>
       <div style={{
         display: "flex", justifyContent: "center", alignItems: "center",
