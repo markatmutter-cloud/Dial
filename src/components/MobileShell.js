@@ -132,33 +132,38 @@ export function MobileShell(props) {
             both wasted opposite halves. Tabs + M merge into Row 2
             below when on Home; brand row stays on every other tab
             as the wordmark home-tap affordance. */}
-        {(tab !== "home" || anyShareActive || searchAllActive) && (
+        {/* Brand row — ALWAYS renders so the auth pill (M circle)
+            sits at top-right of the viewport regardless of tab. On
+            Home the wordmark is suppressed (the editorial hero in
+            the body owns the brand mark), but the row + olive bg +
+            auth pill stay so the user sees the M in the same place
+            on every tab. Mark spec 2026-05-22 "in the same location
+            on all tabs top right so it doesn't move around". */}
         <div style={{
           padding: "8px 16px 8px",
           paddingTop: "calc(env(safe-area-inset-top, 0px) + 8px)",
           display: "flex", alignItems: "center",
-          justifyContent: "space-between", gap: 12,
-          // PR_β experiment 2026-05-22: olive chrome zone (extends
-          // the iOS PWA theme-color strip into the brand + tabs rows).
+          justifyContent: tab === "home" && !anyShareActive && !searchAllActive
+            ? "flex-end"
+            : "space-between",
+          gap: 12,
           background: "var(--brand-olive)",
-          // PR_δ3 2026-05-22: hairline below brand row to anchor
-          // the wordmark+M without introducing a darker olive band.
           borderBottom: "1px solid rgba(255,255,255,0.12)",
         }}>
-          <button onClick={() => { setTab("home"); setPage(1); }}
-            style={{ background: "none", border: "none", cursor: "pointer",
-                    padding: 0, paddingLeft: "0.14em", fontFamily: "inherit",
-                    // PR_δ3 2026-05-22: 600 → 700 to anchor on olive.
-                    fontSize: 14, fontWeight: 700, letterSpacing: "0.14em",
-                    textTransform: "uppercase",
-                    color: "#ffffff" }}>
-            Watchlist
-          </button>
+          {(tab !== "home" || anyShareActive || searchAllActive) && (
+            <button onClick={() => { setTab("home"); setPage(1); }}
+              style={{ background: "none", border: "none", cursor: "pointer",
+                      padding: 0, paddingLeft: "0.14em", fontFamily: "inherit",
+                      fontSize: 14, fontWeight: 700, letterSpacing: "0.14em",
+                      textTransform: "uppercase",
+                      color: "#ffffff" }}>
+              Watchlist
+            </button>
+          )}
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             {authJSX}
           </div>
         </div>
-        )}
         {/* Row 2 — main tab pills. PR 2026-05-22 γ: also suppressed on
             Home (along with Row 1 brand row). Tabs + auth move into
             the HomeTab masthead band under the wordmark, framed by
@@ -224,18 +229,9 @@ export function MobileShell(props) {
               );
             })}
           </div>
-          {/* M-circle goes here ONLY when the brand row above is
-              suppressed (Home with no receiver / search-all). When
-              a receive surface or Search-all is active over Home,
-              the brand row renders + already carries authJSX — the
-              tabs-row M would be a duplicate. Fix 2026-05-22:
-              two M circles visible on Search-all from a fresh
-              landing. */}
-          {tab === "home" && !anyShareActive && !searchAllActive && (
-            <div style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
-              {authJSX}
-            </div>
-          )}
+          {/* Tabs-row M circle retired 2026-05-22 — the brand row
+              above now ALWAYS renders the M, so this duplicate is
+              gone. */}
         </div>
         )}
         {/* Sticky stack: search row (with filter + dark-mode buttons) and
