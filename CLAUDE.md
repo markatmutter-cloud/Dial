@@ -1147,6 +1147,23 @@ of completion, so the banner clears regardless of close path).
   The proxy fetches with the dealer's own domain in Referer and
   minimal Accept. The CSV's raw image URL stays unchanged;
   `imgSrc()` rewrites at render time.
+- **CDN-side image transforms — host-specific rewrites in `imgSrc()`.**
+  Two hosts get rewritten URL-side for size+format reductions; one
+  is parked because it's signed.
+  - **Monaco Legend (Uploadcare)** — bare UUID URLs are unusable;
+    append `/-/resize/800x/-/format/auto/` to serve webp at 800px.
+    Backend follow-up: write the suffix at scrape time.
+  - **Phillips (`assets.phillips.com`, Cloudinary-backed)** — insert
+    `/image/upload/c_limit,w_800,f_auto,q_auto/` before the asset
+    path. Verified 2026-05-22: 1.6 MB → 125 KB (~12× cut). Affects
+    the auction lots Phillips scrape outputs into both live and
+    archive feeds.
+  - **Sotheby's brightspotcdn — parked, can't URL-rewrite.** The
+    `dims4` URLs are hash-signed (path segment after `/dims4/default/`
+    is a signature); any change to the embedded `resize/<W>x<H>!`
+    returns 500. The scraper would need to request a smaller signed
+    URL upstream via the Sotheby's API. Don't waste cycles trying
+    URL-only rewrites again.
 - **`is_excluded_title` strips "o'clock" before running the
   clock-pattern regex.** The bare `\bclock\b` pattern matched
   "date aperture at 6 o'clock" and silently dropped 9/42 lots in

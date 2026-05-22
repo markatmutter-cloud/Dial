@@ -450,6 +450,20 @@ export function imgSrc(url) {
     if (u.hostname === "cdn.monacolegendauctions.com" && !u.pathname.includes("/-/")) {
       return url.replace(/\/?$/, "/-/resize/800x/-/format/auto/");
     }
+    // Phillips' assets.phillips.com is Cloudinary-backed. Inserting
+    // `/image/upload/c_limit,w_800,f_auto,q_auto/` before the asset
+    // path triggers a server-side resize + format/quality auto. Drops
+    // a 1.6 MB jpeg to ~125 KB at w=800 (verified 2026-05-22). Phillips
+    // scrapes (post-2017 sales) all serve from this host.
+    //
+    // Note on Sotheby's brightspotcdn: the dims4 URLs are hash-signed
+    // (the path segment after `/dims4/default/` is a signature), so
+    // URL-side resize modifications return 500. The scraper would have
+    // to request a smaller signed URL upstream — parked, no URL-only
+    // transform possible.
+    if (u.hostname === "assets.phillips.com" && !u.pathname.startsWith("/image/upload/")) {
+      return `https://assets.phillips.com/image/upload/c_limit,w_800,f_auto,q_auto${u.pathname}${u.search}`;
+    }
   } catch { /* malformed URL — fall through to the raw value */ }
   return url;
 }
