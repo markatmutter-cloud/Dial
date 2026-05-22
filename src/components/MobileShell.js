@@ -132,7 +132,7 @@ export function MobileShell(props) {
             both wasted opposite halves. Tabs + M merge into Row 2
             below when on Home; brand row stays on every other tab
             as the wordmark home-tap affordance. */}
-        {tab !== "home" && (
+        {(tab !== "home" || anyShareActive || searchAllActive) && (
         <div style={{
           padding: "4px 16px 4px",
           paddingTop: "calc(env(safe-area-inset-top, 0px) + 4px)",
@@ -168,14 +168,14 @@ export function MobileShell(props) {
           alignItems: "center",
           justifyContent: "space-between",
           gap: 8,
-          padding: tab === "home"
+          padding: (tab === "home" && !anyShareActive && !searchAllActive)
             ? `calc(env(safe-area-inset-top, 0px) + 4px) 16px 0`
             : "0 16px",
-          // Olive chrome on every tab EXCEPT Home (Mark spec
-          // 2026-05-22: "undo the green on the landing page").
-          // Home keeps neutral page bg so the editorial moment
-          // (hero + recently-added strips) carries first paint.
-          background: tab === "home" ? "var(--bg)" : "var(--brand-olive)",
+          // Olive chrome on every tab EXCEPT Home — receive surfaces
+          // + Search-all also get olive even if underlying tab is
+          // "home" (Mark report 2026-05-22).
+          background: (tab === "home" && !anyShareActive && !searchAllActive)
+            ? "var(--bg)" : "var(--brand-olive)",
           // borderBottom removed on Home 2026-05-22 (Mark spec:
           // "there is a feint line under the tabs which I want
           // gone"). Editorial hero below carries enough visual
@@ -192,7 +192,7 @@ export function MobileShell(props) {
           }}>
             {[["listings", "Listings"], ["watchlist", "Watchlists"], ["references", "Collecting"]].map(([key, label]) => {
               const active = tab === key;
-              const onOlive = tab !== "home";
+              const onOlive = tab !== "home" || anyShareActive || searchAllActive;
               return (
                 <button key={key}
                   onClick={() => { setTab(key); if (key === "listings") setSearch(""); }}

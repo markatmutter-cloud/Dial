@@ -139,7 +139,13 @@ export function DesktopShell(props) {
   // Width grows from ~32px (icon-only) to 320px on expand. Esc collapses.
   // PR_ε2 2026-05-22: colors flip when the top bar is olive (every tab
   // except Home — icon button is rendered only on non-Home anyway).
-  const topBarOnOlive = tab !== "home";
+  // Olive top bar applies to every non-Home tab AND to focused
+  // destination surfaces (share-receive, challenge-receive,
+  // list-receive, cross-tab Search-all). Those surfaces take over
+  // the content area; the chrome above them should still read as
+  // the rest of the site, not flip back to neutral just because
+  // the underlying tab value is "home". Fix 2026-05-22.
+  const topBarOnOlive = tab !== "home" || anyShareActive || searchAllActive;
   const tbBorderColor = topBarOnOlive ? "rgba(255,255,255,0.3)" : "var(--border)";
   const tbTextColor   = topBarOnOlive ? "#ffffff" : "var(--text1)";
   const tbIconColor   = topBarOnOlive ? "rgba(255,255,255,0.85)" : "var(--text2)";
@@ -581,7 +587,12 @@ export function DesktopShell(props) {
           paint. Border-bottom dropped when olive: the color flip is
           its own divider against the neutral working surface below. */}
       {(() => {
-        const onOlive = tab !== "home";
+        // Same rule as topBarOnOlive above: receive surfaces +
+        // Search-all also get olive chrome even if the underlying
+        // `tab` is "home" (e.g. user landed via a /share link with
+        // no prior nav). Fix 2026-05-22 — Mark report "still old
+        // interface at the top" on share + search-all surfaces.
+        const onOlive = tab !== "home" || anyShareActive || searchAllActive;
         return (
         <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 20px",
                       borderBottom: onOlive ? "none" : "0.5px solid var(--border)",
@@ -595,7 +606,7 @@ export function DesktopShell(props) {
             against the trailing letter-spacing. Weight bumped 600 →
             700 in PR_ε2 (same rule as mobile δ3 — heavier wordmark
             anchors better on olive). */}
-        {tab !== "home" && (
+        {onOlive && (
           <button onClick={() => { setTab("home"); setPage(1); }}
             style={{ background: "none", border: "none", cursor: "pointer",
                     padding: 0, paddingLeft: "0.16em", fontFamily: "inherit",
@@ -631,7 +642,7 @@ export function DesktopShell(props) {
             unchanged (Spotify overlay from PR_Z). On non-Home tabs
             only — Home has its own editorial hero search. */}
         <div style={{ flex: 1 }} />
-        {tab !== "home" && topBarSearchJSX}
+        {onOlive && topBarSearchJSX}
         {/* About link — top-right area, before the auth chrome.
             Was previously next to the top-left wordmark; relocated
             2026-05-11 so it lives in the same zone as sign-in (per
