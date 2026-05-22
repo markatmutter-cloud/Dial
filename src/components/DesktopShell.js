@@ -145,9 +145,13 @@ export function DesktopShell(props) {
     <div style={{ display: "flex", alignItems: "center", gap: 8,
                   background: "transparent",
                   border: `0.5px solid ${tbBorderColor}`,
-                  borderRadius: 10,
-                  padding: "6px 12px",
+                  // PR 2026-05-22 (Mark spec): match the pill type
+                  // system so search reads as part of the filter row,
+                  // not a different control. radius 10 → 20.
+                  borderRadius: 20,
+                  padding: "4px 12px",
                   width: 320, minWidth: 0,
+                  height: 30,
                   color: tbIconColor }}>
       <SearchIcon />
       <input
@@ -246,39 +250,96 @@ export function DesktopShell(props) {
     <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 20px",
                   borderBottom: expandedSource || expandedBrand || expandedModel || expandedSale ? "none" : "0.5px solid var(--border)",
                   flexShrink: 0, flexWrap: "wrap", position: "relative" }}>
-      {/* Search — leftmost cluster (2026-05-21, Mark spec): in line
-          with sort + filter chips. Behavior unchanged from when it
-          lived in the top bar. */}
-      {searchComposite}
+      {/* Filter row reorder PR 2026-05-22 (Mark spec):
+          LEFT — noun filters (Source / Brand / Sale / Model)
+          MIDDLE — search anchor (the "more in the middle of the page" framing)
+          RIGHT — numeric range + sort + saved (Min-Max / Date / Price / Saved)
+          plus the count + Clear-all tail. */}
 
-      {/* Status segment retired 2026-05-04 — both Listings AND
-          Watchlist now have sub-tabs that cover Live / Sold. */}
-
-      {/* Saved hearted-sub-tab toggle (Listings/Auctions/Sold) —
-          rendered as a leading cluster on the filter row when on
-          Saved + a hearted sub-tab. App.js builds the pill fragment
-          (or null when off-tab); a thin divider after the cluster
-          visually separates it from the sort/filter controls.
-          (2026-05-08 — Mark feedback: was a separate row above. */}
-      {watchHeartedToggleJSX && (
-        <>
-          <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-            {watchHeartedToggleJSX}
-          </div>
-          <div aria-hidden style={{ width: 1, height: 18, background: "var(--border)", margin: "0 2px" }} />
-        </>
+      {/* LEFT — Source / Brand / Sale / Model */}
+      <button onClick={() => setActiveFilterPop(p => p === "source" ? null : "source")}
+        style={dtPill(filterSources.length > 0 || activeFilterPop === "source")}>
+        Source{filterSources.length > 0 ? ` · ${filterSources.length}` : ""}
+      </button>
+      <button onClick={() => setActiveFilterPop(p => p === "brand" ? null : "brand")}
+        style={dtPill(filterBrands.length > 0 || activeFilterPop === "brand")}>
+        Brand{filterBrands.length > 0 ? ` · ${filterBrands.length}` : ""}
+      </button>
+      {tab === "listings" && listingsSubTab === "auctions" && (
+        <button onClick={() => setActiveFilterPop(p => p === "sale" ? null : "sale")}
+          style={dtPill((filterSaleUrls?.length || 0) > 0 || activeFilterPop === "sale")}>
+          Sale{(filterSaleUrls?.length || 0) > 0 ? ` · ${filterSaleUrls.length}` : ""}
+        </button>
+      )}
+      {(MODELS?.length || 0) > 0 && (
+        <button onClick={() => setActiveFilterPop(p => p === "model" ? null : "model")}
+          style={dtPill((filterModels?.length || 0) > 0 || activeFilterPop === "model")}>
+          Model{(filterModels?.length || 0) > 0 ? ` · ${filterModels.length}` : ""}
+        </button>
       )}
 
-      {/* Sort — Date + Price toggle pills. Date pill semantics depend
-          on the active Listings sub-tab (newest firstSeen on Live;
-          ending order on Live auctions; sold-date on All sold) — the
-          dispatch lives in App.js's allFiltered memo. */}
-      <div style={{ display: "flex", gap: 6 }}>
+      {/* MIDDLE — search bar. marginLeft:auto pulls it right of the
+          left filters; the right-cluster's marginLeft:auto below
+          balances it back into the middle. */}
+      <div style={{ marginLeft: "auto" }}>
+        {expandingSearchJSX}
+      </div>
+
+      {/* RIGHT — Min-Max price, Date sort, Price sort, Saved hearted,
+          watchlist hearted-toggle (when applicable), count, Clear all. */}
+      <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+        {watchHeartedToggleJSX && (
+          <>
+            <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+              {watchHeartedToggleJSX}
+            </div>
+            <div aria-hidden style={{ width: 1, height: 18, background: "var(--border)", margin: "0 2px" }} />
+          </>
+        )}
+
+        {/* Min/Max price — same compact pill height as the rest. */}
+        <div style={{
+          display: "flex", alignItems: "center", gap: 6,
+          background: "var(--surface)",
+          border: "0.5px solid var(--border)",
+          borderRadius: 20, padding: "0 6px 0 12px", height: 30,
+        }}>
+          <span style={{ fontSize: 11, color: "var(--text3)" }}>$</span>
+          <input value={minPriceText}
+            onChange={e => setMinPriceText(e.target.value)}
+            placeholder="Min" inputMode="numeric"
+            aria-label="Minimum price USD"
+            style={{
+              border: "none", background: "transparent",
+              color: "var(--text1)", outline: "none",
+              fontFamily: "inherit", fontSize: 13,
+              width: 56, padding: "4px 0",
+            }} />
+          <span style={{ fontSize: 11, color: "var(--text3)" }}>–</span>
+          <input value={maxPriceText}
+            onChange={e => setMaxPriceText(e.target.value)}
+            placeholder="Max" inputMode="numeric"
+            aria-label="Maximum price USD"
+            style={{
+              border: "none", background: "transparent",
+              color: "var(--text1)", outline: "none",
+              fontFamily: "inherit", fontSize: 13,
+              width: 60, padding: "4px 0",
+            }} />
+          {(minPriceText || maxPriceText) && (
+            <button onClick={() => { setMinPriceText(""); setMaxPriceText(""); }}
+              aria-label="Clear price filter"
+              style={{
+                border: "none", background: "transparent",
+                color: "var(--text3)", cursor: "pointer",
+                fontFamily: "inherit", fontSize: 14,
+                padding: "0 4px", lineHeight: 1,
+              }}>×</button>
+          )}
+        </div>
+
+        {/* Date sort pill */}
         {(() => {
-          // On Home, the activity grouping is the visible order — not
-          // a date sort. Suppress the active state on Home so the
-          // pill doesn't lie about state. Click still routes to
-          // Listings via the interact-routes effect.
           const isDate = sort === "date" || sort === "date-asc";
           const label = sort === "date" ? "Date ↓"
                       : sort === "date-asc" ? "Date ↑"
@@ -291,6 +352,8 @@ export function DesktopShell(props) {
             }} style={{ ...pillBase(isDate, { compact: true }), fontWeight: isDate ? 600 : 500 }}>{label}</button>
           );
         })()}
+
+        {/* Price sort pill */}
         {(() => {
           const isPrice = sort === "price-asc" || sort === "price-desc";
           const label = sort === "price-desc" ? "Price ↓"
@@ -304,19 +367,8 @@ export function DesktopShell(props) {
             }} style={{ ...pillBase(isPrice, { compact: true }), fontWeight: isPrice ? 600 : 500 }}>{label}</button>
           );
         })()}
-        {/* Lot # pill retired 2026-05-07 (Mark feedback): the
-            catalog-order behavior is now baked into the default
-            Date sort — within a single auction (same auction_end),
-            lots order by lot_number ascending. Christie's lots
-            stay grouped + in catalog order, then Phillips, etc.
-            Toggle UI removed because there's no longer a meaningful
-            alternate ordering — the sort always reads as you'd see
-            it on the auction house's own site. */}
-        {/* ♥ Saved-only filter pill (Bundle 2B) — Listings + Home,
-            signed-in users only. Same data as the Saved tab
-            sub-tabs; this is the in-flow alternate access path. On
-            Home the click routes to Listings via the interact-routes
-            effect in App.js. */}
+
+        {/* ♥ Saved-only filter pill */}
         {tab === "listings" && user && listingsSubTab !== "calendar" && (
           <button onClick={() => setFilterHearted && setFilterHearted(!filterHearted)}
             aria-pressed={!!filterHearted}
@@ -328,12 +380,6 @@ export function DesktopShell(props) {
               fontWeight: filterHearted ? 600 : 500,
               display: "flex", alignItems: "center", gap: 5,
             }}>
-            {/* Heart always renders red (--danger) so the chip reads
-                as "the heart filter" at a glance — same color as the
-                hearted-card overlay. Filled when active; outlined
-                when off. (2026-05-09 Mark feedback: the heart was
-                color-following the pill state and got lost on the
-                white-on-brand active state.) */}
             <svg width="11" height="11" viewBox="0 0 24 24"
               fill={filterHearted ? "var(--danger)" : "none"}
               stroke="var(--danger)"
@@ -343,96 +389,7 @@ export function DesktopShell(props) {
             Saved
           </button>
         )}
-      </div>
-
-      {/* Price — inline min/max inputs. USD-only labels because the
-          feed is USD-normalized. */}
-      <div style={{
-        display: "flex", alignItems: "center", gap: 6,
-        background: "var(--surface)",
-        border: "0.5px solid var(--border)",
-        borderRadius: 20, padding: "0 6px 0 12px", height: 30,
-      }}>
-        <span style={{ fontSize: 11, color: "var(--text3)" }}>$</span>
-        <input value={minPriceText}
-          onChange={e => setMinPriceText(e.target.value)}
-          placeholder="Min" inputMode="numeric"
-          aria-label="Minimum price USD"
-          style={{
-            border: "none", background: "transparent",
-            color: "var(--text1)", outline: "none",
-            fontFamily: "inherit", fontSize: 13,
-            width: 56, padding: "4px 0",
-          }} />
-        <span style={{ fontSize: 11, color: "var(--text3)" }}>–</span>
-        <input value={maxPriceText}
-          onChange={e => setMaxPriceText(e.target.value)}
-          placeholder="Max" inputMode="numeric"
-          aria-label="Maximum price USD"
-          style={{
-            border: "none", background: "transparent",
-            color: "var(--text1)", outline: "none",
-            fontFamily: "inherit", fontSize: 13,
-            width: 60, padding: "4px 0",
-          }} />
-        {(minPriceText || maxPriceText) && (
-          <button onClick={() => { setMinPriceText(""); setMaxPriceText(""); }}
-            aria-label="Clear price filter"
-            style={{
-              border: "none", background: "transparent",
-              color: "var(--text3)", cursor: "pointer",
-              fontFamily: "inherit", fontSize: 14,
-              padding: "0 4px", lineHeight: 1,
-            }}>×</button>
-        )}
-      </div>
-
-      {/* Source + Brand pills are inline-expand toggles — tap → chip
-          cluster appears in a panel below the filter row. */}
-      <button onClick={() => setActiveFilterPop(p => p === "source" ? null : "source")}
-        style={dtPill(filterSources.length > 0 || activeFilterPop === "source")}>
-        Source{filterSources.length > 0 ? ` · ${filterSources.length}` : ""}
-      </button>
-      <button onClick={() => setActiveFilterPop(p => p === "brand" ? null : "brand")}
-        style={dtPill(filterBrands.length > 0 || activeFilterPop === "brand")}>
-        Brand{filterBrands.length > 0 ? ` · ${filterBrands.length}` : ""}
-      </button>
-      {/* Model trigger — only renders when there are any model_line
-          values to filter by (MODELS is empty until the matcher hits
-          enough items). Avoids a permanent-dead pill on tabs/views
-          with no matched items. */}
-      {(MODELS?.length || 0) > 0 && (
-        <button onClick={() => setActiveFilterPop(p => p === "model" ? null : "model")}
-          style={dtPill((filterModels?.length || 0) > 0 || activeFilterPop === "model")}>
-          Model{(filterModels?.length || 0) > 0 ? ` · ${filterModels.length}` : ""}
-        </button>
-      )}
-      {/* Sale filter — Listings > Live auctions only (PR 2026-05-22
-          auction IA). Lots are bucketed by closing-time bands; the
-          Sale chip lets you drill into a specific catalog. */}
-      {tab === "listings" && listingsSubTab === "auctions" && (
-        <button onClick={() => setActiveFilterPop(p => p === "sale" ? null : "sale")}
-          style={dtPill((filterSaleUrls?.length || 0) > 0 || activeFilterPop === "sale")}>
-          Sale{(filterSaleUrls?.length || 0) > 0 ? ` · ${filterSaleUrls.length}` : ""}
-        </button>
-      )}
-
-      {/* Auctions-only pill retired 2026-05-04 — Watchlist > Saved
-          auctions sub-tab covers it. */}
-
-      {/* Search — moved here 2026-05-22 (Mark spec: filter row,
-          right-aligned, "search bar more often in the middle of
-          the page"). Same expanding-icon-then-input pattern that
-          previously lived in the top bar (PR_ε1.5). Applies to
-          every tab that has a filter row (Listings / Watchlists /
-          Editorial); Home + Search-all skip it. marginLeft: auto
-          pushes it (plus the trailing count + Clear-all) to the
-          right edge. */}
-      <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
-        {expandingSearchJSX}
-        {/* Count chip — RESTORED 2026-05-22 (Mark spec, after
-            retiring the identity band). Stays in the right cluster
-            beside the search pill. */}
+        {/* Count + Clear-all tail at the end of the right cluster. */}
         <span style={{
           flexShrink: 0,
           fontSize: 12, color: "var(--text3)", fontFamily: "inherit",
