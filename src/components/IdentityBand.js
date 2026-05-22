@@ -38,15 +38,28 @@ export function IdentityBand({
   const fg = isDark ? "var(--bg)"    : "#ffffff";
   const subOpacity = isDark ? 0.55 : 0.75;
 
-  const horizPad = pad != null ? pad : (isMobile ? 16 : 20);
+  // Option A (Mark spec 2026-05-21): band aligns with the card grid
+  // edges instead of bleeding edge-to-edge. Outer margins match the
+  // shell content padding (16px mobile / 20px desktop). `pad` arg
+  // kept on the API for back-compat but ignored — every current
+  // caller wants the contained shape.
+  // marginBottom = 0 (down from 12–14): the row below already has
+  // its own top padding; the gap was reading as wasted space.
+  void pad; // suppress unused-warning if eslint inspects
+  const sideMargin = isMobile ? 16 : 20;
   return (
     <div style={{
       background: bg,
       color: fg,
-      padding: isMobile ? "12px 16px" : "16px 20px",
-      marginLeft: -horizPad,
-      marginRight: -horizPad,
-      marginBottom: isMobile ? 12 : 14,
+      padding: isMobile ? "10px 14px" : "12px 18px",
+      marginLeft: sideMargin,
+      marginRight: sideMargin,
+      // 8px top breathing room from the sub-tabs strip above
+      // (Mark feedback 2026-05-21: "also close to the subtabs").
+      // No bottom margin — filter row below has its own top padding.
+      marginTop: 8,
+      marginBottom: 0,
+      borderRadius: 8,
       display: "flex", alignItems: "center", gap: 10,
       flexShrink: 0,
     }}>
