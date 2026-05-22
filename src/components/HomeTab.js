@@ -52,11 +52,10 @@ function EditorialHero({ isMobile, dark }) {
   return (
     <section style={{
       // PR 2026-05-22 γ: top bar suppressed on Home → hero sits at
-      // the top of the viewport. Add safe-area-inset-top on mobile
-      // so the moonphase clears the iOS status bar / notch.
-      padding: isMobile
-        ? "calc(env(safe-area-inset-top, 0px) + 12px) 16px 14px"
-        : "22px 16px 22px",
+      // the top of the viewport. The utility row above the hero now
+      // absorbs the safe-area-inset-top, so this just needs normal
+      // breathing room.
+      padding: isMobile ? "8px 16px 14px" : "22px 16px 22px",
       textAlign: "center",
     }}>
       <div style={{
@@ -831,6 +830,36 @@ export function HomeTab(props) {
 
   return (
     <div style={{ paddingBottom: 0 }}>
+      {/* PR 2026-05-22 (Mark feedback on #502): About + auth pill
+          moved out of the centered masthead band into a slim utility
+          row at the top-right above the hero. Reads as the "Subscribe
+          / Sign in" utility strip seen on Vogue / Wired / Hodinkee
+          above the masthead — quiet, peripheral, doesn't compete with
+          the central hero + nav. Tabs + search stay in the band. */}
+      {(homeMastheadAuthJSX || openAbout) && (
+        <div style={{
+          display: "flex",
+          justifyContent: "flex-end",
+          alignItems: "center",
+          gap: 8,
+          padding: isMobile
+            ? "calc(env(safe-area-inset-top, 0px) + 8px) 16px 0"
+            : "10px 20px 0",
+        }}>
+          {openAbout && (
+            <button onClick={openAbout} style={{
+              background: "transparent", border: "none",
+              cursor: "pointer", fontFamily: "inherit",
+              fontSize: 13, fontWeight: 500, letterSpacing: "0.01em",
+              color: "var(--text3)",
+              padding: "6px 8px",
+            }}>
+              About
+            </button>
+          )}
+          {homeMastheadAuthJSX}
+        </div>
+      )}
       <EditorialHero isMobile={isMobile} dark={dark} />
       {/* Masthead nav block — PR 2026-05-22 (Mark γ). The persistent
           top-bar chrome (tabs / About / auth pill) is suppressed on
@@ -845,12 +874,12 @@ export function HomeTab(props) {
         marginLeft: -shellPad,
         marginRight: -shellPad,
         background: "var(--brand-olive-tint-12)",
-        padding: isMobile ? "16px 16px 18px" : "20px 20px 24px",
-        marginBottom: isMobile ? 24 : 36,
+        padding: isMobile ? "10px 16px 14px" : "12px 20px 18px",
+        marginBottom: isMobile ? 20 : 32,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        gap: isMobile ? 14 : 18,
+        gap: isMobile ? 10 : 14,
       }}>
         {homeMastheadTabs && (
           <div style={{
@@ -885,26 +914,6 @@ export function HomeTab(props) {
               dealerSources={homeDealerSources}
               onJumpToDealer={homeJumpToDealer}
             />
-          </div>
-        )}
-        {(homeMastheadAuthJSX || openAbout) && (
-          <div style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-          }}>
-            {openAbout && (
-              <button onClick={openAbout} style={{
-                background: "transparent", border: "none",
-                cursor: "pointer", fontFamily: "inherit",
-                fontSize: 13, fontWeight: 500, letterSpacing: "0.01em",
-                color: "var(--text3)",
-                padding: "6px 8px",
-              }}>
-                About
-              </button>
-            )}
-            {homeMastheadAuthJSX}
           </div>
         )}
       </div>
