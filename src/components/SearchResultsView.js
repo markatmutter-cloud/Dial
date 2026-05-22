@@ -62,10 +62,7 @@ function matchesArticleQuery(article, q) {
 }
 
 function Strip({ heading, count, items, onViewAll, isMobile, watchlist, handleWish, hidden, toggleHide, primaryCurrency, openCollectionPicker, handleShare, isAdmin, onClickListing }) {
-  // Empty-strip render dropped 2026-05-22: parent already filters out
-  // zero-hit strips via .filter(s => s.count > 0). If items.length is
-  // 0 here it's a defensive no-op rather than the "No matches" slug.
-  if (items.length === 0) return null;
+  const isEmpty = items.length === 0;
   const visible = items.slice(0, STRIP_MAX);
   return (
     <section style={{ padding: isMobile ? "16px 0" : "20px 0" }}>
@@ -96,10 +93,16 @@ function Strip({ heading, count, items, onViewAll, isMobile, watchlist, handleWi
           </button>
         )}
       </div>
-      {/* Horizontal-scrollable strip — mirrors Home's SectionStrip
-          layout (PR_φ-slider 2026-05-22 per Mark's original spec).
-          Mobile tiles ~38% / 170px max so 2.5 fit on a phone; desktop
-          tiles fixed 210px with several visible per viewport. */}
+      {isEmpty ? (
+        <div style={{
+          padding: isMobile ? "0 16px 8px" : "0 20px 8px",
+          color: "var(--text3)", fontSize: 13, fontStyle: "italic",
+        }}>
+          No matches.
+        </div>
+      ) : (
+      // Horizontal-scrollable strip — mirrors Home's SectionStrip
+      // layout. Mobile tiles ~38% / 170px max; desktop fixed 210px.
       <div style={{
         display: "flex", gap: 1, overflowX: "auto", overflowY: "hidden",
         padding: isMobile ? "0 16px 4px" : "0 20px 4px",
@@ -130,6 +133,7 @@ function Strip({ heading, count, items, onViewAll, isMobile, watchlist, handleWi
           </div>
         ))}
       </div>
+      )}
     </section>
   );
 }
@@ -218,16 +222,18 @@ export function SearchResultsView({
   const canEdit = typeof setSearch === "function";
 
   // Strip order — fixed sequence per Mark spec 2026-05-22:
-  // live → auctions → articles → sold. Was dynamic by hit-count desc
-  // (PR_φ1) which moved things around per query; fixed sequence makes
-  // the surface predictable. Empty strips still drop entirely so the
-  // user only sees strips that have hits.
+  // live → auctions → articles → sold. ALL four strips render
+  // every time, even when the count is 0, so the user can see
+  // that the system did search each corpus (and articles in
+  // particular — Mark report 2026-05-22: "what about auction
+  // and editorial that I asked for?"). Empty strips show a slim
+  // "No matches" body instead of the slider grid.
   const stripDefs = [
     { key: "live", heading: "Live listings", kind: "listing", count: liveListings.length, items: liveListings, onViewAll: onViewAllLive },
     { key: "auctions", heading: "Live auctions", kind: "listing", count: liveAuctions.length, items: liveAuctions, onViewAll: onViewAllAuctions },
     { key: "articles", heading: "Articles", kind: "article", count: articleHits.length, items: articleHits, onViewAll: onViewAllArticles },
     { key: "sold", heading: "Archive (Sold)", kind: "listing", count: soldItems.length, items: soldItems, onViewAll: onViewAllSold },
-  ].filter(s => s.count > 0);
+  ];
 
   return (
     <div style={{ paddingBottom: isMobile ? 32 : 40 }}>
