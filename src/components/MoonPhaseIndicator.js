@@ -11,13 +11,19 @@ import { moonPhaseImageUrl, moonPhaseName } from "../utils/moonPhase";
 // Refresh tick every 60s so the moon advances naturally if the
 // tab stays open across a phase boundary.
 
-export function MoonPhaseIndicator({ size = 56 }) {
+export function MoonPhaseIndicator({ size = 56, dark = false }) {
   const [now, setNow] = useState(() => new Date());
 
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 60_000);
     return () => clearInterval(id);
   }, []);
+
+  // Hide in dark mode (interim 2026-05-22): the source PNGs ship
+  // with opaque white backgrounds that read as a hard white block
+  // against the dark page bg (Mark report 2026-05-22). Re-enable
+  // once the PNGs are re-exported with transparent alpha.
+  if (dark) return null;
 
   const phaseUrl = moonPhaseImageUrl(now);
   const phaseLabel = moonPhaseName(now);

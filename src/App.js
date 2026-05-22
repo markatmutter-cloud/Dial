@@ -1160,7 +1160,12 @@ export default function Watchlist() {
     // identity band tone for Listings + Watchlists (PR_Y1, Mark
     // feedback 2026-05-21: the bright --accent-positive green didn't
     // match the favicon).
-    "--brand-olive": "#3b4a36",
+    // Dark mode tones it down a notch (#3b4a36 → #2a3527) per Mark
+    // feedback 2026-05-22: "the black is working great — would say
+    // maybe all black or darker green." Darker olive reads as a
+    // subtle brand thread against the black page bg instead of the
+    // brighter light-mode olive that competed for attention.
+    "--brand-olive": "#2a3527",
     // Text-on-bg variant — dark mode needs a lighter sage so olive
     // reads on black. Used for Home wordmark hero etc.
     "--brand-olive-text": "#a8b3a0",
@@ -1245,11 +1250,17 @@ export default function Watchlist() {
   useEffect(() => {
     if (typeof document === "undefined") return;
     const onHome = tab === "home";
-    const oliveColor = "#3b4a36";
+    // Per-theme olive (PR 2026-05-22 darker-green-in-dark-mode):
+    // light mode keeps the favicon-matched #3b4a36; dark mode tones
+    // it to #2a3527 so the chrome zone reads as a subtle brand
+    // thread against the black page bg instead of competing with
+    // the content.
+    const oliveLight = "#3b4a36";
+    const oliveDark  = "#2a3527";
     const lightHome = "#ffffff";
     const darkHome = "#1c1c1e"; // matches dark theme --surface
-    const lightColor = onHome ? lightHome : oliveColor;
-    const darkColor  = onHome ? darkHome  : oliveColor;
+    const lightColor = onHome ? lightHome : oliveLight;
+    const darkColor  = onHome ? darkHome  : oliveDark;
     document.querySelectorAll('meta[name="theme-color"]').forEach((m) => {
       const media = (m.getAttribute("media") || "").toLowerCase();
       if (!media) m.setAttribute("content", lightColor); // default tag
@@ -1258,7 +1269,7 @@ export default function Watchlist() {
     });
     document.documentElement.style.background = onHome
       ? (dark ? darkHome : lightHome)
-      : oliveColor;
+      : (dark ? oliveDark : oliveLight);
   }, [tab, dark]);
 
   // Auction lots projected into the main listings feed. Two sources
@@ -3615,6 +3626,7 @@ export default function Watchlist() {
       // complete the queue or bail mid-review. Mark report
       // 2026-05-15: re-running review left the banner stuck.
       openFeedScreener={() => { markFeedSeen(); setFeedScreenerOpen(true); }}
+      dark={dark}
     />
   );
 

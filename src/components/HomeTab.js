@@ -43,7 +43,7 @@ const CARDS_PER_SECTION_DESKTOP = 20;
 // flank an italic tagline with hairline rules above + below. Reads
 // as a masthead rather than a header label. No new typefaces — the
 // system stack carries the italic via the regular `font-style`.
-function EditorialHero({ isMobile }) {
+function EditorialHero({ isMobile, dark }) {
   // Hero stays on neutral page bg — olive was tried in PR #450 and
   // pulled back 2026-05-22 (Mark: "undo the green on the landing
   // page. remove green altogether"). Home is the editorial moment;
@@ -58,7 +58,7 @@ function EditorialHero({ isMobile }) {
         display: "flex", justifyContent: "center",
         marginBottom: isMobile ? 10 : 16,
       }}>
-        <MoonPhaseIndicator size={isMobile ? 120 : 200} />
+        <MoonPhaseIndicator size={isMobile ? 120 : 200} dark={dark} />
       </div>
       <h1 style={{
         margin: isMobile ? "0 0 12px" : "0 0 22px",
@@ -798,6 +798,7 @@ export function HomeTab(props) {
     onShare, onView, onClickListing, openCollectionPicker, isAdmin,
     user, compact,
     feedScreenerItemsCount, openFeedScreener,
+    dark,
   } = props;
 
   // The shell adds horizontal padding around its main content (16px
@@ -808,7 +809,7 @@ export function HomeTab(props) {
 
   return (
     <div style={{ paddingBottom: 0 }}>
-      <EditorialHero isMobile={isMobile} />
+      <EditorialHero isMobile={isMobile} dark={dark} />
       {/* Hero search bar — under the wordmark on every viewport.
           Mark feedback 2026-05-20: "would love to have the search
           bar under the logo on mobile like on the desktop site."
