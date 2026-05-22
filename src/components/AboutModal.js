@@ -173,14 +173,13 @@ export function AboutModal({ open, onClose, primaryCurrency }) {
                   Watchlist
                 </div>
                 <div style={{ fontSize: 12, color: "var(--text2)", marginTop: 4, fontStyle: "italic" }}>
-                  Welcome — vintage watches, in one feed.
+                  For people who watch vintage watches.
                 </div>
               </div>
             </div>
             <div style={bodyText}>
-              Watchlist aggregates new listings from across independent
-              dealers and auction houses to make your watch 'problem'
-              more manageable.
+              Search, save, and follow listings from across the
+              vintage watch world.
             </div>
             <div style={{ ...bodyText, marginTop: 10 }}>
               Built by a watch enthusiast as a passion project. Every listing
