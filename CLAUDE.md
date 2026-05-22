@@ -1687,6 +1687,19 @@ again; it's permanently blocked at the platform layer.
   same-day dealer flips are rare; the noise reduction is the right
   tradeoff. Auction lots are also excluded via `_isAuctionFormat ||
   _isTrackedLot` — different lifecycle (catalog → sale → ended).
+- **Don't rely on App-root font-family for portal-rendered nodes.**
+  `baseStyle` sets `fontFamily: -apple-system, …` on the App root
+  div. Portal targets (Card ⋯ menu, mobile search overlay, future
+  toasts) render to `document.body` — outside the App subtree — so
+  they don't inherit. Browsers fall back to their default, which is
+  Times-style serif on iOS. Mark report 2026-05-22 on the Spotify-
+  pattern mobile search overlay: "Search all / Listings / Auctions
+  / Sold" rendered in serif. Fix: font-family is set on `body` in
+  `public/index.html` so every node — portal or not — inherits the
+  system stack. Same shape as the theme-variables-on-`:root` fix
+  from PR #168. If a future change adds another `<style>` block or
+  swaps the body styles, keep `font-family` on `body` (or move it
+  to `:root`) — portals will silently regress otherwise.
 - **Don't inline-style theme CSS variables only on App's root div.**
   `--bg`, `--surface`, `--border`, `--text1`, etc. live on
   `document.documentElement.style` (mirrored via useEffect) so
