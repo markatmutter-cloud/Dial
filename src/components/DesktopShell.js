@@ -562,6 +562,11 @@ export function DesktopShell(props) {
         // (the calendar isn't a searchable surface).
         if (showFullFilterRow) return filterRowJSX;
         if (tab === "listings" && listingsSubTab === "calendar") return null;
+        // Collecting (Editorial) renders its own filter strip with
+        // search inline (PR 2026-05-21 — "filter not in line with
+        // search still"). Skip the shell's search row so it doesn't
+        // stack above EditorialView's strip.
+        if (tab === "references") return null;
         return searchOnlyRowJSX;
       })()}
       <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
