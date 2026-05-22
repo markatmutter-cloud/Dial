@@ -1726,6 +1726,22 @@ export default function Watchlist() {
     return o;
   }, [lotsByAuctionUrl]);
 
+  // Sale-level metadata lookup (auction_url → calendar entry). Lets
+  // the lots grid render sale-grouping headers with house + title +
+  // date label. Mark spec 2026-05-22 (Auction IA Slice 1): when on
+  // Live auctions, group lots by parent sale and emit a sticky
+  // section header per sale instead of the closing-date buckets —
+  // makes sale boundaries legible at a glance (e.g. "this run of
+  // 40 lots is Christie's HK weekend; the next run is Phillips
+  // London").
+  const salesByUrl = useMemo(() => {
+    const m = new Map();
+    for (const a of auctions || []) {
+      if (a && a.url) m.set(a.url, a);
+    }
+    return m;
+  }, [auctions]);
+
   // Auction-calendar action handlers (Mark spec 2026-05-14).
   // CRITICAL: these useCallbacks MUST live ABOVE the `loading` /
   // `loadError` early returns later in the function. Earlier draft
@@ -3193,31 +3209,11 @@ export default function Watchlist() {
     if (label === "Older") return "Older sold";
     return `${label} sold`;
   };
-  // Auctions banding (2026-05-10). Buckets active auction lots by
-  // proximity to their auction_end. The underlying sort is already
-  // endingSoonComparator (soonest-first), so this just labels the
-  // natural breakpoints — "Closing today" vs "Closing tomorrow"
-  // vs weekday-name vs "Closing next week" / "Closing later".
-  const closingBucketLabel = (i) => {
-    const end = i.auction_end;
-    if (!end) return "No end date";
-    const endTime = new Date(end).getTime();
-    if (!Number.isFinite(endTime)) return "No end date";
-    const now = Date.now();
-    const diffMs = endTime - now;
-    if (diffMs < 0) return "Ending now";
-    const HOUR = 60 * 60 * 1000;
-    const DAY = 24 * HOUR;
-    if (diffMs < HOUR) return "Closing in the next hour";
-    if (diffMs < DAY) return "Closing today";
-    if (diffMs < 2 * DAY) return "Closing tomorrow";
-    if (diffMs < 7 * DAY) {
-      const weekdays = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-      return `Closing ${weekdays[new Date(endTime).getDay()]}`;
-    }
-    if (diffMs < 14 * DAY) return "Closing next week";
-    return "Closing later";
-  };
+  // (closingBucketLabel retired 2026-05-22 Auction IA Slice 1 —
+  // Live auctions now groups by parent sale instead of closing-date
+  // buckets. Mark spec: when two sales from different houses overlap
+  // on the same weekend, sale-grouping makes the boundaries legible
+  // in a way the date buckets couldn't.)
   // (Group-by helpers removed with the feature. Date dividers under
   // a date-sort are produced inline in `visibleWithDividers` below.)
 
@@ -3244,19 +3240,53 @@ export default function Watchlist() {
     // only on sub-tabs where date dividers make sense:
     //   live  → freshness buckets (Today / Yesterday / weekday / ...)
     //   sold  → sold-date buckets (Today sold / Last week sold / ...)
-    //   auctions → closing-time buckets (Closing today / Closing
-    //              tomorrow / weekday / Closing next week / ...)
+    //   auctions → sale-group buckets (Auction IA Slice 1, 2026-05-22)
+    //              — house · title with a date-range meta. Replaces the
+    //              previous closing-time bucketing because two sales
+    //              from different houses in the same weekend used to
+    //              smear together; sale-grouping makes the boundaries
+    //              legible.
     //   calendar → renders a calendar component, not this grid
     const isDateSort = sort === "date" || sort === "date-asc";
     const useFreshBuckets   = isDateSort && tab === "listings" && listingsSubTab === "live";
     const useSoldBuckets    = isDateSort && tab === "listings" && listingsSubTab === "sold";
-    const useClosingBuckets = isDateSort && tab === "listings" && listingsSubTab === "auctions";
-    if (!useFreshBuckets && !useSoldBuckets && !useClosingBuckets) {
+    const useSaleBuckets    = tab === "listings" && listingsSubTab === "auctions";
+    if (!useFreshBuckets && !useSoldBuckets && !useSaleBuckets) {
       return visible.map(it => ({ kind: "card", item: it }));
     }
-    const baseLabelFn = useClosingBuckets ? closingBucketLabel
-                      : useSoldBuckets    ? soldBucketLabel
-                      : ageBucketLabel;
+    // Sale-bucket branch returns early: it groups by parent auction_url
+    // (one section per sale) rather than by date buckets, so the
+    // baseLabelFn + earlier-override machinery below doesn't apply.
+    if (useSaleBuckets) {
+      // Sort each sale's lots together while keeping the overall sort
+      // axis. Build a stable sale-order by reading the order each sale
+      // URL first appears in `visible` (already sorted by the parent
+      // sort) — closing-soonest sale comes first because its
+      // closing-soonest lot does.
+      const order = [];
+      const groups = new Map();
+      const NO_SALE = "__no_sale__";
+      for (const it of visible) {
+        const key = it.auction_url || NO_SALE;
+        if (!groups.has(key)) { groups.set(key, []); order.push(key); }
+        groups.get(key).push(it);
+      }
+      const out = [];
+      for (const key of order) {
+        const lots = groups.get(key);
+        const sale = key === NO_SALE ? null : salesByUrl.get(key);
+        const houseTitle = sale
+          ? `${sale.house || ""}${sale.title ? " · " + sale.title : ""}`.trim()
+          : "Other auction lots";
+        const meta = sale
+          ? `${sale.dateLabel || ""} · ${lots.length.toLocaleString()} lots`.trim()
+          : `${lots.length.toLocaleString()} lots`;
+        out.push({ kind: "divider", label: houseTitle, total: lots.length, meta, saleUrl: sale?.url || null });
+        for (const it of lots) out.push({ kind: "card", item: it });
+      }
+      return out;
+    }
+    const baseLabelFn = useSoldBuckets ? soldBucketLabel : ageBucketLabel;
     // Mark's report 2026-05-06: backfilled items can produce a second
     // "Last week" (or any) divider because they sort in a separate
     // section below the non-backfilled run but get bucketed by the
@@ -3360,6 +3390,7 @@ export default function Watchlist() {
               key={`div-${idx}-${entry.label}`}
               label={entry.label}
               total={entry.total}
+              meta={entry.meta}
               isFirst={idx === 0}
             />
           ) : (
