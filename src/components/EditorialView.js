@@ -178,7 +178,7 @@ const SOURCES = [
 ];
 
 const BRAND_TOP_N = 24;       // Show top N brands in expansion panel; "+more" expander reveals the rest
-const RESULTS_PAGE_SIZE = 48; // Denser scroll (Mark spec 2026-05-20 — "24 wasn't enough to scroll through"). Bumped 24→48.
+const RESULTS_PAGE_SIZE = 100; // 24 → 48 (2026-05-20) → 100 (2026-05-21). Mark spec: "100 articles then the load more message" — corpus is ~12k now, the larger initial slice lets users scroll meaningfully before hitting Load more.
 const FEATURED_COUNT = 8;     // Most-recent articles surfaced in the hero strip (visible only when no search / no filters active).
 
 export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, handleWish, openCollectionPicker, handleShare, search: searchProp, setSearch: setSearchProp }) {
