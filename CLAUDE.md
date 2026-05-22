@@ -23,8 +23,12 @@ how to behave for the rest of it.
   reference-page editorial coverage, or any recommender-adjacent
   surface.
 - `SESSION_HANDOFF_*.md` — in-flight snapshot per session. **Not durable.**
-  The current one is [SESSION_HANDOFF_2026-05-22.md](SESSION_HANDOFF_2026-05-22.md);
-  older ones live in `archive/`.
+  The current one is [SESSION_HANDOFF_2026-05-22.md](SESSION_HANDOFF_2026-05-22.md)
+  (frontend / chrome arc, evening addendum at the bottom); the
+  parallel backend session left
+  [SESSION_HANDOFF_2026-05-22-backend.md](SESSION_HANDOFF_2026-05-22-backend.md)
+  (auction scrapers / Bonhams Cloudflare / historical archive lots).
+  Older ones live in `archive/`.
 
 If a gotcha or convention is durable (still true next session), graduate
 it from the handoff to this file. If it's session-specific, leave it in
@@ -1754,6 +1758,34 @@ platform. Don't waste cycles trying the ALTER DEFAULT PRIVILEGES path
 again; it's permanently blocked at the platform layer.
 
 ## Things to never do
+
+- **Don't gate chrome decisions on `tab !== "home"` alone — include
+  the receive-surface flags.** Share-receive, challenge-receive,
+  list-receive, and Search-all surfaces take over the content area
+  but leave the underlying `tab` value untouched. A user landing
+  fresh via `/share/<id>` has `tab === "home"` even though the
+  visible content is a focused destination. The rule is:
+
+  ```
+  const onOliveChrome = tab !== "home" || anyShareActive || searchAllActive;
+  ```
+
+  Applied in DesktopShell (topBarOnOlive, IIFE onOlive, wordmark
+  render, top-bar search render), MobileShell (brand-row visibility,
+  tabs-row bg + padding, tabPill onOlive flag), and App.js's
+  theme-color useEffect (onHome AND-s all flags). Adding new chrome
+  conditionals → mirror the same OR-with-receive-flags pattern.
+  Diagnosed 2026-05-22.
+
+- **Don't declare state in one component and reference it in another
+  sibling component in the same file.** `imgFailed` was declared
+  inside `ShareReceiver`'s `useState` but the JSX consumer lived
+  in `FocusedShareCard` — a separate function in the same file.
+  ReferenceError on every share-receive render for weeks before
+  diagnosis. JavaScript walks scope, finds nothing in
+  FocusedShareCard, throws. When grep finds a name declared in the
+  same file, **verify it's in the same function scope as the
+  consumer** — not just the same file. PR #408 → hotfix PR #474.
 
 - **Don't move `font-family` off `body` in `public/index.html`.**
   The site's `-apple-system, BlinkMacSystemFont, ...` stack lives

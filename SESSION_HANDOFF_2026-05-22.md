@@ -444,3 +444,203 @@ The ε series followed a non-linear naming because Mark approved
 **~40 PRs squash-merged in this session** (counting both morning
 and afternoon, plus the original handoff PR). Branch state still
 clean (all delete-branched on merge).
+
+---
+
+## Addendum — evening session (2026-05-22 PT)
+
+Companion file for the parallel backend session:
+[SESSION_HANDOFF_2026-05-22-backend.md](SESSION_HANDOFF_2026-05-22-backend.md)
+(auction scraper coverage + Bonhams Cloudflare diagnosis +
+archive landmark sales).
+
+After the afternoon handoff, an evening run continued through
+copy work, search-strip rework, receive-surface chrome, and
+several bug hotfixes. **~20 more PRs landed.**
+
+### Six arcs
+
+1. **Search-strip surface (the "Search all" destination)
+   substantially reworked.** PR_φ1 was the inline-editable query
+   + sticky header + smart strip order; PR_φ2 lifted the editorial
+   corpus into App.js so the surface gets a 4th Articles strip;
+   subsequent fixes converted the strips to Home-style horizontal
+   sliders (mobile 38% / 170px max; desktop fixed 210px tiles),
+   pinned strip order to live → auctions → articles → sold, and
+   moved to always-show-all-4-strip-headers (empty strips render
+   "No matches." inline instead of being hidden). Final shape:
+   header has eyebrow row (`SEARCH RESULTS · N matches · Exit`)
+   above an always-visible editable input, then 4 sliders.
+
+2. **Copy refresh anchored to BRAND.md + RECOMMENDER_STRATEGY.md.**
+   Three-line tagline hierarchy (`Watchlist` / *For people who
+   watch vintage watches.* / Search, save, and follow listings
+   from across the vintage watch world.) applied to public/
+   index.html title + OG + Twitter + JSON-LD AND
+   AboutModal welcome panel AND ShareReceiver first-time panel.
+   Home Watchbox CTA went through three heading variants —
+   final: "Your collecting space." Share-receive heading also
+   refreshed ("{Name} thought you'd want to see this." /
+   fallback "A watch worth a look.").
+
+3. **Olive-thread completion across user surfaces.** Avatar M
+   circle inverts based on chrome context (white disc + olive
+   letter on olive bar; olive disc + white letter on neutral).
+   Primary CTAs swept brand-blue → brand-olive site-wide via
+   `actionButton({ variant: "primary" })` (+ From feed, modal
+   primary buttons, ChallengeFlow). Countdown chip on auction
+   cards ("6 HOURS LEFT") swapped to olive rgba. Date dividers
+   redesigned to typographic-only with olive accent label.
+   All Watchlists icon strokes swept olive (heart, bookmark,
+   thumbs-up, users, folder, inbox, eye-off — plus search icon
+   on saved-search rows, completed-challenge glyph). About
+   modal feature badges (B/S/P/L/D) flipped olive. Mobile Home
+   chrome extended olive through the tabs row (previously
+   neutral; created a visual break with non-Home tabs). Home
+   wordmark in olive in both modes (dark mode keeps the same
+   `#3b4a36` per Mark spec — lower contrast is intentional).
+   New token `--brand-olive-tint-12` for icon-disc backgrounds.
+
+4. **Receive surfaces (share / challenge / list / search-all)
+   inherit olive chrome.** When a focused destination surface
+   takes over the content area, the underlying `tab` value can
+   be "home" (fresh `/share` landing with no prior nav). Before:
+   chrome flipped back to neutral on these surfaces, mismatching
+   the rest of the site. Fix in both shells + the App.js
+   theme-color useEffect: olive chrome applies when
+   `tab !== "home" || anyShareActive || searchAllActive`.
+
+5. **Bug hotfixes.**
+   - **imgFailed scope bug (the real one).** Original
+     hypothesis ("stale bundle") was wrong — PR #408 had
+     declared `useState(false)` inside `ShareReceiver` but used
+     the resulting state in `FocusedShareCard` (a separate
+     function in the same file). Every share recipient hit
+     ReferenceError on the focused-share render. Moved state
+     declaration into the inner component. **Lesson logged**:
+     when grep finds a name "declared", verify it's in the
+     same FUNCTION scope as the consumer, not just the same file.
+   - **Two-M-circles on receive surfaces.** Brand-row authJSX
+     started rendering on receive surfaces (correct), but the
+     merged Home tabs-row also rendered authJSX (its condition
+     was tab === "home"). Both fired → two M circles. Gated
+     tabs-row M on `!anyShareActive && !searchAllActive`.
+   - **Desktop Source filter missing "+N more" expander.**
+     Mobile had it (since the grouped-source pattern); desktop
+     never did. With 38 dealers + 6 auction houses, visibleSources
+     was sliced to 8 and the rest were invisible.
+   - **Monaco Legend images returning 404.** Scraper saves
+     bare Uploadcare UUIDs. CDN requires a path operation
+     suffix to serve the image. Frontend `imgSrc()` rewrite
+     appends `/-/resize/800x/-/format/auto/` for the host —
+     fixes 404 + serves webp/avif at 800px (~30-50% smaller).
+     Backend follow-up logged: update scraper to write the
+     suffix at scrape time.
+   - **Editorial filter strip transparency + alignment.** The
+     `top: 40` legacy from a retired subStrip became a
+     transparent gap (PR_ε0). Then horizontal alignment
+     repeatedly drifted because Editorial uses a sticky-wrapper
+     + nested-inner-strip pattern while Listings uses a single
+     flex container — same `pillBase` pills, different outer
+     geometry. Aligned them again after multiple iterations;
+     queued a **refactor** to extract a shared `<FilterRow>`
+     primitive.
+
+6. **Mobile chrome refinements.** Brand row wordmark switched
+   to `alignItems: "center"` (was "baseline" against the larger
+   M circle, which pushed the wordmark visually low). Vertical
+   padding bumped 4 → 8 for breathing room. Home gets olive
+   chrome through its tabs row (the only mobile surface that
+   was still neutral). Search row hide-rules audited (no
+   regression).
+
+### Architectural / durable patterns worth keeping in mind
+
+#### Avatar disc inversion based on chrome bg
+
+The avatar pill (App.js authJSX) has TWO color modes computed
+once in a wrapping IIFE:
+
+```
+On olive top bar (tab !== "home" OR receive OR searchAll):
+  white disc + olive letter, white border @ 30% alpha
+On neutral top bar (Home with no receiver):
+  olive disc + white letter, default border
+```
+
+If a new context flips chrome bg, mirror the rule in this IIFE —
+don't add new conditionals downstream.
+
+#### Receive-surface chrome rule (applies to four flags)
+
+`anyShareActive || searchAllActive || challengeShareActive ||
+listShareActive` — these focused-destination flags should be
+OR'd with `tab !== "home"` everywhere chrome decisions are made.
+Currently five places have this combined rule:
+- DesktopShell topBarOnOlive + IIFE onOlive + wordmark render
+  + top-bar search render
+- MobileShell brand-row visibility + tabs-row bg/padding +
+  tabPill onOlive flag
+- App.js theme-color useEffect (`onHome` AND-s in all flags)
+
+#### Monaco Legend Uploadcare CDN rewrite
+
+The bare UUID URL is unusable. Frontend `imgSrc()` rewrites
+hosts matching `cdn.monacolegendauctions.com` when the path
+has no `/-/` segment, appending `/-/resize/800x/-/format/auto/`.
+The Watchfid/WoL three-place lockstep (utils.js + api/img.js +
+api/share.js) does NOT apply here — Monaco is a different
+mechanism (URL transform, not proxy), so the rewrite lives only
+in utils.js. Backend follow-up logged to write the suffix at
+scrape time.
+
+#### Three-line voice hierarchy
+
+Public-facing positioning copy uses:
+1. **Watchlist** (brand)
+2. *For people who watch vintage watches.* (italic positioning)
+3. Search, save, and follow listings from across the vintage
+   watch world. (description)
+
+Applied to: HTML head meta (title/OG/Twitter/JSON-LD), About
+modal welcome panel, share-receive first-time panel. Future
+positioning surfaces should mirror this hierarchy.
+
+#### Editorial vs Listings filter row drift (known issue)
+
+Same `pillBase` styling, different OUTER container shapes:
+- **Listings**: single flex container in shell, `padding: "6px 20px"`
+- **Editorial**: sticky wrapper + nested inner strip inside
+  scroll container, wrapper has `marginLeft: -20 + paddingLeft: 20`
+  (edge-to-edge trick) + inner strip has `padding: "6px 0"`
+  (horizontal 0 because wrapper already adds 20)
+
+When either is touched, alignment drifts. **Pinned refactor**:
+extract a shared `<FilterRow>` primitive — see next-session queue.
+
+### Next-session queue (Mark spec end-of-session 2026-05-22)
+
+| Item | Notes |
+|---|---|
+| **Landing page tab font** consistency with the landing page hero + other tabs. Currently main-tab text uses 13/14px system; the landing page wordmark uses 30-56px uppercase letter-spaced. Different sizes is fine but font weights / casing could harmonize. |
+| **Extract shared `<FilterRow>` primitive** so Listings + Editorial stop drifting (task #35). The recurring alignment work this session is a structural problem, not a styling one. |
+| **Sotheby's brightspotcdn + Phillips CDN transforms** for image speed. Sotheby's URLs support dim params; Phillips assets are pre-sized but could be smaller. Similar pattern to the Monaco CDN rewrite. |
+| **Grey headers on listings and other tabs** revisit — Mark wants another look at the section-divider treatment across the app. Earlier session retired the slab; section identity comes from chrome + sub-tab underline. Worth deciding if some surfaces still need anchored headers. |
+| **Editorial cards improvements** — visual polish on the article tile (title + image + meta layout). |
+
+### Smaller carried-forward items
+
+| Item | Notes |
+|---|---|
+| **Sotheby's archive coverage** — only 1 of 162 sold lots scraped (vs Antiquorum 551, Christie's 222, Monaco 269, Phillips 200). Sold-lot parser path is broken; needs a separate scraper fix. |
+| **Bonhams Cloudflare block** — three attempts in the backend session didn't clear it. Detailed in [SESSION_HANDOFF_2026-05-22-backend.md](SESSION_HANDOFF_2026-05-22-backend.md). |
+| **Oliver & Clarke + Collectors Corner NY saved-item images** — empty `listing_snapshot.img` in saved snapshots (likely hearted before the dealer's scrape was capturing images). Current scrape has valid CDN URLs. Needs snapshot-refresh-on-feed-encounter or a one-time data migration. |
+| **Christie's two undated stories** — Mark wants Feb 1 2026 as the published_at fallback. Not shipped this session; data file edit. |
+
+### Total evening PR count
+
+**~20 PRs squash-merged.** Plus the morning + afternoon
+totals from this same date, the running 2026-05-22 count is
+**~60 PRs.** Branch state clean (all delete-branched on merge;
+stranded local branches from prior sessions reaped at session
+close).
