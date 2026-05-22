@@ -354,14 +354,19 @@ export function DesktopShell(props) {
       {/* Auctions-only pill retired 2026-05-04 — Watchlist > Saved
           auctions sub-tab covers it. */}
 
-      {/* Filtered count was retired from the filter row 2026-05-21 (PR_Y).
-          The identity band below the controls row now carries section
-          identity + count for every tab. Clear-all stays at the right
-          edge of the filter row since it's an action against the
-          chips immediately above. */}
+      {/* Count chip — RESTORED 2026-05-22 (Mark spec, after retiring
+          the identity band). Was retired in PR_Y1 when the band took
+          over the count display; now back at the right edge of the
+          filter row since the band is gone. */}
+      <span style={{
+        marginLeft: "auto", flexShrink: 0,
+        fontSize: 12, color: "var(--text3)", fontFamily: "inherit",
+        whiteSpace: "nowrap", padding: "0 6px",
+      }}>
+        {(displayedCount || 0).toLocaleString()} {displayedCount === 1 ? "watch" : "watches"}
+      </span>
       {hasFilters && (
         <button onClick={resetFilters} style={{
-          marginLeft: "auto",
           fontSize: 13, padding: "6px 12px", borderRadius: 20, cursor: "pointer",
           fontFamily: "inherit", whiteSpace: "nowrap",
           border: "none", outline: "none",
@@ -476,7 +481,7 @@ export function DesktopShell(props) {
           <button onClick={() => { setTab("home"); setPage(1); }}
             style={{ background: "none", border: "none", cursor: "pointer",
                     padding: 0, paddingLeft: "0.16em", fontFamily: "inherit",
-                    fontSize: 18, fontWeight: 500, letterSpacing: "0.16em",
+                    fontSize: 18, fontWeight: 600, letterSpacing: "0.16em",
                     textTransform: "uppercase",
                     color: "var(--text1)", flexShrink: 0 }}>
             Watchlist
