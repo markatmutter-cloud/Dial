@@ -104,7 +104,11 @@ export const actionButton = ({ variant = "subtle" } = {}) => {
   if (variant === "primary") return {
     ...base,
     border: "none",
-    background: "var(--brand)", color: "#fff",
+    // PR 2026-05-22: primary CTAs swept from brand-blue to brand-
+    // olive to match the olive thread shipped across icons, avatar,
+    // dropdown, view-settings, etc. Mark spec: "+ From feed in
+    // Watchbox could be green" — applied site-wide for consistency.
+    background: "var(--brand-olive)", color: "#fff",
     fontWeight: 500,
   };
   if (variant === "danger") return {

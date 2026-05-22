@@ -325,7 +325,12 @@ export const Card = memo(function Card({
           ) : countdownLabel ? (
             <div style={{
               position: "absolute", top: 6, left: 6,
-              background: countdownIsPast ? "rgba(0,0,0,0.55)" : "rgba(24,95,165,0.92)",
+              // PR 2026-05-22: countdown chip from brand-blue (rgba
+              // 24,95,165) to brand-olive (rgba 59,74,54). Same opacity
+              // so the ended-state stays dark-grey for distinction.
+              // Mark spec: "blue chips on time remaining and other
+              // throughout the site - should they be green?"
+              background: countdownIsPast ? "rgba(0,0,0,0.55)" : "rgba(59,74,54,0.92)",
               color: "#fff", fontSize: 10,
               padding: "2px 8px", borderRadius: 8,
               letterSpacing: "0.04em", fontWeight: 600,
@@ -337,7 +342,7 @@ export const Card = memo(function Card({
             // still mark it as an auction so users can tell at a glance.
             <div style={{
               position: "absolute", top: 6, left: 6,
-              background: "rgba(24,95,165,0.92)", color: "#fff",
+              background: "rgba(59,74,54,0.92)", color: "#fff",
               fontSize: 10, padding: "2px 8px", borderRadius: 8,
               letterSpacing: "0.06em", fontWeight: 600,
             }}>AUCTION</div>
