@@ -3372,40 +3372,56 @@ export default function Watchlist() {
     //              legible.
     //   calendar → renders a calendar component, not this grid
     const isDateSort = sort === "date" || sort === "date-asc";
-    const useFreshBuckets   = isDateSort && tab === "listings" && listingsSubTab === "live";
-    const useSoldBuckets    = isDateSort && tab === "listings" && listingsSubTab === "sold";
-    const useSaleBuckets    = tab === "listings" && listingsSubTab === "auctions";
-    if (!useFreshBuckets && !useSoldBuckets && !useSaleBuckets) {
+    const useFreshBuckets    = isDateSort && tab === "listings" && listingsSubTab === "live";
+    const useSoldBuckets     = isDateSort && tab === "listings" && listingsSubTab === "sold";
+    const useClosingBuckets  = tab === "listings" && listingsSubTab === "auctions";
+    if (!useFreshBuckets && !useSoldBuckets && !useClosingBuckets) {
       return visible.map(it => ({ kind: "card", item: it }));
     }
-    // Sale-bucket branch returns early: it groups by parent auction_url
-    // (one section per sale) rather than by date buckets, so the
-    // baseLabelFn + earlier-override machinery below doesn't apply.
-    if (useSaleBuckets) {
-      // Sort each sale's lots together while keeping the overall sort
-      // axis. Build a stable sale-order by reading the order each sale
-      // URL first appears in `visible` (already sorted by the parent
-      // sort) — closing-soonest sale comes first because its
-      // closing-soonest lot does.
-      const order = [];
+    // Closing-time bands for Live auctions (PR 2026-05-22, Mark spec).
+    // Replaces the sale-grouping shipped in PR #504 — the "Other
+    // auction lots" group bubbled to the top because un-grouped lots
+    // sorted first, and the structure didn't match how Mark triages
+    // urgency. New shape: bucket lots by how soon they close (today
+    // / this week / this month / later) + "Other auction lots" last
+    // for items without an end date. Sale-as-grouping is now exposed
+    // as a filter chip instead (planned PR B).
+    if (useClosingBuckets) {
+      const DAY = 86400000;
+      const now = Date.now();
+      const labelOf = (i) => {
+        const end = i.auction_end ? new Date(i.auction_end).getTime() : 0;
+        if (!end || !Number.isFinite(end)) return "Other auction lots";
+        const diff = end - now;
+        if (diff < 0) return "Ending now";
+        if (diff < DAY) return "Closing today";
+        if (diff < 7 * DAY) return "Closing this week";
+        if (diff < 30 * DAY) return "Closing this month";
+        return "Later";
+      };
+      // Bucket order — closing soonest first, then "Other" last.
+      const ORDER = [
+        "Ending now",
+        "Closing today",
+        "Closing this week",
+        "Closing this month",
+        "Later",
+        "Other auction lots",
+      ];
       const groups = new Map();
-      const NO_SALE = "__no_sale__";
       for (const it of visible) {
-        const key = it.auction_url || NO_SALE;
-        if (!groups.has(key)) { groups.set(key, []); order.push(key); }
+        const key = labelOf(it);
+        if (!groups.has(key)) groups.set(key, []);
         groups.get(key).push(it);
       }
       const out = [];
-      for (const key of order) {
-        const lots = groups.get(key);
-        const sale = key === NO_SALE ? null : salesByUrl.get(key);
-        const houseTitle = sale
-          ? `${sale.house || ""}${sale.title ? " · " + sale.title : ""}`.trim()
-          : "Other auction lots";
-        const meta = sale
-          ? `${sale.dateLabel || ""} · ${lots.length.toLocaleString()} lots`.trim()
-          : `${lots.length.toLocaleString()} lots`;
-        out.push({ kind: "divider", label: houseTitle, total: lots.length, meta, saleUrl: sale?.url || null });
+      for (const label of ORDER) {
+        const lots = groups.get(label);
+        if (!lots || lots.length === 0) continue;
+        // Count is per-band against the contiguous run in allFiltered
+        // (matches the date-bucket count semantic — what the user
+        // sees between this header and the next).
+        out.push({ kind: "divider", label, total: lots.length });
         for (const it of lots) out.push({ kind: "card", item: it });
       }
       return out;

@@ -44,6 +44,14 @@ export default function DateDivider({ label, total, isFirst = false, meta, onCli
       // hairlines (see comment above).
       marginTop: isFirst ? 0 : -1,
       marginBottom: -1,
+      // Sticky-engagement leak fix (Mark report 2026-05-22 "peek
+      // through to the image"). When the divider is position:sticky,
+      // negative margin doesn't translate into the sticky-positioned
+      // rendering — so a 1px sliver of card image bleeds through the
+      // grid hairline above the divider. A 2px var(--bg) box-shadow
+      // outside the box paints over that sliver without affecting
+      // layout.
+      boxShadow: "0 -2px 0 var(--bg), 0 2px 0 var(--bg)",
       display: "flex",
       alignItems: "baseline",
       gap: 6,
