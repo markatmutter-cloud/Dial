@@ -1776,6 +1776,20 @@ again; it's permanently blocked at the platform layer.
 
 ## Things to never do
 
+- **Don't paint `gridStyle.background` as `var(--border)` again.**
+  Until PR #528 the listings grid used `gap: 1; background:
+  var(--border)` so the 1px gap between cards rendered as a thin
+  grey hairline. That trick produced a permanent leak around any
+  full-bleed row (DateDivider headers, EmptyState, etc.) that no
+  amount of masking (negative margin / box-shadow / absolute
+  pseudo-child) fully covered in sticky state — see the history
+  in PRs #498, #524, #526. The fix was to flip the bg to
+  `var(--bg)` so the gap becomes invisible. Cards lose the
+  hairline separator but they have their own `var(--surface)`
+  background plus image padding; the visual reads clean. If a
+  future PR brings back the hairline-grid trick, the divider gap
+  leak comes back with it — use card-level borders instead.
+
 - **Don't gate chrome decisions on `tab !== "home"` alone — include
   the receive-surface flags.** Share-receive, challenge-receive,
   list-receive, and Search-all surfaces take over the content area
