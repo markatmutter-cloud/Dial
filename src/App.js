@@ -2849,7 +2849,15 @@ export default function Watchlist() {
     background: "var(--bg)", color: "var(--text1)",
     ...Object.fromEntries(Object.entries(c).map(([k, v]) => [k, v]))
   };
-  const gridStyle = { display: "grid", gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`, gap: 1, background: "var(--border)" };
+  // PR 2026-05-22: gridStyle.background flipped from var(--border)
+  // (light grey hairline-between-cards effect) to var(--bg) (page
+  // bg). The hairline approach kept leaking 1px slivers around
+  // full-bleed rows (DateDivider headers) — multiple fix attempts
+  // (negative margin, box-shadow, absolute mask child) didn't fully
+  // cover the leak in sticky state. Paint the gap as page-bg and
+  // the leak goes away entirely; cards lose their 1px hairline
+  // separator but the existing surface-bg + spacing reads clean.
+  const gridStyle = { display: "grid", gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`, gap: 1, background: "var(--bg)" };
 
   // ── AUTH UI ─────────────────────────────────────────────────────────────
   // One block of JSX used by both the desktop sidebar footer and the mobile
