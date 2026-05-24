@@ -30,7 +30,7 @@ Run: python3 verify_sources.py
 import json
 import statistics
 from collections import Counter
-from datetime import date
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 PUBLIC = Path("public")
@@ -129,6 +129,11 @@ def main():
 
     report = {
         "date": today,
+        # ISO-8601 UTC timestamp of this run. AdminTab + health.py render
+        # this as "Updated Nh ago" + STALE warning above thresholds.
+        # Date-only field above is kept for back-compat with older
+        # snapshots that didn't have updated_at.
+        "updated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "alerts": alerts,
         "counts": dict(counts_today),
         "total_listings": sum(counts_today.values()),

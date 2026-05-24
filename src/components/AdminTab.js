@@ -80,6 +80,34 @@ function ChipDot({ kind }) {
 const DAY_MS = 86400000;
 const THIRTY_DAYS_MS = 30 * DAY_MS;
 
+// Stale threshold for the source-quality / auction-house headers.
+// verify_sources writes updated_at on every run; a gap larger than
+// this means the cron pipeline is broken or behind.
+const STALE_THRESHOLD_HOURS = 12;
+
+function formatLastRun(updatedAt, fallbackDate) {
+  if (!updatedAt) {
+    return { label: fallbackDate ? `Last verification: ${fallbackDate}` : null, stale: false };
+  }
+  const ts = Date.parse(updatedAt);
+  if (Number.isNaN(ts)) {
+    return { label: `Last verification: ${updatedAt}`, stale: false };
+  }
+  const diffMs = Date.now() - ts;
+  const diffMin = Math.floor(diffMs / 60000);
+  const diffHr = Math.floor(diffMin / 60);
+  const stale = diffHr >= STALE_THRESHOLD_HOURS;
+  let rel;
+  if (diffMin < 1) rel = "just now";
+  else if (diffMin < 60) rel = `${diffMin}m ago`;
+  else if (diffHr < 48) rel = `${diffHr}h ago`;
+  else rel = `${Math.floor(diffHr / 24)}d ago`;
+  return {
+    label: stale ? `STALE — last run ${rel}` : `Updated ${rel}`,
+    stale,
+  };
+}
+
 // Color-code a days-on-sale value: <7d reads green (hot inventory,
 // flips fast), >30d reads in --danger (slow burn, marginal turn),
 // in-between is neutral text1. Used in both per-source and per-
@@ -227,6 +255,7 @@ const USER_COLUMNS = [
 
 export function AdminTab({ watchItems, hiddenItems }) {
   const [verification, setVerification] = useState(null);
+  const [verificationLots, setVerificationLots] = useState(null);
   const [history, setHistory] = useState([]);
   const [listings, setListings] = useState([]);
   const [loadError, setLoadError] = useState(null);
@@ -282,9 +311,11 @@ export function AdminTab({ watchItems, hiddenItems }) {
       fetch("/auctions.json").then((r) => r.ok ? r.json() : []).catch(() => []),
       fetch("/auction_lots.json").then((r) => r.ok ? r.json() : {}).catch(() => ({})),
       fetch("/manual_archive_lots.json").then((r) => r.ok ? r.json() : {}).catch(() => ({})),
-    ]).then(([v, h, l, a, lots, archive]) => {
+      fetch("/verification_lots.json").then((r) => r.ok ? r.json() : null).catch(() => null),
+    ]).then(([v, h, l, a, lots, archive, vl]) => {
       if (cancelled) return;
       setVerification(v);
+      setVerificationLots(vl);
       setHistory((h && h.history) || []);
       setListings(l);
       setAuctions(Array.isArray(a) ? a : []);
@@ -963,11 +994,20 @@ export function AdminTab({ watchItems, hiddenItems }) {
         <span style={{ fontSize: 12, color: "var(--text2)" }}>
           {totals.sources} sources · {totals.live.toLocaleString()} live listings
         </span>
-        {verification?.date && (
-          <span style={{ fontSize: 12, color: "var(--text3)", marginLeft: "auto" }}>
-            Last verification: {verification.date}
-          </span>
-        )}
+        {(() => {
+          const { label, stale } = formatLastRun(verification?.updated_at, verification?.date);
+          if (!label) return null;
+          return (
+            <span style={{
+              fontSize: 12,
+              color: stale ? "var(--danger)" : "var(--text3)",
+              fontWeight: stale ? 600 : 400,
+              marginLeft: "auto",
+            }}>
+              {label}
+            </span>
+          );
+        })()}
       </div>
 
       {alerts.length > 0 && (
@@ -1336,6 +1376,20 @@ export function AdminTab({ watchItems, hiddenItems }) {
         <span style={{ fontSize: 12, color: "var(--text2)" }}>
           {houseRows.length} houses · {houseRows.reduce((a, r) => a + r.totalLots, 0).toLocaleString()} lots tracked
         </span>
+        {(() => {
+          const { label, stale } = formatLastRun(verificationLots?.updated_at, verificationLots?.date);
+          if (!label) return null;
+          return (
+            <span style={{
+              fontSize: 12,
+              color: stale ? "var(--danger)" : "var(--text3)",
+              fontWeight: stale ? 600 : 400,
+              marginLeft: "auto",
+            }}>
+              {label}
+            </span>
+          );
+        })()}
       </div>
 
       {houseRows.length === 0 ? (
