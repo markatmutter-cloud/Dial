@@ -1,6 +1,6 @@
 {
   "date": "2026-05-24",
-  "updated_at": "2026-05-24T15:35:41+00:00",
+  "updated_at": "2026-05-24T21:23:10+00:00",
   "alerts": [],
   "counts": {
     "Wind Vintage": 112,
@@ -9,7 +9,7 @@
     "Collectors Corner NY": 54,
     "Falco Watches": 100,
     "Grey & Patina": 53,
-    "Oliver & Clarke": 90,
+    "Oliver & Clarke": 89,
     "Craft & Tailored": 74,
     "Watch Brothers London": 18,
     "MVV Watches": 47,
@@ -18,12 +18,12 @@
     "Somlo": 203,
     "Analog Shift": 621,
     "Watches of Knightsbridge": 70,
-    "Belmont Watches": 36,
-    "Bob's Watches": 52,
+    "Belmont Watches": 35,
+    "Bob's Watches": 51,
     "Watchfid": 63,
     "Bulang & Sons": 175,
     "Moonphase": 18,
-    "Huntington Company": 91,
+    "Huntington Company": 89,
     "The Vintage Watch": 28,
     "Chronoholic": 5,
     "Vintage Watch Fam": 423,
@@ -45,6 +45,6 @@
     "Watch Center": 279,
     "eBay": 25
   },
-  "total_listings": 3613,
+  "total_listings": 3608,
   "sources_tracked": 41
 }
