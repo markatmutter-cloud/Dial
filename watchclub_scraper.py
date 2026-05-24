@@ -17,11 +17,26 @@ Output: watchclub_listings.csv
 """
 import csv
 import json
+import os
 import re
+import sys
 
 import requests
 
 BASE = "https://www.watchclub.com"
+PRIOR_CSV_PATH = "data/watchclub.csv"
+# If today's parsed result is below MIN_HEALTHY_RATIO of the prior good
+# run's count, treat it as a corrupted-catalog snapshot and skip writing.
+# Watch Club's catalog JS occasionally serves a truncated subset (~15
+# items vs the usual ~55) — seems to be a Cloudflare cache state on
+# specific runner IPs. The bimodal pattern shows up cleanly in
+# verification_history; root cause is upstream and not fixable client-
+# side. Skipping the write keeps merge.py from marking the missing
+# items as sold. Threshold tuned to catch the 15↔55 flap while
+# allowing real organic drops to pass through (a real 50% drop would
+# need two consecutive low counts to land).
+MIN_HEALTHY_RATIO = 0.5
+ABSOLUTE_FLOOR = 25
 DATA_URL = "https://watchclub.com/upload/js/watches2018_bis.js"
 IMG_BASE = "https://www.watchclub.com/upload/watches/wb"
 HEADERS = {
@@ -122,6 +137,17 @@ def parse_item(p):
     }
 
 
+def prior_count():
+    """Count rows in the previous-run CSV; 0 if unreadable / missing."""
+    if not os.path.exists(PRIOR_CSV_PATH):
+        return 0
+    try:
+        with open(PRIOR_CSV_PATH, encoding="utf-8") as f:
+            return sum(1 for _ in csv.DictReader(f))
+    except (OSError, csv.Error):
+        return 0
+
+
 def main():
     raw = fetch_catalog()
     print(f"Loaded {len(raw)} products from TaffyDB")
@@ -135,6 +161,16 @@ def main():
     skipped = len(parsed) - len(results)
     if skipped:
         print(f"Skipped {skipped} items (no price or marked sold/archived)")
+
+    prev = prior_count()
+    if prev and len(results) < ABSOLUTE_FLOOR and len(results) < prev * MIN_HEALTHY_RATIO:
+        print(
+            f"\n⚠ Aborting write: {len(results)} active items is below "
+            f"{int(MIN_HEALTHY_RATIO * 100)}% of prior {prev}. Catalog snapshot "
+            f"likely truncated upstream — keeping previous {PRIOR_CSV_PATH} "
+            f"so merge.py doesn't false-flag the missing items as sold."
+        )
+        sys.exit(0)
 
     out_file = "watchclub_listings.csv"
     with open(out_file, "w", newline="", encoding="utf-8") as f:
