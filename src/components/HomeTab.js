@@ -995,6 +995,13 @@ export function HomeTab(props) {
       <div style={{
         marginLeft: -shellPad,
         marginRight: -shellPad,
+        // B-10 (2026-05-24, Mark): pin the Home nav band (tabs + search) so
+        // it stays reachable at any scroll depth — the hero scrolls away
+        // above it, the strips scroll under it. top uses safe-area-inset so
+        // it sits below the iOS status bar on the PWA, not under the notch.
+        position: "sticky",
+        top: "env(safe-area-inset-top, 0px)",
+        zIndex: 30,
         // B-07 (2026-05-24, Mark): full olive (was --brand-olive-tint-12)
         // so Home's nav band matches the core tabs' olive chrome — smooths
         // the jarring neutral-Home → olive-core-tab tonal jump. Hero above

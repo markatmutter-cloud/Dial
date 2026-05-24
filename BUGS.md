@@ -140,6 +140,9 @@ delete — the history is useful.
   demand for Search-all, not eagerly. Same lazy-bodies machinery as the B-01
   editorial area.
 
+### B-10 — Make the Home nav band (tabs + search) sticky
+- **Reported:** 2026-05-24 (after B-07 landed) · **Severity:** 2 (navigation) · **Surface:** Home, mobile + desktop · **Status:** In progress — preview PR · **Detail:** Mark wants the Home tabs + search to stay pinned on scroll (like he wants for the core tabs in B-03), so they're reachable at any scroll depth. **Fix:** `position: sticky; top: env(safe-area-inset-top); zIndex: 30` on the HomeTab masthead band (`HomeTab.js` ~L995) — hero scrolls away above, strips scroll under. Now solid olive (B-07) so content doesn't show through. Sibling to B-03 (that's the core-tab sticky pass in MobileShell); this one's the Home-specific band in HomeTab.
+
 ---
 
 ## Resolved
