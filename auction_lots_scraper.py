@@ -1874,6 +1874,7 @@ def _phillips_extract_lots(html):
     def resolve(idx, stack=frozenset()):
         if idx in memo: return memo[idx]
         if idx in stack: return None  # cycle
+        # Keep the 0 <= idx < len(arr) bounds-check — the payload has -N sentinels (deferred/pending markers); without the guard they become out-of-bounds resolves that silently nuke values.
         if not isinstance(idx, int) or idx < 0 or idx >= len(arr):
             return idx
         v = arr[idx]

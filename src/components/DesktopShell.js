@@ -580,6 +580,7 @@ export function DesktopShell(props) {
         // neutral, the M just inherits the position via a
         // transparent minimal top bar). Receive surfaces +
         // Search-all still get olive.
+        // Olive chrome must OR-in the receive flags, not gate on tab!=="home" alone: onOlive = tab!=="home" || anyShareActive || searchAllActive. Share/search-all surfaces leave tab unchanged.
         const onOlive = tab !== "home" || anyShareActive || searchAllActive;
         // PR 2026-05-22 γ — Home masthead restructure. On Home (and
         // not over a receive/search-all destination), the persistent

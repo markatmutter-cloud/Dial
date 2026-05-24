@@ -120,6 +120,7 @@ export function useAuth() {
 // Returns an object keyed by listing_id (matches the pre-Supabase shape) so
 // the rest of the app doesn't need to change: `!!watchlist[item.id]` etc.
 
+// Don't migrate watchlist_items into collection_items — Approach A (default Favorites stays here) is deliberate; flipping touches every read path.
 export function useWatchlist(user) {
   const [items, setItems] = useState({});
 
@@ -909,6 +910,7 @@ export function useCollections(user) {
   const addManualItem = useCallback(async (collectionId, manual = {}) => {
     if (!user || !supabase) return { error: 'not signed in' };
     if (!collectionId) return { error: 'collection required' };
+    // manual_* columns require is_manual=true (CHECK constraint collection_items_listing_or_manual); a row with null listing_id AND is_manual=false is rejected.
     const payload = {
       collection_id:           collectionId,
       listing_id:              null,

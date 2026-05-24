@@ -859,23 +859,6 @@ The commercial thesis is:
 
 ---
 
-## Suggested Repo Location
-
-```text
-watchlist/
-└─ docs/
-   ├─ recommender_strategy.md
-   ├─ collector_personas.md
-   ├─ recommendation_modes.md
-   ├─ reference_graph_schema.md
-   ├─ editorial_indexing.md
-   ├─ taste_vectors.md
-   ├─ collector_psychology_principles.md
-   └─ relationship_taxonomy.md
-```
-
----
-
 ## Next Development Priorities
 
 1. Build the initial reference graph for 20–50 important watches.

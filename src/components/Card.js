@@ -263,6 +263,7 @@ export const Card = memo(function Card({
     ? fmtCountdown(item.auction_end)
     : null;
   const countdownIsPast = countdownLabel && countdownLabel.startsWith("ended");
+  // ⚠️ Never put a {/* */} JSX comment between `return (` and the root element — CRA parses it as a stray object literal and CI=true turns it into a failed build. Comments go inside the JSX tree or above the return.
   return (
     <div ref={cardRef} style={{ background: "var(--card-bg)", display: "flex", flexDirection: "column", position: "relative", minWidth: 0, overflow: "hidden" }}>
       <a href={item.url} target="_blank" rel="noopener noreferrer"
