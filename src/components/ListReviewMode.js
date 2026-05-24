@@ -8,8 +8,9 @@ const SWIPE_THRESHOLD_X = 90;
 const SWIPE_ROTATE_PER_PX = 0.06;
 const TAP_MAX_MOVE = 8;
 // "Take a break?" interstitial every N reviewed cards on long
-// queues (see [[feedback-screening-long-queues]]).
-const BREAK_INTERVAL = 25;
+// queues (see [[feedback-screening-long-queues]]). 25 → 50 (B-04,
+// 2026-05-24, Mark): 25 fired too soon; fires at 50/100/150…
+const BREAK_INTERVAL = 50;
 // At/above this viewport width the screening surface renders
 // INLINE in the tab body (Mark spec 2026-05-13 "Approach B" — top
 // wordmark / nav / filter row stay visible). Mobile gets the
