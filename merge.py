@@ -338,6 +338,14 @@ FX = {'GBP': 1.27, 'EUR': 1.08, 'CHF': 1.13, 'JPY': 0.0067, 'CNY': 0.14, 'HKD': 
 
 STATE_PATH = 'public/state.json'
 LISTINGS_PATH = 'public/listings.json'
+# Frontend live/sold split. listings.json stays the canonical full file
+# (backend tools — verify_sources, reference matcher, health — and any
+# stale-cached PWA bundle still read it). The frontend reads these two
+# instead: listings_live.json eager (critical render path), then
+# listings_sold.json lazy after first paint. live+sold partition the same
+# `enriched` array by the `sold` flag, so concatenating them == listings.json.
+LISTINGS_LIVE_PATH = 'public/listings_live.json'
+LISTINGS_SOLD_PATH = 'public/listings_sold.json'
 LISTINGS_DESC_PATH = 'public/listings_desc.json'
 AUCTIONS_PATH = 'public/auctions.json'
 AUCTIONS_STATE_PATH = 'public/auctions_state.json'
@@ -415,6 +423,15 @@ def save_state(state):
     os.makedirs('public', exist_ok=True)
     with open(STATE_PATH, 'w') as f:
         json.dump(state, f, separators=(',', ':'), sort_keys=True)
+
+
+def split_live_sold(enriched):
+    """Partition the enriched listings into (live, sold) by the `sold` flag.
+    The frontend fetches live eager and sold lazy; concatenating the two
+    reproduces listings.json exactly (order within each half preserved)."""
+    live = [it for it in enriched if not it.get('sold')]
+    sold = [it for it in enriched if it.get('sold')]
+    return live, sold
 
 
 def load_csv(path, source_name, currency='USD'):
@@ -850,8 +867,17 @@ def process_listings():
         it['desc'] = ''
     with open(LISTINGS_PATH, 'w') as f:
         json.dump(enriched, f, separators=(',', ':'))
+    # Frontend live/sold split (see path constants). Partition by `sold`;
+    # the two files concatenated reproduce listings.json exactly.
+    live, sold = split_live_sold(enriched)
+    with open(LISTINGS_LIVE_PATH, 'w') as f:
+        json.dump(live, f, separators=(',', ':'))
+    with open(LISTINGS_SOLD_PATH, 'w') as f:
+        json.dump(sold, f, separators=(',', ':'))
     save_state(state)
-    print(f"Written {LISTINGS_PATH} ({len(enriched)} items) and {LISTINGS_DESC_PATH} ({len(desc_map)} descriptions) and {STATE_PATH}")
+    print(f"Written {LISTINGS_PATH} ({len(enriched)} items: "
+          f"{len(live)} live + {len(sold)} sold) and "
+          f"{LISTINGS_DESC_PATH} ({len(desc_map)} descriptions) and {STATE_PATH}")
 
 
 def main():

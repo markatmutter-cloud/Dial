@@ -427,3 +427,28 @@ def test_last_meaningful_price_zero_when_history_is_all_zeros(at_date):
     )
     out = _enriched_by_id(enriched, _id_for("https://example.com/products/test-watch"))
     assert out["lastMeaningfulPrice"] == 0
+
+
+# ── Live/sold split ───────────────────────────────────────────────────────────
+
+
+def test_split_live_sold_partitions_by_sold_flag():
+    """The frontend fetches listings_live.json eager + listings_sold.json
+    lazy. split_live_sold must partition cleanly so the two halves
+    concatenated reproduce listings.json exactly (no item dropped or
+    duplicated, order within each half preserved)."""
+    enriched = [
+        {"id": "a", "sold": False},
+        {"id": "b", "sold": True},
+        {"id": "c", "sold": False},
+        {"id": "d", "sold": True},
+        {"id": "e"},  # missing flag → treated as live (falsy)
+    ]
+    live, sold = merge.split_live_sold(enriched)
+    assert [i["id"] for i in live] == ["a", "c", "e"]
+    assert [i["id"] for i in sold] == ["b", "d"]
+    # Disjoint + complete: union of ids equals the input set.
+    assert {i["id"] for i in live} | {i["id"] for i in sold} == {
+        i["id"] for i in enriched
+    }
+    assert len(live) + len(sold) == len(enriched)

@@ -203,8 +203,14 @@ days. Both catch silent breakage the count-vs-median check misses.
   "Collecting"). All deliberate and documented in CLAUDE.md; the DB umbrella
   names likely stay. Renaming the hooks/files/state is a mechanical but large
   sweep — parked, low urgency.
-- **`listings.json` split (live vs sold)** — at ~4 MB; plan before it crosses
-  5 MB. Splits initial fetch roughly in half.
+- **`listings.json` split — Phase 2** — Phase 1 shipped: `merge.py` emits
+  `listings_live.json` (eager) + `listings_sold.json` (lazy); frontend reads
+  the splits; the full `listings.json` is kept for backend tools + stale PWA
+  bundles, so it's currently duplicated (~+4 MB/commit). **Phase 2:** once
+  deployed PWA bundles have cycled, point the 5 backend consumers
+  (`verify_sources`, reference matcher, `reference_survey`, `purge_ebay_junk`,
+  `health`) at the splits and drop `listings.json` to remove the duplication.
+  Low-risk by then — nothing fetches the full file anymore.
 - **App.js extraction** — App.js is the largest file by far. Candidate extractions:
   an auction-lot-projection hook, a derived-taxonomies hook. Not urgent;
   cleanup-rhythm work.
