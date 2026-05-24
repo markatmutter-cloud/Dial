@@ -10,6 +10,8 @@ import csv
 import re
 import time
 
+from scraper_lib import fetch_json_with_retry
+
 BASE = "https://craftandtailored.com"
 HEADERS = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"}
 
@@ -52,10 +54,9 @@ def get_all_products():
 
     while True:
         print(f"Fetching page {page}...")
-        r = requests.get(f"{BASE}/products.json", headers=HEADERS,
-                         params={'limit': limit, 'page': page}, timeout=20)
-        r.raise_for_status()
-        products = r.json().get('products', [])
+        data = fetch_json_with_retry(f"{BASE}/products.json", headers=HEADERS,
+                                     params={'limit': limit, 'page': page})
+        products = data.get('products', [])
         if not products:
             break
         all_products.extend(products)
