@@ -168,27 +168,35 @@ export function MobileShell(props) {
             {authJSX}
           </div>
         </div>
-        {/* Row 2 — main tab pills. PR 2026-05-22 γ: also suppressed on
-            Home (along with Row 1 brand row). Tabs + auth move into
-            the HomeTab masthead band under the wordmark, framed by
-            an olive bleed. Top bar collapses to nothing on Home so
-            the hero is the first thing in the viewport. */}
-        {(tab !== "home" || anyShareActive || searchAllActive) && (
+        {/* Sticky stack: main tabs + sub-tabs + search + sort/filter.
+            Stays pinned to the viewport top so the whole nav + filter
+            chrome is reachable at any scroll depth.
+
+            B-03 (2026-05-24, Mark): the main-tab pills used to be a
+            NON-sticky "Row 2" above this block, so they scrolled away —
+            you couldn't switch tabs without scrolling back up. They now
+            live as the FIRST child of this sticky stack (same move a
+            prior PR made for the sub-tabs), so main tabs stay visible on
+            every tab. The wordmark brand row above stays non-sticky so
+            the pinned chrome stays compact.
+
+            Suppressed on Home (HomeTab renders its own sticky olive band,
+            B-07/B-10). Also hidden in cross-tab Search-all
+            (SearchResultsView has its own header + Exit) — note: this
+            means the main tabs are not shown during Search-all, where the
+            old non-sticky Row 2 used to show them. */}
+        {tab !== "home" && !searchAllActive && (
+        <div data-sticky-chrome style={{ position: "sticky", top: 0, zIndex: 20, background: "var(--bg)" }}>
+        {/* Main tab pills (Listings / Watchlists / Collecting) — B-03:
+            first child of the sticky stack. Always olive inside the
+            chrome (tab !== "home"), matching the core-tab chrome. */}
         <div style={{
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           gap: 8,
           padding: "0 16px",
-          // Olive chrome on every tab EXCEPT Home — receive surfaces
-          // + Search-all also get olive even if underlying tab is
-          // "home" (Mark report 2026-05-22).
-          background: (tab === "home" && !anyShareActive && !searchAllActive)
-            ? "var(--bg)" : "var(--brand-olive)",
-          // borderBottom removed on Home 2026-05-22 (Mark spec:
-          // "there is a feint line under the tabs which I want
-          // gone"). Editorial hero below carries enough visual
-          // weight that no divider is needed.
+          background: "var(--brand-olive)",
           borderBottom: "none",
         }}>
           <div style={{
@@ -201,12 +209,9 @@ export function MobileShell(props) {
           }}>
             {[["listings", "Listings"], ["watchlist", "Watchlists"], ["references", "Collecting"]].map(([key, label]) => {
               const active = tab === key;
-              const onOlive = tab !== "home" || anyShareActive || searchAllActive;
-              // PR 2026-05-22 chrome harmonization (Mark spec): active
-              // state on neutral chrome picks up --brand-olive-text
-              // (matches the Home wordmark color); on olive chrome
-              // active stays white. Same rule applied to tabPill in
-              // styles.js so the sub-tab strips below match.
+              // Always on olive here (the sticky chrome only renders when
+              // tab !== "home"), so active = white, inactive = faded white.
+              const onOlive = true;
               return (
                 <button key={key}
                   onClick={() => { setTab(key); if (key === "listings") setSearch(""); }}
@@ -233,28 +238,7 @@ export function MobileShell(props) {
               );
             })}
           </div>
-          {/* Tabs-row M circle retired 2026-05-22 — the brand row
-              above now ALWAYS renders the M, so this duplicate is
-              gone. */}
         </div>
-        )}
-        {/* Sticky stack: search row (with filter + dark-mode buttons) and
-            sort/clear pills row. Stays pinned to the viewport top so
-            filters are one tap away at any scroll depth.
-
-            Suppressed on Home (mobile) 2026-05-20: Mark wants the
-            desktop pattern — wordmark + hero search bar below, no
-            sticky top-bar search. HomeTab.js renders HomeSearchBar
-            in the body; the M-circle moved to the non-sticky title
-            row above so auth stays accessible.
-
-            Other tabs keep the sticky search at the top — filter
-            chrome needs to stay reachable at any scroll depth.
-
-            PR_W (2026-05-22): also hidden when in cross-tab Search-all
-            destination — SearchResultsView has its own header + Exit. */}
-        {tab !== "home" && !searchAllActive && (
-        <div data-sticky-chrome style={{ position: "sticky", top: 0, zIndex: 20, background: "var(--bg)" }}>
         {/* Sub-tabs strip — anchored at the TOP of the sticky stack
             2026-05-21 (PR_Y3, Mark feedback). Sub-tabs sit above the
             search row so they read as a continuation of main-nav
