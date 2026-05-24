@@ -59,6 +59,14 @@ import { tabPill, innerToggleButton, actionButton } from "./styles";
 // switched away from `raw.githubusercontent.com/<user>/<repo>/...`
 // to keep the GitHub repo identity off the production network tab.
 const LISTINGS_URL = "/listings.json";
+// Sidecar to listings.json — same per-id keying, value is the full
+// dealer description text. Emitted by merge.py. Lazy-loaded after
+// first paint so it stays off the critical render path; consumed
+// by handleWish to hydrate `desc` into the listing_snapshot at
+// heart time so the description survives the dealer pulling the
+// page. Cost: ~700KB gzipped, fetched async after listings.json
+// resolves.
+const LISTINGS_DESC_URL = "/listings_desc.json";
 const AUCTIONS_URL = "/auctions.json";
 const TRACKED_LOTS_URL = "/tracked_lots.json";
 // Comprehensive auction-lot scrape — populated by auction_lots_scraper.py
@@ -240,6 +248,13 @@ export default function Watchlist() {
   const compact = cols >= 4 || (isMobile && cols >= 3);
 
   const [items, setItems] = useState([]);
+  // id → description map. Lazy-fetched from /listings_desc.json after
+  // the main listings load resolves; consulted by handleWish to
+  // hydrate `desc` into the listing_snapshot at heart time. Empty
+  // until the sidecar lands (rare race: user hearts within ~500ms of
+  // page load → snapshot misses desc; acceptable trade for not
+  // blocking first paint on this ~700KB-gzipped payload).
+  const [listingsDesc, setListingsDesc] = useState({});
   const [auctions, setAuctions] = useState([]);
   // Scraped state for tracked auction lots, keyed by URL. The user's own
   // tracked URLs come from Supabase (useTrackedLots); we join those URLs
@@ -1249,6 +1264,14 @@ export default function Watchlist() {
         const extras = ((manual && manual.items) || []).filter(i => i && i.id && !seen.has(i.id));
         setItems([...(live || []), ...extras]);
         setLoading(false);
+        // Sidecar lazy-fetch — fires AFTER first paint resolves, so
+        // it never blocks card grid render. Silently no-ops on
+        // failure (older snapshots or pre-#437 deploys may not have
+        // the file). See handleWish for the consumer.
+        fetch(LISTINGS_DESC_URL, fetchOpts)
+          .then(r => r.ok ? r.json() : {})
+          .then(map => { if (map && typeof map === "object") setListingsDesc(map); })
+          .catch(() => {});
       })
       .catch(() => { setLoadError(true); setLoading(false); });
     // Auctions load in parallel. Failing silently is fine — the Auctions tab
@@ -2257,10 +2280,20 @@ export default function Watchlist() {
     // Un-favorite (wasWished=true) is always allowed — that's how
     // people clear room.
     if (!wasWished && userLimit.isAtHardCap) return;
-    toggleWatchlist(item);
+    // Hydrate `desc` from the lazy-loaded sidecar before snapshotting.
+    // listings.json carries desc:"" to keep first-paint payload slim
+    // (PR #437); listings_desc.json (lazy) restores it at heart time
+    // so the description survives the dealer pulling the page. No-ops
+    // for auction-lot items (their desc is already on the item),
+    // article items (kind='article'), and the race window before the
+    // sidecar lands. preserveExisting: if item.desc is already set
+    // (auction lots, articles), don't clobber.
+    const hydratedDesc = item.desc || listingsDesc[item.id] || "";
+    const hydrated = hydratedDesc === item.desc ? item : { ...item, desc: hydratedDesc };
+    toggleWatchlist(hydrated);
     // Telemetry on the on-direction only — same shape as toggleHide.
     if (!wasWished) recordEvent("save", item);
-  }, [user, watchlist, toggleWatchlist, requireSignIn, recordEvent, userLimit.isAtHardCap]);
+  }, [user, watchlist, toggleWatchlist, requireSignIn, recordEvent, userLimit.isAtHardCap, listingsDesc]);
 
   // Replay a pending heart/hide once the user is back from OAuth and
   // the items list has loaded (so we can resolve the saved id to the

@@ -338,6 +338,7 @@ FX = {'GBP': 1.27, 'EUR': 1.08, 'CHF': 1.13, 'JPY': 0.0067, 'CNY': 0.14, 'HKD': 
 
 STATE_PATH = 'public/state.json'
 LISTINGS_PATH = 'public/listings.json'
+LISTINGS_DESC_PATH = 'public/listings_desc.json'
 AUCTIONS_PATH = 'public/auctions.json'
 AUCTIONS_STATE_PATH = 'public/auctions_state.json'
 # PT-anchored date so firstSeen/lastSeen/priceHistory align with Mark's
@@ -498,16 +499,17 @@ def load_csv(path, source_name, currency='USD'):
                 'img': r.get('img', ''),
                 'sold': parse_bool(r.get('sold', False)),
                 'priceOnRequest': price_on_request,
-                # `desc` carried full dealer-description text (up to 1500
-                # chars) for the reference matcher's input. Mark perf
-                # report 2026-05-21: the field was bloating listings.json
-                # to 7.7MB on the wire, of which 3.3MB was description
-                # text the frontend never renders. Reference matching
-                # happens BEFORE this dict is built (see
-                # `parse_dealer_description` above), so dropping desc
-                # here doesn't affect matcher coverage. Restoring a 200-
-                # char preview later is a one-line change if needed.
-                'desc': '',
+                # `desc` carries the full dealer-description text (up
+                # to 1500 chars). Kept on the item DURING merge so
+                # process_listings can extract it into the separate
+                # public/listings_desc.json sidecar — then zeroed out
+                # on the in-memory item before listings.json is written
+                # (per PR #437 the field stays empty in the wire
+                # payload). The sidecar is lazy-loaded by the frontend
+                # so users who heart a dealer listing get its
+                # description preserved in the Supabase snapshot, even
+                # after the dealer pulls the page.
+                'desc': desc_full[:1500],
             }
             # Spread structured fields (reference_no, model_name, year,
             # material, case_size, dial, movement, etc.) only when the
@@ -836,10 +838,20 @@ def process_listings():
     print(f"  Price drops this run: {price_drops}")
 
     os.makedirs('public', exist_ok=True)
+    # Sidecar: id → description for the frontend's heart handler to
+    # hydrate before writing listing_snapshot. Built BEFORE we zero
+    # `desc` on the in-memory items so the main listings.json wire
+    # payload stays slim (PR #437). Frontend lazy-loads this file
+    # after first paint so it's never on the critical render path.
+    desc_map = {it['id']: it['desc'] for it in enriched if it.get('desc')}
+    with open(LISTINGS_DESC_PATH, 'w') as f:
+        json.dump(desc_map, f, separators=(',', ':'))
+    for it in enriched:
+        it['desc'] = ''
     with open(LISTINGS_PATH, 'w') as f:
         json.dump(enriched, f, separators=(',', ':'))
     save_state(state)
-    print(f"Written {LISTINGS_PATH} and {STATE_PATH}")
+    print(f"Written {LISTINGS_PATH} ({len(enriched)} items) and {LISTINGS_DESC_PATH} ({len(desc_map)} descriptions) and {STATE_PATH}")
 
 
 def main():
