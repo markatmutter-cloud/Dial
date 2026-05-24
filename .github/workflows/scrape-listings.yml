@@ -28,27 +28,32 @@ jobs:
       - name: Install dependencies
         run: pip install requests
 
+      # Every scraper step uses `continue-on-error: true` so one failing
+      # source (Cloudflare block, timeout, transient 5xx, etc.) doesn't
+      # kill the whole batch. merge.py handles missing CSVs gracefully.
       - name: Run Wind Vintage scraper
+        continue-on-error: true
         run: python windvintage_scraper.py
 
       - name: Run Menta Watches scraper
+        continue-on-error: true
         run: python menta_scraper.py
 
       - name: Run Collectors Corner NY scraper
+        continue-on-error: true
         run: python collectorscorner_scraper.py
 
       - name: Run Falco Watches scraper
+        continue-on-error: true
         run: python falco_scraper.py
 
       - name: Run Tropical Watch scraper (Browse AI)
+        continue-on-error: true
         env:
           BROWSE_AI_API_KEY: ${{ secrets.BROWSE_AI_API_KEY }}
         run: python tropicalwatch_scraper.py --latest
 
       - name: Run Grey & Patina scraper
-        # Each scraper step uses `continue-on-error: true` so one failing
-        # source (Cloudflare block, timeout, etc.) doesn't kill the others.
-        # merge.py handles missing CSVs gracefully.
         continue-on-error: true
         run: python greyandpatina_scraper.py
 
