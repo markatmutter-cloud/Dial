@@ -44,20 +44,36 @@ def strip_html(text):
     text = re.sub(r'&#[0-9]+;', '', text)
     return re.sub(r'\s+', ' ', text).strip()
 
+def fetch_page(page, retries=3):
+    # Shopify's public products.json endpoint occasionally returns 5xx
+    # on individual page requests under load. Retry with exponential
+    # backoff before giving up on the whole scrape.
+    last_exc = None
+    for attempt in range(retries + 1):
+        try:
+            r = requests.get(
+                f"{BASE}/products.json",
+                headers=HEADERS,
+                params={'limit': 250, 'page': page},
+                timeout=20
+            )
+            r.raise_for_status()
+            return r.json().get('products', [])
+        except (requests.HTTPError, requests.RequestException) as e:
+            last_exc = e
+            print(f"  page {page} attempt {attempt + 1} failed: {e}")
+            if attempt < retries:
+                time.sleep(2 ** attempt)
+    raise last_exc
+
+
 def get_all_products():
     all_products = []
     page = 1
 
     while True:
         print(f"Fetching page {page}...")
-        r = requests.get(
-            f"{BASE}/products.json",
-            headers=HEADERS,
-            params={'limit': 250, 'page': page},
-            timeout=20
-        )
-        r.raise_for_status()
-        products = r.json().get('products', [])
+        products = fetch_page(page)
 
         if not products:
             break
