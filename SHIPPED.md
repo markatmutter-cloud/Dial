@@ -199,3 +199,7 @@ within each section roughly last.
   "Closing today / this week / …" grouping replaces sale-grouping.
 - **2026-05-24 — Shared FilterRow primitive (PR #537).** Listings +
   Editorial filter rows extracted so they can't drift apart.
+- **2026-05-24 — listings.json live/sold split, Phase 1 (PR #542).**
+  merge.py emits listings_live.json (eager) + listings_sold.json (lazy);
+  first-paint payload 4.15→2.93 MB (~29%). Full file kept for backend +
+  stale PWA bundles; Phase 2 (drop the dup) tracked in ROADMAP.
