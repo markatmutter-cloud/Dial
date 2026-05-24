@@ -32,14 +32,15 @@ delete — the history is useful.
 ## Open
 
 ### B-01 — Editorial search bar squashed/clipped on scroll (mobile)
-- **Reported:** 2026-05-24, updated w/ 3-frame screenshot · **Severity:** 2 (usability) · **Surface:** Mobile PWA, Editorial subtab (Collecting → Editorial) · **Status:** Open
-- **Detail:** Platform now confirmed **mobile** (not desktop). On scroll it's
-  worse than "scrolls away": the search bar gets **squashed and clipped behind
+- **Reported:** 2026-05-24, updated w/ 3-frame screenshot · **Severity:** 2 (usability) · **Surface:** Mobile PWA, Editorial subtab (Collecting → Editorial) · **Status:** Open — **split out from B-03; focused follow-up**
+- **Split note (2026-05-24):** B-03 (pin the main tabs everywhere) shipped on
+  its own — see Resolved. This entry is now the *editorial-specific* part: the
+  two-competing-sticky-layers collision that squashes the search behind the
+  filter pills. Harder than B-03 because it needs EditorialView's own filter
+  strip to coordinate with the shell's sticky stack (not just pin one row).
+- **Detail:** On scroll the search bar gets **squashed and clipped behind
   the Date/Source/Brand/Hearted filter-pill row** (frame 3 — the "Search
-  articles…" input is half-hidden behind the pills), and the main tabs +
-  sub-tabs disappear, so you must scroll back to the top to search. **Same
-  failure as [[B-03]]** — tabs squashing — they should be fixed together as one
-  sticky-chrome pass.
+  articles…" input is half-hidden behind the pills).
 - **Hypothesis:** Two competing sticky layers in the mobile scroll container.
   The shell's `data-sticky-chrome` (sub-tabs + search row, `position:sticky;
   top:0; zIndex:20` — `MobileShell.js` L256–257) and **EditorialView's own**
@@ -53,24 +54,6 @@ delete — the history is useful.
   shared compact header so search stays reachable at any depth. Inline search
   was retired 2026-05-21 (uses shell global search now). Prior related fix:
   2026-05-21.
-
-### B-03 — Main tabs scroll off on mobile; want them pinned + compact
-- **Reported:** 2026-05-24 (screenshot) · **Severity:** 2 (navigation) · **Surface:** Mobile PWA, all non-Home tabs (shown on Saved → Lists) · **Status:** Open
-- **Detail:** Scrolling down hides the top-level main tabs (Listings /
-  Watchlists / Collecting). Only the sub-tab chrome stays pinned, so you can't
-  switch main tabs without scrolling back to the top. Mark wants the main tabs
-  **visible but compact** at the top at any scroll depth.
-- **Hypothesis:** `MobileShell.js` — Row 1 (brand/wordmark, L142–170) and Row 2
-  (main tab pills, L176 onward) render **outside** the `data-sticky-chrome`
-  wrapper (L256), so they scroll away; only sub-tabs + identity + search row
-  inside that wrapper stay pinned. This was partly intentional (L106 comment:
-  "title sits OUTSIDE the sticky wrapper" + repeated space-trimming because the
-  iOS URL bar already eats the top viewport). Fix = pull a **compact** main-tab
-  row into the sticky stack — likely drop/shrink the wordmark brand row on
-  scroll to claw back the vertical space, so pinning the tabs doesn't push
-  cards below the fold. Has a small design trade-off (nav access vs vertical
-  space); the "compact" instinct is the resolution. Decide the compact form
-  before building.
 
 ### B-06 — Post-screening flow is underspecified (design thread → plan-mode)
 - **Reported:** 2026-05-24 · **Type:** Design/product question, **not** a code defect · **Severity:** — (needs plan, not a quick fix) · **Surface:** Screening / RecapView · **Status:** Open — flagged for plan-mode · **Priority:** HIGH — Mark confirmed 2026-05-24 the screening workflow is "still incomplete" and he's "not happy with it"; this is the surface to fix next in screening, via plan-mode.
@@ -140,12 +123,23 @@ delete — the history is useful.
   demand for Search-all, not eagerly. Same lazy-bodies machinery as the B-01
   editorial area.
 
-### B-10 — Make the Home nav band (tabs + search) sticky
-- **Reported:** 2026-05-24 (after B-07 landed) · **Severity:** 2 (navigation) · **Surface:** Home, mobile + desktop · **Status:** In progress — preview PR · **Detail:** Mark wants the Home tabs + search to stay pinned on scroll (like he wants for the core tabs in B-03), so they're reachable at any scroll depth. **Fix:** `position: sticky; top: env(safe-area-inset-top); zIndex: 30` on the HomeTab masthead band (`HomeTab.js` ~L995) — hero scrolls away above, strips scroll under. Now solid olive (B-07) so content doesn't show through. Sibling to B-03 (that's the core-tab sticky pass in MobileShell); this one's the Home-specific band in HomeTab.
-
 ---
 
 ## Resolved
+
+### B-03 — Main tabs pinned on scroll (all tabs) · Fixed PR (this branch)
+- Main tab pills (Listings/Watchlists/Collecting) used to be a non-sticky
+  "Row 2" that scrolled away. Moved them into the `data-sticky-chrome` stack
+  in `MobileShell.js` as its first child (the same lift a prior PR did for the
+  sub-tabs), so they stay visible at any scroll depth on every tab. Wordmark
+  brand row stays non-sticky to keep the pinned chrome compact. Note: main tabs
+  no longer show during cross-tab Search-all (SearchResultsView has its own
+  Exit). B-01 (editorial search squash) split out as a separate follow-up.
+
+### B-10 — Home nav band (tabs + search) sticky · Fixed #549
+- Pinned the HomeTab masthead band with `position: sticky;
+  top: env(safe-area-inset-top); zIndex: 30` — Home tabs + search stay
+  reachable on scroll; hero scrolls away above, strips scroll under.
 
 ### B-04 — "Take a break" interstitial fires too early (25 → 50) · Fixed #544
 - Screening break prompt fired after 25 cards; Mark wanted 50. Changed
