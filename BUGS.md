@@ -90,16 +90,6 @@ delete — the history is useful.
   space); the "compact" instinct is the resolution. Decide the compact form
   before building.
 
-### B-04 — "Take a break" interstitial fires too early (25 → 50)
-- **Reported:** 2026-05-24 · **Severity:** 3 (tuning) · **Surface:** Screening / ListReviewMode break interstitial · **Status:** Open
-- **Detail:** While screening, the "Take a break?" prompt appears after 25
-  cards. Mark wants it after **50**.
-- **Hypothesis:** One-line change — `BREAK_INTERVAL = 25` →  `50` at
-  `ListReviewMode.js:12`. The break logic (`Math.floor(idx / BREAK_INTERVAL)`,
-  L149) already generalises, so it'll then fire at 50, 100, 150… Relates to
-  [[feedback-screening-long-queues]] (natural-break cadence for long auction
-  catalogs).
-
 ### B-05 — Saved auction catalogs need house + date, not just title
 - **Reported:** 2026-05-24 (screenshot) · **Severity:** 2 (clarity) · **Surface:** Lists / Watchlist — auction-catalog rows (`type='auction'` collections) · **Status:** Open
 - **Detail:** A saved auction in Lists/Watchlist shows only the catalog title +
@@ -140,26 +130,43 @@ delete — the history is useful.
   **Recommend graduating this to a plan-mode session**, not patching RecapView
   piecemeal.
 
-### B-07 — Test: olive bleed bar on Home (⚠ reverses a recent decision)
-- **Reported:** 2026-05-24 · **Type:** UI experiment · **Severity:** 3 (polish) · **Surface:** Home masthead, mobile · **Status:** Open — needs Mark's call given the conflict below
-- **Detail:** Mark wants to test making the Home "bleed bar" (the band holding
-  the main tabs + search under the wordmark) the same dark olive as the other
-  tabs' top/bleed bars.
-- **⚠ Conflict with a recent explicit decision:** On **2026-05-22** Mark said
-  *"undo the green on the landing page. remove green altogether"* (PR #450's
-  olive Home was pulled back). The current design is deliberate — see
-  `HomeTab.js:47–51`: "Home is the editorial moment; the colored chrome zone
-  lives only on Listings/Watchlists/Collecting where it's an identity cue, not
-  on Home." This test partly reverses that. Worth confirming the intent
-  changed before building.
-- **Hypothesis:** This is narrower than the reverted change — it's just the
-  tabs/search band, not the `EditorialHero` (which stays neutral by design).
-  The band bg is set in `MobileShell.js` Row 2 (`var(--bg)` on Home, olive
-  elsewhere — ~L186–187) + the `HomeSearchBar` band in `HomeTab.js`. A test =
-  swap those to `var(--brand-olive)` for Home. Cheap to try and revert.
+### B-07 — Smooth the jarring Home → core-tabs tonal jump
+- **Reported:** 2026-05-24 (clarified) · **Type:** UI tweak · **Severity:** 3 (polish) · **Surface:** Home masthead, mobile · **Status:** Open — unblocked, ready to build
+- **Detail:** The real problem (Mark's clarification): navigating from the
+  neutral Home to the olive core tabs (Listings/Watchlists/Collecting) is a
+  **hard tonal cut — it changes the whole design tone and feels jarring.** The
+  proposed fix: make the Home "bleed bar" (the band holding the main tabs +
+  search under the wordmark) the same dark olive as the core tabs, so Home
+  starts carrying a little olive and the transition isn't a hard jump. The
+  `EditorialHero` (wordmark/moon) **stays neutral** by design.
+- **Note on prior decision:** the 2026-05-22 *"remove green altogether"* call
+  was about the **top/hero only**, not the whole Home (Mark clarified
+  2026-05-24) — so this is consistent, not a reversal.
+- **Hypothesis:** Band bg is set in `MobileShell.js` Row 2 (`var(--bg)` on
+  Home, olive elsewhere — ~L186–187) + the `HomeSearchBar` band in
+  `HomeTab.js`. Swap those to `var(--brand-olive)` for Home. Visual change →
+  push ready-to-merge for Mark to eyeball on-device. Cheap to revert.
+
+### B-08 — Unify the Watchlists tab into one sectioned screen (design thread → plan-mode)
+- **Reported:** 2026-05-24 · **Type:** Design/product thread, **not** a defect · **Severity:** — (needs plan) · **Surface:** Watchlists tab (UI "Watchlists"/"Saved") · **Status:** Open — flagged for plan-mode
+- **Detail:** The Watchlists tab currently has **two sub-tabs** (Lists +
+  Searches). Mark's idea: **integrate them into one screen** with **sections**
+  rather than a plain list — **cards on mobile**, and **make more of the width
+  on desktop**. This unified screen could also become the home for **Watchbox**
+  (owned-watches view) so it lives alongside lists/searches instead of separate.
+- **Why this is a plan item:** it's a re-architecture of a whole tab's IA
+  (merging sub-tabs, a new sectioned layout, responsive card/grid treatment,
+  and absorbing Watchbox) — design + layout decisions up front, not a quick
+  edit. Internals reminder (CLAUDE.md): UI "Watchlists"/"Saved" ↔ internal
+  `watchlist`/`WatchlistTab.js`; the broader `collections` umbrella (Lists,
+  Wishlist, Owned/Watchbox, Sold) is the relevant data model. Pairs with B-06
+  for a screening/collecting plan-mode session.
 
 ---
 
 ## Resolved
 
-_(none yet)_
+### B-04 — "Take a break" interstitial fires too early (25 → 50) · Fixed PR (this branch)
+- Screening break prompt fired after 25 cards; Mark wanted 50. Changed
+  `BREAK_INTERVAL` 25 → 50 in `ListReviewMode.js`; the `Math.floor(idx /
+  BREAK_INTERVAL)` cadence now fires at 50/100/150…
