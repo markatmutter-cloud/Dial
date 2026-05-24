@@ -8,9 +8,11 @@ Get up to speed for this session:
    **SESSION_HANDOFF_*.md** (the in-flight snapshot from last session).
    Skim **ROADMAP.md** only if we're scoping new direction. Don't read the
    whole doc set.
-2. Recall relevant memories.
-3. Tell me back, briefly:
+2. Read **BUGS.md** and note the **Open** entries.
+3. Recall relevant memories.
+4. Tell me back, briefly:
    - where the last session left off (from the handoff),
+   - any open bugs from BUGS.md (by ID + one-liner),
    - the one work item you understand we're starting,
    - the branch you'll create before editing.
 

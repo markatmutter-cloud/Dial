@@ -12,6 +12,7 @@ shipped (SHIPPED).
 | **README.md** | What it is + architecture + data model + stack + folder layout | Onboarding; architecture questions |
 | **ROADMAP.md** | Direction only (north star, jobs-to-be-done, epics, explicitly-NOT) | Scoping new work |
 | **SHIPPED.md** | The changelog (two-line entries by epic) | "When/what shipped?" |
+| **BUGS.md** | Usability/defect backlog (enriched, ID'd) | Every session start; on any `Bug:` |
 | **DESIGN_SYSTEM.md** | Color + style tokens, components, reach-for rules | Any UI work |
 | **BRAND.md** | Voice | Before copy / visual choices |
 | **docs/REFERENCE_INTELLIGENCE.md** | Epic 0/5 reference-intelligence strategy + index stats | Reference index / corpus work |
@@ -55,8 +56,12 @@ the branch you'll create — branch before editing, never edit `main`.
   has them; a notes-doc-for-later doesn't work. When he thinks out loud —
   even in fragments — capture it immediately into the right home.
 - **Message prefixes.** `FYI` / `Note` = ack and keep going on the current
-  item (queue, don't repivot). `Save for plan` = a bigger thread for
-  plan-mode later. `Remember:` = persist to memory. No prefix = execute now.
+  item (queue, don't repivot). `QQ` = quick answer up front, then resume.
+  `Plan:` / `Save for plan` = a bigger thread for plan-mode later. `Bug:` =
+  triage + log to **BUGS.md** (break-now → fix immediately, else enriched
+  entry + ID, work continues; echo the one-liner back). `Remember:` = persist
+  to memory. No prefix = execute now. **A `Bug:` is never scope-drift — never
+  deflect it with "live with it"; that's only for stacked feature requests.**
 - **Burst cadence.** He stacks feedback while testing — observations, not
   redirect-now interrupts. Ack briefly, stay on the agreed list, queue for
   the next pass. Don't pivot per message.
