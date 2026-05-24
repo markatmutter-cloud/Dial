@@ -2413,6 +2413,19 @@ function ListsView({
                : isHiddenRowItem ? eyeOffIcon
                : isShared      ? usersIcon
                : folderIcon;
+    // B-05 (2026-05-24): auction-catalog rows show house + sale date so
+    // near-identically-named catalogs ("Important Watches" × N) are
+    // distinguishable. Saved lots carry house + auction_date_label in their
+    // listing_snapshot (supabase.js `...snap`); read the first item that has
+    // them. Degrades to count-only for old snapshots / manual items.
+    const auctionMeta = c.type === "auction"
+      ? (() => {
+          const its = itemsByColl[c.id] || [];
+          const m = its.find(it => it.house || it.auction_date_label) || {};
+          const parts = [m.house, m.auction_date_label].filter(Boolean);
+          return parts.length ? ` · ${parts.join(" · ")}` : "";
+        })()
+      : "";
     const subtitle = isSavedRowItem
       ? `${count} hearted watch${count === 1 ? "" : "es"}`
       : isSavedArticlesRowItem
@@ -2423,7 +2436,7 @@ function ListsView({
             ? `${count} listing${count === 1 ? "" : "s"} shared with you`
             : isHiddenRowItem
               ? `${count} listing${count === 1 ? "" : "s"} hidden from feed`
-              : `${count} watch${count === 1 ? "" : "es"}${isShared ? " · shared" : ""}`;
+              : `${count} watch${count === 1 ? "" : "es"}${auctionMeta}${isShared ? " · shared" : ""}`;
     const isOwner = !!(myUserId && c?.userId && myUserId === c.userId);
     const isSyntheticOrInbox = isInbox || isHiddenRowItem || isSavedRowItem || isMyReactionsRowItem || isSavedArticlesRowItem;
     const actions = [];

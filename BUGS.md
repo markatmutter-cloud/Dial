@@ -90,25 +90,6 @@ delete — the history is useful.
   space); the "compact" instinct is the resolution. Decide the compact form
   before building.
 
-### B-05 — Saved auction catalogs need house + date, not just title
-- **Reported:** 2026-05-24 (screenshot) · **Severity:** 2 (clarity) · **Surface:** Lists / Watchlist — auction-catalog rows (`type='auction'` collections) · **Status:** Open
-- **Detail:** A saved auction in Lists/Watchlist shows only the catalog title +
-  watch count (e.g. "Important Watches: Featuri…" 272 · "Important Watches"
-  138). It should also show the **auction date** and **house name**. Motivating
-  case from the screenshot: two catalogs both named "Important Watches" are
-  indistinguishable — house + date disambiguates them.
-- **Hypothesis:** Rows render in `CollectionsTab.js` `renderListRow`; the
-  auction-catalog subtitle is just `${count} watch(es)` (L2426). The
-  `type='auction'` collection currently stores **only** `name` +
-  `sourceAuctionUrl` — **no house/date fields** (`getOrCreateAuctionList` /
-  `get_or_create_auction_list` RPC, `supabase.js` L1613–1644). Two fix shapes:
-  (a) **derive** house + date from the first lot in `itemsByColl[c.id]` (lots
-  carry `auctionHouse` + a sale/end date) — frontend-only, no migration,
-  lower-risk; or (b) **store** `house` + `sale_date` on the collection at
-  creation (extend the RPC + a column) — cleaner but needs a migration shipped
-  first (CLAUDE.md Supabase rule). Lean (a) unless the lots don't reliably
-  carry both. Then append "· {House} · {date}" to the auction-row subtitle.
-
 ### B-06 — Post-screening flow is underspecified (design thread → plan-mode)
 - **Reported:** 2026-05-24 · **Type:** Design/product question, **not** a code defect · **Severity:** — (needs plan, not a quick fix) · **Surface:** Screening / RecapView · **Status:** Open — flagged for plan-mode · **Priority:** HIGH — Mark confirmed 2026-05-24 the screening workflow is "still incomplete" and he's "not happy with it"; this is the surface to fix next in screening, via plan-mode.
 - **Detail:** Open questions Mark raised at the end of a screening session:
@@ -166,7 +147,14 @@ delete — the history is useful.
 
 ## Resolved
 
-### B-04 — "Take a break" interstitial fires too early (25 → 50) · Fixed PR (this branch)
+### B-04 — "Take a break" interstitial fires too early (25 → 50) · Fixed #544
 - Screening break prompt fired after 25 cards; Mark wanted 50. Changed
   `BREAK_INTERVAL` 25 → 50 in `ListReviewMode.js`; the `Math.floor(idx /
   BREAK_INTERVAL)` cadence now fires at 50/100/150…
+
+### B-05 — Saved auction catalogs need house + date · Fixed PR (this branch)
+- Auction-catalog rows in Lists showed only title + count, so two
+  similarly-named catalogs were indistinguishable. Now append "· {House} ·
+  {date}" to the row subtitle, read from the saved lots' `house` +
+  `auction_date_label` (carried in the listing_snapshot) — frontend-only, no
+  migration. Degrades to count-only for old snapshots / manual items.
