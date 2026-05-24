@@ -108,21 +108,6 @@ delete — the history is useful.
   Wishlist, Owned/Watchbox, Sold) is the relevant data model. Pairs with B-06
   for a screening/collecting plan-mode session.
 
-### B-09 — Search-all returns "no articles" for reference numbers (e.g. 5513)
-- **Reported:** 2026-05-24 · **Severity:** 2 (usability) · **Surface:** Cross-tab Search-all (search strip) · **Status:** Open
-- **Detail:** Searching **5513** in Search-all reports no articles, even though
-  many articles discuss the 5513 (Submariner) — the reference appears in
-  article **body text**, not titles.
-- **Hypothesis:** `SearchResultsView.js` fetches the editorial corpus **meta
-  only, no bodies** (L13–14 comment). `matchesArticleQuery` (L49–51) matches
-  title/excerpt/author always but body **only if `articleBodies[url]` is
-  present** — and bodies aren't loaded for Search-all. Reference numbers live in
-  bodies, so they don't match → "no articles." Fix = trigger the lazy bodies
-  fetch when `searchAllActive` (mirror EditorialView's first-keystroke body
-  load) so body matches surface. **Perf note:** bodies are ~14 MB — load on
-  demand for Search-all, not eagerly. Same lazy-bodies machinery as the B-01
-  editorial area.
-
 ### B-11 — See-through strip below the sticky chrome (the date-divider gap)
 - **Reported:** 2026-05-24 (Home + Listings screenshots). **LONG-RECURRING since early builds** (Mark) — confirmed by the code (multiple documented failed fixes). · **Severity:** 2 (bumped — recurring + visible on core surfaces) · **Surface:** Desktop Listings/Watchlist grids + Home; the `DateDivider` sticky region · **Status:** Stage 1 fix on preview PR — **root cause found & removed (not masked).** The desktop scroll pane `[data-desktop-main]` had a 14px top padding; a sticky child sticks *below* container padding, so those 14px were the see-through strip (Watchlist/Collecting were already 0 → never showed it, confirming cause). Fix: zero the pane top padding on all tabs (`DesktopShell.js`). Mobile pins via its own measured offset. The broader shared-chrome unification (Stages 2–5 of the plan) still stands as the durable best-practice follow-up.
 - **What it actually is (Mark's key detail):** a **see-through strip that stays
@@ -151,6 +136,8 @@ delete — the history is useful.
 
 ## Resolved
 
+### B-09 — Search-all returned zero articles for any query (e.g. 5513) · Fixed PR (this branch)
+- **Real cause (my earlier "no bodies" hypothesis was wrong — bodies *were* being fetched):** the editorial meta files are **dict-keyed** (`{url: record}`) per the `editorial_corpus_io` split. `EditorialView` reads them via `Object.values`, but the **Search-all fetch in `App.js` did `if (!Array.isArray(arr)) return []`** — discarding *every* source. So Search-all had **zero articles for ANY query**; 5513 is just where Mark noticed. Fix: parse both array + dict shapes (`Object.values`), filtered to real records (`url` + `title`) like EditorialView. Body matching already worked once articles exist (`bodies[article.url]`, rec.url matches the bodies key).
 ### B-03 — Main tabs pinned on scroll (all tabs) · Fixed PR (this branch)
 - Main tab pills (Listings/Watchlists/Collecting) used to be a non-sticky
   "Row 2" that scrolled away. Moved them into the `data-sticky-chrome` stack

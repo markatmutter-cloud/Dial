@@ -870,11 +870,20 @@ export default function Watchlist() {
             try {
               const r = await fetch(url);
               if (!r.ok) return [];
-              const arr = await r.json();
-              if (!Array.isArray(arr)) return [];
+              const data = await r.json();
               // Strip the source key from the URL path for a label.
               const key = url.replace(/^\//, "").replace(/\.json$/, "");
-              return arr.map(a => ({ ...a, _source: { key, label: key } }));
+              // B-09 (2026-05-24): meta files are dict-keyed (url → record)
+              // per the editorial_corpus_io split — the SAME shape
+              // EditorialView reads via Object.values. Search-all previously
+              // assumed arrays and `Array.isArray` → [] discarded EVERY
+              // source, so Search-all returned zero articles for any query
+              // (e.g. "5513" matched nothing). Parse both shapes, filtering
+              // to real records (url + title) like EditorialView does.
+              const records = Array.isArray(data) ? data : Object.values(data || {});
+              return records
+                .filter(rec => rec && rec.url && rec.title)
+                .map(a => ({ ...a, _source: { key, label: key } }));
             } catch (e) {
               console.warn("editorial fetch failed", url, e);
               return [];
