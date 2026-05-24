@@ -59,6 +59,11 @@ How it's maintained:
 - **2026-05-24 — I retain thoughts only if caught in the moment.** Deferred
   capture (a notes doc "for later") loses them. The fix: think out loud and
   let Claude scribe live into the right place — not more self-discipline.
+- **2026-05-24 — A rule that keeps getting broken is in the wrong place, not
+  under-emphasised.** The hooks rule was in CLAUDE.md and still shipped broken
+  3×. Reliability tracks closeness to the mistake: doc (weakest) → comment at
+  the code → test/lint that fails the build (strongest). Recurring, costly
+  rules earn active enforcement, not louder docs. (Mark spotted this.)
 
 ## Growth edges (work on next)
 
