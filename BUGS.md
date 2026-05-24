@@ -125,6 +125,21 @@ delete — the history is useful.
   Wishlist, Owned/Watchbox, Sold) is the relevant data model. Pairs with B-06
   for a screening/collecting plan-mode session.
 
+### B-09 — Search-all returns "no articles" for reference numbers (e.g. 5513)
+- **Reported:** 2026-05-24 · **Severity:** 2 (usability) · **Surface:** Cross-tab Search-all (search strip) · **Status:** Open
+- **Detail:** Searching **5513** in Search-all reports no articles, even though
+  many articles discuss the 5513 (Submariner) — the reference appears in
+  article **body text**, not titles.
+- **Hypothesis:** `SearchResultsView.js` fetches the editorial corpus **meta
+  only, no bodies** (L13–14 comment). `matchesArticleQuery` (L49–51) matches
+  title/excerpt/author always but body **only if `articleBodies[url]` is
+  present** — and bodies aren't loaded for Search-all. Reference numbers live in
+  bodies, so they don't match → "no articles." Fix = trigger the lazy bodies
+  fetch when `searchAllActive` (mirror EditorialView's first-keystroke body
+  load) so body matches surface. **Perf note:** bodies are ~14 MB — load on
+  demand for Search-all, not eagerly. Same lazy-bodies machinery as the B-01
+  editorial area.
+
 ---
 
 ## Resolved
