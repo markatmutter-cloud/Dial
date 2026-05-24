@@ -1,0 +1,169 @@
+name: Scrape listings (matrix, manual)
+
+# Matrix-parallelized version of `scrape-listings.yml`. Each scraper
+# runs in its own runner concurrently, then a single aggregate job
+# downloads every CSV artifact, runs the editorial-corpus + merge +
+# verify + commit steps.
+#
+# Wall-clock target: ~10-15 min (vs 33-40 for the sequential cron).
+# GitHub free-tier concurrency on public repos is 20 jobs, so with
+# 40 scrapers expect two waves of ~5-8 min wall each.
+#
+# This workflow is intentionally `workflow_dispatch` only — the daily
+# cron stays on the sequential workflow for now. Test this manually
+# (e.g. `gh workflow run "Scrape listings (matrix, manual)"`); when
+# confident, swap by adding cron triggers here and removing them from
+# `scrape-listings.yml`.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    # continue-on-error so one bad scraper doesn't fail the matrix and
+    # block the aggregate job from running.
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { scraper: windvintage }
+          - { scraper: menta }
+          - { scraper: collectorscorner }
+          - { scraper: falco }
+          - { scraper: tropicalwatch, args: "--latest" }
+          - { scraper: greyandpatina }
+          - { scraper: oliverandclarke }
+          - { scraper: craftandtailored }
+          - { scraper: watchbrotherslondon }
+          - { scraper: mvvwatches }
+          - { scraper: db1983 }
+          - { scraper: hairspring }
+          - { scraper: somlo }
+          - { scraper: analogshift }
+          - { scraper: watchesofknightsbridge }
+          - { scraper: belmont }
+          - { scraper: bobswatches }
+          - { scraper: watchfid }
+          - { scraper: bulangandsons }
+          - { scraper: moonphase }
+          - { scraper: huntington }
+          - { scraper: thevintagewatch }
+          - { scraper: chronoholic }
+          - { scraper: vintagewatchfam }
+          - { scraper: shucktheoyster }
+          - { scraper: centralwatch }
+          - { scraper: europeanwatch }
+          - { scraper: vintagewatchcollective }
+          - { scraper: visionvintagewatches }
+          - { scraper: watchurbia }
+          - { scraper: maunderwatches }
+          - { scraper: watchcenter }
+          - { scraper: watchclub }
+          - { scraper: vintagewatchshop }
+          - { scraper: watchesoflancashire }
+          - { scraper: heuertime }
+          - { scraper: classicheuer }
+          - { scraper: lunaroyster }
+          - { scraper: ssongwatches }
+          - { scraper: swisshours }
+
+    env:
+      # tropicalwatch needs this; harmless to expose to others (they
+      # don't read the var). Avoids per-matrix-entry env overrides.
+      BROWSE_AI_API_KEY: ${{ secrets.BROWSE_AI_API_KEY }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run scraper ${{ matrix.scraper }}
+        run: python ${{ matrix.scraper }}_scraper.py ${{ matrix.args }}
+
+      - name: Upload CSV artifact
+        # if: always() so a soft-failed scraper that wrote a partial CSV
+        # still uploads what it has. The aggregate job tolerates
+        # missing artifacts (merge.py warns + skips).
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: csv-${{ matrix.scraper }}
+          path: ${{ matrix.scraper }}_listings.csv
+          if-no-files-found: ignore
+          retention-days: 1
+
+  aggregate:
+    needs: scrape
+    # `if: always()` so aggregate runs even when matrix jobs partially
+    # failed. needs without if would skip on any failure — losing the
+    # whole pipeline for one bad scraper.
+    if: always()
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Download all scraper CSV artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: csv-*
+          path: csv-artifacts
+          merge-multiple: true
+
+      - name: Move CSVs into data/
+        # Each scraper writes `<name>_listings.csv`; merge.py expects
+        # `data/<name>.csv`. Strip `_listings` and place.
+        run: |
+          mkdir -p data
+          shopt -s nullglob
+          for src in csv-artifacts/*_listings.csv; do
+            name=$(basename "$src" _listings.csv)
+            mv "$src" "data/${name}.csv"
+            echo "moved $(basename "$src") → data/${name}.csv"
+          done
+
+      - name: Run Hairspring Finds editorial scraper
+        # Editorial corpus (writes to public/hairspring_finds.json, not
+        # a CSV). Lives in the aggregate job because there's only one
+        # of it and it doesn't need parallelism.
+        continue-on-error: true
+        run: python hairspring_finds_scraper.py
+
+      - name: Merge into listings.json
+        run: python merge.py --listings-only
+
+      - name: Verify scrape health
+        run: python verify_sources.py || true
+
+      - name: Commit and push
+        # Same race-resilient push pattern as the sequential workflow.
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/ public/
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "Listings update (matrix) $(date -u '+%Y-%m-%d %H:%M UTC')"
+          for i in 1 2 3; do
+            if git push; then exit 0; fi
+            echo "Push rejected, rebasing and retrying ($i/3)..."
+            if ! git pull --rebase --strategy-option=theirs; then
+              echo "Rebase failed, aborting and retrying push"
+              git rebase --abort 2>/dev/null || true
+            fi
+          done
+          echo "Push still failing after 3 retries"
+          exit 1
