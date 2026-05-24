@@ -644,3 +644,144 @@ totals from this same date, the running 2026-05-22 count is
 **~60 PRs.** Branch state clean (all delete-branched on merge;
 stranded local branches from prior sessions reaped at session
 close).
+
+---
+
+## Addendum — late-night session (2026-05-22 PT)
+
+After the evening handoff merged (#495), a continuous late-night
+working session went through Mark's queued visual + IA backlog
+and shipped **33 more PRs (#496–#528)**. Heavy day of design
+iteration; the running 2026-05-22 total is now **~93 PRs.**
+Branch state clean.
+
+### Headline arcs (in rough order)
+
+1. **Image-perf + visual cleanup (#496–#499).** Phillips
+   Cloudinary transform (w=800 → 1.6 MB → 125 KB on lot tiles),
+   sticky date dividers with olive accent (replacing the grey
+   slab that bled grid-bg through), divider gap fix, editorial
+   cards Vogue/Hodinkee pattern (no border, 3-col max, serif
+   title, uppercase kicker).
+
+2. **Chrome typography pass (#500–#507).** Tabs / About / auth
+   pill all snapped to one type system (13/500-600/0.01em).
+   Active-tab color flipped from `var(--text1)` to
+   `var(--brand-olive-text)` on neutral chrome — ties the active
+   tab visually to the wordmark. Home got an olive kicker rule
+   under the wordmark, a masthead-nav restructure (tabs +
+   search moved under the hero in an olive-bleed band), then
+   compression + rebalance + utility-row + tighten cycles.
+
+3. **Search + Sale filter (#508–#511).** Home search learned
+   recent-search history (localStorage, MRU-6), live per-target
+   counts in the dropdown, and (briefly) live strip filtering.
+   Search-all gained Brand + Price filter chips. List drill-ins
+   got a hearted-only toggle. Then Mark walked back the live-
+   filter trigger ("a bit weird when you start typing that
+   you're suddenly in a different page") — keep counts, drop
+   auto-open.
+
+4. **Screener refresh + IA rework (#512–#516, #522).** The
+   ListReviewMode chrome swept olive (was brand-blue),
+   desktop got a horizontal layout redesign (image 520→400,
+   serif title 36→52, inline action buttons, retired the bottom
+   bar + tally emoji chips). Then Mark called for an IA
+   reframe: "screening is a fun thing, kind of like the
+   challenge" → move it to a destination under Collecting with
+   pool cards (auction catalogs, your lists, shared lists).
+   Dead feed-mode code from #283 / #507 cleaned up; Challenges
+   sub-tab moved from Watchlists → Collecting.
+
+5. **Watchbox top-right parity + Home chrome cycles (#517–#519,
+   #523).** Mark flagged the Watchbox pill appearing to "jump"
+   on tab change (white-on-Home → olive-on-other-tabs context
+   flip). Brought back a minimal top-bar on Home with the auth
+   pill at top-right (initial attempt painted an olive bar,
+   reverted to transparent so Home stays neutral). Top-bar
+   search retired in favour of always-expanded inline search
+   in the filter row. Wordmark sizing pass — Home hero 30 → 40
+   mobile, top-bar 14 → 18 mobile / 18 → 24 desktop.
+
+6. **Auction tab plan (#524–#528).** Mark planning session
+   landed five concerns. Shipped: closing-time bands replace
+   sale-grouping ("Closing today / this week / this month /
+   Later / Other auction lots") + always-expanded search +
+   divider see-through fix (three attempts: negative-margin,
+   box-shadow, absolute mask child — all failed in sticky
+   state) → pragmatic resolution: flip `gridStyle.background`
+   from `var(--border)` to `var(--bg)` so the 1px hairline
+   between cards becomes invisible (kills the leak everywhere).
+   Also shipped Sale filter chip on Live auctions (multi-select
+   dropdown of active catalogs). Filter row reordered:
+   Source/Brand/Sale → Search → Min-Max/Date/Price/Saved per
+   Mark spec; search bar `borderRadius: 10 → 20` to match
+   the pill type system.
+
+### Workflow + memory notes graduated this session
+
+Three durable conventions saved to memory under
+`~/.claude/projects/.../memory/`:
+
+- **`feedback_message_prefixes.md`** — Three-tier signal system:
+  `FYI` / `Note —` (queue for next PR), `Save for plan` (bigger
+  thread, plan-mode later), `Remember:` (persist across sessions).
+  Default (no prefix) = direct instruction, execute now.
+- **`feedback_multimessage_burst_cadence.md`** — Mark stacks
+  feedback in bursts while testing — observations for later, NOT
+  redirect-now interrupts. Ack briefly, stay on the agreed list,
+  queue for next PR. Don't repivot every message.
+- **`feedback_branch_discipline.md`** — Always `git checkout -b
+  <name>` BEFORE editing. Don't edit while on `main`. Recurring
+  failure mode this session — committed directly to local main
+  3+ times; cleanup adds noise. Auto-mode classifier correctly
+  blocks pushing main + resetting main, so the safety net works.
+
+### Self-feedback (mid-session, in response to Mark's prompt)
+
+Mark surfaced that I'd reached for "ridiculous session" as a
+sign-off summary in a way that read as sassy. Honest read: not
+deliberate, but the word choice probably reflected something on
+my side (volume + iteration loops). Saving for future sessions:
+**stay descriptive, not editorial.** Report what shipped + what's
+left; let Mark judge pace/scale himself.
+
+Also surfaced: today's iteration loops on the Home masthead (8
+PRs on one surface) were partly driven by me repivoting on each
+of Mark's burst-feedback messages. The right pattern is to ack +
+queue + stay on the current build, not pivot on each line.
+Documented in the burst-cadence memory entry above.
+
+### Next-session queue
+
+| Item | Notes |
+|---|---|
+| **Hide regression diagnosis** | Auction-plan PR C from the planning session. Mark report on Live auctions cards "don't have the hide feature anymore." Code path looks correct (admin onHide → ⋯ menu → Hide entry). Need a screenshot of the menu open to verify. |
+| **Mobile Sale filter chip** | Desktop got the Sale chip in #525. Mobile filter drawer doesn't yet. |
+| **Collecting > Screening v2 — "New since last visit" pool** | Deferred from #522 (3 of 4 pools shipped; this one needs re-introducing a slimmed feed-mode mount that was cleaned up in #516). |
+| **Screener-without-list rework (Auction IA Slice 3)** | Bigger structural change — replace auto-list-creation on calendar Review with ad-hoc lot set + opt-in persistence at the end. |
+| **Shared `<FilterRow>` primitive refactor** | Listings + Editorial alignment drift documented from earlier sessions; no visible change, hygiene. Low priority. |
+
+### Local repo state at session close
+
+- All 33 PRs squash-merged + delete-branched on origin.
+- Local `main` has a divergent revert commit from one of the
+  accidental-commit-on-main moments — harmless, will sort itself
+  on the next `git checkout -b … origin/main`.
+- No stranded branches; nothing to reap.
+
+### Bottom line
+
+Heavy visual-IA day. Most user-facing surfaces touched at least
+once: chrome typography, Home masthead, search behavior, screener
+visuals + IA, auction tab structure, divider treatment, modal
+elevation, filter row layout. The site looks materially different
+from the morning handoff state — particularly the auction tab
+(closing-time bands + Sale filter chip + search inline) and the
+screener (no longer reachable as an action; lives as a destination
+under Collecting alongside Editorial / Challenges / Size compare /
+Links).
+
+Mark closed the session asking to write up the handoff and stop.
+Next-session is wide open — the queue items above are continuation
+opportunities, none of them blocking.
