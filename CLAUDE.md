@@ -195,6 +195,13 @@ diagram, data model, and folder layout.
   `SUPPRESS_AT_SOLD_BRANDS` are intentionally frontend-only.
 - **No `eslint-disable` for unconfigured CRA rules** (e.g.
   `react-hooks/exhaustive-deps`) — it fails the build under `CI=true`.
+- **Cross-surface consistency = shared abstraction, not per-surface patches.**
+  When a tab/surface looks or behaves differently from its siblings (Editorial's
+  chrome vs other tabs; a sticky/divider gap that recurs), treat it as a *smell
+  pointing at a missing shared component or single source of truth* — fix the
+  root so every surface inherits correct behavior. Resist local band-aids; they
+  re-drift (the date-divider gap took 4 attempts because the chrome isn't one
+  component). Mark flags this often — divergence is the bug, not the styling.
 - Visual tokens, components, and reach-for rules: **see DESIGN_SYSTEM.md**.
 
 ## Internal-vs-UI naming (deliberate — don't "fix" casually)
