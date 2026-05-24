@@ -12,9 +12,9 @@ The system has three layers:
 
 ## 1. Color tokens
 
-Defined once in `src/App.js` (the `c = dark ? {...} : {...}` block,
-~line 892), spread into the root element's style. All descendants read
-them via `var(--name)`.
+Defined once in `src/App.js` (the `c = dark ? {...} : {...}` block),
+spread into the root element's style. All descendants read them via
+`var(--name)`.
 
 | Token | Value (light/dark same unless noted) | Use |
 |---|---|---|
@@ -37,6 +37,9 @@ them via `var(--name)`.
 | `--shadow-modal` | `0 2px 6px rgba(0,0,0,0.10), 0 16px 40px rgba(0,0,0,0.12)` | Modal / floating-surface shadow (ShareReceiver, ChallengeReceiver, ChallengeFlow) |
 | `--text-on-dark-1/2/3` | `rgba(255,255,255,0.78/.62/.40)` | Text hierarchy on inverted dark surfaces (HomeTab hero band). Mirrors `--text1/2/3` on light |
 | `--surface-on-dark` | `rgba(255,255,255,0.10)` | Subtle surface on inverted dark bg |
+| `--brand-olive` | `#3b4a36` / `#2a3527` (dark) | Brand chrome zone on non-Home tabs (the favicon hourglass colour) |
+| `--brand-olive-text` | `#3b4a36` (both modes) | Olive text on page bg (Home wordmark). Same in dark by design — lower contrast is intentional. **Don't use `--brand-olive` for text in dark mode** (`#2a3527` is unreadable on `#000`) |
+| `--brand-olive-tint-12` | `rgba(59,74,54,0.12)` / `rgba(168,179,160,0.18)` (dark) | Olive-tinted surfaces — icon-disc fills |
 
 **Adding a new color:** add to BOTH the dark and light blocks in
 App.js. Never inline a hex literal — even one-off shades drift over

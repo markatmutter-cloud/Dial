@@ -30,6 +30,11 @@ opinionated and supersedes earlier framings in `ROADMAP.md` Epic 0 and
 Epic 5 (which describe the data layer at a coarser grain; this doc is
 the connoisseur-knowledge layer underneath them).
 
+**Browse-unit note (2026-05-24):** the user-facing browse unit is the
+**model line** (GMT-Master, Speedmaster, Railmaster), not the reference
+number. `reference_id` stays the data join key throughout this doc;
+`model_line` is what users browse and what the per-model-line page keys on.
+
 -----
 
 ## The stack, end to end
@@ -413,6 +418,10 @@ One coherent PR; all zero-new-HTTP or one-time-fetch.
 
 Where each layer of the stack stands after the 2026-05-16 → -17
 session push. See `SESSION_HANDOFF_2026-05-17.md` for the full arc.
+
+*Point-in-time snapshot. For the current index size + match rate, read the
+regenerated `docs/watch_references_gaps.md` (updated each matcher run)
+rather than the cached figures below.*
 
 | Layer | Status |
 |---|---|
