@@ -31,7 +31,7 @@ Run: python3 verify_auction_lots.py
 import json
 import statistics
 from collections import Counter
-from datetime import date
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 PUBLIC = Path("public")
@@ -127,6 +127,7 @@ def main():
 
     report = {
         "date": today,
+        "updated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "alerts": alerts,
         "counts": dict(counts_today),
         "total_live_lots": sum(counts_today.values()),

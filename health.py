@@ -26,6 +26,7 @@ import statistics
 import subprocess
 import sys
 from collections import defaultdict
+from datetime import datetime, timezone
 from pathlib import Path
 
 PUBLIC = Path("public")
@@ -85,8 +86,28 @@ def workflow_health() -> int:
     return issues
 
 
+def _relative_age(iso: str | None) -> tuple[str, bool]:
+    """Return ('Nh ago' / 'STALE', stale_bool). stale if >12h old."""
+    if not iso:
+        return ("no timestamp", True)
+    try:
+        ts = datetime.fromisoformat(iso.replace("Z", "+00:00"))
+    except ValueError:
+        return (iso, False)
+    delta = datetime.now(timezone.utc) - ts
+    minutes = int(delta.total_seconds() / 60)
+    stale = minutes >= 12 * 60
+    if minutes < 60:
+        rel = f"{minutes}m ago"
+    elif minutes < 48 * 60:
+        rel = f"{minutes // 60}h ago"
+    else:
+        rel = f"{minutes // (60 * 24)}d ago"
+    return (rel, stale)
+
+
 def verification_alerts() -> int:
-    header("verify_sources.py alerts")
+    header("verify_sources.py alerts + freshness")
     issues = 0
     for label, path in (
         ("Dealer listings", VERIFICATION),
@@ -99,13 +120,18 @@ def verification_alerts() -> int:
         alerts = data.get("alerts", [])
         date = data.get("date", "?")
         total = data.get("total_listings") or data.get("total_live_lots") or 0
+        rel, stale = _relative_age(data.get("updated_at"))
+        freshness = f"  ⚠ STALE {rel}" if stale else f"  fresh ({rel})"
+        if stale:
+            issues += 1
         if alerts:
             issues += len(alerts)
-            print(f"  ✗ {label} ({date}, {total} live): {len(alerts)} alerts")
+            print(f"  ✗ {label} ({date}, {total} live):{freshness} · {len(alerts)} alerts")
             for a in alerts:
                 print(f"      [{a['level']}] {a['source']}: {a['note']}")
         else:
-            print(f"  ✓ {label} ({date}, {total} live): no alerts")
+            marker = "✗" if stale else "✓"
+            print(f"  {marker} {label} ({date}, {total} live):{freshness} · no alerts")
     return issues
 
 
