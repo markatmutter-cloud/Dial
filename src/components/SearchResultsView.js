@@ -589,12 +589,21 @@ function ArticleStrip({ heading, count, items, onViewAll, isMobile }) {
               textDecoration: "none", color: "inherit",
               background: "var(--card-bg)",
             }}>
-            {a.image && (
-              <div style={{ width: "100%", aspectRatio: "16 / 10", background: "var(--bg)" }}>
+            {/* B-12 (2026-05-24): square image + placeholder to match the
+                listing/auction/sold Cards in the other strips (was 16/10
+                landscape, which read as a different card type). Always
+                rendered so tile heights line up across strips. Mirrors
+                Card's 1:1 image + favicon placeholder. */}
+            <div style={{ position: "relative", paddingTop: "100%", background: "var(--surface)", overflow: "hidden" }}>
+              {a.image ? (
                 <img src={a.image} alt="" loading="lazy"
-                  style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-              </div>
-            )}
+                  style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+              ) : (
+                <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <img src="/favicon-192.png" alt="" aria-hidden="true" style={{ width: "44%", maxWidth: 88, opacity: 0.55 }} />
+                </div>
+              )}
+            </div>
             <div style={{ padding: "10px 12px 12px", display: "flex", flexDirection: "column", gap: 4 }}>
               <div style={{
                 fontSize: 10, fontWeight: 600, color: "var(--text3)",
@@ -603,9 +612,9 @@ function ArticleStrip({ heading, count, items, onViewAll, isMobile }) {
                 {(a._source && a._source.label) || a.source || ""}
               </div>
               <div style={{
-                fontSize: 13, fontWeight: 600, color: "var(--text1)",
+                fontSize: 12, fontWeight: 500, color: "var(--text1)",
                 lineHeight: 1.3,
-                display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical",
+                display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
                 overflow: "hidden",
               }}>{a.title}</div>
             </div>
