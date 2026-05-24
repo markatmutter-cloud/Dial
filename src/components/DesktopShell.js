@@ -3,6 +3,7 @@ import { SearchIcon, TabIcon } from "./icons";
 import { Chip } from "./Chip";
 import { AboutModal } from "./AboutModal";
 import { SignInPromptModal } from "./SignInPromptModal";
+import { FilterRow } from "./FilterRow";
 import { pillBase, tabPill } from "../styles";
 
 // Desktop shell — receives everything the desktop branch needs from
@@ -245,11 +246,10 @@ export function DesktopShell(props) {
     const expandedBrand  = activeFilterPop === "brand";
     const expandedModel  = activeFilterPop === "model";
     const expandedSale   = activeFilterPop === "sale";
+    const anyExpanded = expandedSource || expandedBrand || expandedModel || expandedSale;
     return (
     <>
-    <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 20px",
-                  borderBottom: expandedSource || expandedBrand || expandedModel || expandedSale ? "none" : "0.5px solid var(--border)",
-                  flexShrink: 0, flexWrap: "wrap", position: "relative" }}>
+    <FilterRow expanded={anyExpanded} paddingX={20} paddingY={6}>
       {/* Filter row reorder PR 2026-05-22 (Mark spec):
           LEFT — noun filters (Source / Brand / Sale / Model)
           MIDDLE — search anchor (the "more in the middle of the page" framing)
@@ -407,7 +407,7 @@ export function DesktopShell(props) {
           }}>× Clear all</button>
         )}
       </div>
-    </div>
+    </FilterRow>
     {expandedSource && (() => {
       // Iterate the cross-axis-filtered effective list (visibleSources)
       // — NOT the raw DEALER_SOURCES / AUCTION_SOURCES catalogs.
