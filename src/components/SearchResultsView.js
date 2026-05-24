@@ -111,7 +111,11 @@ function Strip({ heading, count, items, onViewAll, isMobile, watchlist, handleWi
         scrollSnapType: "x mandatory",
         WebkitOverflowScrolling: "touch",
         scrollbarWidth: "none", msOverflowStyle: "none",
-        background: "var(--border)",
+        // B-13 (2026-05-24): transparent (was var(--border)) so the 16/20px
+        // edge inset is page-colored, not a grey band "in front of" the row
+        // — most visible on the light-image auction cards, but applied to
+        // all strips so they stay consistent.
+        background: "transparent",
       }}>
         {visible.map(item => (
           <div key={item.id} style={isMobile ? {
@@ -574,7 +578,11 @@ function ArticleStrip({ heading, count, items, onViewAll, isMobile }) {
         scrollSnapType: "x mandatory",
         WebkitOverflowScrolling: "touch",
         scrollbarWidth: "none", msOverflowStyle: "none",
-        background: "var(--border)",
+        // B-13 (2026-05-24): transparent (was var(--border)) so the 16/20px
+        // edge inset is page-colored, not a grey band "in front of" the row
+        // — most visible on the light-image auction cards, but applied to
+        // all strips so they stay consistent.
+        background: "transparent",
       }}>
         {visible.map(a => (
           <a key={a.url} href={a.url} target="_blank" rel="noopener noreferrer"

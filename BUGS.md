@@ -136,6 +136,13 @@ delete — the history is useful.
 
 ## Resolved
 
+### B-13 — Grey band "in front of" the Search-all strips (esp. auctions) · Fix on preview PR
+- The strip scroll container used `background: var(--border)` + 16/20px
+  horizontal padding, so the edge inset rendered as a grey band before the
+  first card. Most visible on the light-image auction cards; subtler on
+  dark wrist/sold shots. Fixed by making the strip background transparent (the
+  inset is now page-colored), on all strips for consistency.
+
 ### B-12 — Search-all article cards looked different from the other strips · Fix on preview PR
 - The Articles strip used a separate tile (`ArticleStrip`) with a 16/10 landscape
   image + no placeholder, while Listings/Auctions/Sold use the shared `Card`
