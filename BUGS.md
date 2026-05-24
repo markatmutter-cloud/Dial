@@ -136,6 +136,15 @@ delete — the history is useful.
 
 ## Resolved
 
+### B-12 — Search-all article cards looked different from the other strips · Fix on preview PR
+- The Articles strip used a separate tile (`ArticleStrip`) with a 16/10 landscape
+  image + no placeholder, while Listings/Auctions/Sold use the shared `Card`
+  (square 1:1 image). Chose to **align the tile to Card's look** (not route
+  articles through Card — articles are a genuinely distinct, price-less,
+  external-link type; see CLAUDE.md consistency-principle nuance). Squared the
+  image (1:1 + favicon placeholder, always rendered) and matched the title to
+  Card (12px / 500 / 2-line). Strip-item widths already matched.
+
 ### B-09 — Search-all returned zero articles for any query (e.g. 5513) · Fixed PR (this branch)
 - **Real cause (my earlier "no bodies" hypothesis was wrong — bodies *were* being fetched):** the editorial meta files are **dict-keyed** (`{url: record}`) per the `editorial_corpus_io` split. `EditorialView` reads them via `Object.values`, but the **Search-all fetch in `App.js` did `if (!Array.isArray(arr)) return []`** — discarding *every* source. So Search-all had **zero articles for ANY query**; 5513 is just where Mark noticed. Fix: parse both array + dict shapes (`Object.values`), filtered to real records (`url` + `title`) like EditorialView. Body matching already worked once articles exist (`bodies[article.url]`, rec.url matches the bodies key).
 ### B-03 — Main tabs pinned on scroll (all tabs) · Fixed PR (this branch)
