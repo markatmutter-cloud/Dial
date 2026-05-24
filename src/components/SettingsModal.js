@@ -97,7 +97,7 @@ export function SettingsModal({
         <div style={sectionLabel}>Primary currency</div>
         <div style={{ fontSize: 12, color: "var(--text2)", marginBottom: 12, lineHeight: 1.5 }}>
           Listings will show in this currency first, with the dealer's native price below.
-          Synced across all your devices (you're welcome George Longfoot).
+          Synced across all your devices.
         </div>
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
           {CURRENCIES.map(c => {

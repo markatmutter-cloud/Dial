@@ -224,3 +224,7 @@ __marimo__/
 
 # Transient car-ride digest — generated on demand, not for the repo
 docs/reading_corpus_digest.md
+
+# Personal insights — Mark's private collection / taste notes (e.g. the
+# collector handoff). Never committed; lives only on the local machine.
+personal/
