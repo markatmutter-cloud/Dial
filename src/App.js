@@ -58,7 +58,14 @@ import { tabPill, innerToggleButton, actionButton } from "./styles";
 // (the-watch-list.app or a preview-deploy domain). 2026-05-10:
 // switched away from `raw.githubusercontent.com/<user>/<repo>/...`
 // to keep the GitHub repo identity off the production network tab.
-const LISTINGS_URL = "/listings.json";
+// Live/sold split (merge.py). We fetch listings_live.json eager — it's
+// the critical render path (Feed, Saved, all live-only views) — and
+// listings_sold.json lazily after first paint. The Sold/Archive views
+// only need the sold half, which can arrive a beat late. listings.json
+// (the full file) is still emitted for backend tooling + stale-cached
+// PWA bundles, but the current frontend never fetches it.
+const LISTINGS_LIVE_URL = "/listings_live.json";
+const LISTINGS_SOLD_URL = "/listings_sold.json";
 // Sidecar to listings.json — same per-id keying, value is the full
 // dealer description text. Emitted by merge.py. Lazy-loaded after
 // first paint so it stays off the critical render path; consumed
@@ -1257,7 +1264,7 @@ export default function Watchlist() {
     // for everyone. (2026-05-09 — Mark request to surface his
     // spreadsheet's URLs in the public sold archive.)
     Promise.all([
-      fetch(LISTINGS_URL, fetchOpts).then(r => { if (!r.ok) throw new Error(); return r.json(); }),
+      fetch(LISTINGS_LIVE_URL, fetchOpts).then(r => { if (!r.ok) throw new Error(); return r.json(); }),
       fetch(MANUAL_HISTORICAL_LISTINGS_URL, fetchOpts).then(r => r.ok ? r.json() : { items: [] }).catch(() => ({ items: [] })),
     ])
       .then(([live, manual]) => {
@@ -1265,6 +1272,25 @@ export default function Watchlist() {
         const extras = ((manual && manual.items) || []).filter(i => i && i.id && !seen.has(i.id));
         setItems([...(live || []), ...extras]);
         setLoading(false);
+        // Sold half — lazy after first paint (PR: live/sold split). The
+        // Feed and every live-only view render off the eager `live` set;
+        // the Sold/Archive sub-tabs and watchlist sold-detection (a
+        // hearted dealer item missing from the live set already resolves
+        // to "sold") tolerate the sold array arriving a beat late. Append,
+        // deduping against ids already present (live + manual extras) so a
+        // manual historical entry overlapping a scraped sold lot — rare by
+        // design — isn't doubled. Silent no-op on failure.
+        fetch(LISTINGS_SOLD_URL, fetchOpts)
+          .then(r => r.ok ? r.json() : [])
+          .then(sold => {
+            if (!Array.isArray(sold) || sold.length === 0) return;
+            setItems(prev => {
+              const have = new Set(prev.map(i => i.id));
+              const add = sold.filter(i => i && i.id && !have.has(i.id));
+              return add.length ? [...prev, ...add] : prev;
+            });
+          })
+          .catch(() => {});
         // Sidecar lazy-fetch — fires AFTER first paint resolves, so
         // it never blocks card grid render. Silently no-ops on
         // failure (older snapshots or pre-#437 deploys may not have

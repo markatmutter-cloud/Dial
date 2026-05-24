@@ -224,7 +224,9 @@ watchlist/
 │   ├─ <source>.csv                # one CSV per dealer / auction house
 │   └─ ebay_searches.json          # eBay search config (label, query, country, seller)
 ├─ public/
-│   ├─ listings.json               # what the Listings + Watchlist tabs read
+│   ├─ listings.json               # full feed — backend tools + stale PWA bundles
+│   ├─ listings_live.json          # live half — frontend fetches eager (critical path)
+│   ├─ listings_sold.json          # sold half — frontend fetches lazy after first paint
 │   ├─ auctions.json               # what the Auction Calendar sub-tab reads
 │   ├─ tracked_lots.json           # scraped state for tracked auction lots
 │   ├─ state.json                  # cross-run memory for listings
