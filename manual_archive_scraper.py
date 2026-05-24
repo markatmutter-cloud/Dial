@@ -201,6 +201,53 @@ def scrape_sale(sale):
             print(f"    {sold or '—':>9} {cur}  {title}")
         return out
 
+    if "sothebys.com/en/buy/auction/" in sale_url:
+        # Sotheby's archive: re-use the live enumerator. algoliaJson
+        # + lotCards (apolloCache) both stay populated on past sales;
+        # for SOLD lots `hit.price` is the realised hammer (the live
+        # enumerator already gates this on `lotState == "sold"`).
+        # Per-lot fetches grab og:image + estimate + LotV2 description
+        # the same way they do for active sales.
+        #
+        # Why this matters: Sotheby's calendar scraper only exposes
+        # upcoming sales, so the comprehensive cron never visits past
+        # Sotheby's sales — leaving 0 ended Sotheby's lots in
+        # auction_lots.json (vs 200-550 for the other houses). Manual
+        # archive entries fill the gap on demand: drop a past sale
+        # URL into data/manual_archive_sales.json and the lots land
+        # in manual_archive_lots.json + flow through to the Sold
+        # archive view.
+        tuples = als.enumerate_sothebys(sale_url, {
+            "url": sale_url,
+            "title": sale_title,
+            "dateEnd": sale_date,
+        })
+        print(f"  {len(tuples)} lot(s) from Sotheby's enumerator")
+        from datetime import date as _date
+        sale_is_past = False
+        try:
+            if sale_date:
+                sale_is_past = _date.fromisoformat(sale_date) < _date.today()
+        except (ValueError, TypeError):
+            pass
+        for url, data in tuples:
+            if als.is_excluded_title(data.get("title")):
+                continue
+            if sale_date and not data.get("auction_end"):
+                data["auction_end"] = sale_date
+            if sale_title and not data.get("auction_title"):
+                data["auction_title"] = sale_title
+            # Same status normalization as the Christie's branch. The
+            # registry date is the source of truth.
+            if sale_is_past:
+                data["status"] = "ended"
+            out[url] = data
+            sold = data.get("sold_price")
+            cur = data.get("currency", "")
+            title = (data.get("title") or "")[:60]
+            print(f"    {sold or '—':>9} {cur}  {title}")
+        return out
+
     print(f"[skip] no archive route for {sale_url}")
     return out
 
