@@ -23,13 +23,11 @@ Not commercial. Not trying to be a marketplace. Just an aggregator for myself �
 Three top-level tabs in the main nav, plus a Home landing reached via the wordmark, a Watchbox destination reached via the avatar dropdown, and an admin-only Site stats surface. Internal-vs-UI naming divergence is real and documented in CLAUDE.md (the URLs use the rebranded names; internal state still says the old ones).
 
 - **Home** *(URL `?tab=home`; reached via the wordmark)* — landing surface with horizontal-slider strips of recently-added listings + thematic groups, plus a "N new listings since {date} — Start screening" banner that opens a fullscreen screener over the new arrivals.
-- **Listings** *(URL `?tab=listings`)* — aggregates 38 curated dealer sources + targeted eBay searches + the four major auction houses' active lots (Antiquorum, Christie's, Sotheby's, Phillips) into one feed. Sub-tabs: Live listings (dealer items) / Live auctions (auction lots, ending-soonest) / All sold / Auction calendar. Each calendar row has three inline actions: **View catalog** (external link), **Add to list** (bulk-add every lot to a user-private auction catalog list), **Review** (Tinder-swipe through the catalog).
-- **Watchlists** *(URL `?tab=saved`; internal key `watchlist`)* — three sub-tabs covering saved-from-feed surfaces and lists:
-  - **Lists** *(default)* — user-created lists by reference, theme, research thread, plus a "Shared with me" inbox for single-listing shares and **Auction catalogs** populated by the Listings calendar's Review / Add to list actions. Email-invite collaborators with viewer / editor roles.
-  - **Searches** — saved searches editor. Each row stores label + query + optional `$ Min` / `$ Max` band; tapping a row applies all three to the Listings tab and lands you there. Live count + "X new this week" badge per row.
-  - **Challenges** — build-a-collection. Pick N watches under a budget from your own Lists / Favorites (or by pasting a URL), share the spec so a friend can build their own answer; or share the completed picks. Sender attribution on shared challenges ("James's 3 watches for $50k"). 20% over-budget soft-warn. Click-pick on every device.
-  - (Plus, when drilled into the "Saved" pseudo-list inside Lists: a Listings/Auctions/Sold toggle showing currently-active hearted dealer items / hearted auction lots + all eBay items / hearted items that went sold.)
-- **Collecting** *(URL `?tab=learn`; internal key `references`)* — collector resource tools (print-to-scale watch size comparison + curated link aggregator; encyclopedia is roadmap'd). Renamed from "Learn" 2026-05-14.
+- **Listings** *(URL `?tab=listings`)* — aggregates ~40 curated dealer sources + targeted eBay searches + the major auction houses' active lots (Antiquorum, Christie's, Sotheby's, Phillips, Monaco Legend) into one feed. Sub-tabs: Live listings (dealer items) / Live auctions (auction lots, ending-soonest) / Archive (sold) / Auction calendar. Each calendar row has three inline actions: **View catalog** (external link), **Add to list** (bulk-add every lot to a user-private auction-catalog list), **Review** (swipe-screen through the catalog).
+- **Watchlists** *(URL `?tab=saved`; internal key `watchlist`)* — two sub-tabs:
+  - **Lists** *(default)* — user-created lists by model, theme, or research thread, plus a "Shared with me" inbox for single-listing shares and **Auction catalogs** populated by the Listings calendar's Add-to-list / Review actions. Email-invite collaborators with viewer / editor roles. A "Saved" pseudo-list at the top holds your hearted items, with an inline Listings / Auctions / Sold toggle (active hearted dealer items / hearted auction lots + all eBay items / hearted items that went sold).
+  - **Searches** — saved-searches editor. Each row stores label + query + optional `$ Min` / `$ Max` band; tapping a row applies all three to the Listings tab and lands you there. Live count + "X new this week" badge per row.
+- **Collecting** *(URL `?tab=learn`; internal key `references`)* — the collector-resource + intelligence surface. Five sub-tabs: **Editorial** (browse the editorial corpus across ~12 sources; heart/save articles), **Screening** (swipe-review destination over pools — auction catalogs, your lists, shared lists), **Challenges** (build-a-collection: pick N watches under a budget, share the spec or the picks; sender attribution on shared challenges), **Size comparison** (print-to-scale case-size tool), **Links** (curated outbound-link aggregator). The per-model-line research page + encyclopedia are roadmap'd. (Renamed from "Learn" 2026-05-14; Challenges moved here from Watchlists.)
 - **Watchbox** *(URL `?tab=watchbox`; reached via the avatar dropdown — no main-nav pill)* — Owned + Sold + Wishlist combined surface with a three-way toggle (Collection / Archive / Plan). Watches you own today (Collection), watches you've sold (Archive), and a planning view (Plan) for what's next.
 - **Site stats** *(admin only — invisible to other users)* — dense admin dashboard at `?tab=admin` covering three sections: per-source quality (live count, new-per-week, hearts/hides, avg price, top brand, $ added/sold over 30d, 30-day engagement, scraper health, "earning its keep" chip), auction-house quality (live + upcoming sales, lots, sold rate, $ sold over 90d, median Hammer/Low ratio), and per-user limits (hearts / hides / lists / saved-searches counts, 30-day clicks/views/shares/list-adds, top saved brand, current cap, with an inline form to set a user's cap by email). Engagement signals come from a `listing_events` table seeded by anonymous + signed-in views/clicks/saves/hides/list-adds/shares; daily rollup at 09:15 UTC. Reachable via the user dropdown for users whose email is in `REACT_APP_ADMIN_EMAILS`.
 
@@ -51,7 +49,7 @@ Plus:
 - Implicit weekday-based date dividers (Today / Yesterday / weekday / Last week / Older) when sorted by date.
 - Dark/light mode following system preference, with manual override.
 - GBP→USD conversion for UK dealers, shown alongside the native price.
-- **Screening Mode** — Tinder-style swipe interface for working through any list one card at a time. Three entry points: (1) shared lists from another user (`mode="list"` — Yes/Pass write reactions, Liked / Open / Disliked buckets visualise sentiment); (2) "N new listings since {date}" Home banner (`mode="feed"` — Yes hearts, Pass skips); (3) auction calendar Review buttons (auction lists are list-mode screened post-#310: bulk-add the catalog, Yes/Pass write reactions, Heart adds to watchlist). Fullscreen overlay on both mobile and desktop (since PR #315 — desktop used to render inline but felt under-immersive). Haptics on Yes/Pass, full-bg colour wash following swipe direction, per-list bookmarked resume.
+- **Screening** — a swipe interface for working through a set one card at a time (Yes / Pass / Heart, Tinder-style swipes, haptics, full-bg colour wash, per-list bookmarked resume). Reached as a destination under **Collecting > Screening**, which lists pools to screen — auction catalogs, your own lists, and shared-with-you lists. On a shared list, Yes/Pass write reactions (Liked / Open / Disliked buckets); on your own pools, Yes hearts. Fullscreen on both mobile and desktop.
 - Mobile: configurable 1-3 col grid with a slide-up filter drawer, sticky search/sort row, and a 3-tab bottom-nav (Listings / Watchlists / Collecting).
 - Desktop: full-width top bar with three main tab pills + an avatar pill with the "Watchbox" label, an inline pill-style filter row, and configurable 3-7 col grid (or auto fluid).
 
@@ -107,7 +105,7 @@ Listings/auctions are static JSON committed to the repo. The only thing behind a
 
 ## Data sources
 
-### Dealers (38)
+### Dealers (~40)
 
 All scrapers hit each dealer's existing public endpoint — no credential-protected APIs, no headless browsers where it can be avoided.
 
@@ -167,7 +165,7 @@ Tropical Watch is the only source still routed through Browse AI — their site 
 
 ### Tracked auction lots
 
-Signed-in users can paste a lot URL into the Auctions tab's **+ Track lot** input to follow that specific lot through to hammer. Supported houses (auctionlots_scraper.py): **Antiquorum, Christie's, Sotheby's**. Each scraper pulls title, image, estimate, starting price, current bid, sold price, and auction end date. Phillips, Bonhams, Monaco Legend, and Heritage are parked — their lot pages are JS-rendered and/or behind bot mitigation that requires Browse AI / a self-hosted Playwright runner / manual entry to bypass.
+Auction-house lots flow into the feed via the comprehensive scrape and are saved by hearting them like any dealer card (Listings > Live auctions). The only lots that come in by URL are **eBay** items, via a paste-a-URL modal — there's no longer a standalone Auctions tab or a visible "+ Track" trigger (the modal infrastructure stays wired for re-adding one). `auctionlots_scraper.py` supports per-lot tracking for **Antiquorum, Christie's, Sotheby's, eBay**, pulling title, image, estimate, current bid, sold price, and end date.
 
 ---
 
@@ -194,7 +192,7 @@ This means the pipeline is **self-healing**: if a single run misses listings (sc
 
 - **Scrapers:** Python 3.11 with `requests`. No Playwright, no Selenium — Browse AI fills the gap for JS-rendered sources.
 - **Pipeline:** GitHub Actions (ubuntu-latest). Each scraper step uses `continue-on-error: true` so one failing source doesn't kill the batch.
-- **Frontend:** React (Create React App), inline styles only, no UI libraries. `App.js` is the orchestrator (~2,900 lines — owns state and JSX consts); render is delegated to `src/components/MobileShell.js` + `DesktopShell.js`, each receiving a single `shellProps` bag. Domain-state hooks live under `src/hooks/` (`useTrackModal`, `useFavSearchModal`, `useViewSettings`, `useFilters`); shared style tokens in `src/styles.js`. Pure helpers in `src/utils.js`.
+- **Frontend:** React (Create React App), inline styles only, no UI libraries. `App.js` is the orchestrator (the largest file by far — owns state and JSX consts); render is delegated to `src/components/MobileShell.js` + `DesktopShell.js`, each receiving a single `shellProps` bag. Domain-state hooks live under `src/hooks/` (`useTrackModal`, `useFavSearchModal`, `useViewSettings`, `useFilters`, …); shared style tokens in `src/styles.js`. Pure helpers in `src/utils.js`.
 - **Per-user image persistence:** Hearted listings get their dealer image cached to **Vercel Blob** by `cache_watchlist_images.mjs` (runs once a day inside the auctions workflow). The frontend prefers the cached URL, so favorited cards survive a dealer deleting the original. Listings/auction images aren't cached — auction houses keep theirs up long-term, and caching the full feed isn't worth the storage cost.
 - **Auth + per-user data:** [Supabase](https://supabase.com) — Postgres with row-level security, Google OAuth provider. Free tier; no backend code of my own.
 - **Hosting:** Vercel free tier, auto-deploy from `main`.
@@ -207,11 +205,14 @@ This means the pipeline is **self-healing**: if a single run misses listings (sc
 ```
 watchlist/
 ├─ .github/workflows/
-│   ├─ scrape-listings.yml         # 3×/day dealer listings pipeline
-│   ├─ scrape-auctions.yml         # daily auctions + tracked-lots + watchlist-image cache
-│   ├─ scrape-ebay.yml             # 3×/day eBay Browse API run
-│   ├─ scrape-tropicalwatch.yml    # higher-cadence Browse AI run (TW only)
-│   └─ tests.yml                   # pytest + jest, run on push + PR
+│   ├─ scrape-listings.yml         # daily dealer listings pipeline (matrix variant is dispatch-only)
+│   ├─ scrape-auctions.yml         # auctions + tracked-lots + watchlist-image cache
+│   ├─ scrape-auction-lots-frequent.yml  # comprehensive per-lot scrape
+│   ├─ scrape-ebay.yml             # eBay Browse API run
+│   ├─ scrape-editorial-corpus.yml # weekly editorial-corpus scrapers
+│   ├─ rollup-events.yml           # daily telemetry rollup + prune
+│   ├─ notify-scrape-failure.yml   # opens a GitHub Issue on scrape failure
+│   └─ tests.yml                   # pytest + jest, on push + PR  (+ a few more: matrix, single, tropicalwatch, topic-index, collector-profile)
 ├─ *_scraper.py                    # one file per dealer + auction house
 ├─ ebay_oauth.py                   # eBay Browse API token refresh
 ├─ ebay_search_scraper.py          # reads data/ebay_searches.json, calls Browse API
@@ -244,8 +245,8 @@ watchlist/
 │                                  # hard lists, manual entries, reactions,
 │                                  # collaborators, RLS hardening, perf indexes.
 ├─ src/
-│   ├─ App.js                      # orchestrator — owns state, builds shellProps, delegates to shells (~3300 lines)
-│   ├─ supabase.js                 # auth + per-user data hooks (~1900 lines)
+│   ├─ App.js                      # orchestrator — owns state, builds shellProps, delegates to shells
+│   ├─ supabase.js                 # auth + per-user data hooks
 │   ├─ styles.js                   # shared inline-style tokens (pillBase, modalShell, actionButton, ...)
 │   ├─ utils.js                    # pure helpers + constants (matchesSearch, ageBucketFromDate, ...)
 │   ├─ hooks.js                    # useWidth, useSystemDark (DOM-tracker hooks)
@@ -256,7 +257,9 @@ watchlist/
 │   │   ├─ useFavSearchModal.js    #   Save-search prompt state + submit
 │   │   ├─ useViewSettings.js      #   theme + column count
 │   │   ├─ useFilters.js           #   the filter row's full input state
-│   │   ├─ useLastVisit.js         #   "new since last visit" tracker for the Home screener banner
+│   │   ├─ useLastVisit.js         #   "new since last visit" tracker
+│   │   ├─ useHomeHidden.js        #   Home-only hide set (separate from global hidden)
+│   │   ├─ useRecentSearches.js    #   recent-search history for the Home search bar
 │   │   ├─ useUserLimit.js         #   per-user watchlist cap state + soft/hard-warn thresholds
 │   │   └─ useEventTelemetry.js    #   fire-and-forget anonymous + signed-in event recording
 │   └─ components/
@@ -264,7 +267,7 @@ watchlist/
 │       ├─ DesktopShell.js         # desktop render path (top bar, filter row, fluid grid)
 │       ├─ HomeTab.js              # Home landing — horizontal-slider strips + new-listings screener banner
 │       ├─ WatchlistTab.js         # Watchlists tab body (Lists / Searches / Challenges sub-tabs)
-│       ├─ CollectionsTab.js       # Lists / Wishlist / My collection / Challenges drill-in surface (~2600 lines)
+│       ├─ CollectionsTab.js       # Lists / Wishlist / My collection / Challenges drill-in surface
 │       ├─ ChallengesView.js       # Challenges list view + drill-in to ChallengeFlow
 │       ├─ ChallengeFlow.js        # Watch Challenges multi-stage flow (Set / Pick / Share)
 │       ├─ ReferencesTab.js        # Collecting tab landing — print-to-scale + curated links
@@ -272,7 +275,7 @@ watchlist/
 │       ├─ AuctionCalendar.js      # month-banded auction calendar (View / Add / Review per row)
 │       ├─ SizeCompare.js          # print-to-scale watch size comparison tool
 │       ├─ Links.js                # curated outbound-link aggregator under Collecting
-│       ├─ ListReviewMode.js       # Tinder-style screener (list / feed / auction modes, ~1500 lines)
+│       ├─ ListReviewMode.js       # Tinder-style screener (list + feed modes)
 │       ├─ Card.js                 # listing card (also used for tracked lots + auction lots)
 │       ├─ Chip.js                 # filter pills (Chip + SidebarChip)
 │       ├─ ListRow.js              # collection-list row used in Lists view
