@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { pillBase, inputBase } from "../styles";
 import { Chip } from "./Chip";
@@ -255,6 +255,16 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
   const [brandsExpanded, setBrandsExpanded] = useState(false);
   const [collapsedYears, setCollapsedYears] = useState({});
   const [pageSize, setPageSize] = useState(RESULTS_PAGE_SIZE);
+
+  // B-01 (2026-05-24): on mobile, find the shell's editorial filter slot so we
+  // can portal the filter chrome into the shared sticky stack (one chrome, like
+  // every other tab — kills the 2nd-sticky-layer search squash). Desktop = null
+  // → renders inline below. Must run before any early return (React hook order).
+  const [filterSlot, setFilterSlot] = useState(null);
+  useLayoutEffect(() => {
+    if (!isMobile) { setFilterSlot(null); return; }
+    setFilterSlot(document.getElementById("editorial-filter-slot"));
+  }, [isMobile]);
 
   // Eager fetch of metadata only on first mount — small (~5 MB total
   // across all sources) so this lands well inside a second on broadband.
@@ -538,33 +548,13 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
     boxShadow: "inset 0 0 0 0.5px var(--brand)",
     marginLeft: 4,
   };
-  return (
-    <div style={{ paddingTop: 4 }}>
-      {/* Sticky filter chrome (Mark feedback 2026-05-21 — Editorial
-          filter/search bar disappeared on scroll; Listings is fixed).
-          Wraps search input + filter strip + expansion panels so the
-          whole filter UI stays anchored as the card grid scrolls.
-          Top: 0 (PR_ε0 2026-05-22). Previously top: 40 to clear an
-          in-component subStrip — that subStrip lifted to the shell
-          in PR_Y3 (2026-05-21), so the 40px offset became a
-          transparent gap where content scrolled through. */}
-      {/* The sticky wrapper extends edge-to-edge via negative
-          horizontal margins through the scroll container's padding
-          — without that, the wrapper was only as wide as the
-          inner content area and the dark Featured band could bleed
-          through the 14/20px gaps on each side as it scrolled past
-          (Mark report 2026-05-21). Inner padding restores the
-          breathing room. Listings doesn't have this problem because
-          its filter row renders OUTSIDE the scroll container — the
-          shell chrome handles full-width naturally. */}
-      <div style={{
-        position: "sticky", top: 0, zIndex: 20,
-        background: "var(--bg)",
-        marginLeft: isMobile ? -14 : -20,
-        marginRight: isMobile ? -14 : -20,
-        paddingLeft: isMobile ? 14 : 20,
-        paddingRight: isMobile ? 14 : 20,
-      }}>
+  // B-01 (2026-05-24): the filter chrome (FilterRow + expansion panels) as a
+  // standalone fragment. On mobile it's portaled into the shell's sticky stack
+  // (#editorial-filter-slot) so editorial's filters live in the SAME chrome as
+  // every other tab — no 2nd in-body sticky layer squashing the search. Desktop
+  // keeps the inline sticky wrapper (its chrome differs; not the B-01 surface).
+  const editorialFilterChrome = (
+    <>
       {/* In-Editorial search input retired 2026-05-21 (Mark spec):
           the global top-bar search now serves Editorial too, with a
           context-aware placeholder. The shells (DesktopShell +
@@ -695,7 +685,31 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
           )}
         </div>
       )}
-      </div>{/* /sticky filter chrome */}
+    </>
+  );
+
+  return (
+    <div style={{ paddingTop: 4 }}>
+      {/* B-01: mobile portals the filter chrome into the shell sticky stack
+          (one shared chrome); desktop keeps the inline edge-to-edge sticky
+          wrapper. Falls back to inline if the slot isn't mounted yet. */}
+      {isMobile && filterSlot
+        ? createPortal(
+            <div style={{ background: "var(--bg)", padding: "4px 16px 0" }}>{editorialFilterChrome}</div>,
+            filterSlot
+          )
+        : (
+          <div style={{
+            position: "sticky", top: 0, zIndex: 20,
+            background: "var(--bg)",
+            marginLeft: isMobile ? -14 : -20,
+            marginRight: isMobile ? -14 : -20,
+            paddingLeft: isMobile ? 14 : 20,
+            paddingRight: isMobile ? 14 : 20,
+          }}>
+            {editorialFilterChrome}
+          </div>
+        )}
 
       {/* Featured strip — top N most-recent articles, shown only when
           no filter / no search is active.

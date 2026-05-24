@@ -348,6 +348,14 @@ export function MobileShell(props) {
             <span style={{ color: "var(--brand)", flexShrink: 0, fontWeight: 500 }}>→</span>
           </button>
         )}
+        {/* Editorial filter slot (B-01, 2026-05-24): EditorialView portals
+            its FilterRow + expansion panels into here on mobile, so the
+            editorial filters live INSIDE this shell sticky stack — like every
+            other tab's chrome — instead of a 2nd sticky layer in the body that
+            collided with / squashed the search row. Empty until
+            Collecting → Editorial mounts and fills it. Cross-surface
+            consistency (see CLAUDE.md). */}
+        {tab === "references" && <div id="editorial-filter-slot" />}
         {/* Sort/filter row — only when the current sub-tab has a
             filterable list. Hidden during share-receive landing so
             the recipient sees the focused card without browse chrome
