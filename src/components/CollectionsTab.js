@@ -2065,6 +2065,7 @@ function ListsView({
             items={items}
             listId={selected.id}
             listName={selected.name}
+            isAuctionCatalog={isAuctionList}
             // Owner-self-review: don't surface "{ownerName} will see
             // your reactions" — the user IS the owner. Recipient
             // flow gets the attribution copy.

@@ -66,6 +66,8 @@ export function ListReviewMode({
   items,
   listId,
   listName,
+  // B-02 (2026-05-24): auction catalogs get watch-vs-save onboarding copy.
+  isAuctionCatalog = false,
   ownerName,
   currentUserId,
   reactionsByItem,
@@ -959,6 +961,7 @@ export function ListReviewMode({
         <OnboardingCard
           ownerName={ownerName}
           total={total}
+          isAuction={isAuctionCatalog}
           onDismiss={dismissIntro}
         />
       )}
@@ -1086,7 +1089,7 @@ function MenuItem({ label, onClick }) {
   );
 }
 
-function OnboardingCard({ ownerName, total, onDismiss }) {
+function OnboardingCard({ ownerName, total, isAuction = false, onDismiss }) {
   return (
     <div style={modalScrim(2120)}>
       <div style={editorialPanel(420)}>
@@ -1131,14 +1134,17 @@ function OnboardingCard({ ownerName, total, onDismiss }) {
           lineHeight: 1.55,
           marginBottom: 24,
         }}>
+          {/* B-02 (2026-05-24, Mark): auction catalogs distinguish "watch"
+              (Yes) from "save + very interested" (Heart). Other lists keep
+              the original consider/save framing. */}
           <IntroRow color="var(--accent-positive)" glyph="→">
-            <strong>Yes</strong> — swipe right or tap Yes. Watches you want to consider.
+            <strong>Yes</strong> — swipe right or tap Yes. {isAuction ? "Watches you want to watch." : "Watches you want to consider."}
           </IntroRow>
           <IntroRow color="var(--danger)" glyph="←">
-            <strong>Pass</strong> — swipe left or tap Pass. Not for you.
+            <strong>Pass</strong> — swipe left or tap Pass. {isAuction ? "Not interested." : "Not for you."}
           </IntroRow>
           <IntroRow color="var(--heart)" glyph="♥">
-            <strong>Heart</strong> — tap to save to your watchlist. Independent from this list.
+            <strong>Heart</strong> — {isAuction ? "tap to save. Watches you want to save and are very interested in." : "tap to save to your watchlist. Independent from this list."}
           </IntroRow>
           <IntroRow color="var(--text2)" glyph="↗">
             <strong>Details</strong> — tap the card to read the full listing.

@@ -54,24 +54,6 @@ delete — the history is useful.
   was retired 2026-05-21 (uses shell global search now). Prior related fix:
   2026-05-21.
 
-### B-02 — Screening response copy should be auction-specific
-- **Reported:** 2026-05-24 · **Severity:** 3 (polish/copy) · **Surface:** Screening / ListReviewMode onboarding card, on auction catalogs · **Status:** Open
-- **Detail:** When screening auctions, the descriptions of each response
-  should distinguish *watch* from *save*. Mark's wording:
-  - **Swipe Yes** → "watches you want to watch"
-  - **Heart** → "watches you want to save and are very interested in"
-  - **Pass** → "not interested"
-- **Hypothesis:** The copy lives in `OnboardingCard` →
-  `ListReviewMode.js:1133–1144` (the one-time intro), currently: Yes =
-  "Watches you want to consider", Pass = "Not for you", Heart = "tap to save
-  to your watchlist. Independent from this list." `OnboardingCard` isn't
-  mode-aware today (takes `ownerName, total` only). Fix = thread the screening
-  context/mode in and swap to auction-specific lines when screening an auction
-  catalog. Consistent with the binary Yes/Pass + heart model
-  ([[reaction-context-lives-in-lists]]) — this is wording only, not new
-  reactions. Note the intro is gated one-time per browser
-  (`screening_intro_seen_v1`), so test with that key cleared.
-
 ### B-03 — Main tabs scroll off on mobile; want them pinned + compact
 - **Reported:** 2026-05-24 (screenshot) · **Severity:** 2 (navigation) · **Surface:** Mobile PWA, all non-Home tabs (shown on Saved → Lists) · **Status:** Open
 - **Detail:** Scrolling down hides the top-level main tabs (Listings /
@@ -152,7 +134,15 @@ delete — the history is useful.
   `BREAK_INTERVAL` 25 → 50 in `ListReviewMode.js`; the `Math.floor(idx /
   BREAK_INTERVAL)` cadence now fires at 50/100/150…
 
-### B-05 — Saved auction catalogs need house + date · Fixed PR (this branch)
+### B-02 — Screening copy: auction catalogs distinguish watch vs save · Fixed PR (this branch)
+- Auction-catalog screening onboarding now reads: Yes = "Watches you want to
+  watch", Heart = "Watches you want to save and are very interested in", Pass =
+  "Not interested" (Mark's wording). Threaded `isAuctionCatalog` (=
+  `selected.type === 'auction'`) → `OnboardingCard`. Non-auction lists keep
+  their original consider/save/Not-for-you copy. One-time intro gated by
+  `screening_intro_seen_v1`.
+
+### B-05 — Saved auction catalogs need house + date · Fixed #545
 - Auction-catalog rows in Lists showed only title + count, so two
   similarly-named catalogs were indistinguishable. Now append "· {House} ·
   {date}" to the row subtitle, read from the saved lots' `house` +
