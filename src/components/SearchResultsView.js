@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useRef, useEffect } from "react";
 import { Card } from "./Card";
+import CardShell from "./CardShell";
 
 // Cross-tab search results — the "Search all" destination (PR_W v1,
 // 2026-05-22). When the user picks "Search all" from the Home
@@ -584,49 +585,28 @@ function ArticleStrip({ heading, count, items, onViewAll, isMobile }) {
         // all strips so they stay consistent.
         background: "transparent",
       }}>
+        {/* Card system Stage 1 (2026-05-24): the article tile now renders
+            through the shared CardShell (square image, L2 source kicker, L1
+            title) — the first consumer of the unified card primitive, instead
+            of a hand-rolled duplicate. Same look as before (B-12/B-13); proves
+            the shell on a low-risk card before the priced Card.js folds in. */}
         {visible.map(a => (
-          <a key={a.url} href={a.url} target="_blank" rel="noopener noreferrer"
-            style={isMobile ? {
-              flex: "0 0 38%", maxWidth: 170, scrollSnapAlign: "start",
-              display: "flex", flexDirection: "column",
-              textDecoration: "none", color: "inherit",
-              background: "var(--card-bg)",
-            } : {
-              flex: "0 0 210px", scrollSnapAlign: "start",
-              display: "flex", flexDirection: "column",
-              textDecoration: "none", color: "inherit",
-              background: "var(--card-bg)",
-            }}>
-            {/* B-12 (2026-05-24): square image + placeholder to match the
-                listing/auction/sold Cards in the other strips (was 16/10
-                landscape, which read as a different card type). Always
-                rendered so tile heights line up across strips. Mirrors
-                Card's 1:1 image + favicon placeholder. */}
-            <div style={{ position: "relative", paddingTop: "100%", background: "var(--surface)", overflow: "hidden" }}>
-              {a.image ? (
-                <img src={a.image} alt="" loading="lazy"
-                  style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-              ) : (
-                <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <img src="/favicon-192.png" alt="" aria-hidden="true" style={{ width: "44%", maxWidth: 88, opacity: 0.55 }} />
-                </div>
-              )}
-            </div>
-            <div style={{ padding: "10px 12px 12px", display: "flex", flexDirection: "column", gap: 4 }}>
-              <div style={{
-                fontSize: 10, fontWeight: 600, color: "var(--text3)",
-                textTransform: "uppercase", letterSpacing: 0.4,
-              }}>
+          <div key={a.url} style={isMobile
+            ? { flex: "0 0 38%", maxWidth: 170, scrollSnapAlign: "start", background: "var(--card-bg)", position: "relative" }
+            : { flex: "0 0 210px", scrollSnapAlign: "start", background: "var(--card-bg)", position: "relative" }}>
+            <CardShell
+              href={a.url}
+              aspect="square"
+              bodyPadding="10px 12px 12px"
+              image={a.image ? { src: a.image, alt: "" } : null}
+              level2={<div style={{ fontSize: 10, fontWeight: 600, color: "var(--text3)", textTransform: "uppercase", letterSpacing: 0.4, marginBottom: 4 }}>
                 {(a._source && a._source.label) || a.source || ""}
-              </div>
-              <div style={{
-                fontSize: 12, fontWeight: 500, color: "var(--text1)",
-                lineHeight: 1.3,
-                display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
-                overflow: "hidden",
-              }}>{a.title}</div>
-            </div>
-          </a>
+              </div>}
+              level1={<div style={{ fontSize: 12, fontWeight: 500, color: "var(--text1)", lineHeight: 1.3, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                {a.title}
+              </div>}
+            />
+          </div>
         ))}
       </div>
     </section>

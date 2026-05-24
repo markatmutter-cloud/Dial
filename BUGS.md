@@ -132,6 +132,9 @@ delete — the history is useful.
   Target end-state (Mark): the date bar sits flush against the filter/search
   bar. **Plan-mode item** — see the chrome-unification thread.
 
+### B-14 — BRAND.md review (Plan thread)
+- **Reported:** 2026-05-24 (`Plan:`) · **Type:** Plan-mode thread, not a bug · **Status:** Queued for a coming session. Mark wants a review of `BRAND.md` (voice/brand). Pairs naturally with the card design system's "breathing-space & brand impact" dial — brand voice + visual brand expression. Surface at a replanning step.
+
 ---
 
 ## Resolved
