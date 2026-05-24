@@ -1310,9 +1310,18 @@ For historical auction sales (Phase D / Epic 2 archive layer):
   `auction_lots.json` and `tracked_lots.json` into `auctionLotItems`
   with the same shape.
 - **Adding a new archive sale is an in-session task**, not a roadmap
-  item — Mark's call. Phillips archive URLs work on the existing
-  Phillips path; Antiquorum archive URLs would need an enumerator
-  extension when needed.
+  item — Mark's call. Supported house URL patterns:
+  - `phillips.com/auctions/auction/...` → per-lot detail walk
+  - `christies.com/en/auction/...` → live enumerator (works on past)
+  - `live.antiquorum.swiss/auctions/...` or `catalog.antiquorum.swiss/...`
+    → live enumerator with catalog-URL bridge
+  - `sothebys.com/en/buy/auction/...` → live enumerator (algoliaJson
+    + lotCards stay populated on past sales). Particularly important
+    for Sotheby's because their calendar scraper only exposes
+    upcoming sales — past sales otherwise don't enter the
+    comprehensive cron and yield 0 ended lots.
+  MLA archive URLs would be a one-block add when needed; Bonhams
+  blocked by the Cloudflare CI-IP issue documented above.
 
 ## Backend-emitted display fields (prefer over inline derivation)
 
