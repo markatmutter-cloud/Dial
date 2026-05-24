@@ -995,7 +995,11 @@ export function HomeTab(props) {
       <div style={{
         marginLeft: -shellPad,
         marginRight: -shellPad,
-        background: "var(--brand-olive-tint-12)",
+        // B-07 (2026-05-24, Mark): full olive (was --brand-olive-tint-12)
+        // so Home's nav band matches the core tabs' olive chrome — smooths
+        // the jarring neutral-Home → olive-core-tab tonal jump. Hero above
+        // stays neutral. Tab labels below flip to white for contrast.
+        background: "var(--brand-olive)",
         // PR 2026-05-22 (Mark spec, "distribute vertically"): equal
         // top padding, gap, and bottom padding — same idea as
         // PowerPoint's Distribute Vertically. Tabs row + search bar
@@ -1032,7 +1036,9 @@ export function HomeTab(props) {
                   fontSize: isMobile ? 14 : 13,
                   fontWeight: 500,
                   letterSpacing: "0.01em",
-                  color: "var(--text2)",
+                  // B-07: white on the now-olive band (was --text2, which
+                  // vanished against dark olive). TabIcon inherits currentColor.
+                  color: "#ffffff",
                   padding: 0,
                   display: "inline-flex", alignItems: "center", gap: 6,
                 }}>
