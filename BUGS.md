@@ -32,7 +32,7 @@ delete — the history is useful.
 ## Open
 
 ### B-01 — Editorial search bar squashed/clipped on scroll (mobile)
-- **Reported:** 2026-05-24, updated w/ 3-frame screenshot · **Severity:** 2 (usability) · **Surface:** Mobile PWA, Editorial subtab (Collecting → Editorial) · **Status:** Open — **split out from B-03; focused follow-up**
+- **Reported:** 2026-05-24, updated w/ 3-frame screenshot · **Severity:** 2 (usability) · **Surface:** Mobile PWA, Editorial subtab (Collecting → Editorial) · **Status:** Fix on preview PR — awaiting Mark's eyeball. **Contained fix (not the full AppChrome extraction):** EditorialView now portals its filter chrome into a slot in the shell sticky stack (`#editorial-filter-slot`) on mobile, so editorial's filters live in the same chrome as every other tab — no 2nd sticky layer squashing search. Desktop unchanged. (The full shared-chrome unification, plan Stages 2–3, remains the durable best-practice follow-up.)
 - **Split note (2026-05-24):** B-03 (pin the main tabs everywhere) shipped on
   its own — see Resolved. This entry is now the *editorial-specific* part: the
   two-competing-sticky-layers collision that squashes the search behind the
