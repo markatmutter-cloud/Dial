@@ -123,6 +123,30 @@ delete — the history is useful.
   demand for Search-all, not eagerly. Same lazy-bodies machinery as the B-01
   editorial area.
 
+### B-11 — See-through strip below the sticky chrome (the date-divider gap)
+- **Reported:** 2026-05-24 (Home + Listings screenshots). **LONG-RECURRING since early builds** (Mark) — confirmed by the code (multiple documented failed fixes). · **Severity:** 2 (bumped — recurring + visible on core surfaces) · **Surface:** Desktop Listings/Watchlist grids + Home; the `DateDivider` sticky region · **Status:** Open — **do NOT band-aid again; needs root-cause/component fix**
+- **What it actually is (Mark's key detail):** a **see-through strip that stays
+  put while card images scroll behind it** — a transparent sticky region
+  between the filter bar and the date-group header. Not a 1px seam; a real gap.
+- **Root cause:** `DateDivider` (`src/components/DateDivider.js`) pins at
+  `top: var(--sticky-top, 0px)`. `--sticky-top` is a **pixel value JS measures
+  off the *mobile* `[data-sticky-chrome]`** (App.js L1498–1517) and writes to a
+  CSS var; on desktop the chrome is a *different structure*, the selector
+  misses, the value is 0, and the divider can't actually reference the chrome
+  above it. A sticky element aligning to a chrome it has no real handle on,
+  across two different chrome implementations, via a measured-pixel guess →
+  perpetual drift.
+- **Why it keeps coming back:** the file documents the band-aid graveyard —
+  box-shadow (#524, "still got a gap"), negative-margin (doesn't translate
+  under `position:sticky`), now 3px absolute "gap-mask" divs. Each patches one
+  viewport/state; the next change re-opens it.
+- **Proper fix = the shared-chrome component (Mark's repeated ask).** One
+  chrome + sticky-offset system with a real source of truth so dividers (and
+  editorial's filters, and the seam) pin **flush by construction**. This entry,
+  B-01/editorial-difference, and the old peekaboo framing are **the same root**.
+  Target end-state (Mark): the date bar sits flush against the filter/search
+  bar. **Plan-mode item** — see the chrome-unification thread.
+
 ---
 
 ## Resolved
