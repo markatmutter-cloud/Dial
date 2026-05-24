@@ -124,7 +124,7 @@ delete — the history is useful.
   editorial area.
 
 ### B-11 — See-through strip below the sticky chrome (the date-divider gap)
-- **Reported:** 2026-05-24 (Home + Listings screenshots). **LONG-RECURRING since early builds** (Mark) — confirmed by the code (multiple documented failed fixes). · **Severity:** 2 (bumped — recurring + visible on core surfaces) · **Surface:** Desktop Listings/Watchlist grids + Home; the `DateDivider` sticky region · **Status:** Open — **do NOT band-aid again; needs root-cause/component fix**
+- **Reported:** 2026-05-24 (Home + Listings screenshots). **LONG-RECURRING since early builds** (Mark) — confirmed by the code (multiple documented failed fixes). · **Severity:** 2 (bumped — recurring + visible on core surfaces) · **Surface:** Desktop Listings/Watchlist grids + Home; the `DateDivider` sticky region · **Status:** Stage 1 fix on preview PR — **root cause found & removed (not masked).** The desktop scroll pane `[data-desktop-main]` had a 14px top padding; a sticky child sticks *below* container padding, so those 14px were the see-through strip (Watchlist/Collecting were already 0 → never showed it, confirming cause). Fix: zero the pane top padding on all tabs (`DesktopShell.js`). Mobile pins via its own measured offset. The broader shared-chrome unification (Stages 2–5 of the plan) still stands as the durable best-practice follow-up.
 - **What it actually is (Mark's key detail):** a **see-through strip that stays
   put while card images scroll behind it** — a transparent sticky region
   between the filter bar and the date-group header. Not a 1px seam; a real gap.

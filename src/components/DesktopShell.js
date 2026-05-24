@@ -721,14 +721,19 @@ export function DesktopShell(props) {
         {/* Top padding is 0 on Watchlist so the sub-tab strip sits flush
             against the filter pill row. Listings keeps the breathing room. */}
         <div data-desktop-main style={{ flex: 1, overflowY: "auto",
-          // Top padding zeroed on tabs whose first child IS a sticky
-          // filter strip (Collecting Editorial) or whose content
-          // doesn't need breathing room from the chrome (Watchlist
-          // collections sub-tabs). Keeps the filter strip flush with
-          // the sub-tab strip above — Mark report 2026-05-22:
-          // "search is different Y height between listings and
-          // collecting tab" was driven by this 14px gap.
-          padding: `${(tab === "watchlist" || tab === "references") ? 0 : 14}px 20px 32px`,
+          // Top padding is 0 on ALL tabs (B-11, 2026-05-24). A sticky
+          // child inside a scroll pane with top padding sticks BELOW
+          // that padding, so the padding becomes a transparent strip
+          // where content scrolls through (the long-recurring
+          // "see-through" gap above the DateDivider on Listings and
+          // above the olive band on Home). Watchlist/Collecting were
+          // already 0 and never showed the gap — proof of cause.
+          // Zeroing it everywhere removes the gap at the root (not a
+          // mask) and makes every desktop tab consistent. Breathing
+          // room now comes from the sticky element's own padding
+          // (DateDivider, masthead band), which scrolls flush under
+          // the chrome instead of leaving a hole.
+          padding: `0 20px 32px`,
         }}>
           {/* Share-receive surface — self-contained component. */}
           {shareReceiverJSX}
