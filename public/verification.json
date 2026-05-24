@@ -1,5 +1,6 @@
 {
   "date": "2026-05-24",
+  "updated_at": "2026-05-24T05:33:02+00:00",
   "alerts": [],
   "counts": {
     "Wind Vintage": 112,
@@ -44,6 +45,6 @@
     "Watch Center": 279,
     "eBay": 25
   },
-  "total_listings": 3614,
+  "total_listings": 3613,
   "sources_tracked": 41
 }
