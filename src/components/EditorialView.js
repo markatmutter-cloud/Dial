@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { pillBase, inputBase } from "../styles";
 import { Chip } from "./Chip";
+import { FilterRow } from "./FilterRow";
 import { shortHash } from "../utils";
 import { HeartIcon } from "./icons";
 
@@ -537,12 +538,6 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
     boxShadow: "inset 0 0 0 0.5px var(--brand)",
     marginLeft: 4,
   };
-  // Vertical 6 matches Listings filter row exactly ("6px 20px") so
-  // the row heights line up on the Y axis (Mark report 2026-05-22:
-  // "filters aligned to the left but not matching on y axis").
-  // Horizontal 0 keeps pills at the wrapper's 14/20px inset.
-  const stripPadding = "6px 0";
-
   return (
     <div style={{ paddingTop: 4 }}>
       {/* Sticky filter chrome (Mark feedback 2026-05-21 — Editorial
@@ -581,14 +576,10 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
 
       {/* Filter strip — mirrors Listings filterRowJSX shape. Single
           horizontal row, pill toggles, inline-expansion panels below
-          for source / brand chip clusters. */}
-      <div style={{
-        display: "flex", alignItems: "center", gap: 8,
-        padding: stripPadding,
-        background: filterBandBg,
-        borderBottom: expanded ? "none" : "0.5px solid var(--border)",
-        flexShrink: 0, flexWrap: "wrap",
-      }}>
+          for source / brand chip clusters. Shared FilterRow primitive
+          (PR FilterRow refactor) standardizes the outer flex/border
+          geometry so Listings + Editorial can't drift apart again. */}
+      <FilterRow expanded={expanded} paddingX={0} paddingY={6} background={filterBandBg}>
         {/* Search input — desktop only. Sits as the leftmost element
             of the filter strip so search + sort + chips render on one
             row (Mark feedback 2026-05-21: "filter not in line with
@@ -658,7 +649,7 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
             boxShadow: "inset 0 0 0 0.5px var(--brand)",
           }}>× Clear all</button>
         )}
-      </div>
+      </FilterRow>
 
       {/* Source expansion panel */}
       {activeFilterPop === "source" && (
