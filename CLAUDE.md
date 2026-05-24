@@ -23,9 +23,14 @@ how to behave for the rest of it.
   reference-page editorial coverage, or any recommender-adjacent
   surface.
 - `SESSION_HANDOFF_*.md` — in-flight snapshot per session. **Not durable.**
-  The current one is [SESSION_HANDOFF_2026-05-22.md](SESSION_HANDOFF_2026-05-22.md)
-  (frontend / chrome arc, evening addendum at the bottom); the
-  parallel backend session left
+  The current one is [SESSION_HANDOFF_2026-05-24.md](SESSION_HANDOFF_2026-05-24.md)
+  (scrape-pipeline reliability + observability: scraper_lib retry
+  helper, health.py CLI, auto-issue on scrape failure, Watch Club
+  flap fix, matrix-parallel workflow, FilterRow primitive,
+  desc-restore sidecar, Sotheby's archive support — 10 PRs).
+  Prior session left
+  [SESSION_HANDOFF_2026-05-22.md](SESSION_HANDOFF_2026-05-22.md)
+  (frontend / chrome arc, evening + late-night addenda) and
   [SESSION_HANDOFF_2026-05-22-backend.md](SESSION_HANDOFF_2026-05-22-backend.md)
   (auction scrapers / Bonhams Cloudflare / historical archive lots).
   Older ones live in `archive/`.
