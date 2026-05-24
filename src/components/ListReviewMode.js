@@ -98,6 +98,7 @@ export function ListReviewMode({
   mode = "list",
 }) {
   // Frozen queue at mount.
+  // initialQueue uses useState lazy init (snapshot at mount), NOT useMemo — useMemo re-derives when deps change and would shift the current card out from under the user mid-flow.
   const [initialQueue] = useState(() => {
     if (screenAll) return items;
     if (!currentUserId) return items;

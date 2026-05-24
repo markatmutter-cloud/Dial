@@ -48,6 +48,7 @@ export function useEventTelemetry(user) {
   // WeakMap so disposed nodes don't pin items in memory after unmount.
   const itemByNodeRef = useRef(new WeakMap());
 
+  // Fire-and-forget: never await recordEvent or surface its errors to the user flow — a failed analytics insert must not block a heart/hide.
   const recordEvent = useCallback((eventType, item) => {
     if (!supabase || !item || !item.id) return;
     if (eventType === "view") {

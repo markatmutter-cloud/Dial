@@ -1012,6 +1012,7 @@ export default function Watchlist() {
     // restored from localStorage, so a user who'd last visited
     // Watchlists > Searches would land back on Searches when
     // tapping Watchlists from another tab. Now lands on Lists.
+    // On cross-main-tab navigation, reset the destination tab's sub-tab to its first value — do NOT restore from localStorage (Mark spec: clicking a tab loads the first sub-tab).
     if (newTab === "listings") setListingsSubTab("live");
     else if (newTab === "watchlist") setWatchTopTab("lists");
     else if (newTab === "references") setReferencesSubTab("editorial");
@@ -1421,6 +1422,7 @@ export default function Watchlist() {
   // critical for the menu portal (Mark report 2026-05-10: menu
   // text rendered with no background because the portal sat under
   // <body> and var(--bg) was undefined there).
+  // Theme CSS vars are mirrored to document.documentElement (:root), not just the App root, so portal-rendered nodes (Card ⋯ menu, overlays) inherit them. Keep the :root mirror.
   useEffect(() => {
     if (typeof document === "undefined") return;
     const root = document.documentElement;
@@ -2070,6 +2072,7 @@ export default function Watchlist() {
   // "Other" assignment stays stable across source-filter toggles.
   // (Reactive cross-axis filtering lives in brandsAvailableInPool
   // below — that drives chip *visibility*, not bucket *identity*.)
+  // brandCounts must dispatch on tab + sub-tab (auctions→lot pool, sold→mixed pool, else live items) — don't fall back to global `items`, or a sub-tab shows brand chips with zero matches.
   const brandCounts = useMemo(() => {
     const c = {};
     currentPool.forEach(i => {
@@ -2576,6 +2579,7 @@ export default function Watchlist() {
       // Phillips/Sotheby's multi-session session-1 lots whose parent
       // auction_end is still in the future.
       const hasRealisedSale = data.sold_price != null && data.sold_price > 0;
+      // Only override status:"ended"→active when sold_price is null — a realised price beats the calendar end-date (Phillips multi-session lots ship ended+sold_price while auction_end is still future).
       let isEnded = data.status === "ended" || hasRealisedSale;
       if (isEnded && !hasRealisedSale && data.auction_start) {
         const startMs = new Date(data.auction_start).getTime();
@@ -2890,6 +2894,7 @@ export default function Watchlist() {
   // cover the leak in sticky state. Paint the gap as page-bg and
   // the leak goes away entirely; cards lose their 1px hairline
   // separator but the existing surface-bg + spacing reads clean.
+  // background must be var(--bg), NOT var(--border). The hairline-grid trick leaks a grey border around full-bleed rows in sticky state. Use card-level borders.
   const gridStyle = { display: "grid", gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`, gap: 1, background: "var(--bg)" };
 
   // ── AUTH UI ─────────────────────────────────────────────────────────────
@@ -3298,6 +3303,7 @@ export default function Watchlist() {
     return merged.sort((a, b) => (soldKey(b) || "").localeCompare(soldKey(a) || "")).slice(0, 20);
   }, [items, auctionLotItems, hidden, adminHidden, homeHidden]);
 
+  // ⚠️ DO NOT add hooks (useState/useMemo/useEffect/useCallback) below this line. Hooks after an early return → React #310 ("rendered more hooks than previous render"); white-screened prod 3×. New hooks go ABOVE all early returns, or in a child component mounted unconditionally. Also: a useEffect deps array must not reference state declared later (TDZ).
   if (loading) return <div style={{ ...baseStyle, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, color: "var(--text2)" }}>Pulling the latest listings…</div>;
   if (loadError) return <div style={{ ...baseStyle, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, color: "var(--text2)" }}>Couldn't pull the listings — refresh to try again.</div>;
 

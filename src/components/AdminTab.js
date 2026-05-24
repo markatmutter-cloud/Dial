@@ -330,6 +330,7 @@ export function AdminTab({ watchItems, hiddenItems }) {
   // is security invoker; underlying tables enforce admin-only SELECT).
   // Non-admin browsers get an empty result without an error, which we
   // already handle by rendering "—" in the engagement columns.
+  // Read engagement from the listing_events_daily rollup (source_engagement_summary RPC), NOT raw listing_events — raw is pruned to 90d and can hit PostgREST row limits.
   useEffect(() => {
     if (!supabase) return undefined;
     let cancelled = false;

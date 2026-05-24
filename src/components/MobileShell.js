@@ -138,6 +138,7 @@ export function MobileShell(props) {
             neutral, editorial hero owns the brand mark); on every
             other tab the row carries the wordmark left + auth right
             on olive. Same screen position for the M either way. */}
+        {/* Olive chrome must OR-in the receive flags, not gate on tab!=="home" alone: onOlive = tab!=="home" || anyShareActive || searchAllActive. Share/search-all surfaces leave tab unchanged. */}
         <div style={{
           padding: "8px 16px 8px",
           paddingTop: "calc(env(safe-area-inset-top, 0px) + 8px)",
