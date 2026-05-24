@@ -1,0 +1,201 @@
+# Watchlist — shipped log
+
+The single changelog for the project. Everything that ships lands here
+as a two-line entry (title + date + one sentence). ROADMAP holds
+direction only; this holds history. For design rationale, see commit
+history and the SESSION_HANDOFF archives.
+
+## How this is organized
+
+Grouped by epic (matching ROADMAP epic numbering), plus a cross-cutting
+**UI & chrome** section for work that doesn't sit under one epic. Each
+entry is two-line max: title + ship date + one-sentence what. Newest
+within each section roughly last.
+
+> A handful of older entries carry `2026-05-XX` where the exact ship
+> date wasn't recovered — fill on next touch, don't guess.
+
+---
+
+## Epic 0 — Foundations
+
+- **2026-05-02 — verify_sources.py.** Per-source liveness counter +
+  rolling-7-day-median delta tracker; outputs verification.json.
+- **2026-05-XX — verify_auction_lots.py (PR #35).** Same shape as
+  verify_sources but for `auction_lots.json` per house.
+- **2026-05-01 — User settings / currency preference.** `user_settings`
+  Supabase table + USD/GBP/EUR picker in Settings.
+- **2026-05-XX — SEO basics (PR #39).** Descriptive `<title>`, meta
+  description, OG / Twitter card, canonical, JSON-LD, robots, sitemap.
+- **2026-05-17 — Reference index + matcher.** Curated
+  `docs/watch_references.md` (26 brands · 312 model lines · 1,666 refs) +
+  `reference_index_match.py` + regenerated gap report; research-chat
+  patch workflow established.
+- **2026-05-19 — Matcher wired into every scrape path (PR #378).**
+  merge.py + all auction enumerators + editorial scrapers fill
+  reference_id / model / model_line where the matcher hits.
+- **2026-05-24 — Scrape reliability + observability (PRs #530–#536).**
+  continue-on-error on all steps, `scraper_lib.fetch_json_with_retry`,
+  `health.py` CLI, notify-scrape-failure GitHub-Issue workflow,
+  verify_sources `updated_at` + STALE signal, parallel matrix workflow
+  (dispatch-only, ~2× faster).
+
+## Epic 1 — Sources
+
+- **2026-04-30 — eBay integration.** Free Browse API source; admin
+  configures `data/ebay_searches.json`; BIN items in main feed.
+- **2026-05-02 — Vintage Watch Collective.** Wix
+  productsWithMetaData (Chronoholic clone), EUR, ~40 listings.
+- **2026-05-03 — Vintage Watch Shop (Vintage Heuer).** WordPress
+  custom-post + detail-page walker for "Our price: £NNNN"; ~20 items.
+- **2026-05-XX — Brand and listing curation (PR #50, partial #52).**
+  Hard exclusions, brand consolidations, Force-Other pooling, suppress-at-sold.
+- **2026-05-19 — Editorial corpus, 8 sources end-to-end (PRs #346–#364).**
+  ~8,556 articles; body-split persistence via `editorial_corpus_io.py`
+  (meta eager, bodies lazy).
+- **2026-05-20→22 — Editorial corpus grew to 12 sources.** WOE Dispatch,
+  Screw Down Crown (free + paid), Fratello (brand-filtered), Christie's
+  Stories.
+- **2026-05-24 — Shopify retry + Watch Club low-count abort (PRs #531/#534).**
+  Kills "single 503 wipes the source" and the truncated-catalog flap.
+
+## Epic 2 — Auction houses
+
+- **2026-05-XX — Calendar.** Six house calendars (Antiquorum, Bonhams,
+  Christie's, Monaco Legend, Phillips, Sotheby's) scraped daily into
+  `auctions.json`; month-banded UI.
+- **2026-05-XX — Live lots.** Comprehensive per-lot scrape for
+  Antiquorum / Christie's / Sotheby's / Phillips into `auction_lots.json`.
+- **2026-05-XX — Archive (PR #42).** Manual-archive pipeline +
+  Phillips CH080317 (42 Heuer lots, Geneva 2017) as first sale in.
+- **2026-05-03 → retired 2026-05-04 — Auction urgency surfacing.**
+  "Ending soon" pinned strip; superseded by Saved Auctions sub-tab.
+- **2026-05-10 — Auction calendar archive (PR #173).** Past auctions kept
+  in `auctions.json` indefinitely; collapsible Archive section.
+- **2026-05-19 — Auction lot essays.** Sotheby's catalogueNote /
+  provenance / literature (#374), Christie's Lot Essay (#377), Antiquorum
+  Notes / Provenance / Literature (#377).
+- **2026-05-22 — Monaco Legend comprehensive lots (PR #477).** 5th house
+  live via server-rendered Livewire HTML (~428 lots).
+- **2026-05-22 — Antiquorum live-URL fallback (PR #473).** Enumerate sales
+  whose catalog page hasn't published yet.
+- **2026-05-22 — Archive +3 landmark sales (PR #484).** OAK Part 1,
+  Daytona Lesson One 2013, Antiquorum Monaco 2023 (399 lots, 272 realised).
+- **2026-05-22 — Bonhams comprehensive scrape — blocked from CI.** Code
+  works locally; Cloudflare IP-reputation 403s from GitHub Actions (PRs
+  #486/#488 didn't clear it).
+- **2026-05-24 — Sotheby's archive support (PR #539).** manual_archive_scraper
+  gains a Sotheby's URL branch.
+
+## Epic 3 — Watchlist
+
+- **2026-05-XX — Sub-tab structure.** Five Watchlist sub-tabs (Saved
+  listings / auctions / sold / Favorite searches / Lists).
+- **2026-05-04 — Lists (Collections renamed in UI).** User-created
+  lists via `collections` + `collection_items`; Hidden as virtual list.
+- **2026-05-06 — Collections refactor (PRs #85–#90).** "Everything is
+  a list": Owned/Sold/Wishlist hard system lists, manual entry, force-rank.
+- **2026-05-XX — Permanency across live → sold transition.** Saved
+  entries keep price-at-save + cached image post-disappearance.
+- **2026-05-08 — Saved searches \$ Min/Max persistence (PRs #136 + #137).**
+  `saved_searches` gained nullable min_price / max_price + full wiring.
+- **2026-05-06 — User limits.** 2,500-heart default cap, soft-warn at
+  80%, BEFORE-INSERT trigger, admin expansion via `user_limits` table.
+- **2026-05-09 — Watchlists IA pass (PRs #144–#148).** Tab rename
+  Saved→Watchlists, Saved virtual list, drill-in filter row, inline view
+  settings.
+- **2026-05-10 — Usernames + image-cache extension (PRs #174, #180).**
+  `user_profiles` table + display name; image cache extended to
+  `collection_items` via `cached_img_url`.
+- **2026-05-24 — desc-restore for hearted listings (PR #538).** Lazy
+  `listings_desc.json` sidecar hydrates desc at heart-time; initial paint
+  stays slim.
+
+## Epic 4 — Sharing
+
+- **2026-05-01 — Single-listing share.** Web Share API + clipboard
+  fallback; `?listing=<id>&shared=1` deep link with Save/Dismiss banner.
+- **2026-05-06 — Shared-link landing surface.** Focused full-width
+  landing card (PRs #63–#72); browse chrome hides when share-receive active.
+- **2026-05-06 — Dynamic OG preview (PR #70).** `api/share.js` emits
+  per-listing og:image / og:title; rewrites `/share/:id`.
+- **2026-05-07 — Sharing collections (List Share v1, PR #119).**
+  `?list=<id>&shared=1` with read-only landing + Save-a-copy flow.
+- **2026-05-07/08 — Collaborator lists slices 1–3 (PRs #121–#123).**
+  Schema + RLS + RPCs + Manage-list sheet + accept-invite on share link.
+- **2026-05-09 — Share flow rewrite (PR #146).** Collaboration vs
+  view-only links; token-based accept (`?invite=<id>`).
+- **2026-05-10 — Reactions on shared lists (PRs #177, #183–#185).**
+  `collection_item_reactions` + realtime; sentiment-bucket grid + list-row
+  count chip.
+- **2026-05-11 — Recipient journey (PRs #245–#253).** Recipient banner,
+  To-review bucket, ListReviewMode Tinder swipes, undo affordances.
+- **2026-05-11 → retired 2026-05-14 — Top-level Share tab (#248/#251 → #282).**
+  Discovery folded into Watchlists > Lists; send via per-list Share button.
+- **2026-05-14/15 — Screening on new entry points (PRs #283, #310).**
+  feed-mode (new-since-last-visit) + auction Review as list-mode screening.
+
+## Epic 5 — References
+
+- **2026-04-29 — Watch size comparison.** Two case dimensions →
+  preview + print-to-scale on US Letter via React Portal pattern.
+- **2026-05-XX — Curated link aggregator (Collecting > Links).**
+  Dealers / References / Topics accordion sections.
+
+## Epic 6 — Collection mentality
+
+- **2026-05-03 — Watch Challenges v1.** Constrained hypothetical
+  collections; ONE collection per challenge with `type='challenge'`.
+- **2026-05-06 — Watch Challenges rebuild (PRs #71, #73, #74, #75, #76).**
+  3-stage stepper, click-pick everywhere, source picker over Lists/Favorites.
+- **2026-05-06 — Watch Challenges v1.5 (PRs #78, #80, #90).**
+  `?newchallenge=1` + `?challenge=<id>&shared=1` receive flows + sender attribution.
+- **2026-05-14 — Watchbox top-level tab (PR #289).** My Watches lifted to
+  `tab=watchbox`, reached via the avatar dropdown (no main-nav pill).
+
+## Epic 7 — Discovery & recommender
+
+- **2026-05-18 — RECOMMENDER_STRATEGY.md.** Three-layer model (reference
+  knowledge / collector mentality / recommendation) + Robustness Anxiety
+  case pattern.
+- **2026-05-20 — Articles as first-class (PRs #403–#405, #399).** Hearted
+  articles, saved-articles virtual row, add-to-list + Articles section in
+  drill-ins, my-reactions virtual list.
+- **2026-05-20 — collector_profile_analyzer.py.** LLM collector-profile
+  generation from hearts / lists / reactions (→ COLLECTOR_HANDOFF).
+
+## Epic 8 — Site analytics (admin-only)
+
+- **2026-05-02 — Source quality dashboard.** Per-source admin table:
+  live count, hearts, heart-rate, avg price, top brand, earning-its-keep chip.
+- **2026-05-05 — Total throughput in value.** Per-source rolling
+  30-day `$ added` and `$ sold` columns on Source quality table.
+- **2026-05-05 — Auction-house quality dashboard.** Six-house table:
+  sales counts, sold rate, $ sold (90d), median Hammer/Low ratio.
+- **2026-05-05 — User stats v1 (`listing_events`).** Raw events table +
+  daily rollup + telemetry hook + engagement columns on Source quality.
+- **2026-05-09 — Realtime + listing velocity (PRs #150, #151/#152).**
+  Live shared-list sync; "SOLD · Nd" chip + per-brand cycle-speed rollup.
+- **2026-05-24 — AdminTab freshness signal (PR #535).** `updated_at`
+  render + "STALE — last run Nh ago" above 12h.
+
+## UI & chrome (cross-cutting)
+
+- **2026-05-15 — Maintenance session (PRs #296–#307).** Test hardening,
+  dead-code deletion, 8 new design tokens, `confirm()`/ConfirmHost
+  replacing every `window.confirm`.
+- **2026-05-22 — Olive chrome identity zone (PRs #445–#453).** Olive
+  (`#3b4a36`) on non-Home tabs both shells; identity bands retired (#448);
+  dynamic PWA theme-color.
+- **2026-05-22 — Mobile shell redesign (PRs #432–#443).** Main tabs to the
+  top stack, bottom nav retired, Spotify-pattern search-focus overlay.
+- **2026-05-22 — Cross-tab "Search all" destination (PR #444).** Reworked
+  into a 4-strip search-results surface (live / auctions / articles / sold).
+- **2026-05-22 — Editorial density pass (PR #454).** Card excerpt dropped,
+  initial page 100→40, infinite scroll.
+- **2026-05-22 — Screening relocated to a Collecting destination (#512–#522).**
+  Pool cards (auction catalogs / your lists / shared lists) instead of an action.
+- **2026-05-22 — Auction tab closing-time bands + Sale filter chip (#524–#528).**
+  "Closing today / this week / …" grouping replaces sale-grouping.
+- **2026-05-24 — Shared FilterRow primitive (PR #537).** Listings +
+  Editorial filter rows extracted so they can't drift apart.
