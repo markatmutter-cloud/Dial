@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { Card } from "./Card";
+import CardStrip from "./CardStrip";
 import { SearchIcon, TabIcon } from "./icons";
 import { MoonPhaseIndicator } from "./MoonPhaseIndicator";
 
@@ -702,60 +703,21 @@ function SectionStrip({ heading, descriptor, items, onViewAll, onScreen, screenC
           the gradient makes the affordance explicit. pointerEvents
           none so it doesn't swallow taps/swipes through the overlay. */}
       <div style={{ position: "relative" }}>
-      <div style={{
-        display: "flex", gap: 1, overflowX: "auto", overflowY: "hidden",
-        padding: inverted ? "0 0 4px" : "0 16px 4px",
-        scrollSnapType: "x mandatory",
-        WebkitOverflowScrolling: "touch",
-        scrollbarWidth: "none", msOverflowStyle: "none",
-        background: inverted ? "var(--surface-on-dark)" : "var(--border)",
-      }}>
-        {slice.map(item => (
-          <div key={item.id} style={isMobile ? {
-            // Mobile tiles — sized so 2.5 fit on a typical phone
-            // viewport (393–430px). 28% / 140px (Mark 2026-05-15)
-            // went too narrow: the heart / × / ⋯ overlay buttons
-            // are absolute-positioned and don't shrink with the
-            // tile, so at 110-140px width they visually dominate
-            // the image, plus the title becomes hard to read at
-            // glance. 38% / 170px restores legible tiles while
-            // still showing partial 3rd tile + a 4th hint — the
-            // "more to scroll" affordance is preserved.
-            // (History: 60%/240px → 44%/180px → 28%/140px → 38%/170px)
-            flex: "0 0 38%", maxWidth: 170, scrollSnapAlign: "start", background: "var(--card-bg)",
-            position: "relative",
-          } : {
-            // Desktop tiles — fixed pixel width so the strip reads as a
-            // proper slider regardless of viewport. ~210px lands ~6 tiles
-            // visible on a typical 1440px window with the rest hinting
-            // off the right edge.
-            flex: "0 0 210px", scrollSnapAlign: "start", background: "var(--card-bg)",
-            position: "relative",
-          }}>
+      <CardStrip
+        items={slice}
+        isMobile={isMobile}
+        background={inverted ? "var(--surface-on-dark)" : "var(--border)"}
+        inset={!inverted}
+        renderCard={item => (
+          <>
             <Card item={item} wished={!!watchlist[item.id]} onWish={handleWish}
               compact={compact}
               onHide={isAdmin ? toggleHide : undefined}
-              // On Home the × overlay handles Home-only hide.
-              // Rename the ⋯ menu Hide entry to "Hide everywhere"
-              // so the two actions are visually disambiguated
-              // (Mark feedback 2026-05-11). Card respects
-              // hideLabel via its existing prop.
               hideLabel="Hide everywhere"
               isHidden={!!hidden[item.id]}
               onAddToCollection={user ? openCollectionPicker : undefined}
               primaryCurrency={primaryCurrency}
               onShare={onShare} onView={onView} onClickListing={onClickListing} />
-            {/* Admin one-tap quick-hide overlay — Home only (2026-05-11).
-                Mark report: "crappy watches showing up on the home
-                screen and I want to hide on a daily basis." Fires
-                `toggleHomeHide(item.id)` which writes to a local
-                home-only set (localStorage `dial_home_hidden_v1`) —
-                hides the listing from THIS page only, doesn't touch
-                hidden_listings or admin_hidden_listings. Other tabs
-                and other users still see it. The ⋯ menu Hide is
-                unchanged and still does the full per-user + global
-                curation hide for cases where Mark wants the listing
-                gone from everywhere. */}
             {isAdmin && toggleHomeHide && (
               <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleHomeHide(item.id); }}
                 aria-label="Hide from Home"
@@ -775,9 +737,9 @@ function SectionStrip({ heading, descriptor, items, onViewAll, onScreen, screenC
                 </svg>
               </button>
             )}
-          </div>
-        ))}
-      </div>
+          </>
+        )}
+      />
         {/* Right-edge fade — lives inside the position:relative wrapper
             opened above the scroll div. Mark 2026-05-15 desktop audit:
             "wanted the fade but didn't seem to come through" — bumped
