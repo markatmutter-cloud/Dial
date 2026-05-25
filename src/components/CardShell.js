@@ -123,7 +123,10 @@ export default function CardShell({
     color: "var(--text1)", whiteSpace: "nowrap", borderRadius: 6,
   };
   const rating = menu && menu.rating;
-  const hasMenu = !!menu && (menu.onShare || menu.onAddToCollection || menu.onHide || rating
+  // Match Card.js's original menu-render condition: rating alone does NOT
+  // open the menu — it only shows as a section when the menu is already
+  // present for share/add/hide/extra. (Behaviour-identical fold.)
+  const hasMenu = !!menu && (menu.onShare || menu.onAddToCollection || menu.onHide
     || (menu.extraMenuItems && menu.extraMenuItems.length > 0));
   const actionSize = compact ? 26 : 36;
   const heartIconSize = compact ? 12 : 16;

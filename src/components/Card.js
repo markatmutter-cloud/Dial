@@ -1,18 +1,12 @@
-import React, { useState, useEffect, useRef, memo } from "react";
-import { createPortal } from "react-dom";
+import React, { useEffect, useRef, memo } from "react";
 import { fmt, imgSrc, fmtCountdown, fmtLotPrice, fmtSoldDate, priceIn, daysOnSale, daysOnSaleLabel, CURRENCY_SYM, FX_RATES_USD_PER } from "../utils";
-import { HeartIcon } from "./icons";
+import CardShell from "./CardShell";
 
-// Shared style for action-menu rows. Module-scope so it's not
-// re-created per Card render. Uses var(--text1) explicitly so the
-// dropdown reads in both light and dark mode against var(--bg).
-const menuItemStyle = {
-  display: "block", width: "100%", textAlign: "left",
-  padding: "8px 10px", border: "none", background: "transparent",
-  color: "var(--text1)", cursor: "pointer",
-  fontFamily: "inherit", fontSize: 13, borderRadius: 6,
-  whiteSpace: "nowrap",
-};
+// Card system (2026-05-24): Card renders into the shared CardShell — it keeps
+// ALL its price/FX/auction logic and computes the slot nodes (imageOverlay /
+// L1 title / L2 source / L3 price), while CardShell owns the frame + the action
+// stack + the single portal menu. The menu impl + menuItemStyle moved to
+// CardShell (one source of truth, was duplicated in EditorialView too).
 
 // Wrapped in React.memo so an unrelated state change in App (heart toggle
 // on a different card, scroll-triggered page bump, filter tweak) doesn't
@@ -78,23 +72,6 @@ export const Card = memo(function Card({
   // default (auto + loading="lazy"). Cheap perceived-perf win.
   priority = false,
 }) {
-  // When the dealer's image URL goes 404 (e.g. they cleaned up their CDN
-  // for a sold listing), the browser shows an ugly broken-image icon.
-  // Track the failure and render a clean placeholder instead.
-  const [imgFailed, setImgFailed] = useState(false);
-  // Action menu open/close. Click-outside + Escape closes.
-  const [menuOpen, setMenuOpen] = useState(false);
-  // Brief "Copied!" feedback when Web Share API isn't available and
-  // we fall back to the clipboard. 1.2s timeout, no toast component.
-  const [shareFeedback, setShareFeedback] = useState("");
-  // Portal-anchored menu position. The menu used to live inside the
-  // card's overflow:hidden subtree, so longer labels (Remove from
-  // collection, Watch details) overflowed the card edge and got
-  // clipped — Mark report 2026-05-10. Now rendered via portal with
-  // position:fixed at coords computed from the trigger's rect.
-  const [menuPos, setMenuPos] = useState(null);
-  const triggerRef = useRef(null);
-  const portalRef = useRef(null);
   // View-event observer registration. When onView is supplied, hand
   // the card's outer node to the App-level IntersectionObserver so it
   // can fire a `view` once the card crosses 50% visibility. Returns a
@@ -104,26 +81,6 @@ export const Card = memo(function Card({
     if (!onView || !cardRef.current) return undefined;
     return onView(cardRef.current, item);
   }, [onView, item]);
-  useEffect(() => {
-    if (!menuOpen) return;
-    const onDown = (e) => {
-      const inTrigger = triggerRef.current && triggerRef.current.contains(e.target);
-      const inPortal  = portalRef.current && portalRef.current.contains(e.target);
-      if (!inTrigger && !inPortal) setMenuOpen(false);
-    };
-    const onKey = (e) => { if (e.key === "Escape") setMenuOpen(false); };
-    // Defer one tick so the click that opened the menu doesn't
-    // immediately close it.
-    const t = setTimeout(() => {
-      document.addEventListener("mousedown", onDown);
-      document.addEventListener("keydown", onKey);
-    }, 0);
-    return () => {
-      clearTimeout(t);
-      document.removeEventListener("mousedown", onDown);
-      document.removeEventListener("keydown", onKey);
-    };
-  }, [menuOpen]);
   // (Previously had a NEW chip on cards <= 1 day old. Removed
   // 2026-04-30 — was firing inconsistently due to the backfill rule
   // and the date-order sort already conveys recency. Less chrome on
@@ -264,376 +221,123 @@ export const Card = memo(function Card({
     : null;
   const countdownIsPast = countdownLabel && countdownLabel.startsWith("ended");
   // ⚠️ Never put a {/* */} JSX comment between `return (` and the root element — CRA parses it as a stray object literal and CI=true turns it into a failed build. Comments go inside the JSX tree or above the return.
+  // Card-system fold (2026-05-24): render into the shared CardShell. ALL the
+  // price/FX/auction logic above is untouched — here we hand the computed
+  // pieces to the shell's slots (imageOverlay / L2 source / L1 title / L3
+  // price) and the action config (heart / menu / quickAction). CardShell owns
+  // the frame, the action stack, and the single portal menu.
   return (
-    <div ref={cardRef} style={{ background: "var(--card-bg)", display: "flex", flexDirection: "column", position: "relative", minWidth: 0, overflow: "hidden" }}>
-      <a href={item.url} target="_blank" rel="noopener noreferrer"
-        onClick={() => { if (onClickListing) onClickListing(item); }}
-        style={{ textDecoration: "none", color: "inherit", display: "flex", flexDirection: "column" }}>
-        <div style={{ position: "relative", paddingTop: "100%", overflow: "hidden" }}>
-          {item.img && !imgFailed ? (
-            <img src={imgSrc(item.img)} alt={item.ref}
-              onError={() => setImgFailed(true)}
-              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
-              loading="lazy"
-              decoding="async"
-              fetchpriority={priority ? "high" : "auto"} />
-          ) : (
-            // On-brand placeholder when the image is missing or the dealer's
-            // URL has gone 404. Uses the same hourglass mark as the favicon
-            // / app icon. Tinted against the existing site palette.
-            <div style={{
-              position: "absolute", inset: 0,
-              background: "var(--surface)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              flexDirection: "column", gap: 6,
-            }}>
-              <img src="/favicon-192.png" alt="" aria-hidden="true"
-                style={{ width: "44%", maxWidth: 88, opacity: 0.55 }} />
-              <span style={{ fontSize: 10, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--text3)" }}>
-                Image not available
-              </span>
-            </div>
-          )}
-          {/* Top-left chip stack — only one of these renders at a
-              time. SOLD wins (terminal state), then HIDDEN, then the
-              auction countdown / fallback AUCTION pill. Mark moved
-              the countdown from the right corner to the left
-              2026-04-30 so it sits with the other state badges
-              instead of crowding the heart/hide buttons on the right. */}
-          {/* Top-left state chip — fontSize bumped down to 9 (was 10)
-              2026-04-30 so it doesn't eat ~40% of card width at narrow
-              mobile widths (2-col view = ~165px cards). Stays legible
-              and gives chip more breathing room on every density. */}
-          {item.sold ? (() => {
-            // Velocity chip: "SOLD · 4d" when we know firstSeen +
-            // soldAt. Auctions don't have a firstSeen-from-listing
-            // history (lots appear on the catalog ~weeks before the
-            // sale and "sold" is the auction end), so the chip
-            // would mislead — skip on auction-shaped items. Mark
-            // wants this for dealer cycle-speed visibility (Mark
-            // request 2026-05-09).
-            const dur = (!item._isAuctionFormat && !item._isTrackedLot)
-              ? daysOnSale(item) : null;
-            const durLabel = dur != null ? daysOnSaleLabel(dur) : null;
-            return (
-              <div style={{ position: "absolute", top: 6, left: 6, background: "rgba(0,0,0,0.6)", color: "#fff", fontSize: 10, padding: "2px 8px", borderRadius: 8, letterSpacing: "0.06em" }}
-                title={durLabel ? `On sale for ${durLabel} before going sold` : undefined}>
-                SOLD{durLabel ? ` · ${durLabel}` : ""}
-              </div>
-            );
-          })() : isHidden ? (
-            <div style={{ position: "absolute", top: 6, left: 6, background: "rgba(120,120,120,0.85)", color: "#fff", fontSize: 10, padding: "2px 8px", borderRadius: 8, letterSpacing: "0.06em" }}>HIDDEN</div>
-          ) : countdownLabel ? (
-            <div style={{
-              position: "absolute", top: 6, left: 6,
-              // PR 2026-05-22: countdown chip from brand-blue (rgba
-              // 24,95,165) to brand-olive (rgba 59,74,54). Same opacity
-              // so the ended-state stays dark-grey for distinction.
-              // Mark spec: "blue chips on time remaining and other
-              // throughout the site - should they be green?"
-              background: countdownIsPast ? "rgba(0,0,0,0.55)" : "rgba(59,74,54,0.92)",
-              color: "#fff", fontSize: 10,
-              padding: "2px 8px", borderRadius: 8,
-              letterSpacing: "0.04em", fontWeight: 600,
-              textTransform: "uppercase",
-            }}>{countdownLabel}</div>
-          ) : isAuctionLot ? (
-            // Auction-format lot without a known auction_end (e.g. a
-            // Phillips lot before the calendar lookup populated it):
-            // still mark it as an auction so users can tell at a glance.
-            <div style={{
-              position: "absolute", top: 6, left: 6,
-              background: "rgba(59,74,54,0.92)", color: "#fff",
-              fontSize: 10, padding: "2px 8px", borderRadius: 8,
-              letterSpacing: "0.06em", fontWeight: 600,
-            }}>AUCTION</div>
-          ) : null}
-        </div>
-        <div style={{ padding: compact ? "5px 7px 8px" : "7px 9px 10px" }}>
-          <div style={{ fontSize: compact ? 8 : 9, color: "var(--text3)", marginBottom: 2, textTransform: "uppercase", letterSpacing: "0.05em" }}>{item.source}</div>
-          {/* Always reserve 2 lines' worth of height so cards in a grid row
-              line up regardless of whether the title wraps. Empty title gets
-              a space so the line-height still renders. */}
-          {/* Brand + model prepended in bold when set + not "Other"
-              AND not already in the source-emitted title (Mark spec
-              2026-05-19 items 6+7: "could brand be included in all
-              cards at the start" / "build in model names into the
-              titles Tudor 'Submariner' as a step before going to
-              references"). Hairspring titles like "6238, Black
-              Galvanic Dial, 'Pre-Daytona' Chronograph, Steel" don't
-              mention "Rolex Daytona" — the bold prefix makes the
-              brand+model legible at a glance.
-
-              Model lives on items already (Epic 0 matcher populates
-              model + sub_model + model_line on auction lots + the
-              editorial projections — Hairspring Finds, Hodinkee
-              Shop). Dealer listings.json doesn't yet — that needs
-              merge.py + reference_index_match wiring (Epic 0 slice
-              B, pending). Until then, dealer items degrade to
-              brand-only prefix. */}
-          {(() => {
-            const title = item.ref || " ";
-            const brand = item.brand;
-            const model = item.model;
-            const lowerTitle = title.toLowerCase();
-            const showBrand = brand
-              && brand !== "Other"
-              && !lowerTitle.includes(brand.toLowerCase());
-            // Skip model when it's already in the title OR already
-            // contained in the brand string (avoids "Cartier Tank"
-            // when the brand string was "Cartier Tank" itself).
-            const showModel = model
-              && !lowerTitle.includes(model.toLowerCase())
-              && !(brand && brand.toLowerCase().includes(model.toLowerCase()));
-            const prefix = [showBrand && brand, showModel && model].filter(Boolean).join(" ");
-            return (
-              <div style={{ fontSize: compact ? 10 : 12, fontWeight: 500, lineHeight: 1.3, marginBottom: 4, color: "var(--text1)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", minHeight: compact ? 26 : 32 }}>
-                {prefix ? <><b style={{ fontWeight: 700 }}>{prefix}</b> {title}</> : title}
-              </div>
-            );
-          })()}
-          {isLot ? (
-            <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
-              <span style={{ fontSize: 10, color: "var(--text3)", letterSpacing: "0.05em", fontWeight: 600 }}>
-                {lotLabel}
-              </span>
-              <span style={{ fontSize: compact ? 11 : 13, fontWeight: 500, color: item.sold ? "var(--accent-positive)" : "var(--text1)" }}>
-                {lotPrimaryDisplay}
-              </span>
-            </div>
-          ) : (
-            <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
-              <div style={{ fontSize: compact ? 11 : 13, fontWeight: 500, color: item.sold ? "var(--text2)" : "var(--text1)" }}>{displayPrice}</div>
-              {priceDropped && (
-                <span title={`Peak ${fmt(peakPrice, item.currency || "USD")} → ${fmt(item.price, item.currency || "USD")}`}
-                  style={{ fontSize: 10, color: "var(--accent-positive)", fontWeight: 600 }}>
-                  ↓ {fmt(cumulativeDrop, item.currency || "USD")}
-                </span>
-              )}
-            </div>
-          )}
-          {/* Secondary line carries (in priority order):
-                1. Sold date — when the item is sold, surface when the
-                   price was recorded. Mark wanted this front-and-center
-                   for archive browsing.
-                2. Native price for non-USD items (since primary is now
-                   the USD-converted figure).
-                3. Auction estimate range (active auction-format lots).
-                4. Invisible spacer to keep row heights uniform. */}
-          <div style={{ fontSize: 10, color: "var(--text3)", minHeight: 12 }}>
-            {(() => {
-              if (item.sold) {
-                const soldDateStr = item.soldAt || item.lastSeen
-                  || (isLot ? item.auction_end : null);
-                const label = fmtSoldDate(soldDateStr);
-                if (label) return label;
-              }
-              if (isLot) {
-                if (lotShowNative) return fmtLotPrice(lotNativeValue, item.currency);
-                return estimateLine || " ";
-              }
-              // Compact tiles (Home strips, 38% / 170px wide) suppress
-              // the native-currency line — the dual-price stack made
-              // non-USD dealer tiles render ~16px taller than USD
-              // tiles, breaking strip uniformity (Mark screenshot
-              // 2026-05-20: Falco £11,495 below $14,599 pushed the
-              // tile past everything else). The minHeight: 12 spacer
-              // still reserves the line so bottom edges stay aligned.
-              // Sold-date + auction-estimate (cases above) stay
-              // visible everywhere because they're high-signal context.
-              if (compact) return " ";
-              return showNative ? fmt(item.price, item.currency) : " ";
-            })()}
+    <CardShell
+      innerRef={cardRef}
+      href={item.url}
+      onClickLink={onClickListing ? () => onClickListing(item) : undefined}
+      image={item.img ? { src: imgSrc(item.img), alt: item.ref } : null}
+      priority={priority}
+      aspect="square"
+      size={compact ? "compact" : "full"}
+      bodyPadding={compact ? "5px 7px 8px" : "7px 9px 10px"}
+      imageOverlay={item.sold ? (() => {
+        const dur = (!item._isAuctionFormat && !item._isTrackedLot)
+          ? daysOnSale(item) : null;
+        const durLabel = dur != null ? daysOnSaleLabel(dur) : null;
+        return (
+          <div style={{ position: "absolute", top: 6, left: 6, background: "rgba(0,0,0,0.6)", color: "#fff", fontSize: 10, padding: "2px 8px", borderRadius: 8, letterSpacing: "0.06em" }}
+            title={durLabel ? `On sale for ${durLabel} before going sold` : undefined}>
+            SOLD{durLabel ? ` · ${durLabel}` : ""}
           </div>
-        </div>
-      </a>
-      {/* Action-button sizing tracks card density. compact mode is
-          activated at cols >= 4 (App.js: const compact = cols >= 4),
-          where cards are narrow and a tight 26px button is fine. At
-          1 / 2 / 3 cols the cards are large enough that 26px reads as
-          a tiny tap target — especially on mobile 1-col where each
-          card spans the viewport. Bump to 36px (heart 16px, ⋯ 20px)
-          for the non-compact case so the heart is comfortably tap-
-          sized at all column counts. */}
-      {quickAction && (
-        <button onClick={e => { e.preventDefault(); e.stopPropagation(); quickAction.onClick(item); }}
-          aria-label={quickAction.label}
-          title={quickAction.label}
-          style={{
-            position: "absolute", top: 6, left: 6,
-            width: compact ? 22 : 28, height: compact ? 22 : 28,
-            borderRadius: "50%", border: "none", cursor: "pointer",
-            background: quickAction.active ? "rgba(220,38,38,0.88)" : "rgba(0,0,0,0.55)",
-            color: "#fff",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: compact ? 12 : 14, fontWeight: 700,
-            fontFamily: "inherit", padding: 0, lineHeight: 1,
-          }}>{quickAction.icon || "↑"}</button>
-      )}
-      <div style={{ position: "absolute", top: 6, right: 6, display: "flex", flexDirection: "column", gap: 6 }}>
-        <button onClick={e => { e.preventDefault(); e.stopPropagation(); onWish(item); }}
-          aria-label="Save"
-          style={{ width: compact ? 26 : 36, height: compact ? 26 : 36, borderRadius: "50%", border: "none", cursor: "pointer",
-                  background: wished ? "rgba(220,38,38,0.88)" : "rgba(0,0,0,0.28)",
-                  color: "#fff", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <HeartIcon filled={wished} size={compact ? 12 : 16} />
-        </button>
-        {/* "..." menu — replaces the standalone × hide button as of
-            2026-05-01. Houses Add-to-collection + Hide; Session 3
-            adds Share. Renders only if at least one menu item is
-            available (so signed-out browsing keeps the card clean).
-            Anchored top-right with the dropdown opening down-and-left
-            so it doesn't fall off the screen on rightmost cards. */}
-        {(onAddToCollection || onHide || onShare || (extraMenuItems && extraMenuItems.length > 0)) && (
-          <div style={{ position: "relative" }}>
-            <button ref={triggerRef}
-              onClick={e => {
-                e.preventDefault(); e.stopPropagation();
-                if (!menuOpen && triggerRef.current) {
-                  const r = triggerRef.current.getBoundingClientRect();
-                  // Anchor the menu's right edge to the trigger's right
-                  // edge in viewport coords. Clamp left to ≥8 below.
-                  setMenuPos({ top: r.bottom + 4, right: Math.max(8, window.innerWidth - r.right) });
-                }
-                setMenuOpen(o => !o);
-              }}
-              aria-label="More actions"
-              style={{ width: compact ? 26 : 36, height: compact ? 26 : 36, borderRadius: "50%", border: "none", cursor: "pointer",
-                      background: menuOpen ? "rgba(0,0,0,0.55)" : "rgba(0,0,0,0.28)",
-                      color: "#fff", display: "flex", alignItems: "center", justifyContent: "center",
-                      padding: 0, fontFamily: "inherit", fontSize: compact ? 16 : 20, lineHeight: 1 }}>
-              ⋯
-            </button>
-            {menuOpen && menuPos && createPortal(
-              <div ref={portalRef} onClick={e => e.preventDefault()}
-                style={{
-                  position: "fixed",
-                  top: menuPos.top, right: menuPos.right,
-                  zIndex: 1000,
-                  // Clamp width so on a small viewport the menu can't
-                  // extend past the left edge — labels wrap if forced.
-                  maxWidth: `calc(100vw - ${menuPos.right + 16}px)`,
-                  background: "var(--bg)", border: "0.5px solid var(--border)",
-                  borderRadius: 8, padding: 4,
-                  whiteSpace: "nowrap",
-                  boxShadow: "0 6px 20px rgba(0,0,0,0.18)",
-                  // Portal mounts to document.body; without an explicit
-                  // font-family the inherit chain hits the browser's
-                  // default (serif). Mark report 2026-05-11: Share /
-                  // Add to / Hide were rendering in Times. Pin to the
-                  // system sans the rest of the app uses.
-                  fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif",
-                }}>
-                {onRate && (
-                  <>
-                    <div style={{
-                      padding: "6px 10px 2px",
-                      fontSize: 10, fontWeight: 600,
-                      color: "var(--text3)",
-                      letterSpacing: "0.08em",
-                      textTransform: "uppercase",
-                    }}>
-                      Give rating
-                    </div>
-                    <div style={{
-                      display: "flex", gap: 4, padding: "2px 6px 6px",
-                    }}>
-                      {[
-                        { emoji: "👍", label: "Yes", color: "var(--brand)" },
-                        { emoji: "❌", label: "Pass", color: "var(--text3)" },
-                      ].map(({ emoji, label, color }) => {
-                        const active = myRating === emoji;
-                        return (
-                          <button key={emoji} onClick={e => {
-                            e.preventDefault(); e.stopPropagation();
-                            setMenuOpen(false);
-                            onRate(emoji);
-                          }} style={{
-                            flex: 1,
-                            display: "inline-flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            gap: 6,
-                            padding: "6px 8px",
-                            border: active ? `1px solid ${color}` : "0.5px solid var(--border)",
-                            borderRadius: 6,
-                            background: active ? "var(--brand-tint-12)" : "transparent",
-                            color: active ? color : "var(--text1)",
-                            cursor: "pointer",
-                            fontFamily: "inherit",
-                            fontSize: 12,
-                            fontWeight: 500,
-                          }}>
-                            {emoji === "👍" ? (
-                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" strokeWidth="2.2"
-                                strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                                <path d="M20 6L9 17l-5-5"/>
-                              </svg>
-                            ) : (
-                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" strokeWidth="1.8"
-                                strokeLinecap="round" aria-hidden="true">
-                                <path d="M18 6L6 18M6 6l12 12"/>
-                              </svg>
-                            )}
-                            <span>{label}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                    <div style={{
-                      height: 1, margin: "2px 6px 4px",
-                      background: "var(--border)",
-                    }} />
-                  </>
-                )}
-                {onShare && (
-                  <button onClick={async e => {
-                    e.preventDefault(); e.stopPropagation();
-                    let result;
-                    try { result = await onShare(item); }
-                    catch (err) { console.warn("share failed", err); result = null; }
-                    if (result?.copied) {
-                      setShareFeedback("Copied!");
-                      setTimeout(() => { setShareFeedback(""); setMenuOpen(false); }, 1200);
-                    } else {
-                      setMenuOpen(false);
-                    }
-                  }} style={menuItemStyle}>{shareFeedback || "Share"}</button>
-                )}
-                {/* Menu labels are intentionally short so the menu
-                    fits inside a 3-col-mobile card (~114px wide).
-                    Longer labels ("Add to collection…", "Hide from
-                    feed", "Remove from collection") would push the
-                    menu past the card's overflow:hidden edge and
-                    get clipped. The "…" on "Add to" hints at the
-                    second-step picker modal. */}
-                {onAddToCollection && (
-                  <button onClick={e => { e.preventDefault(); e.stopPropagation(); setMenuOpen(false); onAddToCollection(item); }}
-                    style={menuItemStyle}>Add to…</button>
-                )}
-                {onHide && (
-                  <button onClick={e => { e.preventDefault(); e.stopPropagation(); setMenuOpen(false); onHide(item); }}
-                    style={menuItemStyle}>
-                    {hideLabel === "Remove from list"
-                      ? "Remove"
-                      : (hideLabel || (isHidden ? "Unhide" : "Hide"))}
-                  </button>
-                )}
-                {(extraMenuItems || []).map((entry, i) => (
-                  <button key={i} onClick={e => {
-                    e.preventDefault(); e.stopPropagation();
-                    setMenuOpen(false);
-                    entry.onClick(item);
-                  }} style={menuItemStyle}>{entry.label}</button>
-                ))}
-              </div>,
-              document.body
+        );
+      })() : isHidden ? (
+        <div style={{ position: "absolute", top: 6, left: 6, background: "rgba(120,120,120,0.85)", color: "#fff", fontSize: 10, padding: "2px 8px", borderRadius: 8, letterSpacing: "0.06em" }}>HIDDEN</div>
+      ) : countdownLabel ? (
+        <div style={{
+          position: "absolute", top: 6, left: 6,
+          background: countdownIsPast ? "rgba(0,0,0,0.55)" : "rgba(59,74,54,0.92)",
+          color: "#fff", fontSize: 10,
+          padding: "2px 8px", borderRadius: 8,
+          letterSpacing: "0.04em", fontWeight: 600,
+          textTransform: "uppercase",
+        }}>{countdownLabel}</div>
+      ) : isAuctionLot ? (
+        <div style={{
+          position: "absolute", top: 6, left: 6,
+          background: "rgba(59,74,54,0.92)", color: "#fff",
+          fontSize: 10, padding: "2px 8px", borderRadius: 8,
+          letterSpacing: "0.06em", fontWeight: 600,
+        }}>AUCTION</div>
+      ) : null}
+      level2={<div style={{ fontSize: compact ? 8 : 9, color: "var(--text3)", marginBottom: 2, textTransform: "uppercase", letterSpacing: "0.05em" }}>{item.source}</div>}
+      level1={(() => {
+        const title = item.ref || " ";
+        const brand = item.brand;
+        const model = item.model;
+        const lowerTitle = title.toLowerCase();
+        const showBrand = brand
+          && brand !== "Other"
+          && !lowerTitle.includes(brand.toLowerCase());
+        const showModel = model
+          && !lowerTitle.includes(model.toLowerCase())
+          && !(brand && brand.toLowerCase().includes(model.toLowerCase()));
+        const prefix = [showBrand && brand, showModel && model].filter(Boolean).join(" ");
+        return (
+          <div style={{ fontSize: compact ? 10 : 12, fontWeight: 500, lineHeight: 1.3, marginBottom: 4, color: "var(--text1)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", minHeight: compact ? 26 : 32 }}>
+            {prefix ? <><b style={{ fontWeight: 700 }}>{prefix}</b> {title}</> : title}
+          </div>
+        );
+      })()}
+      level3={<>
+        {isLot ? (
+          <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+            <span style={{ fontSize: 10, color: "var(--text3)", letterSpacing: "0.05em", fontWeight: 600 }}>
+              {lotLabel}
+            </span>
+            <span style={{ fontSize: compact ? 11 : 13, fontWeight: 500, color: item.sold ? "var(--accent-positive)" : "var(--text1)" }}>
+              {lotPrimaryDisplay}
+            </span>
+          </div>
+        ) : (
+          <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+            <div style={{ fontSize: compact ? 11 : 13, fontWeight: 500, color: item.sold ? "var(--text2)" : "var(--text1)" }}>{displayPrice}</div>
+            {priceDropped && (
+              <span title={`Peak ${fmt(peakPrice, item.currency || "USD")} → ${fmt(item.price, item.currency || "USD")}`}
+                style={{ fontSize: 10, color: "var(--accent-positive)", fontWeight: 600 }}>
+                ↓ {fmt(cumulativeDrop, item.currency || "USD")}
+              </span>
             )}
           </div>
         )}
-      </div>
-    </div>
+        <div style={{ fontSize: 10, color: "var(--text3)", minHeight: 12 }}>
+          {(() => {
+            if (item.sold) {
+              const soldDateStr = item.soldAt || item.lastSeen
+                || (isLot ? item.auction_end : null);
+              const label = fmtSoldDate(soldDateStr);
+              if (label) return label;
+            }
+            if (isLot) {
+              if (lotShowNative) return fmtLotPrice(lotNativeValue, item.currency);
+              return estimateLine || " ";
+            }
+            if (compact) return " ";
+            return showNative ? fmt(item.price, item.currency) : " ";
+          })()}
+        </div>
+      </>}
+      quickAction={quickAction ? {
+        label: quickAction.label, icon: quickAction.icon,
+        active: quickAction.active, onClick: () => quickAction.onClick(item),
+      } : null}
+      heart={{ wished, onToggle: () => onWish(item) }}
+      menu={{
+        rating: onRate ? { myRating, onRate } : null,
+        onShare: onShare ? () => onShare(item) : null,
+        onAddToCollection: onAddToCollection ? () => onAddToCollection(item) : null,
+        onHide: onHide ? () => onHide(item) : null,
+        hideLabel,
+        isHidden,
+        extraMenuItems: (extraMenuItems || []).map(entry => ({
+          label: entry.label, onClick: () => entry.onClick(item),
+        })),
+      }}
+    />
   );
 });
