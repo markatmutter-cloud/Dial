@@ -12,7 +12,7 @@ import { HeartIcon } from "./icons";
 // Saved sub-tabs, the Saved-articles virtual row, future sold-state
 // inference) branch on. Listing-style toggling reuses the existing
 // `toggleWatchlist` path so we don't fork the heart primitive.
-function articleAsListing(article) {
+export function articleAsListing(article) {
   if (!article || !article.url) return null;
   const sourceMeta = article._source || {};
   return {
