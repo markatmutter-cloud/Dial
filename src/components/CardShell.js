@@ -27,6 +27,36 @@ import React, { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { HeartIcon } from "./icons";
 
+// Image sub-component: owns the onError→placeholder fallback (dealer image
+// URLs 404 over time — Card.js relied on this). Falls back to the same
+// favicon placeholder when there's no src OR the load fails.
+function CardImage({ image, priority }) {
+  const [failed, setFailed] = useState(false);
+  const showImg = image && image.src && !failed;
+  return (
+    <>
+      {showImg ? (
+        <img src={image.src} alt={image.alt || ""}
+          onError={() => setFailed(true)}
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+          loading="lazy" decoding="async" fetchpriority={priority ? "high" : "auto"} />
+      ) : (
+        <div style={{
+          position: "absolute", inset: 0, background: "var(--surface)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          flexDirection: "column", gap: 6,
+        }}>
+          <img src="/favicon-192.png" alt="" aria-hidden="true"
+            style={{ width: "44%", maxWidth: 88, opacity: 0.55 }} />
+          <span style={{ fontSize: 10, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--text3)" }}>
+            Image not available
+          </span>
+        </div>
+      )}
+    </>
+  );
+}
+
 const SANS_STACK = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif";
 
 const ASPECT = { square: "100%", editorial: "62.5%" /* 16:10 */ };
@@ -34,6 +64,7 @@ const ASPECT = { square: "100%", editorial: "62.5%" /* 16:10 */ };
 export default function CardShell({
   // Image
   image,                 // { src, alt } | null  (src already run through imgSrc by caller)
+  priority,              // high fetchpriority for above-the-fold cards
   aspect = "square",     // "square" | "editorial"
   imageOverlay,          // node — top-left state chips (SOLD / countdown / AUCTION)
   // Text levels
@@ -66,13 +97,23 @@ export default function CardShell({
   // opening click doesn't immediately re-close it.
   useEffect(() => {
     if (!menuOpen) return undefined;
-    const onDocClick = (e) => {
+    const onDown = (e) => {
       if (portalRef.current && portalRef.current.contains(e.target)) return;
       if (triggerRef.current && triggerRef.current.contains(e.target)) return;
       setMenuOpen(false);
     };
-    const id = setTimeout(() => document.addEventListener("click", onDocClick), 0);
-    return () => { clearTimeout(id); document.removeEventListener("click", onDocClick); };
+    const onKey = (e) => { if (e.key === "Escape") setMenuOpen(false); };
+    // Defer one tick so the click that opened the menu doesn't immediately
+    // close it. mousedown + Escape, matching the original Card.js behaviour.
+    const id = setTimeout(() => {
+      document.addEventListener("mousedown", onDown);
+      document.addEventListener("keydown", onKey);
+    }, 0);
+    return () => {
+      clearTimeout(id);
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
   }, [menuOpen]);
 
   const menuItemStyle = {
@@ -93,23 +134,7 @@ export default function CardShell({
         onClick={() => { if (onClickLink) onClickLink(); }}
         style={{ textDecoration: "none", color: "inherit", display: "flex", flexDirection: "column" }}>
         <div style={{ position: "relative", paddingTop: ASPECT[aspect] || ASPECT.square, overflow: "hidden" }}>
-          {image && image.src ? (
-            <img src={image.src} alt={image.alt || ""}
-              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
-              loading="lazy" decoding="async" />
-          ) : (
-            <div style={{
-              position: "absolute", inset: 0, background: "var(--surface)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              flexDirection: "column", gap: 6,
-            }}>
-              <img src="/favicon-192.png" alt="" aria-hidden="true"
-                style={{ width: "44%", maxWidth: 88, opacity: 0.55 }} />
-              <span style={{ fontSize: 10, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--text3)" }}>
-                Image not available
-              </span>
-            </div>
-          )}
+          <CardImage image={image} priority={priority} />
           {imageOverlay}
         </div>
         <div style={{ padding: bodyPadding || (compact ? "8px 10px 10px" : "10px 12px 12px"), minWidth: 0 }}>
