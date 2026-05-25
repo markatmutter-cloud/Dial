@@ -97,6 +97,35 @@ limited time, FOMO copy, "act now", "don't miss", "for you" (as in
 algorithmic feed framing), engagement, growth, scale, monetise,
 power user, hack, pro tips, "shop now".
 
+## Reference & learning copy
+
+Reference pages are "why you should love this watch" — what's
+interesting, where it sits in watches and culture, what to look for.
+Write **for** collectors, **about the watch**, not about collectors to
+an outside reader.
+
+- **No hierarchy or diminishment — even if true, even if positive.** No
+  "starter / entry / first serious / stepping-stone" framing (the $2m
+  "starter home" insult — it shrinks the person's decision). No ranking a
+  watch as lesser ("overshadowed by its bigger brother", "less status",
+  "budget alternative"). Every watch and every buyer's choice is fully
+  serious on its own terms.
+- **Lateral, not laddered.** Watch-to-watch relationships are *linked /
+  alternative / complementary* — what they share, how they differ — never
+  up or down a price/status ladder. The collecting *journey* (you
+  "graduate" from one to another) lives in the coaching surfaces, never
+  the reference page.
+- **Intrinsic, not extrinsic.** Describe the watch, not "what collectors
+  mean when they say…". No typology, no taste-sorting, no telling the
+  reader why they'd want it — leave room for their own discovery.
+- **OK:** "famous for / widely regarded for / known for X" (the watch's
+  standing, not a verdict on the reader). Name variants in correct terms;
+  don't over-explain ("depth text" is a tell — it's *meters-first vs
+  feet-first*).
+- **AI surfaces: be transparent + invite correction.** "An AI map, part
+  machine part human, still learning — something off? Suggest a fix."
+  Honest framing earns slack and keeps a wrong rec from losing a user.
+
 ## What "good" looks like in five years
 
 Someone reads about Watchlist on r/watches and the comment is
