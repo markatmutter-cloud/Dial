@@ -488,7 +488,7 @@ export default function Watchlist() {
   // (Mark spec, "while at it, move the challenge tab from watchlist
   // to collecting"). Challenges sits as a Collecting sub-tab
   // alongside Editorial / Size compare / Links.
-  const REFERENCES_SUB_VALUES = ["editorial", "screening", "challenges", "size", "links"];
+  const REFERENCES_SUB_VALUES = ["editorial", "references", "screening", "challenges", "size", "links"];
   const [referencesSubTab, setReferencesSubTab] = useState(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
@@ -3826,6 +3826,7 @@ export default function Watchlist() {
       }}>
         {[
           ["editorial",  "Editorial"],
+          ["references", "References"],
           ["screening",  "Screening"],
           ["challenges", "Challenges"],
           ["size",       "Size comparison"],
@@ -4075,6 +4076,18 @@ export default function Watchlist() {
         setWatchTopTab("lists");
         setPage(1);
       }}
+      // Reference pages (2026-05-24): "View all" on a market slider deep-links
+      // to Listings pre-filtered by the page's reference set (same pattern as
+      // homeJumpToDealer). onClickListing carries the existing card telemetry.
+      onViewAll={(refs, sub) => {
+        setSearch("");
+        setFilterSources([]); setFilterBrands([]); setFilterModels([]);
+        setFilterRefs(Array.isArray(refs) ? refs : [refs]);
+        setTab("listings");
+        setListingsSubTab(sub || "live");
+        setPage(1);
+      }}
+      onClickListing={onClickListing}
     />
   );
 

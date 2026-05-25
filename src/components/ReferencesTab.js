@@ -4,6 +4,8 @@ import { Links } from "./Links";
 import { EditorialView } from "./EditorialView";
 import { ChallengesView } from "./ChallengesView";
 import { ScreeningView } from "./ScreeningView";
+import { ReferencePage } from "./ReferencePage";
+import { DEFAULT_REFERENCE_NODE } from "../data/referencePages";
 
 // Collecting tab (internal `tab="references"`, UI label "Collecting").
 // Restructured 2026-05-18 (Mark spec) from a resource-button list
@@ -64,6 +66,10 @@ export function ReferencesTab({
   lotCountsByAuctionUrl,
   onReviewAuctionCatalog,
   onScreeningOpenList,
+  // Reference pages (2026-05-24): deep-link to Listings pre-filtered by
+  // reference + click telemetry for the market/connection sliders.
+  onViewAll,
+  onClickListing,
 }) {
   // Tab re-tap → return to default sub-tab. App.js bumps
   // `tabResetTick` whenever the user clicks the active main tab
@@ -127,6 +133,26 @@ export function ReferencesTab({
         handleShare={handleShare}
         pendingChallengeDrillId={pendingChallengeDrillId}
         clearPendingChallengeDrill={clearPendingChallengeDrill}
+      />
+    );
+  } else if (current === "references") {
+    // Reference pages (2026-05-24) — lands directly on the first anchor
+    // node (5512/5513). Browse index over multiple nodes is Phase 2.
+    body = (
+      <ReferencePage
+        node={DEFAULT_REFERENCE_NODE}
+        items={allListings || []}
+        isMobile={isMobile}
+        watchlist={watchlist}
+        handleWish={handleWish}
+        openCollectionPicker={openCollectionPicker}
+        handleShare={handleShare}
+        hidden={hidden}
+        primaryCurrency={primaryCurrency}
+        compact={compact}
+        user={user}
+        onClickListing={onClickListing}
+        onViewAll={onViewAll}
       />
     );
   } else {
