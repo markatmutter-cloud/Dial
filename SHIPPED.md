@@ -203,3 +203,25 @@ within each section roughly last.
   merge.py emits listings_live.json (eager) + listings_sold.json (lazy);
   first-paint payload 4.15→2.93 MB (~29%). Full file kept for backend +
   stale PWA bundles; Phase 2 (drop the dup) tracked in ROADMAP.
+- **2026-05-24 — Unified card design system, S1–S4 (PRs #558/#560/#561/#562).**
+  Shared `CardShell` (image + L1/L2/L3 text slots + action stack + one portal
+  menu) and `CardStrip`; priced cards, all horizontal strips, the Search-all
+  article strip, and the Collections article grids now render through one
+  primitive. Editorial magazine card is the deliberate exception, parked for
+  the design-uplift pass.
+- **2026-05-24 — Sticky-chrome pass (PRs #547/#549/#550/#552).** Main tabs
+  pinned on scroll across all tabs; Home nav band made olive + sticky; the
+  long-recurring desktop see-through "divider gap" fixed at the root (a sticky
+  child sitting below the scroll-pane's top padding).
+- **2026-05-24 — Search-all + editorial fixes (PRs #554/#555/#556/#557).**
+  Search-all returns articles for any query (was a meta-only parse bug that
+  dropped every source); article cards squared + strip grey edge removed;
+  editorial filter chrome portaled into the shell sticky stack so search no
+  longer gets squashed.
+- **2026-05-24 — Screening + catalog polish (PRs #544/#545/#546).** "Take a
+  break" interstitial 25→50; auction-catalog rows show house + sale date;
+  auction-screening onboarding distinguishes watch (Yes) vs save (Heart).
+- **2026-05-24 — Bug-backlog workflow + consistency principle (PRs #543/#553).**
+  BUGS.md durable backlog + `Bug:`/`Plan:` prefixes (nothing lost between
+  sessions); CLAUDE.md cross-surface consistency rule (divergence is a smell →
+  fix the shared root, not per-surface band-aids).
