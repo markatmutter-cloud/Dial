@@ -94,7 +94,9 @@ state, no behavior. Compose with overrides via spread:
 
 | Component | Use |
 |---|---|
-| `Card.js` | Feed card. The dominant UI unit |
+| `CardShell.js` | **Shared card frame** — square/editorial image + placeholder, L1/L2/L3 text slots, action stack (heart / ⋯ / quickAction), the single portal menu. Every card renders through it. |
+| `CardStrip.js` | **Shared horizontal card row** — scroll container + per-tile wrapper (38%/170 mobile · 210 desktop). Caller passes a `renderCard` fn. Used by Home + Search-all strips. |
+| `Card.js` | Feed card (priced listings / auctions / sold). Renders **into** `CardShell`; keeps all the price/FX/auction/sold logic |
 | `Chip.js` | Filter chips (brands / sources / refs row) |
 | `ListRow.js` | Collection list row (in Lists drill-in) |
 | `SubTabIntro.js` | Intro callout banner with optional action button (different visual primitive from `actionButton`; intentional — callout-banner action vs header toolbar action) |
@@ -113,6 +115,7 @@ state, no behavior. Compose with overrides via spread:
 - **New color?** Add a CSS var to App.js's `c` block in BOTH light and dark modes. Never inline hex.
 - **Sub-section grouping inside a tab?** `<Section />` from `./Section`. Page-level tab headers (back-arrow + title + actions row) are intentionally a denser inline shape; don't try to consolidate them into Section.
 - **Need a confirm dialog?** `import { confirm } from "./ConfirmModal"`, then `await confirm({ title, message, confirmLabel, tone: "danger" })`. Never `window.confirm` — it breaks dark mode and reads as jarring against the rest of the UI.
+- **New card, anywhere?** Render through `CardShell` (image + L1/L2/L3 slots + actions) — don't hand-roll a card frame or a second portal menu. Priced items go via `Card.js` (it keeps the price logic and fills the slots); articles fill the slots directly. **A horizontal row of cards?** `<CardStrip renderCard={…}>`. The editorial magazine `ArticleCard` is the one deliberate exception (its own floating/serif layout) — pending the design-uplift pass.
 
 ## Intentional drift (don't "fix")
 

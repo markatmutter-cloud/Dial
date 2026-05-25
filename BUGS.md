@@ -31,30 +31,6 @@ delete — the history is useful.
 
 ## Open
 
-### B-01 — Editorial search bar squashed/clipped on scroll (mobile)
-- **Reported:** 2026-05-24, updated w/ 3-frame screenshot · **Severity:** 2 (usability) · **Surface:** Mobile PWA, Editorial subtab (Collecting → Editorial) · **Status:** Fix on preview PR — awaiting Mark's eyeball. **Contained fix (not the full AppChrome extraction):** EditorialView now portals its filter chrome into a slot in the shell sticky stack (`#editorial-filter-slot`) on mobile, so editorial's filters live in the same chrome as every other tab — no 2nd sticky layer squashing search. Desktop unchanged. (The full shared-chrome unification, plan Stages 2–3, remains the durable best-practice follow-up.)
-- **Split note (2026-05-24):** B-03 (pin the main tabs everywhere) shipped on
-  its own — see Resolved. This entry is now the *editorial-specific* part: the
-  two-competing-sticky-layers collision that squashes the search behind the
-  filter pills. Harder than B-03 because it needs EditorialView's own filter
-  strip to coordinate with the shell's sticky stack (not just pin one row).
-- **Detail:** On scroll the search bar gets **squashed and clipped behind
-  the Date/Source/Brand/Hearted filter-pill row** (frame 3 — the "Search
-  articles…" input is half-hidden behind the pills).
-- **Hypothesis:** Two competing sticky layers in the mobile scroll container.
-  The shell's `data-sticky-chrome` (sub-tabs + search row, `position:sticky;
-  top:0; zIndex:20` — `MobileShell.js` L256–257) and **EditorialView's own**
-  sticky filter chrome (Date/Source/Brand/Hearted + count, also `position:
-  sticky; top:0; zIndex:20` — `EditorialView.js` ~L543–575) both pin at
-  `top:0` but in different containing blocks, so as you scroll the shell search
-  row unsticks/overlaps under the EditorialView pill row instead of stacking
-  cleanly below it. Fix = **one** coordinated sticky stack: either lift the
-  Editorial filter strip into the shell's sticky chrome, or give the two
-  layers sequential `top` offsets (search row pins, pills pin *below* it) and a
-  shared compact header so search stays reachable at any depth. Inline search
-  was retired 2026-05-21 (uses shell global search now). Prior related fix:
-  2026-05-21.
-
 ### B-06 — Post-screening flow is underspecified (design thread → plan-mode)
 - **Reported:** 2026-05-24 · **Type:** Design/product question, **not** a code defect · **Severity:** — (needs plan, not a quick fix) · **Surface:** Screening / RecapView · **Status:** Open — flagged for plan-mode · **Priority:** HIGH — Mark confirmed 2026-05-24 the screening workflow is "still incomplete" and he's "not happy with it"; this is the surface to fix next in screening, via plan-mode.
 - **Detail:** Open questions Mark raised at the end of a screening session:
@@ -76,23 +52,6 @@ delete — the history is useful.
   **Recommend graduating this to a plan-mode session**, not patching RecapView
   piecemeal.
 
-### B-07 — Smooth the jarring Home → core-tabs tonal jump
-- **Reported:** 2026-05-24 (clarified) · **Type:** UI tweak · **Severity:** 3 (polish) · **Surface:** Home masthead, mobile · **Status:** Open — unblocked, ready to build
-- **Detail:** The real problem (Mark's clarification): navigating from the
-  neutral Home to the olive core tabs (Listings/Watchlists/Collecting) is a
-  **hard tonal cut — it changes the whole design tone and feels jarring.** The
-  proposed fix: make the Home "bleed bar" (the band holding the main tabs +
-  search under the wordmark) the same dark olive as the core tabs, so Home
-  starts carrying a little olive and the transition isn't a hard jump. The
-  `EditorialHero` (wordmark/moon) **stays neutral** by design.
-- **Note on prior decision:** the 2026-05-22 *"remove green altogether"* call
-  was about the **top/hero only**, not the whole Home (Mark clarified
-  2026-05-24) — so this is consistent, not a reversal.
-- **Hypothesis:** Band bg is set in `MobileShell.js` Row 2 (`var(--bg)` on
-  Home, olive elsewhere — ~L186–187) + the `HomeSearchBar` band in
-  `HomeTab.js`. Swap those to `var(--brand-olive)` for Home. Visual change →
-  push ready-to-merge for Mark to eyeball on-device. Cheap to revert.
-
 ### B-08 — Unify the Watchlists tab into one sectioned screen (design thread → plan-mode)
 - **Reported:** 2026-05-24 · **Type:** Design/product thread, **not** a defect · **Severity:** — (needs plan) · **Surface:** Watchlists tab (UI "Watchlists"/"Saved") · **Status:** Open — flagged for plan-mode
 - **Detail:** The Watchlists tab currently has **two sub-tabs** (Lists +
@@ -108,30 +67,6 @@ delete — the history is useful.
   Wishlist, Owned/Watchbox, Sold) is the relevant data model. Pairs with B-06
   for a screening/collecting plan-mode session.
 
-### B-11 — See-through strip below the sticky chrome (the date-divider gap)
-- **Reported:** 2026-05-24 (Home + Listings screenshots). **LONG-RECURRING since early builds** (Mark) — confirmed by the code (multiple documented failed fixes). · **Severity:** 2 (bumped — recurring + visible on core surfaces) · **Surface:** Desktop Listings/Watchlist grids + Home; the `DateDivider` sticky region · **Status:** Stage 1 fix on preview PR — **root cause found & removed (not masked).** The desktop scroll pane `[data-desktop-main]` had a 14px top padding; a sticky child sticks *below* container padding, so those 14px were the see-through strip (Watchlist/Collecting were already 0 → never showed it, confirming cause). Fix: zero the pane top padding on all tabs (`DesktopShell.js`). Mobile pins via its own measured offset. The broader shared-chrome unification (Stages 2–5 of the plan) still stands as the durable best-practice follow-up.
-- **What it actually is (Mark's key detail):** a **see-through strip that stays
-  put while card images scroll behind it** — a transparent sticky region
-  between the filter bar and the date-group header. Not a 1px seam; a real gap.
-- **Root cause:** `DateDivider` (`src/components/DateDivider.js`) pins at
-  `top: var(--sticky-top, 0px)`. `--sticky-top` is a **pixel value JS measures
-  off the *mobile* `[data-sticky-chrome]`** (App.js L1498–1517) and writes to a
-  CSS var; on desktop the chrome is a *different structure*, the selector
-  misses, the value is 0, and the divider can't actually reference the chrome
-  above it. A sticky element aligning to a chrome it has no real handle on,
-  across two different chrome implementations, via a measured-pixel guess →
-  perpetual drift.
-- **Why it keeps coming back:** the file documents the band-aid graveyard —
-  box-shadow (#524, "still got a gap"), negative-margin (doesn't translate
-  under `position:sticky`), now 3px absolute "gap-mask" divs. Each patches one
-  viewport/state; the next change re-opens it.
-- **Proper fix = the shared-chrome component (Mark's repeated ask).** One
-  chrome + sticky-offset system with a real source of truth so dividers (and
-  editorial's filters, and the seam) pin **flush by construction**. This entry,
-  B-01/editorial-difference, and the old peekaboo framing are **the same root**.
-  Target end-state (Mark): the date bar sits flush against the filter/search
-  bar. **Plan-mode item** — see the chrome-unification thread.
-
 ### B-14 — BRAND.md review (Plan thread)
 - **Reported:** 2026-05-24 (`Plan:`) · **Type:** Plan-mode thread, not a bug · **Status:** Queued for a coming session. Mark wants a review of `BRAND.md` (voice/brand). Pairs naturally with the card design system's "breathing-space & brand impact" dial — brand voice + visual brand expression. Surface at a replanning step.
 
@@ -139,14 +74,29 @@ delete — the history is useful.
 
 ## Resolved
 
-### B-13 — Grey band "in front of" the Search-all strips (esp. auctions) · Fix on preview PR
+### B-01 — Editorial filter chrome squashed on scroll (mobile) · Fixed #554
+- EditorialView portals its filter chrome into a slot in the shell's sticky
+  stack (`#editorial-filter-slot`) on mobile, so editorial's filters live in
+  the same chrome as every other tab — no 2nd sticky layer squashing search.
+
+### B-07 — Olive Home nav band (smooths Home → core-tabs jump) · Fixed #547
+- Home masthead nav band (tabs + search) made full `--brand-olive` so Home ends
+  in the same olive as the core tabs; the hero stays neutral.
+
+### B-11 — See-through "divider gap" below the sticky chrome (recurring) · Fixed #552
+- A sticky DateDivider sat *below* the desktop scroll pane's 14px top padding
+  (Watchlist/Collecting at 0 never showed it). Zeroed the pane top padding on
+  all tabs — removed at the root after years of band-aids. The broader
+  shared-chrome unification stays a future item (see chrome-unification memory).
+
+### B-13 — Grey band "in front of" the Search-all strips (esp. auctions) · Fixed #557
 - The strip scroll container used `background: var(--border)` + 16/20px
   horizontal padding, so the edge inset rendered as a grey band before the
   first card. Most visible on the light-image auction cards; subtler on
   dark wrist/sold shots. Fixed by making the strip background transparent (the
   inset is now page-colored), on all strips for consistency.
 
-### B-12 — Search-all article cards looked different from the other strips · Fix on preview PR
+### B-12 — Search-all article cards looked different from the other strips · Fixed #556
 - The Articles strip used a separate tile (`ArticleStrip`) with a 16/10 landscape
   image + no placeholder, while Listings/Auctions/Sold use the shared `Card`
   (square 1:1 image). Chose to **align the tile to Card's look** (not route
@@ -155,9 +105,9 @@ delete — the history is useful.
   image (1:1 + favicon placeholder, always rendered) and matched the title to
   Card (12px / 500 / 2-line). Strip-item widths already matched.
 
-### B-09 — Search-all returned zero articles for any query (e.g. 5513) · Fixed PR (this branch)
+### B-09 — Search-all returned zero articles for any query (e.g. 5513) · Fixed #555
 - **Real cause (my earlier "no bodies" hypothesis was wrong — bodies *were* being fetched):** the editorial meta files are **dict-keyed** (`{url: record}`) per the `editorial_corpus_io` split. `EditorialView` reads them via `Object.values`, but the **Search-all fetch in `App.js` did `if (!Array.isArray(arr)) return []`** — discarding *every* source. So Search-all had **zero articles for ANY query**; 5513 is just where Mark noticed. Fix: parse both array + dict shapes (`Object.values`), filtered to real records (`url` + `title`) like EditorialView. Body matching already worked once articles exist (`bodies[article.url]`, rec.url matches the bodies key).
-### B-03 — Main tabs pinned on scroll (all tabs) · Fixed PR (this branch)
+### B-03 — Main tabs pinned on scroll (all tabs) · Fixed #550
 - Main tab pills (Listings/Watchlists/Collecting) used to be a non-sticky
   "Row 2" that scrolled away. Moved them into the `data-sticky-chrome` stack
   in `MobileShell.js` as its first child (the same lift a prior PR did for the
@@ -176,7 +126,7 @@ delete — the history is useful.
   `BREAK_INTERVAL` 25 → 50 in `ListReviewMode.js`; the `Math.floor(idx /
   BREAK_INTERVAL)` cadence now fires at 50/100/150…
 
-### B-02 — Screening copy: auction catalogs distinguish watch vs save · Fixed PR (this branch)
+### B-02 — Screening copy: auction catalogs distinguish watch vs save · Fixed #546
 - Auction-catalog screening onboarding now reads: Yes = "Watches you want to
   watch", Heart = "Watches you want to save and are very interested in", Pass =
   "Not interested" (Mark's wording). Threaded `isAuctionCatalog` (=
