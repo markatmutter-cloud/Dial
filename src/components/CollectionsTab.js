@@ -11,7 +11,8 @@ import { ManageListSheet } from "./ManageListSheet";
 import { confirm } from "./ConfirmModal";
 import { WatchDetailSheet } from "./WatchDetailSheet";
 import { ListReviewMode } from "./ListReviewMode";
-import { ArticleCard } from "./EditorialView";
+import { articleAsListing } from "./EditorialView";
+import CardShell from "./CardShell";
 import { fmtUSD, matchesSearch } from "../utils";
 import { actionButton, signInButton } from "../styles";
 import { EmptyState } from "./EmptyState";
@@ -2247,19 +2248,31 @@ function ListsView({
                     </div>
                   </div>
                   <div style={gridStyle}>
-                    {asArticles.map(a => (
-                      <ArticleCard
-                        key={a.url}
-                        article={a}
-                        isMobile={!isWide}
-                        compact={compact}
-                        cols={isWide ? 3 : 1}
-                        watchlist={watchlist}
-                        handleWish={handleWish}
-                        openCollectionPicker={openCollectionPicker}
-                        handleShare={handleShare}
-                      />
-                    ))}
+                    {/* S4: articles render via the shared CardShell (square)
+                        so they line up with listing cards in the grid. */}
+                    {asArticles.map(a => {
+                      const asListing = articleAsListing(a);
+                      const wished = !!(watchlist && asListing && watchlist[asListing.id]);
+                      return (
+                        <CardShell
+                          key={a.url}
+                          href={a.url}
+                          aspect="square"
+                          image={a.image ? { src: a.image, alt: "" } : null}
+                          level2={<div style={{ fontSize: 10, fontWeight: 600, color: "var(--text3)", textTransform: "uppercase", letterSpacing: 0.4, marginBottom: 4 }}>
+                            {(a._source && a._source.label) || ""}
+                          </div>}
+                          level1={<div style={{ fontSize: 12, fontWeight: 500, color: "var(--text1)", lineHeight: 1.3, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                            {a.title}
+                          </div>}
+                          heart={(asListing && handleWish) ? { wished, onToggle: () => handleWish(asListing) } : null}
+                          menu={{
+                            onAddToCollection: (openCollectionPicker && asListing) ? () => openCollectionPicker(asListing) : null,
+                            onShare: (handleShare && asListing) ? () => handleShare(asListing) : null,
+                          }}
+                        />
+                      );
+                    })}
                   </div>
                 </div>
               );
@@ -3280,7 +3293,7 @@ function ReactionCard({ row, onRemove, onOpenList }) {
 // the same component can render both surfaces.
 // ─────────────────────────────────────────────────────────────────
 
-function SavedArticlesView({ items, isWide, isMobile, gridStyle, watchlist, handleWish, openCollectionPicker, handleShare, onBack }) {
+function SavedArticlesView({ items, isWide, gridStyle, watchlist, handleWish, openCollectionPicker, handleShare, onBack }) {
   // Convert a stored snapshot (article-as-listing shape) back into
   // the article shape ArticleCard renders. The stored fields live
   // both at the top level (ref, brand) and inside the `article`
@@ -3335,19 +3348,34 @@ function SavedArticlesView({ items, isWide, isMobile, gridStyle, watchlist, hand
         </div>
       ) : (
         <div style={gridStyle}>
-          {asArticles.map(a => (
-            <ArticleCard
-              key={a.url}
-              article={a}
-              isMobile={isMobile}
-              compact={false}
-              cols={isWide ? 3 : 1}
-              watchlist={watchlist}
-              handleWish={handleWish}
-              openCollectionPicker={openCollectionPicker}
-              handleShare={handleShare}
-            />
-          ))}
+          {/* S4 (2026-05-24): saved articles render through the shared CardShell
+              (square image, source kicker, title) so they LINE UP with the
+              listing cards in the same grid — the magazine ArticleCard (16/10,
+              serif) was stuffed into the dense grid and didn't match. Heart +
+              menu wired via articleAsListing exactly as ArticleCard did. */}
+          {asArticles.map(a => {
+            const asListing = articleAsListing(a);
+            const wished = !!(watchlist && asListing && watchlist[asListing.id]);
+            return (
+              <CardShell
+                key={a.url}
+                href={a.url}
+                aspect="square"
+                image={a.image ? { src: a.image, alt: "" } : null}
+                level2={<div style={{ fontSize: 10, fontWeight: 600, color: "var(--text3)", textTransform: "uppercase", letterSpacing: 0.4, marginBottom: 4 }}>
+                  {(a._source && a._source.label) || ""}
+                </div>}
+                level1={<div style={{ fontSize: 12, fontWeight: 500, color: "var(--text1)", lineHeight: 1.3, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                  {a.title}
+                </div>}
+                heart={(asListing && handleWish) ? { wished, onToggle: () => handleWish(asListing) } : null}
+                menu={{
+                  onAddToCollection: (openCollectionPicker && asListing) ? () => openCollectionPicker(asListing) : null,
+                  onShare: (handleShare && asListing) ? () => handleShare(asListing) : null,
+                }}
+              />
+            );
+          })}
         </div>
       )}
     </div>
