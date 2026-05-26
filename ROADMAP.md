@@ -203,6 +203,10 @@ days. Both catch silent breakage the count-vs-median check misses.
 
 ### Infrastructure / refactor track
 
+Full cold audit 2026-05-24 lives in `docs/audits/2026-05-24-vibe-code/` (grade
+B−; findings tracked in BUGS.md as `[audit:2026-05-24]`). Several items below
+draw from it.
+
 - **Internal-naming cleanup** — three UI renames left internals on the old name
   (DB `collections` ↔ "Lists", `watchlist` ↔ "Saved", `references` ↔
   "Collecting"). All deliberate and documented in CLAUDE.md; the DB umbrella
@@ -219,6 +223,15 @@ days. Both catch silent breakage the count-vs-median check misses.
 - **App.js extraction** — App.js is the largest file by far. Candidate extractions:
   an auction-lot-projection hook, a derived-taxonomies hook. Not urgent;
   cleanup-rhythm work.
+- **Build toolchain — CRA → Vite** — `react-scripts` is unmaintained; migrate when
+  build/test friction or a Node bump forces it. (audit 2026-05-24)
+- **Incremental type-checking** — `// @ts-check` + JSDoc on `utils.js` / `supabase.js`
+  / shellProps + `tsc --noEmit` in CI, to catch the white-screen / TDZ / ref-error
+  class at build time. Not a full TS rewrite. (audit 2026-05-24)
+- **Payload + data-growth budget** — `state.json` / sold-archive grow unbounded and
+  ~22 MB JSON loads on first paint; cap/tier the archive, lazy-gate non-default
+  fetches, add a CI size-budget guard. Pairs with the listings.json split Phase 2.
+  (audit 2026-05-24)
 - **Maintenance rhythm** — every 4th–5th session is hygiene only.
 
 ### Mac mini infrastructure (future hardware tier)

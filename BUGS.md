@@ -70,6 +70,36 @@ delete — the history is useful.
 ### B-14 — BRAND.md review (Plan thread)
 - **Reported:** 2026-05-24 (`Plan:`) · **Type:** Plan-mode thread, not a bug · **Status:** Queued for a coming session. Mark wants a review of `BRAND.md` (voice/brand). Pairs naturally with the card design system's "breathing-space & brand impact" dial — brand voice + visual brand expression. Surface at a replanning step.
 
+### B-15 — Scrapers can silently mark a dealer's whole stock "Sold" on an empty fetch
+- **Reported:** 2026-05-24 · **Source:** `audit:2026-05-24` · **Severity:** 1 (data-integrity — silent, permanent) · **Surface:** scrapers + `merge.py` · **Status:** Open — top audit priority
+- **Detail:** A site returning HTTP 200 with empty/truncated data makes the scraper "succeed"; the workflow moves the empty CSV over yesterday's good one and `merge.py`'s disappearance logic flips **every** previously-live item to SOLD on the **first** miss (no debounce). Only `watchclub` has the low-count abort guard. Because every step is `continue-on-error`, the run finishes green and no alert fires — and the sold archive is permanent. Highest blast-radius finding in the audit.
+- **Fix:** apply the empty/low-count abort to **every** scraper (or centrally in `merge.py`) + a test that fails if a scraper can write an empty CSV. Full detail: `docs/audits/2026-05-24-vibe-code/findings-data.md` (C1).
+
+### B-16 — Dependencies unpinned (no lockfiles, JS + Python)
+- **Reported:** 2026-05-24 · **Source:** `audit:2026-05-24` · **Severity:** 2 (reliability + supply-chain) · **Surface:** build / CI / workflows · **Status:** Open
+- **Detail:** No `package-lock.json`; workflows `pip install` latest unpinned. A build that works today can break tomorrow with no code change, and it's a supply-chain exposure (updates run with the scrapers' secret keys). Cheapest high-leverage fix in the audit.
+- **Fix:** commit `package-lock.json` + `npm ci`; pinned `requirements.txt` + `pip install -r`; turn on Dependabot. Detail: `findings-maintainability.md` (HIGH-1), `findings-security.md` (MED-2/3).
+
+### B-17 — ~22 MB JSON fetched on every app open (mobile first-load jank)
+- **Reported:** 2026-05-24 · **Source:** `audit:2026-05-24` · **Severity:** 2 (perf / UX) · **Surface:** `App.js` mount fetch + service worker · **Status:** Open
+- **Detail:** The mount effect fetches ~22 MB (~3.6 MB gzip), ~19 MB of which the default Live view doesn't render (`auction_lots`, `loupethis_lots`, `listings_desc`, `hodinkee_shop`, `hairspring_finds`, `manual_archive_lots`), parsed on the main thread → multi-second jank on phones. Separately, the service-worker JSON regex no longer matches the post-split feed filenames.
+- **Fix:** gate non-default fetches behind tab visit / idle; broaden the SW regex. Detail: `findings-frontend.md` (C1, H2).
+
+### B-18 — Currency FX tables duplicated, can silently drift
+- **Reported:** 2026-05-24 · **Source:** `audit:2026-05-24` · **Severity:** 2 (price correctness) · **Surface:** `merge.py` + `utils.js` · **Status:** Open
+- **Detail:** Exchange rates are hardcoded in two places that must match, with nothing enforcing it. Drift → silently wrong prices (the "8× off" class) and fabricated "biggest price drops" feeding the deals sort.
+- **Fix:** single source of truth, or a parity test that fails if the two disagree. Detail: `findings-correctness.md` (F2/F9), `findings-data.md` (H4).
+
+### B-19 — 5 user-data tables' RLS state not version-controlled
+- **Reported:** 2026-05-24 · **Source:** `audit:2026-05-24` · **Severity:** 2 (security provability) · **Surface:** Supabase / migrations · **Status:** Open
+- **Detail:** `watchlist_items`, `hidden_listings`, `saved_searches`, `tracked_lots`, and the base collections/challenges table have correct policies in the repo but **no committed CREATE / enable-RLS** — so "RLS is on" can't be proven from code, and a dashboard change could silently disable it (private → world-readable). No active leak found; this is a provability + regression-safety gap. Also: the `listing_events` insert policy lets a client forge `user_id`.
+- **Fix:** commit DDL + `enable row level security` for the 5; tighten the `listing_events` insert policy. Detail: `findings-security.md` (HIGH-1, MED-1).
+
+### B-20 — Two near-identical auction-scraper filenames
+- **Reported:** 2026-05-24 · **Source:** `audit:2026-05-24` · **Severity:** 3 (footgun) · **Surface:** auction scrapers · **Status:** Open
+- **Detail:** `auction_lots_scraper.py` (catalog walker) and `auctionlots_scraper.py` (tracked-URL tracker) differ by one underscore and both run in the same workflow — easy to edit the wrong one. Flagged independently by 3 auditors.
+- **Fix:** rename `auctionlots_scraper.py` → `tracked_lots_scraper.py` + update importers/workflows. Detail: `findings-architecture.md` (M1), `findings-maintainability.md` (MED-4).
+
 ---
 
 ## Resolved
