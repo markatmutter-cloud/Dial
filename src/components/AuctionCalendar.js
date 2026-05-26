@@ -70,6 +70,7 @@ export function AuctionCalendar({
   // url → scraped lot count, for surfacing "N lots" on each row +
   // gating Add/Review on whether the actions actually have items.
   lotCounts = {},
+  onOpenSale,
   onReviewCatalog,
   onAddToList,
   busyAuctionUrl,
@@ -197,6 +198,7 @@ export function AuctionCalendar({
       {upcomingGroups.map((group, idx) => (
         <MonthBlock key={group.key} group={group} firstBlock={idx === 0}
           lotCounts={lotCounts}
+          onOpenSale={onOpenSale}
           onReviewCatalog={onReviewCatalog}
           onAddToList={onAddToList}
           busyAuctionUrl={busyAuctionUrl}
@@ -231,6 +233,7 @@ export function AuctionCalendar({
           {archiveOpen && pastGroups.map((group, idx) => (
             <MonthBlock key={group.key} group={group} firstBlock={idx === 0} archive
               lotCounts={lotCounts}
+              onOpenSale={onOpenSale}
               onReviewCatalog={onReviewCatalog}
               onAddToList={onAddToList}
               busyAuctionUrl={busyAuctionUrl}
@@ -245,7 +248,7 @@ export function AuctionCalendar({
 // One month-banded section of the calendar. Lifted from the inline
 // map in 2026-05-10's calendar/Archive split — same render shape
 // reused for both upcoming and past sections.
-function MonthBlock({ group, firstBlock, archive = false, lotCounts = {}, onReviewCatalog, onAddToList, busyAuctionUrl, isMobile = false }) {
+function MonthBlock({ group, firstBlock, archive = false, lotCounts = {}, onOpenSale, onReviewCatalog, onAddToList, busyAuctionUrl, isMobile = false }) {
   return (
     <div style={{ marginBottom: 28 }}>
       <div style={{
@@ -265,6 +268,7 @@ function MonthBlock({ group, firstBlock, archive = false, lotCounts = {}, onRevi
         {group.items.map(a => (
           <AuctionRow key={a.id} a={a} archive={archive}
             lotCount={lotCounts[a.url] || 0}
+            onOpenSale={onOpenSale}
             onReviewCatalog={onReviewCatalog}
             onAddToList={onAddToList}
             busy={busyAuctionUrl === a.url}
@@ -288,7 +292,7 @@ function MonthBlock({ group, firstBlock, archive = false, lotCounts = {}, onRevi
 //     Disliked bucket like a shared list (post-#55, 2026-05-15)
 // On closed past auctions only View catalog renders — there's
 // nothing useful to add to a watchlist or review for upcoming.
-function AuctionRow({ a, archive, lotCount = 0, onReviewCatalog, onAddToList, busy, isMobile = false }) {
+function AuctionRow({ a, archive, lotCount = 0, onOpenSale, onReviewCatalog, onAddToList, busy, isMobile = false }) {
   const isLive   = a.status === "live";
   const isClosed = a.status === "past";
   const catalogAgeDays = a.catalogLiveAt
@@ -324,7 +328,12 @@ function AuctionRow({ a, archive, lotCount = 0, onReviewCatalog, onAddToList, bu
       flexShrink: 0,
       justifyContent: isMobile ? "flex-start" : "flex-end",
     }}>
-      <ActionButton label="View catalog" onClick={openExternal} />
+      {lotActionsAvailable && onOpenSale && (
+        <ActionButton label="View lots →" onClick={() => onOpenSale(a)} primary />
+      )}
+      {/* Subtle external link to the auction house's own page. */}
+      <ActionButton label="↗" onClick={openExternal}
+        title={`View on ${a.house || "the auction house"} site`} />
       {lotActionsAvailable && onAddToList && (
         <ActionButton label="Add to list"
           onClick={() => onAddToList(a)}
@@ -333,7 +342,6 @@ function AuctionRow({ a, archive, lotCount = 0, onReviewCatalog, onAddToList, bu
       {lotActionsAvailable && onReviewCatalog && (
         <ActionButton label="Review"
           onClick={() => onReviewCatalog(a)}
-          primary
           disabled={busy} />
       )}
     </div>
@@ -381,8 +389,12 @@ function AuctionRow({ a, archive, lotCount = 0, onReviewCatalog, onAddToList, bu
               </span>
             )}
           </div>
-          <div style={{ fontSize: 14, fontWeight: 500, color: "var(--text1)",
-                      overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          <div
+            onClick={lotActionsAvailable && onOpenSale ? () => onOpenSale(a) : undefined}
+            title={lotActionsAvailable && onOpenSale ? "View this sale's lots" : undefined}
+            style={{ fontSize: 14, fontWeight: 500, color: "var(--text1)",
+                      overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                      cursor: (lotActionsAvailable && onOpenSale) ? "pointer" : "default" }}>
             {a.title}
           </div>
           <div style={{ fontSize: 12, color: "var(--text2)",
@@ -398,9 +410,9 @@ function AuctionRow({ a, archive, lotCount = 0, onReviewCatalog, onAddToList, bu
   );
 }
 
-function ActionButton({ label, onClick, primary, disabled }) {
+function ActionButton({ label, onClick, primary, disabled, title }) {
   return (
-    <button onClick={onClick} disabled={disabled}
+    <button onClick={onClick} disabled={disabled} title={title}
       style={{
         flexShrink: 0,
         cursor: disabled ? "default" : "pointer",
