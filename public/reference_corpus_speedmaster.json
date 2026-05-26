@@ -211,17 +211,15 @@
   },
   "https://www.watchfid.com/moonwatch-only/": {
     "author": null,
-    "excerpt": "“This book was carefully researched and written by two Speedmaster enthusiasts, which proves the incredible impact this watch has had”.\nRaynald Aeschlimann, President & CEO of OMEGA\nForeword by Raynald Aeschlimann, President & CEO of",
+    "excerpt": "",
     "flags": {},
     "focus": "what the book covers",
-    "image": "https://www.watchfid.com/wp-content/uploads/2020/03/MWO3-3d-1024x899.png",
     "node": "speedmaster",
-    "origin": "scraped",
+    "origin": "fetch-failed",
     "publication": "Watchfid",
     "source": "Watchfid",
     "title": "Moonwatch Only",
-    "type": "book-overview",
-    "word_count": 718
+    "type": "book-overview"
   },
   "https://www.watchtime.com/brands/manufacture-movement/flight-qualified-for-space-the-story-behind-nasas-choice-of-the-omega-speedmaster": {
     "author": null,
