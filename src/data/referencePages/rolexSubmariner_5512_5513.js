@@ -15,6 +15,10 @@
 
 const node = {
   id: "rolex-submariner-5512-5513",
+  // Pulls the LLM synthesis (public/reference_synthesis_<synthesisNode>.json) at
+  // render — stories, conflicts, module candidates enrich the page from the
+  // scraped+analyzed material. Human-review-gated (the digest is the review surface).
+  synthesisNode: "submariner",
   brand: "Rolex",
   modelLine: "Submariner",
   refs: ["5512", "5513"],
