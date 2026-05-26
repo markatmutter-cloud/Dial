@@ -23,7 +23,8 @@ COLLECTION = "watches"
 
 # Cloudflare 403s the default python-requests UA. These headers mimic a real
 # Chrome request closely enough to pass the default challenge. If they stop
-# working we'd need to move to Playwright / Browse AI like Tropical Watch.
+# working we'd need a residential-IP fetcher (the laptop host, B-25) — the
+# same path the Bonhams scraper uses for its Cloudflare block.
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
     "Accept": "application/json, text/javascript, */*; q=0.01",
