@@ -118,6 +118,10 @@ diagram, data model, and folder layout.
   driver for "all Shopify dealers" — per-dealer quirks justify per-dealer files.
 - **Every workflow scrape step needs `continue-on-error: true`** so one
   failing source can't kill the batch. Wrap external `fetch` in a timeout.
+- **Pinned deps — never bare `pip install <pkg>`.** Scrape/CI steps install
+  via `pip install -r requirements*.txt` (base `requirements.txt`; `-auctions`
+  adds curl-cffi; `-ai` adds anthropic). A bare install pulls latest-on-the-day
+  into a job holding secret keys — don't reintroduce it.
 - **Resilience:** retry transient 5xx (`scraper_lib.fetch_json_with_retry`);
   if a catalog returns a suspiciously truncated count (<50% of prior AND <25
   absolute), skip the CSV write so `merge.py` keeps prior state. Scrape

@@ -84,3 +84,61 @@ Clean atomic close. On `main` (after this branch merges), synced, **no open PRs,
 no stranded branches from this session** (all merged + deleted). Reference-page
 pilot + the full reference-intelligence pipeline are live and verified. Next
 session: judge the UX on-device, then work the carried threads.
+
+---
+
+# Addendum — Vibe-code audit + remediation (2026-05-26, second session)
+
+A separate session, same day. Mark asked for a cold "vibe-code audit" (his
+friends' thesis: vibe-coded projects collapse under their own weight), then we
+worked the findings.
+
+## What shipped (7 PRs, all merged + branches deleted)
+- **Audit (#574, #575).** 6 parallel read-only subagents (architecture,
+  correctness, security, data, frontend, maintainability). **Overall grade B−**
+  — *not* the "garbage" thesis; a well-governed core with 3–4 real cliffs.
+  3 Critical · 19 High · 25 Medium · 19 Low. Report + 6 `findings-*.md` archived
+  to `docs/audits/2026-05-24-vibe-code/` (+ `AUDIT_PLAIN_ENGLISH.md`). Wired in:
+  CLAUDE.md doc-set pointer + close routing, BUGS.md B-15–B-22 tagged
+  `[audit:2026-05-24]`, ROADMAP refactor-track items.
+- **B-15 (#576) — the lone Critical.** Empty/HTTP-200 scrape used to flip a
+  whole source to SOLD on the first miss. Central debounce in
+  `merge.update_state` (`DISAPPEARANCE_MISS_THRESHOLD=2`): held live + re-emitted
+  from cache until absent N consecutive runs; a seen run resets `missCount`.
+  Tests rewritten to the 2-miss contract + 3 regressions.
+- **B-17 (#577).** Deferred ~15 MB of non-critical mount JSON to
+  `requestIdleCallback` (auction/editorial archives feed only Auctions + Sold).
+- **B-16 Python (#578).** `requirements.txt`/`-auctions`/`-ai`; 11 workflow
+  steps repointed. **JS lockfile NOT done** — `npm`/`node` unavailable locally.
+- **B-22 AdminTab (#579).** `React.lazy` admin-only code out of the public bundle.
+- **B-21 (#580).** SW `isJsonData` now covers post-split feed files; added
+  `src/service-worker.test.js` drift-guard (rebuilds the SW regex from source,
+  asserts it covers every App.js `*_URL`).
+
+## Carried forward (all Open in BUGS.md → resurface via /start)
+- **B-18 — FX tables drift (Medium, money correctness).** Not polish; real.
+- **B-19 — 5 user-data tables' RLS state un-versioned (Medium, security).** Real.
+- **B-16 JS lockfile** — needs a Node env (or a CI-generates-it job).
+- **B-20 — rename `auctionlots_scraper.py` → `tracked_lots_scraper.py`** (mechanical).
+- **B-22 phase 2 — code-split.** Messier than line-counts implied (below).
+- **B-06 / B-08 / B-14** — design/plan-mode threads (not cleanup).
+
+## Notes worth keeping
+- **Code-split survey reality (B-22):** the receivers (Share/Challenge/List) are
+  **always-mounted + self-gating**, so naive `React.lazy` loads their chunk
+  anyway — needs intent-gating (touches the #310-sensitive lifecycle). App.js
+  *imports* `ListReviewMode` but renders it 0× (CollectionsTab renders it → dead
+  import). `SearchResultsView` (~572 lines, conditional) is the one clean
+  remaining App.js-level candidate. EditorialView/SizeCompare/ChallengeFlow are
+  multi-imported (split at every site). AdminTab was the clean win.
+- **CI doesn't exercise scrape installs** (cron/dispatch only) — B-16 validated
+  by version existence + next scheduled scrape. The B-21 test *does* run in CI.
+- **Minor drift:** README's dev-setup line still says `pip install requests`
+  (now `requirements.txt`) — fix on next touch.
+- The audit's organizing idea for Mark: **promote expensive rules from notes →
+  guardrails** (a check that fails the build), not docs you must remember.
+
+## Bottom line
+Clean close. The lone Critical is fixed, the biggest mobile first-load hit is
+gone, Python deps pinned, the audit fully captured + tracked so nothing's lost.
+No open PRs, no stranded branches from this session.
