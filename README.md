@@ -101,6 +101,8 @@ Plus:
 
 Listings/auctions are static JSON committed to the repo. The only thing behind a server is per-user data (watchlist, hidden listings, saved searches, collections + items, collaborator invites, listing events for admin analytics), which lives in Supabase with row-level security so each user can only read/write their own rows. Anonymous visitors can browse and search; signing in unlocks saving.
 
+**Reference-intelligence pipeline (Collecting ▸ References).** Per-model reference pages (e.g. Submariner 5512/5513) are built by a manual GitHub-Actions pipeline: `reference_corpus_scraper.py` assembles an attributed source corpus from a `reference_sources/<node>.json` manifest (reusing the editorial corpus, fetching the rest), `reference_synthesis.py` runs one Claude Opus pass into source-grounded, `applies_to`-scoped JSON, and `reference_digest.py` emits a readable `docs/reference_synthesis_<node>.md` (the human-review surface + gap backlog). The React `ReferencePage` renders a hand-authored content node (`src/data/referencePages/`) enriched by that synthesis at runtime. Same chunked corpus is the planned input to a reference RAG bot.
+
 ---
 
 ## Data sources

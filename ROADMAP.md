@@ -105,10 +105,15 @@ Epics 0/5/7 for detail.
    per-feature status (works / broken / hard to find), fix the broken and
    buried ones (starting with the Hide regression on Live auctions). Scoped as
    a pass, not endless. (Epic 0 — see "Product QA" below.)
-2. **Per-model-line page, pilot one** (GMT-Master or Speedmaster). The first
-   visible reference-intelligence surface, keyed on **model line** (GMT-Master,
-   Speedmaster, Railmaster) — not reference number. Every active listing across
-   dealers + recent auction results + editorial coverage on one page. (Epic 5.)
+2. **Reference pages — pilot SHIPPED (2026-05-26).** Submariner 5512/5513 is live
+   (Collecting ▸ References) on a repeatable **scrape → Opus-synthesis → digest**
+   pipeline. Next: **review-gate + tighten the synthesis prompt** (only real
+   debates); feed each digest's **gap backlog** into the next source scan;
+   templatize + a **browse index** over nodes; build more nodes from the
+   synthesis **module candidates** (MilSub/COMEX/Sea-Dweller/1680/Bond/Speedmaster).
+   Then: **RAG chat over the reference corpus → collector-support AI**; composable
+   **Lists** ("Evernote for watches", Epic 3); a **watches-&-diving feature**.
+   (Epic 5; pipeline = Epic 0.)
 3. **AI collector-insight surface.** The Screwdown-Crown "collector matrix"
    idea, in the app: "you missed this," "what you've been gravitating to,"
    "thoughts on your collection," "what next." Built on the existing

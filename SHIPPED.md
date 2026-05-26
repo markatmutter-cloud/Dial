@@ -135,8 +135,20 @@ within each section roughly last.
 - **2026-05-14/15 — Screening on new entry points (PRs #283, #310).**
   feed-mode (new-since-last-visit) + auction Review as list-mode screening.
 
+- **2026-05-26 — Reference-intelligence pipeline (PRs #566, #567, #570).**
+  Repeatable per-node scrape → Opus 4.7 synthesis → readable digest
+  (`reference_sources/` manifests, `reference_corpus_scraper.py`,
+  `reference_synthesis.py`, `reference_digest.py`); source-grounded cited JSON,
+  every item `applies_to`-scoped so a reference page shows only its slice;
+  Submariner + Speedmaster run. First Anthropic-Opus integration.
+
 ## Epic 5 — References
 
+- **2026-05-26 — Reference page pilot: Submariner 5512/5513 (PRs #564, #565,
+  #568, #572).** New References sub-tab (2nd in Collecting) — magazine-style
+  guide: story, marks, variants, live/auction/sold sliders, connections,
+  debated, further reading; LLM synthesis wired in; sticky scroll-spy wayfinding
+  + section-header tier + guided learning journey.
 - **2026-04-29 — Watch size comparison.** Two case dimensions →
   preview + print-to-scale on US Letter via React Portal pattern.
 - **2026-05-XX — Curated link aggregator (Collecting > Links).**
