@@ -15,7 +15,9 @@ State model (public/state.json):
       "lastImg":     "https://.../img.jpg",   # Archive tab without needing
       "lastCurrency": "USD",                  # a fresh scrape.
       "active":      true,                     # False once it stops appearing.
-      "soldAt":      "YYYY-MM-DD"              # Set when active flips false.
+      "soldAt":      "YYYY-MM-DD",             # Set when active flips false.
+      "missCount":   0                         # Consecutive runs absent from the
+                                               # scrape (disappearance debounce).
     },
     ...
   }
@@ -336,6 +338,16 @@ KNOWN_BRANDS_SET = (
 
 FX = {'GBP': 1.27, 'EUR': 1.08, 'CHF': 1.13, 'JPY': 0.0067, 'CNY': 0.14, 'HKD': 0.128, 'USD': 1.0}
 
+# Disappearance debounce (B-15). A listing must be ABSENT from this many
+# consecutive runs before it flips to sold. 1 = the old behavior, where a
+# single empty/failed scrape (a dealer 503, an empty-but-HTTP-200 catalog, a
+# truncated page) marked an entire source SOLD — permanently, in the archive,
+# with no alert because every workflow step is continue-on-error. 2 rides out a
+# single bad run; genuine sellouts still surface on the next run (~hours at
+# 3×/day). Raise it for more grace during longer outages, at the cost of
+# slower sold-detection. See BUGS.md B-15 / docs/audits/2026-05-24-vibe-code.
+DISAPPEARANCE_MISS_THRESHOLD = 2
+
 STATE_PATH = 'public/state.json'
 LISTINGS_PATH = 'public/listings.json'
 # Frontend live/sold split. listings.json stays the canonical full file
@@ -546,6 +558,54 @@ def load_csv(path, source_name, currency='USD'):
     return items
 
 
+def _build_live_from_cache(sid, entry):
+    """Reconstruct a still-live listing row from cached state fields, for an
+    item that's missing from THIS run's scrape but hasn't yet crossed the
+    disappearance threshold (B-15 debounce). Lets a held listing keep showing
+    in the live feed (last-known-good) during a transient/failed scrape instead
+    of vanishing then reappearing. Returns None when the entry lacks enough
+    cached data to render or its brand is excluded."""
+    if not entry.get('lastTitle'):
+        return None
+    history = entry.get('priceHistory') or []
+    last_price = history[-1]['price'] if history else 0
+    currency = history[-1].get('currency') if history else entry.get('lastCurrency', 'USD')
+    brand = canonicalize_brand(entry.get('lastBrand') or detect_brand(entry.get('lastTitle', '')))
+    if brand in EXCLUDED_BRANDS:
+        return None
+    rate = FX.get(currency, 1.0)
+    prices = [h.get('price') or 0 for h in history]
+    peak = max(prices) if prices else last_price
+    last_meaningful = next(
+        (h['price'] for h in reversed(history) if (h.get('price') or 0) > 0),
+        last_price,
+    )
+    row = {
+        'id':            sid,
+        'brand':         brand,
+        'ref':           entry.get('lastTitle', ''),
+        'price':         last_price,
+        'currency':      currency,
+        'priceUSD':      round(last_price * rate),
+        'lastMeaningfulPrice': last_meaningful,
+        'source':        entry.get('lastSource', ''),
+        'url':           entry.get('lastUrl', ''),
+        'img':           entry.get('lastImg', ''),
+        'desc':          '',
+        'sold':          False,
+        'soldAt':        None,
+        'firstSeen':     entry.get('firstSeen', ''),
+        'lastSeen':      entry.get('lastSeen', ''),
+        'priceHistory':  history,
+        'priceChange':   0,
+        'priceDropTotal': max(0, peak - last_price),
+        'pricePeak':     peak,
+        'priceDropAt':   entry.get('priceDropAt'),
+    }
+    enrich_with_reference_match(row)
+    return row
+
+
 def update_state(items, state):
     """Enrich each item with firstSeen/lastSeen/priceHistory and update state in place.
 
@@ -597,6 +657,9 @@ def update_state(items, state):
         entry['lastBrand']    = it['brand']
         entry['lastImg']      = it['img']
         entry['lastCurrency'] = it['currency']
+
+        # Seen this run → reset the disappearance debounce counter.
+        entry.pop('missCount', None)
 
         state[sid] = entry
 
@@ -661,18 +724,36 @@ def update_state(items, state):
             'soldAt':       entry.get('soldAt'),
         })
 
-    # Anything in state but not seen today: mark inactive and emit as a sold
-    # listing so the Archive tab can show it.
+    # Anything in state but not seen today: debounce, then mark inactive and
+    # emit as a sold listing so the Archive tab can show it.
     disappeared_this_run = 0
+    held_this_run = 0
     archived_count = 0
     for sid, entry in state.items():
         if sid in seen_today:
             continue
 
-        # Flip to inactive on first miss, recording when it disappeared.
         if entry.get('active'):
+            # B-15 debounce. A single missing run is almost always a
+            # transient/failed scrape — a dealer 503, an empty-but-HTTP-200
+            # catalog, a truncated page — NOT a genuine sellout. Flipping to
+            # sold on the first miss let one bad scrape mark an entire source
+            # SOLD (permanently, in the archive). Hold the listing live —
+            # re-emitting last-known-good from cache — until it's been absent
+            # for DISAPPEARANCE_MISS_THRESHOLD consecutive runs. A seen run
+            # resets the counter, so an every-other-run flap never flips.
+            miss = entry.get('missCount', 0) + 1
+            if miss < DISAPPEARANCE_MISS_THRESHOLD:
+                entry['missCount'] = miss
+                held_this_run += 1
+                held_row = _build_live_from_cache(sid, entry)
+                if held_row is not None:
+                    enriched.append(held_row)
+                continue
+            # Absent long enough — treat as genuinely gone.
             entry['active'] = False
             entry['soldAt'] = TODAY
+            entry.pop('missCount', None)
             disappeared_this_run += 1
 
         # Only emit an archive row if we have enough cached display data.
@@ -741,6 +822,8 @@ def update_state(items, state):
 
     if disappeared_this_run:
         print(f"  {disappeared_this_run} listings disappeared from scrape this run (marked sold)")
+    if held_this_run:
+        print(f"  {held_this_run} missing listings held live (disappearance debounce — likely a failed/partial scrape)")
     if archived_count:
         print(f"  {archived_count} sold/inactive listings emitted to archive")
 

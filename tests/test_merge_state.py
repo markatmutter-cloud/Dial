@@ -4,10 +4,10 @@ Covers the core lifecycle a listing goes through across consecutive
 scrape runs: first sight, persistence with and without price moves,
 disappearance, reappearance, and multi-cycle churn.
 
-These tests document current behavior. If a test hits a case that
-seems to surface a bug, the test is written against the *current*
-behavior (with a comment flagging it) — bug fixes are out of scope
-for this PR per Mark's instruction.
+Disappearance is debounced (B-15): a listing must be absent from
+DISAPPEARANCE_MISS_THRESHOLD consecutive runs before it flips to sold,
+so a single transient/empty scrape can't wipe a source. The
+currency-mismatch tests still document known, un-fixed behavior.
 """
 from conftest import make_item
 
@@ -131,28 +131,38 @@ def test_listing_disappears_marks_inactive_and_caches_display_fields(at_date):
     )
     merge.update_state([item], state)
 
-    # Day 2: scrape returns an empty list — the listing has dropped out.
+    sid = item["id"]
+
+    # Day 2: scrape returns empty (transient/failed). The debounce holds the
+    # listing LIVE — it must NOT flip to sold on the first miss (B-15).
     at_date("2026-04-02")
     enriched = merge.update_state([], state)
-
-    sid = item["id"]
     entry = state[sid]
-    assert entry["active"] is False, "active must flip to False on disappearance"
-    assert entry["soldAt"] == "2026-04-02"
-    # Cached display fields were captured on the prior day; they must
-    # still be present so the Archive can render the card.
+    assert entry["active"] is True, "first miss is held live, not sold (B-15 debounce)"
+    assert entry.get("missCount") == 1
+    assert "soldAt" not in entry or entry["soldAt"] is None
+    held = _enriched_by_id(enriched, sid)
+    assert held["sold"] is False, "held listing is re-emitted live from cache"
+    assert held["ref"] == "1968 Rolex Submariner 5513"
+
+    # Day 3: still gone — the second consecutive miss crosses the threshold
+    # and the listing flips to sold/inactive.
+    at_date("2026-04-03")
+    enriched = merge.update_state([], state)
+    entry = state[sid]
+    assert entry["active"] is False, "active flips to False after the threshold"
+    assert entry["soldAt"] == "2026-04-03"
+    # Cached display fields were captured on day 1; they must still be present
+    # so the Archive can render the card.
     assert entry["lastTitle"] == "1968 Rolex Submariner 5513"
     assert entry["lastBrand"] == "Rolex"
     assert entry["lastImg"] == "https://example.com/sub.jpg"
     assert entry["lastCurrency"] == "USD"
     assert entry["lastSource"] == "Test Dealer"
 
-    # The disappeared listing should be emitted in the enriched output as
-    # a sold/archive row so the Archive tab can render it without a
-    # round-trip to the source site.
     out = _enriched_by_id(enriched, sid)
     assert out["sold"] is True
-    assert out["soldAt"] == "2026-04-02"
+    assert out["soldAt"] == "2026-04-03"
     assert out["ref"] == "1968 Rolex Submariner 5513"
     assert out["img"] == "https://example.com/sub.jpg"
 
@@ -165,13 +175,17 @@ def test_listing_reappearing_after_disappearing_keeps_original_first_seen(at_dat
     sid = item["id"]
     original_first_seen = state[sid]["firstSeen"]
 
-    # Day 2: gone.
+    # Day 2-3: gone for two consecutive runs → flips inactive after day 3
+    # (B-15 debounce: the first miss is held live).
     at_date("2026-04-02")
+    merge.update_state([], state)
+    assert state[sid]["active"] is True, "first miss is held live (B-15)"
+    at_date("2026-04-03")
     merge.update_state([], state)
     assert state[sid]["active"] is False
 
-    # Day 3: back.
-    at_date("2026-04-03")
+    # Day 4: back.
+    at_date("2026-04-04")
     enriched = merge.update_state([item], state)
 
     entry = state[sid]
@@ -180,9 +194,11 @@ def test_listing_reappearing_after_disappearing_keeps_original_first_seen(at_dat
         "firstSeen must NOT reset when a listing reappears — the watchlist's "
         "stable-id contract relies on this"
     )
-    assert entry["lastSeen"] == "2026-04-03"
+    assert entry["lastSeen"] == "2026-04-04"
     # soldAt should clear once the listing is back and not flagged sold.
     assert "soldAt" not in entry or entry["soldAt"] is None
+    # missCount is cleared on sight.
+    assert "missCount" not in entry or entry["missCount"] == 0
 
     out = _enriched_by_id(enriched, sid)
     assert out["firstSeen"] == original_first_seen
@@ -284,34 +300,40 @@ def test_multi_day_cycle_preserves_first_seen_and_history_across_reactivations(a
     assert state[sid]["active"] is True
     assert len(state[sid]["priceHistory"]) == 1
 
-    # Day 2: gone.
+    # Days 2-3: gone for two consecutive runs → inactive after day 3 (the
+    # first miss is held live by the B-15 debounce).
     at_date("2026-04-02")
     merge.update_state([], state)
-    assert state[sid]["active"] is False
-    assert state[sid]["soldAt"] == "2026-04-02"
-
-    # Day 3: back at the same price (no priceHistory append).
+    assert state[sid]["active"] is True, "first miss held"
     at_date("2026-04-03")
+    merge.update_state([], state)
+    assert state[sid]["active"] is False
+    assert state[sid]["soldAt"] == "2026-04-03"
+
+    # Day 4: back at the same price (no priceHistory append).
+    at_date("2026-04-04")
     merge.update_state([make_item(price=5000)], state)
     assert state[sid]["active"] is True
     assert state[sid]["firstSeen"] == "2026-04-01"
     assert len(state[sid]["priceHistory"]) == 1
     assert "soldAt" not in state[sid] or state[sid]["soldAt"] is None
 
-    # Day 4: gone again.
-    at_date("2026-04-04")
+    # Days 5-6: gone again for two runs.
+    at_date("2026-04-05")
+    merge.update_state([], state)
+    at_date("2026-04-06")
     merge.update_state([], state)
     assert state[sid]["active"] is False
-    assert state[sid]["soldAt"] == "2026-04-04"
+    assert state[sid]["soldAt"] == "2026-04-06"
 
-    # Day 5: back at a *different* price — history should grow.
-    at_date("2026-04-05")
+    # Day 7: back at a *different* price — history should grow.
+    at_date("2026-04-07")
     enriched = merge.update_state([make_item(price=4750)], state)
     assert state[sid]["active"] is True
     assert state[sid]["firstSeen"] == "2026-04-01", "firstSeen survives multi-cycle"
     assert len(state[sid]["priceHistory"]) == 2
     assert state[sid]["priceHistory"][-1] == {
-        "date": "2026-04-05", "price": 4750, "currency": "USD"
+        "date": "2026-04-07", "price": 4750, "currency": "USD"
     }
     out = _enriched_by_id(enriched, sid)
     assert out["priceDropTotal"] == 250
@@ -333,14 +355,20 @@ def test_two_distinct_listings_do_not_share_state(at_date):
     assert state[b["id"]]["lastTitle"] == "Watch B"
 
     at_date("2026-04-02")
-    # B disappears; A persists at a new price.
+    # B disappears; A persists at a new price. First miss → B held live (B-15).
     merge.update_state([make_item(url="https://example.com/products/a",
                                    title="Watch A", price=4500)], state)
+    assert state[a["id"]]["active"] is True
+    assert state[b["id"]]["active"] is True, "B held on first miss (B-15)"
 
+    at_date("2026-04-03")
+    # B still gone on the second consecutive run → now flips to sold.
+    merge.update_state([make_item(url="https://example.com/products/a",
+                                   title="Watch A", price=4500)], state)
     assert state[a["id"]]["active"] is True
     assert state[a["id"]]["priceHistory"][-1]["price"] == 4500
     assert state[b["id"]]["active"] is False
-    assert state[b["id"]]["soldAt"] == "2026-04-02"
+    assert state[b["id"]]["soldAt"] == "2026-04-03"
 
 
 # ── lastMeaningfulPrice (last non-zero historic ask) ────────────────────────
@@ -401,14 +429,17 @@ def test_last_meaningful_price_on_archive_emission(at_date):
     at_date("2026-04-03")
     merge.update_state([make_item(price=0, price_on_request=True)], state)
 
-    # Day 4: listing disappears entirely.
+    # Days 4-5: listing disappears entirely — two consecutive misses cross the
+    # B-15 debounce threshold before it's archived.
     at_date("2026-04-04")
+    merge.update_state([], state)
+    at_date("2026-04-05")
     enriched = merge.update_state([], state)
 
     sid = _id_for("https://example.com/products/test-watch")
     out = _enriched_by_id(enriched, sid)
     assert out["sold"] is True
-    assert out["soldAt"] == "2026-04-04"
+    assert out["soldAt"] == "2026-04-05"
     # `price` reflects the trailing history entry (0 here) — preserved
     # for analytics. The display field is lastMeaningfulPrice.
     assert out["price"] == 0
@@ -452,3 +483,77 @@ def test_split_live_sold_partitions_by_sold_flag():
         i["id"] for i in enriched
     }
     assert len(live) + len(sold) == len(enriched)
+
+
+# ── B-15 disappearance debounce ─────────────────────────────────────────────
+# A listing must be ABSENT from DISAPPEARANCE_MISS_THRESHOLD consecutive runs
+# before it flips to sold, so a single transient/empty scrape can't silently
+# mark a whole source SOLD. See docs/audits/2026-05-24-vibe-code (finding C1).
+
+
+def test_single_empty_scrape_does_not_mark_sold(at_date):
+    """B-15 regression. A single empty/failed scrape must NOT mark a source's
+    listings sold. One transient 503 / empty-but-200 catalog used to flip an
+    entire source to SOLD permanently (the lone Critical audit finding)."""
+    at_date("2026-04-01")
+    state = {}
+    items = [
+        make_item(url="https://example.com/products/x1", title="Watch X1"),
+        make_item(url="https://example.com/products/x2", title="Watch X2"),
+    ]
+    merge.update_state(items, state)
+
+    # Day 2: scrape comes back empty (failed/transient).
+    at_date("2026-04-02")
+    enriched = merge.update_state([], state)
+
+    for it in items:
+        entry = state[it["id"]]
+        assert entry["active"] is True, "empty scrape must not flip active → sold"
+        assert entry.get("missCount") == 1
+    # Nothing is marked sold, and the held listings are re-emitted live.
+    assert all(not e.get("sold") for e in enriched), "no sold rows on a single empty run"
+    live_ids = {e["id"] for e in enriched}
+    assert {it["id"] for it in items} <= live_ids, "held listings stay in the live feed"
+
+
+def test_two_consecutive_empty_scrapes_marks_sold(at_date):
+    """After DISAPPEARANCE_MISS_THRESHOLD consecutive misses, a genuinely
+    gone listing does flip to sold — the debounce delays, it doesn't disable."""
+    at_date("2026-04-01")
+    state = {}
+    item = make_item()
+    merge.update_state([item], state)
+
+    at_date("2026-04-02")
+    merge.update_state([], state)              # miss 1 → held live
+    assert state[item["id"]]["active"] is True
+
+    at_date("2026-04-03")
+    enriched = merge.update_state([], state)   # miss 2 → sold
+    assert state[item["id"]]["active"] is False
+    assert state[item["id"]]["soldAt"] == "2026-04-03"
+    out = _enriched_by_id(enriched, item["id"])
+    assert out["sold"] is True
+
+
+def test_intermittent_scrape_never_marks_sold(at_date):
+    """A source that flaps (empty every other run) must never flip its
+    listings to sold — a seen run resets the debounce counter. This is the
+    Watch Club-style oscillation the guard is built for."""
+    at_date("2026-04-01")
+    state = {}
+    item = make_item()
+    merge.update_state([item], state)
+
+    for day, present in [
+        ("2026-04-02", False),  # miss 1 → held
+        ("2026-04-03", True),   # seen → reset
+        ("2026-04-04", False),  # miss 1 → held
+        ("2026-04-05", True),   # seen → reset
+        ("2026-04-06", False),  # miss 1 → held
+    ]:
+        at_date(day)
+        merge.update_state([item] if present else [], state)
+        assert state[item["id"]]["active"] is True, f"{day}: must stay live through a flap"
+    assert "soldAt" not in state[item["id"]] or state[item["id"]]["soldAt"] is None
