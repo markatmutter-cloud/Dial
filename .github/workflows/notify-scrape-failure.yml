@@ -10,6 +10,15 @@ name: Notify on scrape failure
 # That setting is on by default but the notification is buried alongside
 # every other Actions event; this surfaces failures as actionable
 # Issues that stay open until acknowledged.
+#
+# Implementation note (B-23): this uses the pre-installed `gh` CLI in a
+# plain run step, NOT actions/github-script. github-script must be
+# downloaded from GitHub's CDN at job setup, and a transient CDN blip
+# serving that tarball once crashed THIS workflow at setup — which
+# GitHub then emailed Mark as "Notify on scrape failure: All jobs have
+# failed", a false alarm that read like every scraper had died. `gh` is
+# already on the runner, so this job needs no action download and can't
+# fail that way again.
 
 on:
   workflow_run:
@@ -31,70 +40,49 @@ jobs:
   notify:
     runs-on: ubuntu-latest
     steps:
-      - name: Open or update issue on failure / close on recovery
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const wf = context.payload.workflow_run;
-            const wfName = wf.name;
-            const conclusion = wf.conclusion;
-            const runUrl = wf.html_url;
-            const runId = wf.id;
-            const sha = wf.head_sha.slice(0, 7);
-            const at = wf.updated_at;
-            const titlePrefix = `[scrape-fail] ${wfName}`;
+      - name: Open / update / close the failure issue via gh CLI
+        # All workflow_run fields are passed through env (never inlined
+        # into the script) to avoid shell-injection from run metadata.
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          WF_NAME: ${{ github.event.workflow_run.name }}
+          CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          RUN_URL: ${{ github.event.workflow_run.html_url }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          EVENT: ${{ github.event.workflow_run.event }}
+          UPDATED_AT: ${{ github.event.workflow_run.updated_at }}
+        run: |
+          set -euo pipefail
+          sha="${HEAD_SHA:0:7}"
+          prefix="[scrape-fail] ${WF_NAME}"
 
-            // Find an open issue we previously created for this workflow.
-            const { data: openIssues } = await github.rest.issues.listForRepo({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              state: 'open',
-              labels: 'scrape-failure',
-              per_page: 50,
-            });
-            const existing = openIssues.find((i) => i.title.startsWith(titlePrefix));
+          # Find an open issue we previously opened for this workflow.
+          existing=$(gh issue list --repo "$GH_REPO" --label scrape-failure \
+            --state open --limit 50 --json number,title \
+            --jq "[.[] | select(.title | startswith(\"$prefix\"))][0].number // empty")
 
-            if (conclusion === 'failure') {
-              const body = `Workflow **${wfName}** failed on \`${sha}\` at ${at}.\n\n` +
-                           `Run: ${runUrl}\n\n` +
-                           `Triggered: ${wf.event}\n` +
-                           `Run ID: ${runId}\n\n` +
-                           `_Auto-opened by notify-scrape-failure workflow. ` +
-                           `This issue will auto-close when ${wfName} runs successfully again._`;
-              if (existing) {
-                await github.rest.issues.createComment({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: existing.number,
-                  body,
-                });
-                console.log(`Commented on existing issue #${existing.number}`);
-              } else {
-                const created = await github.rest.issues.create({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  title: `${titlePrefix} — ${sha}`,
-                  body,
-                  labels: ['scrape-failure'],
-                });
-                console.log(`Opened new issue #${created.data.number}`);
-              }
-            } else if (conclusion === 'success' && existing) {
-              // Recovery path — close the open failure issue.
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: existing.number,
-                body: `Recovered: ${wfName} succeeded on \`${sha}\` at ${at}. Run: ${runUrl}`,
-              });
-              await github.rest.issues.update({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: existing.number,
-                state: 'closed',
-                state_reason: 'completed',
-              });
-              console.log(`Closed recovered issue #${existing.number}`);
-            } else {
-              console.log(`No action for conclusion=${conclusion} (no existing open issue)`);
-            }
+          if [ "$CONCLUSION" = "failure" ]; then
+            body=$(printf '%s\n\n%s\n\n%s\n%s\n\n%s' \
+              "Workflow **${WF_NAME}** failed on \`${sha}\` at ${UPDATED_AT}." \
+              "Run: ${RUN_URL}" \
+              "Triggered: ${EVENT}" \
+              "Run ID: ${RUN_ID}" \
+              "_Auto-opened by notify-scrape-failure. This issue auto-closes when ${WF_NAME} runs successfully again._")
+            if [ -n "$existing" ]; then
+              gh issue comment "$existing" --repo "$GH_REPO" --body "$body"
+              echo "Commented on existing issue #$existing"
+            else
+              gh issue create --repo "$GH_REPO" --title "$prefix — $sha" \
+                --body "$body" --label scrape-failure
+              echo "Opened new issue for $WF_NAME"
+            fi
+          elif [ "$CONCLUSION" = "success" ] && [ -n "$existing" ]; then
+            gh issue comment "$existing" --repo "$GH_REPO" \
+              --body "Recovered: ${WF_NAME} succeeded on \`${sha}\` at ${UPDATED_AT}. Run: ${RUN_URL}"
+            gh issue close "$existing" --repo "$GH_REPO" --reason completed
+            echo "Closed recovered issue #$existing"
+          else
+            echo "No action for conclusion=${CONCLUSION} (no existing open issue)"
+          fi
