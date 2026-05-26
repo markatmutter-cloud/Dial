@@ -31,7 +31,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install requests
+        run: pip install -r requirements.txt
 
       - name: Run eBay saved-search scraper (Browse API)
         # No-ops cleanly (writes empty CSV) when secrets aren't set,

@@ -71,9 +71,10 @@ delete — the history is useful.
 - **Reported:** 2026-05-24 (`Plan:`) · **Type:** Plan-mode thread, not a bug · **Status:** Queued for a coming session. Mark wants a review of `BRAND.md` (voice/brand). Pairs naturally with the card design system's "breathing-space & brand impact" dial — brand voice + visual brand expression. Surface at a replanning step.
 
 ### B-16 — Dependencies unpinned (no lockfiles, JS + Python)
-- **Reported:** 2026-05-24 · **Source:** `audit:2026-05-24` · **Severity:** 2 (reliability + supply-chain) · **Surface:** build / CI / workflows · **Status:** Open
+- **Reported:** 2026-05-24 · **Source:** `audit:2026-05-24` · **Severity:** 2 (reliability + supply-chain) · **Surface:** build / CI / workflows · **Status:** Partly fixed — **Python pinned #578**; **JS lockfile still open** (pending a Node environment — `npm` unavailable locally).
 - **Detail:** No `package-lock.json`; workflows `pip install` latest unpinned. A build that works today can break tomorrow with no code change, and it's a supply-chain exposure (updates run with the scrapers' secret keys). Cheapest high-leverage fix in the audit.
-- **Fix:** commit `package-lock.json` + `npm ci`; pinned `requirements.txt` + `pip install -r`; turn on Dependabot. Detail: `findings-maintainability.md` (HIGH-1), `findings-security.md` (MED-2/3).
+- **Done (#578):** pinned `requirements.txt` / `requirements-auctions.txt` / `requirements-ai.txt`; all 11 runtime workflow steps now `pip install -r`.
+- **Remaining:** commit `package-lock.json` + switch CI/Vercel to `npm ci` (needs Node); optionally Dependabot for deliberate bumps. Detail: `findings-maintainability.md` (HIGH-1), `findings-security.md` (MED-2/3).
 
 ### B-21 — Service-worker JSON regex out of sync with post-split feed filenames
 - **Reported:** 2026-05-24 · **Source:** `audit:2026-05-24` (H2; split from B-17) · **Severity:** 2 (offline / freshness) · **Surface:** `public/service-worker.js` · **Status:** Open
