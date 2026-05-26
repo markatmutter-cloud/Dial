@@ -76,11 +76,6 @@ delete — the history is useful.
 - **Done (#578):** pinned `requirements.txt` / `requirements-auctions.txt` / `requirements-ai.txt`; all 11 runtime workflow steps now `pip install -r`.
 - **Remaining:** commit `package-lock.json` + switch CI/Vercel to `npm ci` (needs Node); optionally Dependabot for deliberate bumps. Detail: `findings-maintainability.md` (HIGH-1), `findings-security.md` (MED-2/3).
 
-### B-21 — Service-worker JSON regex out of sync with post-split feed filenames
-- **Reported:** 2026-05-24 · **Source:** `audit:2026-05-24` (H2; split from B-17) · **Severity:** 2 (offline / freshness) · **Surface:** `public/service-worker.js` · **Status:** Open
-- **Detail:** `isJsonData()` matches only `(listings|auctions|tracked_lots|state|auctions_state).json`, so the post-split feed files the app actually fetches (`listings_live/_sold/_desc`, `auction_lots`, `loupethis_lots`, `hairspring_finds`, `hodinkee_shop`, `manual_archive_lots`) fall through to pass-through — no offline fallback for the primary feed, and the SW freshness guarantee no longer applies (works today only because App.js sets `cache:"no-cache"`). Silent drift since the live/sold split.
-- **Fix:** broaden the regex to the current filenames; add a test asserting every App.js feed URL matches a SW rule. Detail: `docs/audits/2026-05-24-vibe-code/findings-frontend.md` (H2).
-
 ### B-18 — Currency FX tables duplicated, can silently drift
 - **Reported:** 2026-05-24 · **Source:** `audit:2026-05-24` · **Severity:** 2 (price correctness) · **Surface:** `merge.py` + `utils.js` · **Status:** Open
 - **Detail:** Exchange rates are hardcoded in two places that must match, with nothing enforcing it. Drift → silently wrong prices (the "8× off" class) and fabricated "biggest price drops" feeding the deals sort.
@@ -105,6 +100,16 @@ delete — the history is useful.
 ---
 
 ## Resolved
+
+### B-21 — Service-worker JSON regex out of sync with post-split feed filenames · Fixed #580
+- The SW's `isJsonData()` matched only the pre-split filenames, so the live/sold
+  split + auction/editorial archives the app fetches fell through to
+  pass-through (no offline fallback; the freshness guarantee held only because
+  App.js sets `cache:"no-cache"`). Fixed by deriving the matcher from a named
+  `JSON_DATA_FILES` list, plus `src/service-worker.test.js` — a drift guard that
+  rebuilds the SW regex from source and asserts it covers every App.js `*_URL`
+  feed constant, so it can't silently drift again. Detail:
+  `docs/audits/2026-05-24-vibe-code/findings-frontend.md` (H2).
 
 ### B-17 — ~19 MB of non-critical JSON loaded eagerly on every app open · Fixed #577
 - The mount effect fetched 5 heavy archive/auction sources (auction_lots 5.2 MB,
