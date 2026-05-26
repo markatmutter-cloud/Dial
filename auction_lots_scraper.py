@@ -1335,9 +1335,16 @@ def enumerate_bonhams(sale_url, sale=None):
     estimate, image, sold-price-incl-premium are all in the sale
     JSON).
 
-    Cloudflare on Bonhams is in passive proof-of-work mode (sets
-    __cf_bm but doesn't block), so this works cleanly from CI with a
-    browser-style User-Agent. No per-lot fetches means no WAF risk.
+    DORMANT IN CI — runs from a residential host. This enumerator is
+    complete and correct, but Cloudflare now 403s Bonhams' lot pages from
+    GitHub's datacenter IPs (confirmed via the source-probe workflow, #584),
+    so when this runs in CI it returns []. It works fine from a residential
+    IP: the residential host (B-25) drives it via `bonhams_lots_scraper.py`,
+    which scopes to Bonhams and writes the separate `public/bonhams_lots.json`
+    (CI's auction_lots.json sweep would otherwise drop Bonhams active lots).
+    Reactivates in CI only if Bonhams' Cloudflare posture changes back. (It
+    DID once work from CI — hence the wiring in ENUMERATORS; the block came
+    later.) No per-lot fetches, so no WAF risk beyond the IP block itself.
 
     The buildId rotates on Bonhams deploys; we extract it from the
     sale-page HTML on every run so we're never stuck on a stale id.
