@@ -23,6 +23,24 @@ BASE_URL = "https://api.browse.ai/v2"
 POLL_INTERVAL = 10
 MAX_WAIT = 600
 
+
+def _raise_for_status(r, context):
+    """Like r.raise_for_status() but prints Browse AI's response body first.
+    A bare raise_for_status() discards the JSON message Browse AI returns —
+    e.g. a 403 explains *why* (exhausted task credits, lapsed billing, or a
+    rotated key), which a status code alone doesn't. Surfacing it in CI logs
+    turns a future failure into a self-diagnosing one (see BUGS B-23)."""
+    if r.status_code >= 400:
+        body = (r.text or "").strip()[:500]
+        print(f"ERROR: Browse AI {context} returned HTTP {r.status_code}.")
+        if body:
+            print(f"  Response body: {body}")
+        if r.status_code == 403:
+            print("  403 = authenticated but forbidden — most likely exhausted "
+                  "task credits, lapsed billing, or a rotated key. "
+                  "Check the account dashboard: https://www.browse.ai/account")
+    r.raise_for_status()
+
 BRANDS = [
     'Rolex','Omega','Patek Philippe','Tudor','Breitling','IWC','Cartier',
     'Jaeger-LeCoultre','Panerai','Audemars Piguet','Vacheron Constantin',
@@ -62,7 +80,7 @@ def trigger_robot(api_key):
         f"{BASE_URL}/robots/{ROBOT_ID}/tasks",
         headers=headers, json=payload, timeout=30
     )
-    r.raise_for_status()
+    _raise_for_status(r, "trigger robot")
     task_id = r.json()['result']['id']
     print(f"Task started: {task_id}")
     return task_id
@@ -78,7 +96,7 @@ def poll_task(api_key, task_id):
             f"{BASE_URL}/robots/{ROBOT_ID}/tasks/{task_id}",
             headers=headers, timeout=30
         )
-        r.raise_for_status()
+        _raise_for_status(r, "poll task")
         task = r.json()['result']
         status = task.get('status', 'in-progress')
         print(f"  [{elapsed}s] {status}")
@@ -98,7 +116,7 @@ def get_latest_task(api_key):
         params={"status": "successful", "pageSize": 1, "sort": "-createdAt"},
         timeout=30
     )
-    r.raise_for_status()
+    _raise_for_status(r, "get latest task")
     items = r.json()['result']['robotTasks']['items']
     if items:
         print(f"Using latest task: {items[0]['id']}")

@@ -97,6 +97,13 @@ delete — the history is useful.
 - **Done (#579):** AdminTab (admin-only) `React.lazy` + `Suspense` — its chunk now loads only when an admin opens the tab.
 - **Remaining (phase 2):** the receivers (mount only on inbound share/challenge/list links), `EditorialView`, `SizeCompare`, `ChallengeFlow`, modals. Confirm where each is imported (some are inside sub-components, not App.js). Detail: `docs/audits/2026-05-24-vibe-code/findings-frontend.md` (H1).
 
+### B-23 — Browse AI 403 (Tropical Watch) + in-batch scrape failures are invisible
+- **Reported:** 2026-05-26 · **Severity:** 2 (a source stops updating; operability) · **Surface:** `tropicalwatch_scraper.py`, `.github/workflows/scrape-listings.yml`, `notify-scrape-failure.yml` · **Status:** Partly fixed — **error-surfacing shipped (this branch)**; **account-side fix pending Mark**; **silent-gap proposal pending decision**.
+- **Detail:** Tropical Watch (the **only** active Browse AI source — Analog Shift fetches Shopify directly, Grey & Patina migrated to WooCommerce) started getting **`403 Forbidden`** from `POST /robots/{id}/tasks` on 2026-05-26 06:09Z, opening scrape-failure issue **#569**. The key is present (not 401), so 403 = account-side: most likely **exhausted Browse AI task credits**, lapsed billing, or a rotated key. Not a code bug — needs the Browse AI dashboard.
+- **Two findings:** (1) the scraper called `raise_for_status()` and **discarded Browse AI's response body**, so CI logs showed only "403" with no reason. (2) Tropical Watch fails *loudly* (own workflow → red → issue), but every source **inside** `scrape-listings.yml` runs `continue-on-error`, so an Analog Shift / Grey & Patina failure keeps the run **green** and never notifies — `health.py` detects it (STALE >12h + missing CSV) but only on-demand.
+- **Done (this branch):** `_raise_for_status()` helper in `tropicalwatch_scraper.py` prints the response body + a 403 hint before raising, at all three API call sites — the next failure self-diagnoses.
+- **Remaining:** (a) **Mark:** resolve the Browse AI account (credits/billing/key); if the key changed, update the `BROWSE_AI_API_KEY` GitHub secret. (b) **Decide:** whether to push in-batch source failures proactively (post-batch staleness gate that reds the run *after* commit so the notifier fires, or scheduled `health.py`), vs. leaving it on-demand. Premise note: the original "3 Browse AI dealers" read was wrong — only Tropical Watch uses it.
+
 ---
 
 ## Resolved
