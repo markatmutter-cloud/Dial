@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  launchd LaunchAgent for the Bonhams residential lot scrape (B-25).
+
+  Ticks hourly while the laptop is awake; launchd runs a MISSED tick on the
+  next wake (unlike cron, which skips). The scraper itself decides whether to
+  actually scrape (it self-throttles, ramping to hourly near a sale's close),
+  so an hourly tick is cheap most of the time.
+
+  EDIT BEFORE INSTALLING: set the ProgramArguments path to wherever you cloned
+  the dedicated checkout (the path below assumes ~/watchlist-bonhams).
+  Install steps are in scripts/RESIDENTIAL_SCRAPE_SETUP.md.
+-->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.thewatchlist.bonhams-scrape</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>/Users/markmutter/watchlist-bonhams/scripts/bonhams_residential_scrape.sh</string>
+    </array>
+
+    <!-- Fire at minute 0 of every hour (no Hour key = every hour). -->
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+
+    <!-- Don't fire on load/login; first run is manual (see setup doc). -->
+    <key>RunAtLoad</key>
+    <false/>
+
+    <!-- launchd's own wrapper log (the script also logs to ~/Library/Logs). -->
+    <key>StandardOutPath</key>
+    <string>/Users/markmutter/Library/Logs/watchlist-bonhams-launchd.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/markmutter/Library/Logs/watchlist-bonhams-launchd.log</string>
+
+    <!-- Don't relaunch on exit; this is a periodic job, not a daemon. -->
+    <key>KeepAlive</key>
+    <false/>
+</dict>
+</plist>
