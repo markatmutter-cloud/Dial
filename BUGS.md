@@ -120,6 +120,13 @@ delete — the history is useful.
 - **Pluggable-fetcher abstraction:** the orchestration (schedule → URL → window → results → merge) is identical whether the fetcher is direct-`requests`, Playwright, or Browse AI. Build it **once**; the fetcher is a swap. For both Bonhams and TW, **direct fetch works → Browse AI is droppable.**
 - **Security:** needs git push creds on the box (Mark has git set up). If ever a self-hosted GitHub *runner* instead of `launchd`, lock it down — self-hosted runners on a public repo are a known risk.
 
+### B-26 — A shared item leaks into the brand-filtered Listings grid
+- **Reported:** 2026-05-26 · **Severity:** 2 (correctness; possible cross-user/private-content leak — verify) · **Surface:** Listings brand filter / user-data projection into listings · **Status:** Open — held for later (Mark, 2026-05-26)
+- **Detail:** Filtering Listings by brand **Enicar** surfaces a card that links to a **share URL** — `https://the-watch-list.app/share/484b499a302c?from=Mark+Mutter` — instead of a real dealer listing. A `/share/<id>` link is a *shared item*, not a marketplace listing, so it shouldn't appear in the public brand-filtered grid at all.
+- **What I found (triage):** the `/share/` item is **not** in static `public/listings.json` (none of the 9 Enicar items there have a `/share/` URL). So it's coming from **user data** — a Supabase row (collection/shared item) carrying a `listing_snapshot`, which is projected into the listings memo client-side (`src/supabase.js` `listing_snapshot` pattern; CLAUDE.md "Articles flow through the listing tables"). The snapshot's `brand` is `Enicar`, so it matches the Enicar brand filter, but its link resolves to the `/share/<id>` URL rather than a dealer URL.
+- **Hypothesis:** the listings projection / brand filter doesn't exclude share-kind (or non-dealer `listing_snapshot`) items — they should live only in their own surface, not the cross-source Listings grid. Likely fix near the listings memo in `src/App.js` (gate out share/`listing_snapshot`-only items) or wherever shared snapshots are folded into the grid. **Verify the privacy dimension:** confirm whether this leaks one user's shared item into *another* user's listings, or only the sharer's own session.
+- **Adjacent smell (maybe separate):** one static Enicar item is titled "Richard Mille RM 002-V2 Tourbillon…" but `brand: Enicar` (windvintage URL) — a brand-misclassification worth a look while in this code.
+
 ---
 
 ## Resolved
