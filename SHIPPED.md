@@ -52,6 +52,11 @@ within each section roughly last.
 - **2026-05-26 — Service-worker feed coverage + drift test (B-21).** SW
   network-firsts the post-split feed files again; `service-worker.test.js`
   fails if its file list drifts from App.js's `*_URL` constants (#580).
+- **2026-05-26 — Browse AI 403 surfacing + notifier hardening (B-23).** Tropical
+  Watch scraper now prints Browse AI's error body on failure; the
+  failure-notifier uses the pre-installed `gh` CLI (no action download at setup)
+  so a GitHub-CDN blip can't crash it into a misleading "all jobs failed" email
+  (#582).
 
 ## Epic 1 — Sources
 

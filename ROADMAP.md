@@ -201,6 +201,14 @@ verification expansions — (a) flag sales whose `date_end` passed but status is
 still active; (b) flag new sales that don't appear in our calendar within N
 days. Both catch silent breakage the count-vs-median check misses.
 
+**Browse AI direction (decided 2026-05-26):** the free 50-credit/mo tier can't
+sustain our usage (~17/day, Tropical Watch only). Plan: subscribe and make it
+pay by adding sources our CI *can't* reach (Bonhams + other Cloudflare-blocked
+houses — B-24), then migrate those to a **self-hosted Playwright runner** on a
+spare machine to drop the Browse AI cost entirely (B-25). In-batch silent-source
+failures (a non-TW source erroring inside a green run) are detected by
+`health.py` but not yet pushed — surfacing approach still TBD.
+
 ### Infrastructure / refactor track
 
 Full cold audit 2026-05-24 lives in `docs/audits/2026-05-24-vibe-code/` (grade
