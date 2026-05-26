@@ -19,6 +19,10 @@ const node = {
   // render — stories, conflicts, module candidates enrich the page from the
   // scraped+analyzed material. Human-review-gated (the digest is the review surface).
   synthesisNode: "submariner",
+  // Which synthesis items this page shows: its own refs + model-wide context.
+  // Branch-scoped items (sea-dweller/comex/milsub/1680/6538…) route to their own
+  // future pages, not here. (Helium-valve = sea-dweller/comex → won't show.)
+  synthesisScope: ["5512", "5513", "model-wide"],
   brand: "Rolex",
   modelLine: "Submariner",
   refs: ["5512", "5513"],

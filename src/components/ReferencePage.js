@@ -70,6 +70,14 @@ export function ReferencePage({
     sold: matched.filter((it) => it.sold),
   };
 
+  // Only show synthesis items scoped to this reference (or model-wide). Branch
+  // items (sea-dweller/comex/1680…) route to their own pages. Untagged items
+  // (older synthesis without applies_to) show, for back-compat.
+  const scope = node.synthesisScope || node.refs || [];
+  const inScope = (it) => !it.applies_to || !it.applies_to.length || it.applies_to.some((t) => scope.includes(t));
+  const synStories = (synthesis?.stories || []).filter(inScope);
+  const synConflicts = (synthesis?.conflicts || []).filter(inScope);
+
   const renderListingCard = (item) => (
     <Card item={item} wished={!!watchlist[item.id]} onWish={handleWish} compact={compact}
       isHidden={!!hidden[item.id]} onAddToCollection={user ? openCollectionPicker : undefined}
@@ -150,13 +158,13 @@ export function ReferencePage({
       </div>
 
       {/* STORIES — moved high; visual strip + synthesised text stories */}
-      {(node.storiesAndImages?.length > 0 || synthesis?.stories?.length > 0) && (
+      {(node.storiesAndImages?.length > 0 || synStories.length > 0) && (
         <div style={{ marginTop: gap }}>
           {wrapStrip(stripHead("Stories", "secondary"))}
           {node.storiesAndImages?.length > 0 && wrapStrip(<CardStrip items={node.storiesAndImages} isMobile={isMobile} background="var(--border)" renderCard={renderEditorialCard} />)}
-          {synthesis?.stories?.length > 0 && wide(
+          {synStories.length > 0 && wide(
             <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 0 : "0 36px", marginTop: node.storiesAndImages?.length ? 18 : 0 }}>
-              {synthesis.stories.map((s, i) => (
+              {synStories.map((s, i) => (
                 <div key={i} style={{ padding: "11px 0", borderTop: "0.5px solid var(--border)" }}>
                   <div style={{ fontFamily: SERIF, fontSize: isMobile ? 16 : 17, fontWeight: 600, color: "var(--text1)", lineHeight: 1.3 }}>
                     {s.title}{s.source ? <a href={s.source} target="_blank" rel="noopener noreferrer" style={{ color: "var(--brand)", textDecoration: "none", fontSize: 11, fontWeight: 600, marginLeft: 6 }}>↗</a> : null}
@@ -344,11 +352,11 @@ export function ReferencePage({
       )}
 
       {/* DEBATED & CONTESTED — from the synthesis conflicts */}
-      {synthesis?.conflicts?.length > 0 && (
+      {synConflicts.length > 0 && (
         <div style={{ ...prose, marginTop: gap }}>
           <Eyebrow style={{ marginBottom: 4 }}>Debated &amp; contested</Eyebrow>
           <div style={{ fontSize: 12, color: "var(--text3)", marginBottom: 8 }}>Where good sources disagree — we show both sides rather than pick.</div>
-          {synthesis.conflicts.map((c, i) => (
+          {synConflicts.map((c, i) => (
             <div key={i} style={{ padding: "12px 0", borderTop: "0.5px solid var(--border)" }}>
               <div style={{ fontFamily: SERIF, fontSize: isMobile ? 16 : 17, fontWeight: 600, color: "var(--text1)" }}>{c.topic}</div>
               <div style={{ fontSize: 14, lineHeight: 1.5, color: "var(--text2)", marginTop: 3 }}>{c.note}</div>

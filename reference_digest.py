@@ -20,6 +20,11 @@ PUBLIC = Path("public")
 DOCS = Path("docs")
 
 
+def _scope(x: dict) -> str:
+    t = x.get("applies_to")
+    return f"  ·  _scope: {', '.join(t)}_" if t else ""
+
+
 def digest(node: str) -> None:
     syn_path = PUBLIC / f"reference_synthesis_{node}.json"
     corpus_path = PUBLIC / f"reference_corpus_{node}.json"
@@ -52,22 +57,22 @@ def digest(node: str) -> None:
     w(f"\n## Consensus facts ({len(syn.get('consensus', []))})\n")
     for c in syn.get("consensus", []):
         srcs = " · ".join(f"[{i+1}]({s})" for i, s in enumerate(c.get("sources", [])))
-        w(f"- **[{c.get('confidence')}]** {c.get('claim')}  \n  {srcs}")
+        w(f"- **[{c.get('confidence')}]** {c.get('claim')}  \n  {srcs}{_scope(c)}")
 
     w(f"\n## Marks ({len(syn.get('marks', []))})\n")
     for m in syn.get("marks", []):
         srcs = " · ".join(f"[{i+1}]({s})" for i, s in enumerate(m.get("sources", [])))
-        w(f"- **{m.get('name')}** — {m.get('explanation')}  \n  {srcs}")
+        w(f"- **{m.get('name')}** — {m.get('explanation')}  \n  {srcs}{_scope(m)}")
 
     w(f"\n## Agreements & conflicts ({len(syn.get('conflicts', []))})\n")
     for c in syn.get("conflicts", []):
-        w(f"- **{c.get('topic')}** — {c.get('note')}")
+        w(f"- **{c.get('topic')}** — {c.get('note')}{_scope(c)}")
         for p in c.get("positions", []):
             w(f"  - {p}")
 
     w(f"\n## Stories worth telling ({len(syn.get('stories', []))})\n")
     for s in syn.get("stories", []):
-        w(f"- **{s.get('title')}** — {s.get('why')}  \n  [source]({s.get('source')})")
+        w(f"- **{s.get('title')}** — {s.get('why')}  \n  [source]({s.get('source')}){_scope(s)}")
 
     w(f"\n## Module candidates — future nodes ({len(syn.get('module_candidates', []))})\n")
     for m in syn.get("module_candidates", []):
