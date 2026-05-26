@@ -27,7 +27,6 @@ on:
       - "Scrape auctions"
       - "Scrape auction lots (frequent)"
       - "Scrape eBay"
-      - "Scrape Tropical Watch only"
       - "Rollup listing events"
     types:
       - completed

@@ -47,11 +47,9 @@ jobs:
         continue-on-error: true
         run: python falco_scraper.py
 
-      - name: Run Tropical Watch scraper (Browse AI)
+      - name: Run Tropical Watch scraper (direct HTML, no Browse AI)
         continue-on-error: true
-        env:
-          BROWSE_AI_API_KEY: ${{ secrets.BROWSE_AI_API_KEY }}
-        run: python tropicalwatch_scraper.py --latest
+        run: python tropicalwatch_scraper.py
 
       - name: Run Grey & Patina scraper
         continue-on-error: true

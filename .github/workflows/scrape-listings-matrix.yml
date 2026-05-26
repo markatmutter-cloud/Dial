@@ -32,7 +32,7 @@ jobs:
           - { scraper: menta }
           - { scraper: collectorscorner }
           - { scraper: falco }
-          - { scraper: tropicalwatch, args: "--latest" }
+          - { scraper: tropicalwatch }
           - { scraper: greyandpatina }
           - { scraper: oliverandclarke }
           - { scraper: craftandtailored }
@@ -68,11 +68,6 @@ jobs:
           - { scraper: lunaroyster }
           - { scraper: ssongwatches }
           - { scraper: swisshours }
-
-    env:
-      # tropicalwatch needs this; harmless to expose to others (they
-      # don't read the var). Avoids per-matrix-entry env overrides.
-      BROWSE_AI_API_KEY: ${{ secrets.BROWSE_AI_API_KEY }}
 
     steps:
       - uses: actions/checkout@v4
