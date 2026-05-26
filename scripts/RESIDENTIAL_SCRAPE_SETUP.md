@@ -16,7 +16,26 @@ your main working copy it would fight whatever branch you're on. So it runs in a
 **separate clone that only ever sits on `main`** — your working copy is never
 touched. The wrapper refuses to run unless `HEAD == main`.
 
-## One-time setup
+## Quick install (fresh machine — one command)
+
+This is the whole thing. On any Mac (your laptop, a replacement, a Mac mini):
+
+```bash
+git clone https://github.com/markatmutter-cloud/watchlist.git ~/watchlist-bonhams
+bash ~/watchlist-bonhams/scripts/install_residential_host.sh
+```
+
+`install_residential_host.sh` is **idempotent and portable** (uses `$HOME`/your
+uid, so it works for any user on any Mac): it sets up the dedicated clone,
+installs `curl-cffi`, generates the launchd plist with this machine's paths,
+loads the agent, and does one smoke-test run (approve the one-time git keychain
+prompt when it appears). Re-run it anytime to update or reload. Remove with
+`bash ~/watchlist-bonhams/scripts/uninstall_residential_host.sh`.
+
+The manual steps below are what the installer automates — for reference / if you
+want to do it by hand.
+
+## Manual setup (what the installer does)
 
 ```bash
 # 1. Dedicated clone (only ever on main). Adjust the path if you like, but then
