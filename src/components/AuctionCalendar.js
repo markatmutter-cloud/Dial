@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useEffect } from "react";
+import { innerToggleButton } from "../styles";
 
 // Auction calendar — month-banded list of every auction-house sale
 // in the emitted feed. Live + upcoming render in the top section;
@@ -87,10 +88,29 @@ export function AuctionCalendar({
     } catch {}
   }, [archiveOpen]);
 
+  // House filter (Mark 2026-05-26). The calendar interleaves every house's
+  // sales by month; with 6 houses that's a lot to wade through if you follow
+  // one. A scoped chip row narrows to a single house. Session-local (defaults
+  // to "all") on purpose — a persisted filter risks the "why am I only seeing
+  // Bonhams?" confusion on a later visit.
+  const [houseFilter, setHouseFilter] = useState("all");
+  const houses = useMemo(
+    () => [...new Set(auctions.map(a => a.house).filter(Boolean))].sort(),
+    [auctions]
+  );
+  // If the selected house drops out of the feed (data refresh), fall back to
+  // "all" so the calendar never gets stuck showing nothing.
+  useEffect(() => {
+    if (houseFilter !== "all" && !houses.includes(houseFilter)) setHouseFilter("all");
+  }, [houses, houseFilter]);
+
   const { upcomingAuctions, pastAuctions } = useMemo(() => {
+    const src = houseFilter === "all"
+      ? auctions
+      : auctions.filter(a => a.house === houseFilter);
     const upcoming = [];
     const past = [];
-    for (const a of auctions) {
+    for (const a of src) {
       (a.status === "past" ? past : upcoming).push(a);
     }
     upcoming.sort((a, b) => {
@@ -105,7 +125,7 @@ export function AuctionCalendar({
       return db.localeCompare(da) || (a.house || "").localeCompare(b.house || "");
     });
     return { upcomingAuctions: upcoming, pastAuctions: past };
-  }, [auctions]);
+  }, [auctions, houseFilter]);
 
   const groupByMonth = (arr) => {
     const buckets = new Map();
@@ -153,6 +173,22 @@ export function AuctionCalendar({
 
   return (
     <div>
+      {/* House filter — scoped to the houses actually present. Hidden when
+          there's only one house (nothing to narrow). Horizontally scrollable
+          on mobile so 6+ houses don't wrap the chrome. */}
+      {houses.length > 1 && (
+        <div style={{
+          display: "flex", gap: 6, overflowX: "auto", padding: "0 0 12px",
+          WebkitOverflowScrolling: "touch", scrollbarWidth: "none",
+        }}>
+          <button onClick={() => setHouseFilter("all")}
+            style={innerToggleButton(houseFilter === "all")}>All</button>
+          {houses.map(h => (
+            <button key={h} onClick={() => setHouseFilter(h)}
+              style={innerToggleButton(houseFilter === h)}>{h}</button>
+          ))}
+        </div>
+      )}
       {/* "N upcoming · M archived" counts line retired 2026-05-21 (PR_Y).
           The shell-level identity band on the Calendar sub-tab now
           carries those counts in its colored slab. Live-now count
