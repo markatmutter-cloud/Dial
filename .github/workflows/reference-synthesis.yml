@@ -69,13 +69,17 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: python reference_synthesis.py ${{ steps.nodes.outputs.list }}
 
+      - name: Stage 3 — readable digest (insights + gap backlog)
+        run: python reference_digest.py ${{ steps.nodes.outputs.list }}
+
       - name: Commit + push outputs
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add reference_sources/ \
                   public/reference_corpus_*.json \
-                  public/reference_synthesis_*.json
+                  public/reference_synthesis_*.json \
+                  docs/reference_synthesis_*.md
           if git diff --staged --quiet; then
             echo "No changes — nothing to commit."
             exit 0
