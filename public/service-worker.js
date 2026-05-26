@@ -9,9 +9,9 @@
  *   2. Cache hashed static assets (CRA's main.<hash>.js / .css under
  *      /static/) with a cache-first strategy so subsequent loads are
  *      fast and offline-tolerant.
- *   3. Network-first the JSON files (listings.json, auctions.json,
- *      tracked_lots.json) so fresh scraper data lands without manual
- *      refresh.
+ *   3. Network-first the scraper-output JSON (the live/sold listings split,
+ *      auction lots, archives — see JSON_DATA_FILES) so fresh data lands
+ *      without manual refresh.
  *   4. Auto-clean old caches on activate.
  *
  * Update strategy:
@@ -48,10 +48,24 @@ function isHashedStaticAsset(url) {
       || /\/[^/]+\.[a-f0-9]{8,}\.(js|css|woff2?|ttf|otf|png|jpg|svg|webp)$/i.test(url.pathname);
 }
 
+// Scraper-output JSON the app loads — network-first for freshness, with a
+// cached-stale offline fallback. KEEP IN SYNC with the *_URL feed constants in
+// src/App.js. The live/sold split + auction/editorial archives were added there
+// but this list wasn't (B-21 / audit H2), so the primary feed silently lost SW
+// coverage. src/service-worker.test.js fails if an App.js feed URL isn't here.
+const JSON_DATA_FILES = [
+  "listings", "listings_live", "listings_sold", "listings_desc",
+  "auctions", "auctions_state", "auction_lots", "tracked_lots", "state",
+  "manual_archive_lots", "manual_historical_listings",
+  "loupethis_lots", "hairspring_finds", "hodinkee_shop",
+];
+const JSON_DATA_RE = new RegExp(`/(${JSON_DATA_FILES.join("|")})\\.json$`, "i");
+
 function isJsonData(url) {
-  // The scraper output JSONs we want freshness-first on.
-  return /\/(listings|auctions|tracked_lots|state|auctions_state)\.json$/i.test(url.pathname)
-      || /raw\.githubusercontent\.com\/.+\/(listings|auctions|tracked_lots|state|auctions_state)\.json$/i.test(url.href);
+  // Unanchored at the start, so it matches the basename at the end of both a
+  // same-origin path (/listings_live.json) and a raw.githubusercontent path
+  // (/owner/repo/branch/.../listings_live.json).
+  return JSON_DATA_RE.test(url.pathname);
 }
 
 self.addEventListener("fetch", (event) => {
