@@ -76,6 +76,10 @@ within each section roughly last.
   Stories.
 - **2026-05-24 — Shopify retry + Watch Club low-count abort (PRs #531/#534).**
   Kills "single 503 wipes the source" and the truncated-catalog flap.
+- **2026-05-26 — Tropical Watch off Browse AI → direct scraper (B-23).**
+  Server-rendered index walker (`requests`, no key), reachable from CI. Browse
+  AI now fully removed from the project; sold-price history preserved via the
+  URL-hash IDs (#586/#587).
 
 ## Epic 2 — Auction houses
 
@@ -104,6 +108,15 @@ within each section roughly last.
   #486/#488 didn't clear it).
 - **2026-05-24 — Sotheby's archive support (PR #539).** manual_archive_scraper
   gains a Sotheby's URL branch.
+- **2026-05-26 — Bonhams lots live, via a residential host (B-24/B-25).** The
+  existing-but-CI-blocked `enumerate_bonhams` now runs from a laptop `launchd`
+  agent → separate `bonhams_lots.json` folded into the Auctions grid; adaptive
+  throttle, one-command portable installer, non-watch (dept≠WCH) sales filtered
+  out (#590/#591/#593/#594).
+- **2026-05-26 — Auction calendar: house filter + sale→grid (Phase 1A).** Chip
+  row filters the calendar by house (#595); "View lots" / title click open the
+  in-app grid pre-filtered to that sale — Auctions if live, Sold if past, with a
+  subtle ↗ to the house page (#596).
 
 ## Epic 3 — Watchlist
 
