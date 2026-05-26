@@ -60,7 +60,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install Anthropic SDK
-        run: pip install anthropic
+        run: pip install -r requirements-ai.txt
 
       - name: Run topic indexer
         env:

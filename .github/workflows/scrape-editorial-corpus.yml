@@ -72,7 +72,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install requests
+        run: pip install -r requirements.txt
 
       - name: Run Hodinkee Bring a Loupe scraper
         # Sitemap-based URL discovery, ~251 articles. Incremental

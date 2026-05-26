@@ -64,7 +64,7 @@ jobs:
         # shake so the same request from GHA clears the bot challenge.
         # Other houses (Antiquorum, Christie's, Sotheby's, Phillips,
         # Monaco Legend) continue to use plain `requests`.
-        run: pip install requests curl-cffi
+        run: pip install -r requirements-auctions.txt
 
       - name: Run comprehensive auction-lot scraper
         # Reads the existing public/auctions.json (last refreshed by

@@ -1,0 +1,8 @@
+# LLM-backed workflows (topic index, collector profile). Composes the base
+# pins + the Anthropic SDK. Floor matches requirements-pipeline.txt; kept a
+# floor (>=) rather than an exact pin because the exact working version
+# couldn't be verified offline in this environment — tighten to == once
+# confirmed in a node/pip environment. Used by index-corpus-topics.yml +
+# collector-profile.yml. See BUGS.md B-16.
+-r requirements.txt
+anthropic>=0.69

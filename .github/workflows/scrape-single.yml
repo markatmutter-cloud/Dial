@@ -46,7 +46,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install requests
+        run: pip install -r requirements.txt
 
       - name: Validate scraper exists
         # Bail early with a clear error if the basename is wrong, rather

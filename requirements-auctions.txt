@@ -1,0 +1,6 @@
+# Auction-house scrapers also need curl-cffi (Chrome-TLS impersonation, for
+# Cloudflare-fronted houses like Bonhams). Composes the base pins so `requests`
+# stays defined in exactly one place. Used by scrape-auctions.yml +
+# scrape-auction-lots-frequent.yml. See BUGS.md B-16.
+-r requirements.txt
+curl-cffi==0.13.0

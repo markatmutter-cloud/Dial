@@ -1,0 +1,13 @@
+# Runtime dependencies for the scraper + merge pipeline.
+#
+# Pinned so a scheduled scrape (which runs with secret keys — Browse AI, eBay
+# OAuth, Supabase write) can't silently pull a brand-new release of a dep or
+# its transitive tree. Before this, every workflow did `pip install requests`
+# = latest-on-the-day, the classic supply-chain vector. See BUGS.md B-16 /
+# docs/audits/2026-05-24-vibe-code (security MED-3).
+#
+# Bump deliberately (by hand, or via Dependabot — a queued follow-up), never
+# implicitly. Versions are the current-latest as of 2026-05-26, so this pins
+# what the runners were already effectively installing — no behavior change,
+# just locked.
+requests==2.32.5
