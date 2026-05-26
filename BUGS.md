@@ -75,10 +75,10 @@ delete — the history is useful.
 - **Detail:** No `package-lock.json`; workflows `pip install` latest unpinned. A build that works today can break tomorrow with no code change, and it's a supply-chain exposure (updates run with the scrapers' secret keys). Cheapest high-leverage fix in the audit.
 - **Fix:** commit `package-lock.json` + `npm ci`; pinned `requirements.txt` + `pip install -r`; turn on Dependabot. Detail: `findings-maintainability.md` (HIGH-1), `findings-security.md` (MED-2/3).
 
-### B-17 — ~22 MB JSON fetched on every app open (mobile first-load jank)
-- **Reported:** 2026-05-24 · **Source:** `audit:2026-05-24` · **Severity:** 2 (perf / UX) · **Surface:** `App.js` mount fetch + service worker · **Status:** Open
-- **Detail:** The mount effect fetches ~22 MB (~3.6 MB gzip), ~19 MB of which the default Live view doesn't render (`auction_lots`, `loupethis_lots`, `listings_desc`, `hodinkee_shop`, `hairspring_finds`, `manual_archive_lots`), parsed on the main thread → multi-second jank on phones. Separately, the service-worker JSON regex no longer matches the post-split feed filenames.
-- **Fix:** gate non-default fetches behind tab visit / idle; broaden the SW regex. Detail: `findings-frontend.md` (C1, H2).
+### B-21 — Service-worker JSON regex out of sync with post-split feed filenames
+- **Reported:** 2026-05-24 · **Source:** `audit:2026-05-24` (H2; split from B-17) · **Severity:** 2 (offline / freshness) · **Surface:** `public/service-worker.js` · **Status:** Open
+- **Detail:** `isJsonData()` matches only `(listings|auctions|tracked_lots|state|auctions_state).json`, so the post-split feed files the app actually fetches (`listings_live/_sold/_desc`, `auction_lots`, `loupethis_lots`, `hairspring_finds`, `hodinkee_shop`, `manual_archive_lots`) fall through to pass-through — no offline fallback for the primary feed, and the SW freshness guarantee no longer applies (works today only because App.js sets `cache:"no-cache"`). Silent drift since the live/sold split.
+- **Fix:** broaden the regex to the current filenames; add a test asserting every App.js feed URL matches a SW rule. Detail: `docs/audits/2026-05-24-vibe-code/findings-frontend.md` (H2).
 
 ### B-18 — Currency FX tables duplicated, can silently drift
 - **Reported:** 2026-05-24 · **Source:** `audit:2026-05-24` · **Severity:** 2 (price correctness) · **Surface:** `merge.py` + `utils.js` · **Status:** Open
@@ -98,6 +98,17 @@ delete — the history is useful.
 ---
 
 ## Resolved
+
+### B-17 — ~19 MB of non-critical JSON loaded eagerly on every app open · Fixed #577
+- The mount effect fetched 5 heavy archive/auction sources (auction_lots 5.2 MB,
+  loupethis 4.4 MB, hodinkee_shop 3.2 MB, hairspring_finds 1.7 MB,
+  manual_archive_lots 1.1 MB) concurrently with the critical `listings_live`
+  fetch, though they feed only the Auctions tab + the Sold-archive projection —
+  never the default Listings>Live first paint. Deferred them past first paint
+  via `requestIdleCallback` (timeout 2000 ms; `setTimeout(1200)` fallback),
+  taking ~15 MB of fetch+parse off the mobile first-paint window. The
+  service-worker-regex sub-item (H2) was split to B-21. Detail:
+  `docs/audits/2026-05-24-vibe-code/findings-frontend.md` (C1).
 
 ### B-15 — Scrapers could silently mark a source's whole stock "Sold" on an empty scrape · Fixed #576
 - An HTTP-200-but-empty/truncated scrape used to flip **every** previously-live
