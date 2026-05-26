@@ -96,6 +96,12 @@ delete — the history is useful.
 - **Detail:** `auction_lots_scraper.py` (catalog walker) and `auctionlots_scraper.py` (tracked-URL tracker) differ by one underscore and both run in the same workflow — easy to edit the wrong one. Flagged independently by 3 auditors.
 - **Fix:** rename `auctionlots_scraper.py` → `tracked_lots_scraper.py` + update importers/workflows. Detail: `findings-architecture.md` (M1), `findings-maintainability.md` (MED-4).
 
+### B-22 — App ships as one bundle; heavy tabs aren't code-split
+- **Reported:** 2026-05-26 · **Source:** `audit:2026-05-24` (H1) · **Severity:** 2 (perf / first-load) · **Surface:** `src/App.js`, `src/index.js` · **Status:** Partly fixed — **AdminTab code-split #579**; phase 2 open.
+- **Detail:** No `React.lazy`/`Suspense` anywhere; `App.js` statically imports every heavy surface (AdminTab, EditorialView, SizeCompare, ChallengeFlow, the share/list/challenge receivers, all modals, SearchResultsView), so every visitor downloads + parses their code on first load even though most never open them.
+- **Done (#579):** AdminTab (admin-only) `React.lazy` + `Suspense` — its chunk now loads only when an admin opens the tab.
+- **Remaining (phase 2):** the receivers (mount only on inbound share/challenge/list links), `EditorialView`, `SizeCompare`, `ChallengeFlow`, modals. Confirm where each is imported (some are inside sub-components, not App.js). Detail: `docs/audits/2026-05-24-vibe-code/findings-frontend.md` (H1).
+
 ---
 
 ## Resolved

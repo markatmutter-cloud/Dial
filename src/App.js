@@ -41,7 +41,14 @@ import { AuctionCalendar } from "./components/AuctionCalendar";
 import { LotMigrationBanner } from "./components/LotMigrationBanner";
 import { WatchlistTab } from "./components/WatchlistTab";
 import { EmptyState } from "./components/EmptyState";
-import { AdminTab } from "./components/AdminTab";
+// AdminTab is code-split (B-22): admin-only code that every public visitor
+// used to download + parse on first load. React.lazy splits it into its own
+// chunk, fetched only when an admin first opens the tab. Named export →
+// unwrap to default. It's rendered behind `tab === "admin"` (admins only), so
+// the chunk request never fires for normal users. See docs/audits/2026-05-24.
+const AdminTab = React.lazy(() =>
+  import("./components/AdminTab").then(m => ({ default: m.AdminTab }))
+);
 import { MobileShell } from "./components/MobileShell";
 import { DesktopShell } from "./components/DesktopShell";
 import { ErrorBoundary } from "./components/ErrorBoundary";
@@ -3909,7 +3916,9 @@ export default function Watchlist() {
   // verification_history.json, listings.json); we pass in-memory hearts
   // and hides because those come from Supabase via App.js hooks.
   const adminTabJSX = (
-    <AdminTab watchItems={watchItems} hiddenItems={hiddenItems} />
+    <React.Suspense fallback={<div style={{ padding: 24, color: "var(--text2)" }}>Loading admin…</div>}>
+      <AdminTab watchItems={watchItems} hiddenItems={hiddenItems} />
+    </React.Suspense>
   );
 
   // Home tab JSX — step 1 (2026-05-11). The three slice memos
