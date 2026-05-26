@@ -39,6 +39,19 @@ within each section roughly last.
   `health.py` CLI, notify-scrape-failure GitHub-Issue workflow,
   verify_sources `updated_at` + STALE signal, parallel matrix workflow
   (dispatch-only, ~2× faster).
+- **2026-05-26 — Cold vibe-code audit (grade B−).** 6-agent read-only audit of
+  the whole codebase; report + 6 domain findings archived to
+  `docs/audits/2026-05-24-vibe-code/`, findings filed as BUGS B-15–B-22
+  (`[audit:2026-05-24]`), direction items to ROADMAP (#574, #575).
+- **2026-05-26 — Scrape integrity: disappearance debounce (B-15).** A listing
+  must be absent 2 consecutive runs before flipping to sold — a single
+  empty/failed scrape can no longer silently mark a whole source SOLD (#576).
+- **2026-05-26 — Pinned Python scraper deps (B-16).** `requirements.txt` /
+  `-auctions` / `-ai`; scrape workflows install via `-r` instead of
+  latest-on-the-day. JS lockfile still pending a Node env (#578).
+- **2026-05-26 — Service-worker feed coverage + drift test (B-21).** SW
+  network-firsts the post-split feed files again; `service-worker.test.js`
+  fails if its file list drifts from App.js's `*_URL` constants (#580).
 
 ## Epic 1 — Sources
 
@@ -237,3 +250,9 @@ within each section roughly last.
   BUGS.md durable backlog + `Bug:`/`Plan:` prefixes (nothing lost between
   sessions); CLAUDE.md cross-surface consistency rule (divergence is a smell →
   fix the shared root, not per-surface band-aids).
+- **2026-05-26 — Defer ~15 MB of non-critical JSON off first paint (B-17).**
+  Auction/editorial-archive fetches moved to `requestIdleCallback` after first
+  paint, so the default Listings>Live no longer competes with ~15 MB of
+  fetch+parse on mobile (#577).
+- **2026-05-26 — Code-split AdminTab (B-22 phase 1).** `React.lazy` + Suspense
+  so admin-only code leaves every public visitor's initial bundle (#579).
