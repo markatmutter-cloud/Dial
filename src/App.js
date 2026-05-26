@@ -1324,50 +1324,52 @@ export default function Watchlist() {
       .then(r => r.ok ? r.json() : {})
       .then(d => setTrackedLotsState(d && typeof d === "object" ? d : {}))
       .catch(() => {});
-    // Comprehensive auction-lot scrape — same shape as tracked_lots.json
-    // but populated by a separate scraper that walks every active sale.
-    // Failing silently is fine on first deployment (file doesn't exist
-    // yet) — the feed just won't have these lots until the cron runs.
-    fetch(AUCTION_LOTS_URL, fetchOpts)
-      .then(r => r.ok ? r.json() : {})
-      .then(d => setAuctionLotsState(d && typeof d === "object" ? d : {}))
-      .catch(() => {});
-
-    // Manual archive lots — Phase D historical-auction surface. Same
-    // shape as auction_lots.json, merged into the same projection
-    // below. Failing silently is fine if the file isn't deployed yet.
-    fetch(MANUAL_ARCHIVE_LOTS_URL, fetchOpts)
-      .then(r => r.ok ? r.json() : {})
-      .then(d => setManualArchiveLotsState(d && typeof d === "object" ? d : {}))
-      .catch(() => {});
-
-    // Loupe This auction lots — independent scraper, same shape as
-    // auction_lots.json. Failing silently is fine on first deployment.
-    fetch(LOUPETHIS_LOTS_URL, fetchOpts)
-      .then(r => r.ok ? r.json() : {})
-      .then(d => setLoupethisLotsState(d && typeof d === "object" ? d : {}))
-      .catch(() => {});
-
-    // Hairspring Finds — editorial corpus with sold-archive metadata.
-    // URL-keyed dict, scraped by hairspring_finds_scraper.py. Loaded
-    // here so App.js can project the records into Listings > All sold.
-    // Failing silently on first deployment matches the auction lots
-    // pattern above — the feed simply won't show Finds entries until
-    // the next cron run produces the file.
-    fetch(HAIRSPRING_FINDS_URL, fetchOpts)
-      .then(r => r.ok ? r.json() : {})
-      .then(d => setHairspringFindsState(d && typeof d === "object" ? d : {}))
-      .catch(() => {});
-
-    // Hodinkee Shop archive (frozen Feb 2023, ~2,346 sold products).
-    // Same dual-track pattern as Hairspring Finds — the editorial
-    // sub-tab also loads this file lazily on its own, but loading
-    // here lets the Sold-archive projection below see the records
-    // without waiting for the Editorial tab to be opened.
-    fetch(HODINKEE_SHOP_URL, fetchOpts)
-      .then(r => r.ok ? r.json() : {})
-      .then(d => setHodinkeeShopState(d && typeof d === "object" ? d : {}))
-      .catch(() => {});
+    // Heavy, non-critical payloads (~15 MB combined): auction-lot + editorial
+    // sold-archive sources that feed ONLY the Auctions tab and the Sold-archive
+    // projection — never the default Listings>Live first paint. Defer them past
+    // first paint so ~15 MB of fetch+parse stops competing with the critical
+    // render on mobile. Each populates a beat late exactly like listings_sold
+    // above; every consumer starts from an empty {} and re-renders on arrival.
+    // (B-17 / audit finding C1: ~19 MB was loading eagerly on every app open.)
+    const loadDeferredArchives = () => {
+      // Comprehensive auction-lot scrape — same shape as tracked_lots.json,
+      // populated by a separate scraper that walks every active sale.
+      fetch(AUCTION_LOTS_URL, fetchOpts)
+        .then(r => r.ok ? r.json() : {})
+        .then(d => setAuctionLotsState(d && typeof d === "object" ? d : {}))
+        .catch(() => {});
+      // Manual archive lots — Phase D historical-auction surface. Same shape
+      // as auction_lots.json, merged into the same projection below.
+      fetch(MANUAL_ARCHIVE_LOTS_URL, fetchOpts)
+        .then(r => r.ok ? r.json() : {})
+        .then(d => setManualArchiveLotsState(d && typeof d === "object" ? d : {}))
+        .catch(() => {});
+      // Loupe This auction lots — independent scraper, same shape.
+      fetch(LOUPETHIS_LOTS_URL, fetchOpts)
+        .then(r => r.ok ? r.json() : {})
+        .then(d => setLoupethisLotsState(d && typeof d === "object" ? d : {}))
+        .catch(() => {});
+      // Hairspring Finds — editorial corpus w/ sold-archive metadata, projected
+      // into Listings > All sold (hairspring_finds_scraper.py, URL-keyed dict).
+      fetch(HAIRSPRING_FINDS_URL, fetchOpts)
+        .then(r => r.ok ? r.json() : {})
+        .then(d => setHairspringFindsState(d && typeof d === "object" ? d : {}))
+        .catch(() => {});
+      // Hodinkee Shop archive (frozen Feb 2023, ~2,346 sold products). Dual-track
+      // like Hairspring Finds; the Editorial sub-tab also loads it lazily on its
+      // own, but loading here lets the Sold-archive projection see the records.
+      fetch(HODINKEE_SHOP_URL, fetchOpts)
+        .then(r => r.ok ? r.json() : {})
+        .then(d => setHodinkeeShopState(d && typeof d === "object" ? d : {}))
+        .catch(() => {});
+    };
+    if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+      // timeout: load within 2s even if the main thread never goes idle, so a
+      // user who opens Auctions/Sold right away still gets data promptly.
+      window.requestIdleCallback(loadDeferredArchives, { timeout: 2000 });
+    } else {
+      setTimeout(loadDeferredArchives, 1200);
+    }
   }, []);
 
   const c = dark ? {
