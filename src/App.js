@@ -1969,6 +1969,25 @@ export default function Watchlist() {
   // false. See CLAUDE.md Things-to-never-do: hooks BEFORE every
   // early return, always.
   //
+  // Open a sale's lots in the Listings grid, pre-filtered to that sale
+  // (Mark 2026-05-26 — replaces the old external "View catalog" action and
+  // the auction-title click). Clears the other filters for a clean
+  // single-sale view, then routes to Sold for closed sales (their lots live
+  // in the sold archive) and Auctions for live/upcoming. Uses the existing
+  // filterSaleUrls filter (applied in the grid memo). MUST stay above the
+  // loading/loadError early returns like the other auction handlers.
+  const handleOpenSale = useCallback((auction) => {
+    if (!auction?.url) return;
+    setFilterBrands([]);
+    setFilterSources([]);
+    setFilterModels([]);
+    setFilterHearted(false);
+    setFilterSaleUrls([auction.url]);
+    setTab("listings");
+    setListingsSubTab(auction.status === "past" ? "sold" : "auctions");
+  }, [setFilterBrands, setFilterSources, setFilterModels, setFilterHearted,
+      setFilterSaleUrls, setTab, setListingsSubTab]);
+
   // Review-catalog (post-#55, 2026-05-15 — replaces the bespoke
   // mode="auction" screener). Bulk-adds every lot to the auction's
   // auto-list so Pass items survive in the Disliked bucket, then
@@ -3594,6 +3613,7 @@ export default function Watchlist() {
       <AuctionCalendar
         auctions={auctions || []}
         lotCounts={lotCountsByAuctionUrl}
+        onOpenSale={handleOpenSale}
         onReviewCatalog={handleReviewCatalog}
         onAddToList={handleAddCatalogToList}
         busyAuctionUrl={auctionActionBusyUrl}
