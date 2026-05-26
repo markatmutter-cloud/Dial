@@ -287,13 +287,27 @@ the active mode until the Stop rule triggers.
 Serves **job #1** (auction side) and is the substrate **job #4** draws from.
 Three layers: calendar ✓, live lots ✓, archive ✓ (expanding on demand).
 
-**5 of 6 houses comprehensively scrape lots:** Antiquorum, Christie's, Monaco
-Legend, Sotheby's, Phillips. **Bonhams is blocked from CI** by Cloudflare's
-IP-reputation layer (works locally; header + TLS impersonation didn't clear it).
-**Heritage** is parked behind DataDome (developer API is the legit path).
+**All 6 houses scrape lots:** Antiquorum, Christie's, Monaco Legend, Sotheby's,
+Phillips in CI; **Bonhams via a residential host** (B-24/B-25, shipped
+2026-05-26). Bonhams' lot pages 403 GitHub's datacenter IPs (Cloudflare), so
+they're scraped from a residential machine (Mark's laptop, launchd) into a
+separate `bonhams_lots.json` the frontend folds in by URL key; the Bonhams
+calendar still runs in CI. **Heritage** is parked behind DataDome (developer API
+is the legit path; a residential test is worth trying now the host exists).
 
-- **Bonhams escape paths**, ranked: Vercel serverless proxy (cheap experiment —
-  NEXT #6) → tls-client → Mac mini Phase A → manual archive entries on demand.
+- **Residential host unlocks the CI-IP-blocked sources** (B-25, shipped). The
+  same path that fixed Bonhams could now reach **Phillips lot-detail + essays**
+  (WAF 403s only from CI) and is worth a residential test against **Heritage**
+  (DataDome — tougher/fingerprint-based, so dev API may still win). The
+  orchestration is built once; the fetcher/host is a swap. Earlier ranked escape
+  paths (Vercel proxy, tls-client) are moot — residential direct fetch works.
+- **Adjacent-interest (non-watch) surface — future.** Bonhams cross-lists
+  genuinely interesting non-watch sales on the watches department (e.g.
+  "Espionage: Fact & Fiction" — spy memorabilia); we now filter non-watch lots
+  *out* of the watch listings (by lot department). Rather than discard that
+  content, a future section could surface adjacent-interest collectibles for the
+  same audience — incl. **Bring a Trailer** (cars) and similar. Its own surface,
+  not the watch grid.
 - **Calendar UX pending:** surface the date *range* (start + end) when they
   differ + a "live now" indicator. Render-only change.
 - **Reference-led realized prices** — "every time the AP 5548BA has been to
@@ -304,7 +318,8 @@ IP-reputation layer (works locally; header + TLS impersonation didn't clear it).
   backfill. Plan when the time comes.
 - **Archive sales** are in-session work, not a roadmap item — append to
   `data/manual_archive_sales.json` + run the scraper. Supports Phillips /
-  Christie's / Antiquorum / Sotheby's; MLA a one-block add; Bonhams blocked.
+  Christie's / Antiquorum / Sotheby's; MLA a one-block add; Bonhams now
+  scrapes live via the residential host (B-24/B-25).
 
 ## Epic 3: Watchlist
 
