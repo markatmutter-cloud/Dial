@@ -66,10 +66,6 @@ jobs:
           fi
 
       - name: Run the scraper
-        # Browse-AI key only matters for tropicalwatch; harmless to set
-        # for other scrapers (they ignore it).
-        env:
-          BROWSE_AI_API_KEY: ${{ secrets.BROWSE_AI_API_KEY }}
         run: python ${{ inputs.scraper }}_scraper.py
 
       - name: Move CSV to data folder

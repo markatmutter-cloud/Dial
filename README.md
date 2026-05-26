@@ -114,7 +114,7 @@ All scrapers hit each dealer's existing public endpoint — no credential-protec
 | Source | Platform | Method | Currency |
 |---|---|---|---|
 | Wind Vintage | Squarespace | `?format=json` + HTML price parse | USD |
-| Tropical Watch | Custom (JS-rendered) | [Browse AI](https://browse.ai) | USD |
+| Tropical Watch | Custom (server-rendered HTML) | Index walk + HTML parse | USD |
 | Menta Watches | WooCommerce | Store API | USD |
 | Collectors Corner NY | Shopify | `/products.json` | USD |
 | Falco Watches | Shopify | `/products.json` | GBP |
@@ -152,7 +152,7 @@ All scrapers hit each dealer's existing public endpoint — no credential-protec
 | S.Song Watches | Shopify | `/collections/vintage/products.json` | USD |
 | Swiss Hours | Shopify | `/collections/watches/products.json` | USD |
 
-Tropical Watch is the only source still routed through Browse AI — their site actively blocks scrapers. Every other source is scraped with vanilla `requests`. Browse AI robot ID and API key live in GitHub Secrets, never in the repo.
+Every source is scraped with vanilla `requests` — no third-party scraping service. Tropical Watch server-renders its listing index (live inventory first, then a sold archive); its scraper walks the index pages and stops at the live→sold boundary. (It was the last source routed through Browse AI; that dependency was retired 2026-05-26 — see SHIPPED.)
 
 ### Auction houses (6)
 
@@ -192,7 +192,7 @@ This means the pipeline is **self-healing**: if a single run misses listings (sc
 
 ## Stack
 
-- **Scrapers:** Python 3.11 with `requests`. No Playwright, no Selenium — Browse AI fills the gap for JS-rendered sources.
+- **Scrapers:** Python 3.11 with `requests`. No Playwright, no Selenium, no third-party scraping service — every source is reachable with plain HTTP.
 - **Pipeline:** GitHub Actions (ubuntu-latest). Each scraper step uses `continue-on-error: true` so one failing source doesn't kill the batch.
 - **Frontend:** React (Create React App), inline styles only, no UI libraries. `App.js` is the orchestrator (the largest file by far — owns state and JSX consts); render is delegated to `src/components/MobileShell.js` + `DesktopShell.js`, each receiving a single `shellProps` bag. Domain-state hooks live under `src/hooks/` (`useTrackModal`, `useFavSearchModal`, `useViewSettings`, `useFilters`, …); shared style tokens in `src/styles.js`. Pure helpers in `src/utils.js`.
 - **Per-user image persistence:** Hearted listings get their dealer image cached to **Vercel Blob** by `cache_watchlist_images.mjs` (runs once a day inside the auctions workflow). The frontend prefers the cached URL, so favorited cards survive a dealer deleting the original. Listings/auction images aren't cached — auction houses keep theirs up long-term, and caching the full feed isn't worth the storage cost.
@@ -317,14 +317,11 @@ watchlist/
 
 ```bash
 # Python scrapers — each writes a CSV to data/
-pip install requests
+pip install -r requirements.txt
 python windvintage_scraper.py
 python menta_scraper.py
-# ...one per dealer/auction house
-
-# Browse AI scraper needs an API key
-export BROWSE_AI_API_KEY=your_key
-python tropicalwatch_scraper.py --latest
+python tropicalwatch_scraper.py
+# ...one per dealer/auction house — all plain requests, no keys
 
 # Merge all CSVs into listings.json + auctions.json
 python merge.py

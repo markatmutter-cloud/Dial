@@ -1,52 +1,69 @@
 #!/usr/bin/env python3
 """
-Tropical Watch scraper - uses Browse AI REST API
+Tropical Watch scraper - direct HTML fetch (no Browse AI).
+
+Replaces the old Browse AI integration (retired 2026-05-26, see BUGS.md B-23).
+tropicalwatch.com server-renders its listing index at https://tropicalwatch.com/
+with everything we need inline per card — title, price, URL, image, and
+sold-status — so a plain `requests` fetch is all it takes. No JS app, no auth,
+no Cloudflare challenge. Confirmed reachable from a GitHub datacenter IP via the
+source-probe workflow (200, full body, 0 challenge markers), so this runs in
+normal CI — it does NOT need the residential host (B-25).
+
+Index structure (the reason the walk works):
+  The index lists ALL live (for-sale) listings first, newest-first, then the
+  ENTIRE sold archive (hundreds of pages deep). The live->sold boundary is
+  sharp: a sold card carries `<h3 class="watch-main-price ... color-red">Sold`
+  instead of a `$price`. We walk pages 1..N collecting live cards and STOP at
+  the first page that contains a sold card (after taking that page's live
+  cards). We never descend into the sold archive.
+
+Sold transitions are intentionally NOT written here. When an item sells it
+leaves the live set, so it disappears from this CSV; merge.py's disappearance
+debounce (B-15, DISAPPEARANCE_MISS_THRESHOLD consecutive misses) then flips it
+sold using its cached last *asking* price. That's more correct than scraping
+the index's price-less "Sold" badge (which would archive it at $0).
+
 Run: python3 tropicalwatch_scraper.py
 Requires: pip install requests
-Needs: BROWSE_AI_API_KEY environment variable
 Output: tropicalwatch_listings.csv
-
-Setup:
-  1. Get your API key: https://www.browse.ai/account/api-keys
-  2. export BROWSE_AI_API_KEY=your_key_here
-  3. python3 tropicalwatch_scraper.py
-
-Flags:
-  --latest   Use most recent successful run instead of triggering a new one
 """
 
-import requests, csv, os, time, re, sys
+import csv
+import html as html_lib
+import re
+import sys
+import time
 from datetime import date
 
-ROBOT_ID = "019da60c-551b-77d6-b9b3-7c4444586624"
-BASE_URL = "https://api.browse.ai/v2"
-POLL_INTERVAL = 10
-MAX_WAIT = 600
+import requests
 
+BASE = "https://tropicalwatch.com"
+REQUEST_DELAY = 0.3   # polite gap between page fetches
+RETRIES = 3
+# Safety cap. Live inventory is ~100 (≈7 pages of 15). If we walk this many
+# pages without hitting the live->sold boundary, the page markup almost
+# certainly changed and our sold-detection broke — refuse to write rather than
+# flood the CSV with hundreds of archive items mislabelled live. 20 pages = 300
+# live, far above any plausible real inventory for a vintage dealer.
+MAX_PAGES = 20
 
-def _raise_for_status(r, context):
-    """Like r.raise_for_status() but prints Browse AI's response body first.
-    A bare raise_for_status() discards the JSON message Browse AI returns —
-    e.g. a 403 explains *why* (exhausted task credits, lapsed billing, or a
-    rotated key), which a status code alone doesn't. Surfacing it in CI logs
-    turns a future failure into a self-diagnosing one (see BUGS B-23)."""
-    if r.status_code >= 400:
-        body = (r.text or "").strip()[:500]
-        print(f"ERROR: Browse AI {context} returned HTTP {r.status_code}.")
-        if body:
-            print(f"  Response body: {body}")
-        if r.status_code == 403:
-            print("  403 = authenticated but forbidden — most likely exhausted "
-                  "task credits, lapsed billing, or a rotated key. "
-                  "Check the account dashboard: https://www.browse.ai/account")
-    r.raise_for_status()
+HEADERS = {
+    "User-Agent": ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                   "AppleWebKit/605.1.15 (KHTML, like Gecko) "
+                   "Version/17.0 Safari/605.1.15"),
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.9",
+}
 
+# Small brand list for early labelling; merge.py reassigns brand from title.
 BRANDS = [
-    'Rolex','Omega','Patek Philippe','Tudor','Breitling','IWC','Cartier',
-    'Jaeger-LeCoultre','Panerai','Audemars Piguet','Vacheron Constantin',
-    'A. Lange','Heuer','Zenith','Longines','Universal Geneve',
-    'Movado','Aquastar','Czapek','Urwerk','Breguet','Seiko','Blancpain'
+    'Rolex', 'Omega', 'Patek Philippe', 'Tudor', 'Breitling', 'IWC', 'Cartier',
+    'Jaeger-LeCoultre', 'Panerai', 'Audemars Piguet', 'Vacheron Constantin',
+    'A. Lange', 'Heuer', 'Zenith', 'Longines', 'Universal Geneve',
+    'Movado', 'Aquastar', 'Czapek', 'Urwerk', 'Breguet', 'Seiko', 'Blancpain'
 ]
+
 
 def detect_brand(name):
     for b in BRANDS:
@@ -54,199 +71,170 @@ def detect_brand(name):
             return b
     return 'Other'
 
-def get_api_key():
-    key = os.environ.get('BROWSE_AI_API_KEY', '')
-    if not key:
-        print("ERROR: Set BROWSE_AI_API_KEY environment variable.")
-        print("Get your key: https://www.browse.ai/account/api-keys")
-        print("Then: export BROWSE_AI_API_KEY=your_key_here")
-        sys.exit(1)
-    return key
 
-def trigger_robot(api_key):
-    headers = {"Authorization": f"Bearer {api_key}"}
-    payload = {
-        "inputParameters": {
-            "originUrl": "https://tropicalwatch.com/watches",
-            # Tropical Watch carries ~100-130 listings at any time. 150 gives
-            # comfortable headroom without wasting Browse AI rows. If you
-            # change this, keep it >= actual inventory so listings don't
-            # incorrectly drop out of the scrape and get marked inactive.
-            "watches_limit": 150
-        }
-    }
-    print("Triggering Browse AI robot...")
-    r = requests.post(
-        f"{BASE_URL}/robots/{ROBOT_ID}/tasks",
-        headers=headers, json=payload, timeout=30
-    )
-    _raise_for_status(r, "trigger robot")
-    task_id = r.json()['result']['id']
-    print(f"Task started: {task_id}")
-    return task_id
+# Each listing on the index is one <li class="watch ...">...</li> block.
+CARD_RE = re.compile(r'<li class="watch\b.*?</li>', re.S | re.I)
+HREF_RE = re.compile(r'href="(/watches/[^"]+)"')
+TITLE_RE = re.compile(r'<h2[^>]*>(.*?)</h2>', re.S | re.I)
+# The card's photo <img>; grab its src (the 1x url), not the srcset 2x url.
+IMG_RE = re.compile(r'<img\b[^>]*?\bsrc="([^"]+)"', re.I)
+PRICE_RE = re.compile(
+    r'<h3[^>]*class="watch-main-price[^"]*"[^>]*>(.*?)</h3>', re.S | re.I)
+# A sold card styles the price h3 with color-red and reads "Sold".
+SOLD_CLASS_RE = re.compile(r'class="watch-main-price[^"]*\bcolor-red\b', re.I)
 
-def poll_task(api_key, task_id):
-    headers = {"Authorization": f"Bearer {api_key}"}
-    elapsed = 0
-    print(f"Waiting for completion (checking every {POLL_INTERVAL}s)...")
-    while elapsed < MAX_WAIT:
-        time.sleep(POLL_INTERVAL)
-        elapsed += POLL_INTERVAL
-        r = requests.get(
-            f"{BASE_URL}/robots/{ROBOT_ID}/tasks/{task_id}",
-            headers=headers, timeout=30
-        )
-        _raise_for_status(r, "poll task")
-        task = r.json()['result']
-        status = task.get('status', 'in-progress')
-        print(f"  [{elapsed}s] {status}")
-        if status == 'successful':
-            return task
-        elif status == 'failed':
-            print(f"Failed: {task.get('userFriendlyError','Unknown error')}")
-            return None
-    print("Timed out.")
-    return None
 
-def get_latest_task(api_key):
-    headers = {"Authorization": f"Bearer {api_key}"}
-    r = requests.get(
-        f"{BASE_URL}/robots/{ROBOT_ID}/tasks",
-        headers=headers,
-        params={"status": "successful", "pageSize": 1, "sort": "-createdAt"},
-        timeout=30
-    )
-    _raise_for_status(r, "get latest task")
-    items = r.json()['result']['robotTasks']['items']
-    if items:
-        print(f"Using latest task: {items[0]['id']}")
-        return items[0]
-    return None
+def _strip_tags(s):
+    return html_lib.unescape(re.sub(r'<[^>]+>', '', s)).strip()
 
-def parse_results(task):
-    captured_lists = task.get('capturedLists', {})
-    watches_data = None
-    for key, data in captured_lists.items():
-        if isinstance(data, list) and len(data) > 0:
-            print(f"Found list '{key}' with {len(data)} items")
-            watches_data = (key, data)
-            break
 
-    if not watches_data:
-        print("No list data found. Available keys:", list(captured_lists.keys()))
-        return []
+def parse_price(raw):
+    """'$22,850' -> 22850. Returns 0 for non-numeric (e.g. 'Sold')."""
+    try:
+        return int(float(str(raw).replace('$', '').replace(',', '').strip()))
+    except (ValueError, TypeError):
+        m = re.search(r'[\d,]+', str(raw))
+        if m:
+            try:
+                return int(m.group(0).replace(',', ''))
+            except ValueError:
+                pass
+    return 0
 
-    key, items = watches_data
-    results = []
-    for item in items:
-        title = (item.get('Watch Name') or item.get('name') or
-                 item.get('title') or item.get('watch_name') or '')
-        price_raw = (item.get('Price') or item.get('price') or '')
-        url = (item.get('Watch URL') or item.get('url') or item.get('link') or '')
-        img = (item.get('Image URL') or item.get('image') or item.get('img') or '')
 
+def parse_page(html):
+    """Parse one index page into a list of card dicts.
+    Each: {url, title, img, price, sold}. sold is True when the price h3
+    carries color-red OR the price text isn't a usable number ('Sold')."""
+    cards = []
+    for m in CARD_RE.finditer(html):
+        block = m.group(0)
+        href = HREF_RE.search(block)
+        if not href:
+            continue
+        url = BASE + href.group(1)
+
+        title_m = TITLE_RE.search(block)
+        title = _strip_tags(title_m.group(1)) if title_m else ''
         if not title:
             continue
 
-        price = 0
-        try:
-            price = int(float(str(price_raw).replace('$','').replace(',','').strip()))
-        except:
-            m = re.search(r'[\d,]+', str(price_raw))
-            if m:
-                try: price = int(m.group(0).replace(',',''))
-                except: pass
-        if price == 0:
-            continue
+        img_m = IMG_RE.search(block)
+        img = img_m.group(1) if img_m else ''
 
-        results.append({
-            'title': title, 'brand': detect_brand(title),
-            'price': price, 'url': url, 'img': img,
+        price_m = PRICE_RE.search(block)
+        price_raw = price_m.group(1).strip() if price_m else ''
+        price = parse_price(price_raw)
+        # Two independent sold signals: the color-red class, or a price cell
+        # that isn't a number. Either alone is enough — robust to one changing.
+        sold = bool(SOLD_CLASS_RE.search(block)) or price == 0
+
+        cards.append({'url': url, 'title': title, 'img': img,
+                      'price': price, 'sold': sold})
+    return cards
+
+
+def fetch(url):
+    last_err = None
+    for attempt in range(1, RETRIES + 1):
+        try:
+            r = requests.get(url, headers=HEADERS, timeout=30)
+            if r.status_code == 200:
+                return r.text
+            # Retry transient 5xx; bail on others (4xx won't fix on retry).
+            if r.status_code >= 500:
+                last_err = f"HTTP {r.status_code}"
+            else:
+                print(f"ERROR: {url} returned HTTP {r.status_code}")
+                return None
+        except requests.RequestException as e:
+            last_err = str(e)
+        if attempt < RETRIES:
+            time.sleep(attempt)  # 1s, 2s backoff
+    print(f"ERROR: {url} failed after {RETRIES} attempts: {last_err}")
+    return None
+
+
+def scrape():
+    """Walk the index, collecting live listings, stopping at the sold archive
+    boundary. Returns (results, boundary_found)."""
+    results = []
+    boundary_found = False
+    for page in range(1, MAX_PAGES + 1):
+        url = BASE + ("/" if page == 1 else f"/?page={page}")
+        html = fetch(url)
+        if html is None:
+            # Network/5xx failure mid-walk. Bail without a partial write so
+            # merge keeps prior state (a half-walk would look like a sellout).
+            print(f"Aborting: failed to fetch page {page}.")
+            return [], False
+        cards = parse_page(html)
+        if not cards:
+            # Ran off the end of the catalog (shouldn't happen before the
+            # boundary, but treat as a clean stop).
+            boundary_found = True
+            break
+
+        live = [c for c in cards if not c['sold']]
+        results.extend(live)
+        print(f"  page {page}: {len(live)} live / {len(cards)} cards")
+
+        if len(live) < len(cards):
+            # This page contains a sold card -> we've reached the live/sold
+            # boundary. We already took its live cards; stop here.
+            boundary_found = True
+            break
+
+        time.sleep(REQUEST_DELAY)
+
+    return results, boundary_found
+
+
+def main():
+    print("Fetching Tropical Watch index (direct, no Browse AI)...")
+    results, boundary_found = scrape()
+
+    if not boundary_found:
+        # Hit MAX_PAGES without ever seeing a sold card. Almost certainly the
+        # markup changed and sold-detection silently failed. Refuse to write so
+        # merge.py keeps the prior good state (same philosophy as the truncation
+        # guard) and the next failure is loud, not a corrupted archive.
+        print(f"ERROR: walked {MAX_PAGES} pages without finding the live/sold "
+              "boundary — sold-detection likely broke. Not writing CSV.")
+        sys.exit(1)
+
+    if not results:
+        print("ERROR: no live listings parsed. Not writing CSV.")
+        sys.exit(1)
+
+    rows = []
+    for c in results:
+        if c['price'] == 0:
+            continue  # a live card with no parseable price — skip, don't $0 it
+        rows.append({
+            'title': c['title'], 'brand': detect_brand(c['title']),
+            'price': c['price'], 'url': c['url'], 'img': c['img'],
             'description': '', 'source': 'Tropical Watch',
             'date': str(date.today()), 'sold': False,
         })
 
-    # Sold-state sweep. The Browse AI robot's output schema covers
-    # title / price / url / image but not sold-status. Tropical Watch
-    # marks sold listings with `<h3 class="watch-main-price color-red"
-    # ...>Sold</h3>` on the detail page; without this follow-up
-    # fetch, sold listings come through as active because Browse AI
-    # captured the historical price elsewhere on the page.
-    #
-    # Per-listing GET, polite 0.25s delay → ~30s for ~120 listings.
-    # Plain requests + Safari UA passes the dealer's response without
-    # a Cloudflare challenge (verified 2026-04-29). If that ever
-    # changes, fall back to capturing a Status field in the Browse AI
-    # robot config and reading it from the item dict above.
-    sold_marker = re.compile(
-        r'class="watch-main-price[^"]*color-red[^"]*"[^>]*>\s*Sold',
-        re.IGNORECASE,
-    )
-    sold_headers = {
-        "User-Agent": ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-                       "AppleWebKit/605.1.15 (KHTML, like Gecko) "
-                       "Version/17.0 Safari/605.1.15"),
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-        "Accept-Language": "en-US,en;q=0.9",
-    }
-    print(f"  Sold-state sweep over {len(results)} listing(s)...")
-    sold_count = 0
-    for i, row in enumerate(results, 1):
-        if not row.get('url'):
-            continue
-        try:
-            resp = requests.get(row['url'], headers=sold_headers, timeout=15)
-            if resp.status_code == 200 and sold_marker.search(resp.text):
-                row['sold'] = True
-                sold_count += 1
-        except requests.RequestException:
-            # Don't fail the scrape on a single transient error —
-            # leave sold as default (False) and let the merge layer's
-            # disappeared-from-scrape archive logic catch it next run
-            # if needed.
-            pass
-        time.sleep(0.25)
-    print(f"  Sold-state sweep done: {sold_count} sold / {len(results)} total")
-
-    return results
-
-def main():
-    api_key = get_api_key()
-
-    if '--latest' in sys.argv:
-        task = get_latest_task(api_key)
-    else:
-        task_id = trigger_robot(api_key)
-        task = poll_task(api_key, task_id)
-
-    if not task:
-        print("No task data.")
-        return
-
-    print("\nParsing results...")
-    results = parse_results(task)
-
-    if not results:
-        print("No listings parsed. Printing raw sample to help debug:")
-        for key, val in task.get('capturedLists', {}).items():
-            if isinstance(val, list) and val:
-                print(f"\nKey '{key}', first item:", val[0])
-        return
-
     output = 'tropicalwatch_listings.csv'
     with open(output, 'w', newline='', encoding='utf-8') as f:
         writer = csv.DictWriter(f, fieldnames=[
-            'title','brand','price','url','img','description','source','date','sold'
+            'title', 'brand', 'price', 'url', 'img',
+            'description', 'source', 'date', 'sold'
         ])
         writer.writeheader()
-        writer.writerows(results)
+        writer.writerows(rows)
 
-    prices = [r['price'] for r in results]
-    print(f"\n✓ {len(results)} listings saved to {output}")
-    print(f"  Min: ${min(prices):,} | Max: ${max(prices):,} | Avg: ${sum(prices)//len(prices):,}")
+    prices = [r['price'] for r in rows]
+    print(f"\n✓ {len(rows)} live listings saved to {output}")
+    print(f"  Min: ${min(prices):,} | Max: ${max(prices):,} | "
+          f"Avg: ${sum(prices) // len(prices):,}")
     from collections import Counter
-    for b, c in Counter(r['brand'] for r in results).most_common(5):
+    for b, c in Counter(r['brand'] for r in rows).most_common(5):
         print(f"  {b}: {c}")
+
 
 if __name__ == "__main__":
     main()
