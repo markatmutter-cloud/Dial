@@ -1,0 +1,631 @@
+{
+  "conflicts": [
+    {
+      "note": "The patent record is unambiguously Rolex (Zibach), but the engineering priority is contested. Perezcope's 2020 and 2025 articles disagree with each other in tone: the 2020 piece doubts Doxa's claims; the 2025 piece, citing newly surfaced Swiss press, argues Doxa was effectively first to a working valve.",
+      "positions": [
+        "Rolex narrative: T. Walker Lloyd brought Bob Barth's idea to Rolex; Rolex filed CH492246 on 6 Nov 1967 (inventor André Zibach), granted 15 Jun 1970, and the Sea-Dweller followed.",
+        "Doxa narrative: Doxa co-developed the valve, tested it via Claude Wesly and introduced the Sub 300 T Conquistador in 1969 — shared patent claim per Urs Eschle.",
+        "Perezcope's 2025 evidence: a working Doxa prototype was demonstrably tested during Comex 'Ludion 2' (15 Nov 1967), just nine days after Rolex's filing, suggesting Doxa was at least parallel and arguably ahead in practical execution."
+      ],
+      "topic": "Who invented the helium release valve"
+    },
+    {
+      "note": "All sources agree the question is unsettled in Rolex's own archives; the 'lower-number-first' theory is presented as plausible folklore, not documented fact.",
+      "positions": [
+        "Monochrome and Hodinkee treat the 6204 as the first reference to carry 'Submariner' on the dial (II.53-stamped cases), with the 6200 appearing later despite its lower number.",
+        "Rolex Passion Market and Rolex Magazine entertain the view that the 6200 was developed first as the Big-Crown 200m Sub but held back by Wilsdorf as too aggressive for retailers, with the slimmer 6204 launched in its place."
+      ],
+      "topic": "Which Submariner came first — 6204 or 6200"
+    },
+    {
+      "note": "The premium is real, but Fratello pushes back on the assumption that 'Red' equals 'rare' — condition and dial Mk are the more meaningful axes.",
+      "positions": [
+        "Common framing: Red 1680s are the prized early variant, with premiums over white-text 1680s (Hodinkee, Fratello, Monochrome).",
+        "Fratello's vintage round-up: the 1680 was produced for most of its run with red text; total 1680 production was over 110,000, so Red Subs aren't truly rare in absolute terms."
+      ],
+      "topic": "How rare are Red Subs"
+    },
+    {
+      "note": "No source ranks these laterally as a hierarchy — the consensus is they are sibling watches with different priorities.",
+      "positions": [
+        "Wind Vintage: explicitly refuses to call the 5512 superior, arguing condition trumps reference and that a great 5513 beats a poor 5512.",
+        "Hodinkee/Fratello: noted preference among some collectors for the 5513's two-line dial and lateral parity with the 5512 on everything but the movement.",
+        "Monochrome: frames the 5512 as the 'premium' option of the two at the time of sale, owing to its chronometer certification."
+      ],
+      "topic": "5512 vs 5513 as the 'better' watch"
+    }
+  ],
+  "consensus": [
+    {
+      "claim": "The Submariner was developed in the early 1950s and publicly launched at the 1954 Basel Fair, with Rolex internally dating first production to 1953.",
+      "confidence": "high",
+      "sources": [
+        "https://monochrome-watches.com/rolex-submariner-history-part-1-the-early-references/",
+        "https://www.bobswatches.com/rolex/submariner/history",
+        "https://www.hodinkee.com/articles/rolex-submariner-reference-points",
+        "https://rolexpassionmarket.com/the-complete-rolex-submariner-collectors-guide/",
+        "https://www.rolexmagazine.com/2020/08/a-brief-history-of-rolex-submariner.html"
+      ]
+    },
+    {
+      "claim": "René-Paul Jeanneret, a Rolex director and diver close to Jacques Cousteau, was the internal champion who pushed Rolex to make a sporty yet wearable waterproof watch.",
+      "confidence": "high",
+      "sources": [
+        "https://monochrome-watches.com/rolex-submariner-history-part-1-the-early-references/",
+        "https://rolexpassionmarket.com/the-complete-rolex-submariner-collectors-guide/",
+        "https://www.bobswatches.com/rolex/submariner/history"
+      ]
+    },
+    {
+      "claim": "The first Submariner was marketed as waterproof to 100m, narrowly bettering Blancpain's Fifty Fathoms (rated to ~91m), which had appeared months earlier in 1953.",
+      "confidence": "high",
+      "sources": [
+        "https://monochrome-watches.com/rolex-submariner-history-part-1-the-early-references/",
+        "https://www.bobswatches.com/rolex/submariner/history",
+        "https://www.watchfinder.com/articles/feature-the-25-best-dive-watches"
+      ]
+    },
+    {
+      "claim": "Crown guards arrived with the 5512 in 1959; it was the first Rolex of any kind to use them.",
+      "confidence": "high",
+      "sources": [
+        "https://monochrome-watches.com/rolex-submariner-history-part-2-the-55xx-1680references/",
+        "https://www.windvintage.com/blog/collectors-guide-rolex-submariner-reference-5512",
+        "https://www.hodinkee.com/articles/rolex-submariner-reference-points"
+      ]
+    },
+    {
+      "claim": "The 5512 and 5513 share the same case and design; the defining difference is that the 5512 carried a chronometer-certified movement (after early non-chronometer 5512s using cal. 1530), while the 5513 used non-chronometer calibres 1530 and later 1520.",
+      "confidence": "high",
+      "sources": [
+        "https://www.windvintage.com/blog/collectors-guide-rolex-submariner-reference-5512",
+        "https://monochrome-watches.com/rolex-submariner-history-part-2-the-55xx-1680references/",
+        "https://www.hodinkee.com/articles/a-collectors-guide-to-the-vintage-rolex-submariner-5513",
+        "https://teddybaldassarre.com/blogs/watches/rolex-5513-submariner-review"
+      ]
+    },
+    {
+      "claim": "5512 production ran roughly 1959–1980; 5513 production ran roughly 1962–1989, making the 5513 one of Rolex's longest continuously produced sports watch references.",
+      "confidence": "high",
+      "sources": [
+        "https://monochrome-watches.com/rolex-submariner-history-part-2-the-55xx-1680references/",
+        "https://www.hodinkee.com/articles/a-collectors-guide-to-the-vintage-rolex-submariner-5513",
+        "https://teddybaldassarre.com/blogs/watches/rolex-5513-submariner-review",
+        "https://www.windvintage.com/blog/collectors-guide-rolex-submariner-reference-5512"
+      ]
+    },
+    {
+      "claim": "Rolex produced roughly one 5512 for every ten 5513s — about 17,338 vs. 151,449 according to figures cited in Rolex's 2024 Submariner publication.",
+      "confidence": "medium",
+      "sources": [
+        "https://www.windvintage.com/blog/collectors-guide-rolex-submariner-reference-5512",
+        "https://www.hodinkee.com/articles/a-collectors-guide-to-the-vintage-rolex-submariner-5513"
+      ]
+    },
+    {
+      "claim": "The 5513 dial evolved through three broad eras: glossy gilt (c.1962–67), matte (c.1967–84), and glossy black with white-gold-surround applied markers (c.1984–89).",
+      "confidence": "high",
+      "sources": [
+        "http://5513mattedial.com/About.html",
+        "http://5513mattedial.com/TheSequence.html",
+        "https://www.hodinkee.com/articles/a-collectors-guide-to-the-vintage-rolex-submariner-5513",
+        "https://teddybaldassarre.com/blogs/watches/rolex-5513-submariner-review"
+      ]
+    },
+    {
+      "claim": "Within matte-dial 5513s, collectors classify a sequence from Meters First → Non-Serif/Serif → Pre-COMEX → Maxi I–V, distinguished by depth-rating placement, serifs on the 'f' of 'ft', the shape of the coronet, position of the '=' sign, and the size of the tritium plots.",
+      "confidence": "high",
+      "sources": [
+        "http://5513mattedial.com/MaxiDials.html",
+        "http://5513mattedial.com/TheSequence.html",
+        "https://www.hodinkee.com/articles/a-collectors-guide-to-the-vintage-rolex-submariner-5513"
+      ]
+    },
+    {
+      "claim": "The 1680, introduced in 1969, was the first Submariner with a date and cyclops; early examples with 'Submariner' in red are nicknamed the 'Red Sub'.",
+      "confidence": "high",
+      "sources": [
+        "https://monochrome-watches.com/rolex-submariner-history-part-2-the-55xx-1680references/",
+        "https://www.fratellowatches.com/fratellos-top-5-rolex-submariner-references-ever-produced/",
+        "https://www.hodinkee.com/articles/rolex-submariner-reference-points",
+        "https://www.bobswatches.com/rolex/submariner/history"
+      ]
+    },
+    {
+      "claim": "In 1969 Rolex also released the first solid 18k yellow gold Submariner (1680/8), available with black or blue dial/bezel, marking the model's expansion beyond pure tool watch.",
+      "confidence": "high",
+      "sources": [
+        "https://monochrome-watches.com/rolex-submariner-history-part-2-the-55xx-1680references/",
+        "https://www.vrfm.io/gold-submariners.html",
+        "https://www.fratellowatches.com/fratellos-top-5-vintage-and-neo-vintage-rolex-submariner-models/"
+      ]
+    },
+    {
+      "claim": "Rolex produced 5513s (and the helium-valve-equipped 5514) for COMEX from the early 1970s; some 5513s were also retrofitted with prototype gas-escape valves before the dedicated 5514 existed.",
+      "confidence": "high",
+      "sources": [
+        "https://monochrome-watches.com/rolex-submariner-history-part-2-the-55xx-1680references/",
+        "https://www.bobswatches.com/rolex-blog/history-of-time/vintage-rolex-submariner-5513-comex-prototype.html",
+        "https://perezcope.com/2020/06/28/the-sea-dweller-chronicles-dry-run-and-teaming-up-with-comex/"
+      ]
+    },
+    {
+      "claim": "The MilSub (5513, and later the dedicated 5517) was made for the British MoD with fixed bar lugs, sword hands, an encircled 'T' on the dial, and a fully graduated 60-minute bezel.",
+      "confidence": "high",
+      "sources": [
+        "https://monochrome-watches.com/rolex-submariner-history-part-2-the-55xx-1680references/",
+        "https://teddybaldassarre.com/blogs/watches/rolex-5513-submariner-review",
+        "https://perezcope.com/2023/05/07/the-shadow-a-unique-factory-blacked-out-rolex-submariner-5513-milsub/"
+      ]
+    },
+    {
+      "claim": "The Submariner is foundational to the Bond visual identity: a 6538 (Big Crown) on Sean Connery in Dr. No, From Russia with Love and Goldfinger, and a 5513 worn by Roger Moore in Live and Let Die.",
+      "confidence": "high",
+      "sources": [
+        "https://www.jamesbondlifestyle.com/tags/rolex-submariner-6538",
+        "https://www.jamesbondlifestyle.com/tags/rolex-submariner-5513",
+        "https://www.christies.com/en/lot/lot-1290106",
+        "https://www.phillips.com/detail/rolex/CH080515/290",
+        "https://www.gq.com/story/rolex-submariner-buying-guide"
+      ]
+    },
+    {
+      "claim": "The 5508 was the last Submariner produced without crown guards and the first to use tritium rather than radium lume.",
+      "confidence": "high",
+      "sources": [
+        "https://monochrome-watches.com/rolex-submariner-history-part-2-the-55xx-1680references/",
+        "https://www.hodinkee.com/articles/rolex-submariner-reference-points"
+      ]
+    },
+    {
+      "claim": "The 5513's late-life transition (c.1984) to a glossy black dial with white-gold-surround applied markers established the visual template carried into the five-digit 14060 and beyond.",
+      "confidence": "high",
+      "sources": [
+        "https://monochrome-watches.com/rolex-submariner-history-part-2-the-55xx-1680references/",
+        "https://teddybaldassarre.com/blogs/watches/rolex-5513-submariner-review",
+        "https://www.hodinkee.com/articles/a-collectors-guide-to-the-vintage-rolex-submariner-5513"
+      ]
+    }
+  ],
+  "gaps": [
+    {
+      "gap": "Production volumes and dating for the 5512 vs 5513 rely heavily on the 2024 Rolex-commissioned Foulkes book (cited via Wind Vintage). Perezcope flags that book as 'widely flawed' on the HEV story.",
+      "suggestion": "Cross-check the 17,338 / 151,449 figures against independent serial-number research (e.g. Pucci Papaleo, Goldberger, or the original Foulkes citation) before treating them as canonical."
+    },
+    {
+      "gap": "The MilSub story is told only in passing by Monochrome, Teddy Baldassarre and the 'Shadow' article. There is no detailed source in the corpus covering Royal Navy issue numbers, 5517 specifics, or the double-referenced 5513/5517.",
+      "suggestion": "Add a dedicated MilSub source — e.g. a long-form piece from Bulang & Sons, A Collected Man, or Phillips lot essays for issued MilSubs."
+    },
+    {
+      "gap": "Coverage of the 5517 itself is thin (mentioned only as 'a special reference … for British Armed Forces').",
+      "suggestion": "Pull in a Phillips/Christie's lot essay or a dedicated reference history for the 5517."
+    },
+    {
+      "gap": "The 1680 COMEX vs 5513/5514 COMEX distinction (HEV or not, issue programme structure) is told in scattered fragments.",
+      "suggestion": "Add a focused COMEX source covering issue numbers, dial Mk taxonomy and the relationship to the Sea-Dweller programme."
+    },
+    {
+      "gap": "The Cousteau / Jeanneret connection is asserted repeatedly but only briefly sourced (Monochrome, Rolex Passion Market, Rolex Magazine).",
+      "suggestion": "Add primary-ish material — the 1953 Cousteau testing letter Rolex Magazine references is a candidate, ideally with a verifiable image source."
+    },
+    {
+      "gap": "Modern references (14060/114060/124060) are mentioned in passing by Fratello, GQ and Watchfinder but not covered in depth; this corpus is heavily vintage-weighted.",
+      "suggestion": "Add a dedicated modern-Sub source (e.g. a Hodinkee or Monochrome Part 3/Part 4 piece, or a current Submariner review) when extending the node."
+    },
+    {
+      "gap": "The Submariner's role in British/French military diving units before the formal MilSub programme is implied but not documented.",
+      "suggestion": "Source material on Royal Navy clearance divers and French Marine Nationale Sub usage in the 1960s."
+    },
+    {
+      "gap": "Steve McQueen's 5512 is asserted by Teddy Baldassarre and GQ but without primary photographic citation in the corpus.",
+      "suggestion": "Add a reliable provenance source (e.g. Phillips/Christie's lot for a McQueen-attributed Sub) before leaning on the association."
+    },
+    {
+      "gap": "The Tudor Submariner lineage (mentioned only by Watchfinder) is a meaningful lateral relationship absent from the main narrative.",
+      "suggestion": "Bring in a Tudor Submariner reference history (e.g. 7928, 9411 Snowflake) for the eventual peer-set module."
+    },
+    {
+      "gap": "The bracelet story (rivet, folded, solid) is covered well by Hodinkee for the 5513; less so for the earlier 5508/5510/6538.",
+      "suggestion": "Source pre-9315 bracelet references (7206/6636) for the Big Crown era specifically."
+    }
+  ],
+  "marks": [
+    {
+      "explanation": "The earliest matte-dial 5513s, where the depth rating reads '200m=660ft' (meters before feet); transition from gilt began around 1966, with 1.6–1.7 mil serial cases.",
+      "name": "Meters First (5513 matte)",
+      "sources": [
+        "http://5513mattedial.com/TheSequence.html",
+        "https://teddybaldassarre.com/blogs/watches/rolex-5513-submariner-review"
+      ]
+    },
+    {
+      "explanation": "From c.1969 the depth rating order switched to '660ft=200m'; this is the matte-dial form most commonly encountered through to ~1982.",
+      "name": "Feet First (5513 matte)",
+      "sources": [
+        "https://teddybaldassarre.com/blogs/watches/rolex-5513-submariner-review",
+        "http://5513mattedial.com/TheSequence.html"
+      ]
+    },
+    {
+      "explanation": "Mid-matte 5513 dials introduced around late 1969 / early 1970 (early 2.0 mil serials), distinguished by the presence or absence of serifs on the depth-rating typography.",
+      "name": "Non-Serif / Serif dials",
+      "sources": [
+        "http://5513mattedial.com/TheSequence.html"
+      ]
+    },
+    {
+      "explanation": "Term coined by Ed Delgado in a VRF post on 24 Oct 2008 to describe 5513 matte dials sharing layout traits with some COMEX 5514 dials (large tritium plots, 'Submariner' below depth rating, fat coronet).",
+      "name": "Pre-COMEX dial",
+      "sources": [
+        "http://5513mattedial.com/TheSequence.html",
+        "http://5513mattedial.com/MaxiDials.html"
+      ]
+    },
+    {
+      "explanation": "Five distinct large-lume-plot matte dials produced from c.1977 to c.1984 in the 5–8 mil serial ranges; identified by '=' sign position, 'zig-zag S', open 6s, and whether 'Submariner' sits above or below the depth rating.",
+      "name": "Maxi I–V (5513 matte)",
+      "sources": [
+        "http://5513mattedial.com/MaxiDials.html",
+        "https://www.hodinkee.com/articles/a-collectors-guide-to-the-vintage-rolex-submariner-5513"
+      ]
+    },
+    {
+      "explanation": "Maxi III is the most-loved Maxi variant, nicknamed for tritium plots that appear to touch the five-minute hash marks beneath them.",
+      "name": "Maxi III 'Lollipop'",
+      "sources": [
+        "http://5513mattedial.com/MaxiDials.html"
+      ]
+    },
+    {
+      "explanation": "A small run of 5513s with 3-6-9 Arabic-numeral dials, produced roughly 1962–1965 — the last 'Explorer-dial' Submariner.",
+      "name": "Explorer-dial 5513",
+      "sources": [
+        "https://monochrome-watches.com/rolex-submariner-history-part-2-the-55xx-1680references/",
+        "https://teddybaldassarre.com/blogs/watches/rolex-5513-submariner-review"
+      ]
+    },
+    {
+      "explanation": "Collector nickname for a 5513 dial variant where the coronet's shape evokes Bart Simpson's hair.",
+      "name": "Bart Simpson dial",
+      "sources": [
+        "https://monochrome-watches.com/rolex-submariner-history-part-2-the-55xx-1680references/",
+        "https://teddybaldassarre.com/blogs/watches/rolex-5513-submariner-review"
+      ]
+    },
+    {
+      "explanation": "Transitional 5512/5513 dial variants from the early 1960s gilt era, identified by an underline beneath the depth rating or twin 'Swiss' markings.",
+      "name": "Underline / Double-Swiss-Underline",
+      "sources": [
+        "https://monochrome-watches.com/rolex-submariner-history-part-2-the-55xx-1680references/",
+        "https://rolexpassionmarket.com/the-complete-rolex-submariner-collectors-guide/"
+      ]
+    },
+    {
+      "explanation": "5513 (and dedicated 5517) made for the British MoD: fixed bar lugs, sword hands, circled-T tritium symbol, fully graduated 60-minute bezel.",
+      "name": "MilSub",
+      "sources": [
+        "https://monochrome-watches.com/rolex-submariner-history-part-2-the-55xx-1680references/",
+        "https://teddybaldassarre.com/blogs/watches/rolex-5513-submariner-review",
+        "https://perezcope.com/2023/05/07/the-shadow-a-unique-factory-blacked-out-rolex-submariner-5513-milsub/"
+      ]
+    },
+    {
+      "explanation": "Unique factory-blacked-out (teflon-coated, gunmetal) 5513 supplied to South African Special Forces in 1975, confirmed by a Rolex Patrimoine fax; nickname coined by dealer Tom Bolt.",
+      "name": "The Shadow",
+      "sources": [
+        "https://perezcope.com/2023/05/07/the-shadow-a-unique-factory-blacked-out-rolex-submariner-5513-milsub/"
+      ]
+    },
+    {
+      "explanation": "5513s supplied to COMEX commercial divers from the early 1970s (some retrofitted with prototype helium valves), and the dedicated no-date 5514 with factory HEV.",
+      "name": "COMEX 5513 / 5514",
+      "sources": [
+        "https://www.bobswatches.com/rolex-blog/history-of-time/vintage-rolex-submariner-5513-comex-prototype.html",
+        "https://monochrome-watches.com/rolex-submariner-history-part-2-the-55xx-1680references/"
+      ]
+    },
+    {
+      "explanation": "First-generation 1680 (1969–c.1975) with 'Submariner' printed in red; collectors classify its dial variants Mk I–VI (plus a Luminova service Mk VII).",
+      "name": "Red Sub (1680)",
+      "sources": [
+        "https://www.vrfm.io/red-submariner-dials.html",
+        "https://www.fratellowatches.com/fratellos-top-5-rolex-submariner-references-ever-produced/"
+      ]
+    },
+    {
+      "explanation": "Refers to the 8mm 'Brevet' winding crown used on the 6200, 6538, A/6538 and 5510 — the last of the no-crown-guard, large-crown Submariners.",
+      "name": "Big Crown",
+      "sources": [
+        "https://rolexpassionmarket.com/the-complete-rolex-submariner-collectors-guide/",
+        "https://www.hodinkee.com/articles/rolex-submariner-reference-points",
+        "https://www.gq.com/story/rolex-submariner-buying-guide"
+      ]
+    },
+    {
+      "explanation": "Informal name attached to both the 6538 (Connery Big Crown in Dr. No / FRWL / Goldfinger) and the 5513 (Moore in Live and Let Die, plus later Bond films).",
+      "name": "James Bond Sub",
+      "sources": [
+        "https://www.jamesbondlifestyle.com/tags/rolex-submariner-6538",
+        "https://www.jamesbondlifestyle.com/tags/rolex-submariner-5513",
+        "https://www.gq.com/story/rolex-submariner-buying-guide"
+      ]
+    }
+  ],
+  "model_context": "The Rolex Submariner sits at the centre of the brand's professional/tool-watch identity. Conceived in the early 1950s under the influence of board member René-Paul Jeanneret — a diving enthusiast close to Jacques Cousteau — it was Rolex's deliberate move into purpose-built sports watches, alongside the Explorer and Turn-O-Graph. The Submariner was launched at the 1954 Basel Fair (Rolex internally dates production to 1953), debuting as the first wristwatch publicly rated to 100m. From the 6204/6205/6200 'pre-crown-guard' era through the Big Crown 6536/6538/5510/5508, Rolex iterated rapidly: bigger crowns, deeper ratings (200m by the 6200), the Mercedes hand, tritium lume (from 5508), and finally crown guards in 1959 with the 5512. The 5512 (1959–1980) and 5513 (1962–1989) define the long crown-guard, no-date, four-digit core: the 5512 is the chronometer-certified watch (calibres 1530/1560/1570), the 5513 the non-chronometer sibling (1530/1520) introduced as a more accessible variant. The 5513's near-three-decade run made it Rolex's everyman dive watch and the reference under which most special-purpose variants were issued (MilSub 5513, COMEX, Explorer-dial, the 'Shadow' South African pieces). The date arrived in 1969 with the 1680, prompted in part by the Sea-Dweller's 1967 introduction; the 1680 was also the first gold Submariner. Demand was driven by post-war recreational diving (Cousteau, the Aqua-Lung), military and commercial-dive contracts (Royal Navy, COMEX), and a steady drumbeat of cultural placement — most famously Sean Connery's 6538 in Dr. No and later Roger Moore's modified 5513 in Live and Let Die. The Submariner is widely regarded as the template the rest of the dive-watch industry followed.",
+  "module_candidates": [
+    {
+      "module": "MilSub (5513 / 5517)",
+      "rationale": "Distinct MoD specification (sword hands, fixed lugs, circled-T, fully graduated bezel), well-defined production window mid-1970s, and a clear lateral relationship to 'The Shadow' and other military-issue pieces."
+    },
+    {
+      "module": "COMEX Submariner (5513 / 5514 / 1680)",
+      "rationale": "COMEX partnership from c.1970 produced a discrete family of dials and case modifications (HEVs on 5513/5514, no HEV on 1680), plus its own provenance ecosystem worth a dedicated page."
+    },
+    {
+      "module": "Sea-Dweller (1665 onwards)",
+      "rationale": "The 1967 Sea-Dweller is the direct trigger for the 1680 date Sub; the Single Red / Double Red lineage and the gas-escape-valve story (including the Doxa controversy) deserve their own treatment."
+    },
+    {
+      "module": "1680 Red Sub",
+      "rationale": "Mk I–VI (plus service Mk VII) dial taxonomy, meters-first vs feet-first, and the watershed introduction of the date make this a self-contained module."
+    },
+    {
+      "module": "Gold Submariner (1680/8, 16808, 16618, 116618LN, 116619LB 'Smurf')",
+      "rationale": "VRFM's dedicated gold-Sub article shows the depth of variation (nipple dials, tropical blues, alloy evolution) — distinct enough from the steel core to warrant separation."
+    },
+    {
+      "module": "James Bond Submariner",
+      "rationale": "6538 (Connery), 5513 (Moore), and the documented screen-used props at Phillips/Christie's are a cohesive cultural module that otherwise risks dominating the main 5512/5513 narrative."
+    },
+    {
+      "module": "Pre-crown-guard Subs (6204 / 6205 / 6200 / 6536 / 6538 / 5508 / 5510)",
+      "rationale": "The 1953–1959 era has enough internal variation (Big Crown vs small crown, Explorer dials, OCC vs non-chronometer, radium → tritium transition with the 5508) to merit its own anchor page."
+    },
+    {
+      "module": "5513 matte-dial taxonomy (Meters First → Maxi V)",
+      "rationale": "5513mattedial.com alone is a dense reference that doesn't fit neatly inside a model-line overview; ideal as a dedicated identification module."
+    },
+    {
+      "module": "Submariner peer set (Fifty Fathoms, Seamaster 300, Doxa Sub 300, Tudor Submariner, Ploprof)",
+      "rationale": "Treating these laterally — not as alternatives 'beneath' the Sub — gives readers genre context; Watchfinder and Fratello provide a ready starting list."
+    },
+    {
+      "module": "Five-digit transition (14060 / 16800 / 16610 / 16610LV)",
+      "rationale": "The bridge from the 5513's late glossy dial to the modern 41mm Sub is a coherent story (sapphire, unidirectional bezel, 904L, ceramic) and is explicitly excluded by Hodinkee's Reference Points."
+    }
+  ],
+  "source_contributions": [
+    {
+      "publication": "Beaumont Miller II (5513mattedial.com)",
+      "source": "http://5513mattedial.com/About.html",
+      "unique_contribution": "Stated purpose of the site as a reference for identifying 5513 matte dials from Meters First to Maxi V, c.1966–84; credits to Pisani, Jedly, Tomvox for the underlying research."
+    },
+    {
+      "publication": "Beaumont Miller II (5513mattedial.com)",
+      "source": "http://5513mattedial.com/MaxiDials.html",
+      "unique_contribution": "Detailed visual taxonomy of Maxi I–V dials (introduction dates by serial range, coronet shape, 'zig-zag S', serif/non-serif 'f', position of '=' relative to 'A')."
+    },
+    {
+      "publication": "Beaumont Miller II (5513mattedial.com)",
+      "source": "http://5513mattedial.com/TheSequence.html",
+      "unique_contribution": "Defines the matte 5513 chronological sequence (Meters First → Non-Serif/Serif → Pre-COMEX → Maxi) and attributes the 'Pre-COMEX' term to Ed Delgado, VRF Oct 2008."
+    },
+    {
+      "publication": "Monochrome",
+      "source": "https://monochrome-watches.com/rolex-submariner-history-part-1-the-early-references/",
+      "unique_contribution": "Granular reference-by-reference walk of 6204/6205/6200/6536/6538, including the Sub-Aqua dial variant, split-logo dials, and case/crown evolution."
+    },
+    {
+      "publication": "Monochrome",
+      "source": "https://monochrome-watches.com/rolex-submariner-history-part-2-the-55xx-1680references/",
+      "unique_contribution": "Bridges 5508/5510 to 5512/5513/1680, frames the date as a 'watershed' decision, and notes 5513/5514 COMEX with HEVs vs. 1680 COMEX without."
+    },
+    {
+      "publication": "Perezcope",
+      "source": "https://perezcope.com/2020/02/25/the-doxa-hrv/",
+      "unique_contribution": "Forensic look at the helium-valve patent (CH492246, inventor André Zibach), the T. Walker Lloyd / Bob Barth origin story, and a sceptical reading of Doxa's shared-patent claim."
+    },
+    {
+      "publication": "Perezcope",
+      "source": "https://perezcope.com/2020/06/28/the-sea-dweller-chronicles-dry-run-and-teaming-up-with-comex/",
+      "unique_contribution": "Documents Rolex retrofitting valves to 1.6-mil Single Red Sea-Dwellers for SEALAB III, Tektite I and Deepstar 4000 personnel, and the photo of SEALAB III Team One wearing them."
+    },
+    {
+      "publication": "Perezcope",
+      "source": "https://perezcope.com/2022/07/15/hands-on-the-most-important-rolex-dive-watch/",
+      "unique_contribution": "Hands-on with Dr. Ralph W. Brauer's prototype Single Red Sea-Dweller, the watch tied to COMEX 'Hydra' / 'Physalie' tests; explains the 'Gas Escape Valve' terminology."
+    },
+    {
+      "publication": "Perezcope",
+      "source": "https://perezcope.com/2023/05/07/the-shadow-a-unique-factory-blacked-out-rolex-submariner-5513-milsub/",
+      "unique_contribution": "The South African Special Forces 'Shadow' — a 1975 factory blacked-out 5513 confirmed by a Rolex Patrimoine fax, with context on Operation Savannah and serif-dial details."
+    },
+    {
+      "publication": "Perezcope",
+      "source": "https://perezcope.com/2025/04/18/the-doxa-helium-release-valve-reloaded-doxa-beat-rolex/",
+      "unique_contribution": "New evidence (Swiss press from April 1968, Ludion 2 in Nov 1967) suggesting Doxa had a working helium-valve prototype days after Rolex filed its patent — complicating the Rolex-first narrative."
+    },
+    {
+      "publication": "Rolex Passion Market",
+      "source": "https://rolexpassionmarket.com/the-complete-rolex-submariner-collectors-guide/",
+      "unique_contribution": "Long-form catalogue of dial variants by reference (split logo, double-name Serpico y Laino/Tiffany/Joyería Riviera, underline, 369 Explorer big-crown 5510, etc.)."
+    },
+    {
+      "publication": "Teddy Baldassarre",
+      "source": "https://teddybaldassarre.com/blogs/watches/rolex-5513-submariner-review",
+      "unique_contribution": "Personal-history framing of the 5513 (father's daily-worn 5513 from 1982; grandfather's 1967 Meters First) and a clean overview of cal. 1530/1520 cost-saving choices."
+    },
+    {
+      "publication": "Teddy Baldassarre",
+      "source": "https://teddybaldassarre.com/blogs/watches/rolex-submariner",
+      "unique_contribution": "Mercedes Gleitze and the 1927 Channel-swim Oyster marketing stunt; Panerai context (Rolex-built cases for Italian frogmen in the 1930s–40s)."
+    },
+    {
+      "publication": "Bob's Watches",
+      "source": "https://www.bobswatches.com/rolex-blog/history-of-time/vintage-rolex-submariner-5513-comex-prototype.html",
+      "unique_contribution": "First-hand provenance from a former COMEX commercial diver (Stuart L., RN 1962–73), with a 1971 (2.8-mil) 5513 retrofitted with a prototype HEV."
+    },
+    {
+      "publication": "Bob's Watches",
+      "source": "https://www.bobswatches.com/rolex/submariner/history",
+      "unique_contribution": "Cites the Cannes Institute for Deep Sea Research 1953 testing report (132 dives, 12–60m, plus 120m tethered)."
+    },
+    {
+      "publication": "Christie's",
+      "source": "https://www.christies.com/en/lot/lot-1290106",
+      "unique_contribution": "Auction-house authentication of the Live and Let Die buzz-saw/magnetic Sub and its role as plot device (Solitaire rescue, Miss Caruso scene)."
+    },
+    {
+      "publication": "Fratello",
+      "source": "https://www.fratellowatches.com/can-we-appreciate-the-rolex-submariner-as-just-a-great-dive-watch/",
+      "unique_contribution": "Modern-wearing perspective on the 41mm 126610LN, including the less-reflective ceramic bezel vs. the 116610, and the cultural 'flex' baggage."
+    },
+    {
+      "publication": "Fratello",
+      "source": "https://www.fratellowatches.com/everyone-needs-one-of-these-iconic-dive-watches/",
+      "unique_contribution": "Frames the Submariner among its lateral peers (Fifty Fathoms, Seamaster 300M, Panerai Submersible, Doxa Sub 300, Seiko MM300, Breitling Superocean, Longines Legend Diver)."
+    },
+    {
+      "publication": "Fratello",
+      "source": "https://www.fratellowatches.com/fratellos-top-5-rolex-submariner-references-ever-produced/",
+      "unique_contribution": "Highlights the 168000 'Triple Zero' (1988–89, ~9 months) as a short-run transitional reference using 904L steel."
+    },
+    {
+      "publication": "Fratello",
+      "source": "https://www.fratellowatches.com/fratellos-top-5-vintage-and-neo-vintage-rolex-submariner-models/",
+      "unique_contribution": "Notes the misconception that the Red 1680 is rare (most of its run had red text), and Tritium-dial 14060 (pre-M) appeal."
+    },
+    {
+      "publication": "GQ",
+      "source": "https://www.gq.com/story/rolex-submariner-buying-guide",
+      "unique_contribution": "Notes James Bond's 5513 specifically in OHMSS, Live and Let Die, and The Man with the Golden Gun; Sacha Davidoff's 911-analogy quote."
+    },
+    {
+      "publication": "Hodinkee",
+      "source": "https://www.hodinkee.com/articles/a-collectors-guide-to-the-vintage-rolex-submariner-5513",
+      "unique_contribution": "Bracelet generations on the 5513 (rivet 7206/6636/C&I → folded 9315 → solid 93150) and the role of Gay Frères and C&I (Cromwell International)."
+    },
+    {
+      "publication": "Hodinkee",
+      "source": "https://www.hodinkee.com/articles/rolex-submariner-reference-points",
+      "unique_contribution": "Authoritative Reference Points narrative covering II.53-dated 6204s, the Sub-Aqua dial, the 6200 'King Sub', and small-/large-logo 6200 variants."
+    },
+    {
+      "publication": "James Bond Lifestyle",
+      "source": "https://www.jamesbondlifestyle.com/tags/rolex-submariner",
+      "unique_contribution": "Aggregates the Submariner's repeated film and auction appearances across the Bond franchise."
+    },
+    {
+      "publication": "James Bond Lifestyle",
+      "source": "https://www.jamesbondlifestyle.com/tags/rolex-submariner-5513",
+      "unique_contribution": "Records a 5513 used during Licence To Kill (Dalton-era stunt double) auctioned by Fellows in 2018 at £60–90k estimate."
+    },
+    {
+      "publication": "James Bond Lifestyle",
+      "source": "https://www.jamesbondlifestyle.com/tags/rolex-submariner-6538",
+      "unique_contribution": "Bonhams December 2018 sale of 6538 and 5513 examples 'known to be worn' as Bond models (not the screen-used pieces)."
+    },
+    {
+      "publication": "Phillips",
+      "source": "https://www.phillips.com/detail/rolex/CH080515/290",
+      "unique_contribution": "Catalogue entry for the Live and Let Die 5513 with caseback 'Roger Moore 007' and the Syd Cain (Bond gadget designer) provenance."
+    },
+    {
+      "publication": "Rolex Magazine",
+      "source": "https://www.rolexmagazine.com/2019/06/1958-rolex-submariner-brochure.html",
+      "unique_contribution": "1958 Rolex brochure showing the 6536 (no depth rating) alongside the 6538 as the 'heavy-duty' option and the 'sub-marine-er' pronunciation reading."
+    },
+    {
+      "publication": "Rolex Magazine",
+      "source": "https://www.rolexmagazine.com/2020/08/a-brief-history-of-rolex-submariner.html",
+      "unique_contribution": "Surfaces 1953 Cousteau test photo, Chuck Yeager 1956 with a 6538, Elvis with a Big Crown, and Brian Kelly (Flipper) — a wide cultural cast."
+    },
+    {
+      "publication": "Vintage Rolex Field Manual",
+      "source": "https://www.vrfm.io/gold-submariners.html",
+      "unique_contribution": "Material-science detail on the 1680/8: ~138.75g pure gold content, partners Genex/Boninchi/Virex et Joli Poli, and faded-blue 'tropical' shades (purple, green, brown)."
+    },
+    {
+      "publication": "Vintage Rolex Field Manual",
+      "source": "https://www.vrfm.io/red-submariner-dials.html",
+      "unique_contribution": "Maps Red Sub dials into seven marks (MkI–VII) spanning meters-first, feet-first and a Luminova service dial — and notes Singer, Beyler, Stern, Lemrich as dial suppliers."
+    },
+    {
+      "publication": "Watchfinder",
+      "source": "https://www.watchfinder.com/articles/feature-the-25-best-dive-watches",
+      "unique_contribution": "Frames the Submariner within its dive-watch peer group, including the Fifty Fathoms (Bob Maloubier story) and the Tudor Oyster Prince Submariner."
+    },
+    {
+      "publication": "Wind Vintage",
+      "source": "https://www.windvintage.com/blog/collectors-guide-rolex-submariner-reference-5512",
+      "unique_contribution": "Detailed 5512 movement timeline (1530 → 1560 c.1962 → 1570 c.1965) and the explicit Rolex-published production figures (17,338 / 151,449)."
+    }
+  ],
+  "stories": [
+    {
+      "source": "https://monochrome-watches.com/rolex-submariner-history-part-1-the-early-references/",
+      "title": "Auguste Piccard's 1953 Bathyscaphe dive",
+      "why": "The 3,131.8m dive of the Bathyscaphe Trieste with a Rolex Deep Sea prototype attached set the public-relations stage for the Submariner's launch and seeded Rolex's deep-sea marketing posture."
+    },
+    {
+      "source": "https://www.rolexmagazine.com/2020/08/a-brief-history-of-rolex-submariner.html",
+      "title": "Jacques Cousteau testing 1953 prototype Submariners",
+      "why": "Rolex Magazine surfaces a letter and photograph showing Cousteau wearing a Submariner prototype in 1953 — direct evidence of the Cousteau/Jeanneret link that drove the model's design brief."
+    },
+    {
+      "source": "https://www.phillips.com/detail/rolex/CH080515/290",
+      "title": "Roger Moore's buzz-saw / magnetic 5513 in Live and Let Die",
+      "why": "The Phillips and Christie's lot essays document the actual screen-used 5513 prop — Syd Cain–designed gadget watch, caseback engraved 'Roger Moore 007' — anchoring the 5513's place in Bond lore beyond styling."
+    },
+    {
+      "source": "https://perezcope.com/2023/05/07/the-shadow-a-unique-factory-blacked-out-rolex-submariner-5513-milsub/",
+      "title": "'The Shadow' — South African Special Forces 5513",
+      "why": "A 1975 factory-blacked-out 5513 confirmed by Rolex Patrimoine, made for Operation Savannah; Marcello Pisani called it 'the only watch I will ever regret', and it seeded the entire later genre of PVD-coated Bamford/Pro Hunter pieces."
+    },
+    {
+      "source": "https://www.bobswatches.com/rolex-blog/history-of-time/vintage-rolex-submariner-5513-comex-prototype.html",
+      "title": "COMEX diver Stuart L.'s prototype-HEV 5513",
+      "why": "A 1971 (2.8-mil) 5513 retrofitted with a prototype gas-escape valve, traced directly to a former Royal Navy / COMEX commercial diver who sent it back to Rolex periodically for updates — rare first-hand provenance for the COMEX programme."
+    },
+    {
+      "source": "https://perezcope.com/2022/07/15/hands-on-the-most-important-rolex-dive-watch/",
+      "title": "Dr. Ralph W. Brauer's Single Red Sea-Dweller",
+      "why": "The very first Sea-Dweller fitted with a gas-escape valve, used in Comex 'Physalie'/'Hydra' tests; the watch later turned up under the late professor's mattress with cash and a handgun — a useful reminder of how close the early valve story sits to the 5513/Sub family."
+    },
+    {
+      "source": "https://perezcope.com/2025/04/18/the-doxa-helium-release-valve-reloaded-doxa-beat-rolex/",
+      "title": "Doxa's 'Ludion 2' valve test, 15 Nov 1967",
+      "why": "Newly surfaced 1968 Swiss press reporting on Claude Wesly's helium-valve Doxa Sub 300 prototype — nine days after Rolex filed its patent — complicates the tidy 'Rolex invented it' narrative used in many Submariner histories."
+    },
+    {
+      "source": "https://www.rolexmagazine.com/2020/08/a-brief-history-of-rolex-submariner.html",
+      "title": "Chuck Yeager's 6538 in 1956",
+      "why": "Rolex Magazine surfaces a 1956 photograph of test pilot Chuck Yeager wearing a Big Crown 6538 — a vivid early example of the Submariner crossing from divers to other 'achievers'."
+    },
+    {
+      "source": "https://www.rolexmagazine.com/2020/08/a-brief-history-of-rolex-submariner.html",
+      "title": "Elvis Presley's Big Crown Submariner",
+      "why": "A 1962 photograph of Elvis with a Big Crown Sub places the model in early rock-and-roll iconography, well before the 'Bond' overlay hardened."
+    },
+    {
+      "source": "https://www.rolexmagazine.com/2020/08/a-brief-history-of-rolex-submariner.html",
+      "title": "Brian Kelly's Submariner in Flipper",
+      "why": "Television placement on Porter Ricks in Flipper — an under-discussed thread of the Submariner's early-1960s mainstream presence in family TV alongside its Bond appearances."
+    },
+    {
+      "source": "https://teddybaldassarre.com/blogs/watches/rolex-submariner",
+      "title": "Mercedes Gleitze and the 1927 Channel swim",
+      "why": "Pre-Submariner, but the founding act of Rolex's diver-credibility narrative — a Rolex Oyster around Gleitze's neck during her Channel attempt set the template for everything the Submariner later built on."
+    },
+    {
+      "source": "https://www.fratellowatches.com/can-we-appreciate-the-rolex-submariner-as-just-a-great-dive-watch/",
+      "title": "Tom Place's lost 1996 Submariner",
+      "why": "Fratello reader/stuntman Tom Place still dives the lake where he lost his Sub — a contemporary human story illustrating the watch's grip on its owners decades after manufacture."
+    },
+    {
+      "source": "https://www.fratellowatches.com/can-we-appreciate-the-rolex-submariner-as-just-a-great-dive-watch/",
+      "title": "Harold Holt's two Submariners",
+      "why": "Rolex provided the late Australian PM Harold Holt — a keen skin diver — with two Submariners; Holt disappeared on an ocean swim in December 1967, an unusually sombre chapter in the model's cultural history."
+    }
+  ]
+}
