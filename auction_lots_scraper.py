@@ -1260,6 +1260,17 @@ def _bonhams_lot_to_record(lot, auction_obj, sale_url):
     if not title:
         return None
 
+    # Watch-department filter. Bonhams cross-lists non-watch sales on the
+    # watches department landing page — e.g. "Espionage: Fact and Fiction"
+    # (books/gadgets; sale dept COL-ENT, lots BOK) — so the calendar scraper
+    # picks them up. Keep only lots whose OWN department is Watches (code
+    # starts "WCH"). This drops a non-watch sale entirely while still keeping
+    # any genuine watch in a mixed sale; a lot with no dept is kept (we only
+    # scrape watch-department sales, so unknown defaults to watch). Mark 2026-05-26.
+    dept_code = ((lot.get("department") or {}).get("code") or "").upper()
+    if dept_code and not dept_code.startswith("WCH"):
+        return None
+
     # Brand group: Bonhams classifies lots into brand "groups" (e.g.
     # ['Rolex']). First group is the canonical maker for our purposes.
     groups = lot.get("groups") or []
