@@ -70,11 +70,6 @@ delete — the history is useful.
 ### B-14 — BRAND.md review (Plan thread)
 - **Reported:** 2026-05-24 (`Plan:`) · **Type:** Plan-mode thread, not a bug · **Status:** Queued for a coming session. Mark wants a review of `BRAND.md` (voice/brand). Pairs naturally with the card design system's "breathing-space & brand impact" dial — brand voice + visual brand expression. Surface at a replanning step.
 
-### B-15 — Scrapers can silently mark a dealer's whole stock "Sold" on an empty fetch
-- **Reported:** 2026-05-24 · **Source:** `audit:2026-05-24` · **Severity:** 1 (data-integrity — silent, permanent) · **Surface:** scrapers + `merge.py` · **Status:** Open — top audit priority
-- **Detail:** A site returning HTTP 200 with empty/truncated data makes the scraper "succeed"; the workflow moves the empty CSV over yesterday's good one and `merge.py`'s disappearance logic flips **every** previously-live item to SOLD on the **first** miss (no debounce). Only `watchclub` has the low-count abort guard. Because every step is `continue-on-error`, the run finishes green and no alert fires — and the sold archive is permanent. Highest blast-radius finding in the audit.
-- **Fix:** apply the empty/low-count abort to **every** scraper (or centrally in `merge.py`) + a test that fails if a scraper can write an empty CSV. Full detail: `docs/audits/2026-05-24-vibe-code/findings-data.md` (C1).
-
 ### B-16 — Dependencies unpinned (no lockfiles, JS + Python)
 - **Reported:** 2026-05-24 · **Source:** `audit:2026-05-24` · **Severity:** 2 (reliability + supply-chain) · **Surface:** build / CI / workflows · **Status:** Open
 - **Detail:** No `package-lock.json`; workflows `pip install` latest unpinned. A build that works today can break tomorrow with no code change, and it's a supply-chain exposure (updates run with the scrapers' secret keys). Cheapest high-leverage fix in the audit.
@@ -103,6 +98,17 @@ delete — the history is useful.
 ---
 
 ## Resolved
+
+### B-15 — Scrapers could silently mark a source's whole stock "Sold" on an empty scrape · Fixed #576
+- An HTTP-200-but-empty/truncated scrape used to flip **every** previously-live
+  item from that source to SOLD on the first miss (permanent, in the archive),
+  with no alert because every workflow step is `continue-on-error`. Fixed with a
+  central debounce in `merge.update_state`: a listing must be absent from
+  `DISAPPEARANCE_MISS_THRESHOLD` (=2) consecutive runs before flipping to sold —
+  the first miss is held live (re-emitted from the state cache), and a seen run
+  resets the per-entry `missCount`, so an every-other-run flap never flips.
+  Protects all ~41 sources + future ones centrally (no per-scraper edits).
+  Detail: `docs/audits/2026-05-24-vibe-code/findings-data.md` (C1).
 
 ### B-01 — Editorial filter chrome squashed on scroll (mobile) · Fixed #554
 - EditorialView portals its filter chrome into a slot in the shell's sticky
