@@ -142,3 +142,56 @@ worked the findings.
 Clean close. The lone Critical is fixed, the biggest mobile first-load hit is
 gone, Python deps pinned, the audit fully captured + tracked so nothing's lost.
 No open PRs, no stranded branches from this session.
+
+---
+
+# Addendum — Browse AI 403 incident (2026-05-26, third session)
+
+Started intending reference-page follow-ups (Mark picked that lane) but a
+break-now signal pre-empted: "all scrapes failed" notice + a Browse AI failure
+email. Spent the session triaging. **Reference-page follow-ups never started —
+still queued** (P2 a11y polish, desktop gutter-rail nav, reconcile `Eyebrow.js`,
+tighten synthesis prompt). That's the natural next-session pickup.
+
+## What actually happened (the two emails)
+- **Tropical Watch failed for real** — Browse AI returned **403** on the robot
+  trigger (06:09 + 17:23 UTC, identical). Root cause: **TW is the only active
+  Browse AI source** (Analog Shift = direct Shopify; Grey & Patina migrated to
+  WooCommerce — I first misread the grep as "3 dealers", corrected). Browse AI
+  **free tier = 50 credits/mo**; our burn is **~17/day** (the dedicated
+  `scrape-tropicalwatch.yml` triggers a **fresh 15-credit** capture 2×/day). So
+  the free cap is structurally impossible, and a fresh trigger gets 403 once the
+  balance drops below ~15. **Not data loss** — the main batch reads TW via
+  `--latest` (cheap), so `data/tropicalwatch.csv` stayed current.
+- **"Notify on scrape failure: All jobs have failed" was a FALSE ALARM** — the
+  notifier crashed at *setup* because GitHub's CDN briefly couldn't serve
+  `actions/github-script@v7`. GitHub auto-emailed it with a name that reads like
+  "all scrapers died." This is what made the session confusing. Transient
+  GitHub infra; self-recovered.
+
+## Shipped — PR #582 (merged, branch deleted, CI green)
+1. `tropicalwatch_scraper.py` — `_raise_for_status()` surfaces Browse AI's
+   response body + 403 hint at all 3 call sites (next failure self-diagnoses).
+2. `notify-scrape-failure.yml` — rewritten to use the **pre-installed `gh` CLI**
+   (no action download at setup → can't fail that way again). Behaviour
+   unchanged.
+3. BUGS.md — B-23 (incident + root cause), B-24 (Browse AI source expansion:
+   Bonhams + Cloudflare-blocked houses), B-25 (self-hosted Playwright runner).
+
+## Mark's decision + open items
+- **Decision:** don't fight the 50-credit cap — **subscribe** to Browse AI and
+  make it worth it by adding sources we *can't* otherwise scrape (Bonhams etc.,
+  B-24), then **move to self-hosted Playwright sooner** (B-25).
+- **Mark has NOT added credits yet** → TW will keep 403-ing ~2×/day, commenting
+  on issue **#569** + emailing, until he does. Adding credits should clear it
+  (no code issue). **Easy interim:** pause `scrape-tropicalwatch.yml`'s
+  `schedule:` (keep `workflow_dispatch`) — one line, in B-23.
+- **Deferred:** in-batch silent-failure visibility (daily `health.py` digest vs
+  loud-batch vs in-app Admin badge — Mark hadn't picked).
+
+## Bottom line
+Clean close. PR #582 merged, no stranded branches, main synced. Session was
+confusing (the misnamed notifier email) but resolved and hardened so it can't
+recur. Next session: add Browse AI credits (Mark), then the queued
+reference-page follow-ups — or plan-mode B-24/B-25 if Mark wants to act on the
+Browse-AI-expansion / Playwright direction.
