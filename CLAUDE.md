@@ -13,6 +13,7 @@ shipped (SHIPPED).
 | **ROADMAP.md** | Direction only (north star, jobs-to-be-done, epics, explicitly-NOT) | Scoping new work |
 | **SHIPPED.md** | The changelog (two-line entries by epic) | "When/what shipped?" |
 | **BUGS.md** | Usability/defect backlog (enriched, ID'd) | Every session start; on any `Bug:` |
+| **docs/audits/** | Cold audit reports (dated) + routing index | After an audit; tracking findings |
 | **DESIGN_SYSTEM.md** | Color + style tokens, components, reach-for rules | Any UI work |
 | **BRAND.md** | Voice | Before copy / visual choices |
 | **docs/REFERENCE_INTELLIGENCE.md** | Epic 0/5 reference-intelligence strategy + index stats | Reference index / corpus work |
@@ -34,9 +35,9 @@ the branch you'll create — branch before editing, never edit `main`.
   into CLAUDE.md.**
 - One fact, one home: **SHIPPED** (ship events, 2 lines) · **ROADMAP**
   (direction changes) · **README** (architecture changes) ·
-  **DESIGN_SYSTEM** (token/component changes) · **CLAUDE.md** (a durable
-  rule only, within budget — prune/compress before adding; strip PR/date
-  tags).
+  **DESIGN_SYSTEM** (token/component changes) · **docs/audits/** (audit
+  reports; findings → BUGS.md) · **CLAUDE.md** (durable rule only, within
+  budget; strip PR/date tags).
 - Update **personal/LEARNING.md** (capability snapshot / concept log / growth edges).
 - **CLAUDE.md budget: ~4,000 words, ceiling 6,000.** Adding a rule means
   cutting or compressing an equal amount.
