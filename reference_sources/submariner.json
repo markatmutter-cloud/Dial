@@ -1,0 +1,55 @@
+{
+  "node": "submariner",
+  "brand": "Rolex",
+  "model_line": "Submariner",
+  "reference_focus": ["5512", "5513"],
+  "where_next_refs": ["6204", "6205", "6536", "6538", "5508", "5510", "5512", "5513", "1680", "5514", "5517", "1665", "14060", "114060", "124060"],
+  "sources": [
+    { "url": "https://www.hodinkee.com/articles/rolex-submariner-reference-points", "title": "Reference Points: Understanding the Rolex Submariner", "publication": "Hodinkee", "author": "Stephen Pulvirent", "type": "definitive-guide", "focus": "vintage lineage / family tree" },
+    { "url": "https://monochrome-watches.com/rolex-submariner-history-part-1-the-early-references/", "title": "History of the Rolex Submariner — Part 1, The Early References", "publication": "Monochrome", "author": "Brice Goulard", "type": "history", "focus": "1950s origins, 6204/6205/6536/6538" },
+    { "url": "https://monochrome-watches.com/rolex-submariner-history-part-2-the-55xx-1680references/", "title": "History of the Rolex Submariner — Part 2, The 55XX and 1680 References", "publication": "Monochrome", "author": "Brice Goulard", "type": "history", "focus": "5512/5513/1680 crown-guard era" },
+    { "url": "https://rolexpassionmarket.com/the-complete-rolex-submariner-collectors-guide/", "title": "The Complete Rolex Submariner Collectors Guide", "publication": "Rolex Passion Market", "type": "collector-guide", "focus": "full lineage / production context" },
+    { "url": "https://www.bobswatches.com/rolex/submariner/history", "title": "The Complete Rolex Submariner History", "publication": "Bob's Watches", "type": "history-commercial", "focus": "model timeline 1953–modern" },
+    { "url": "https://teddybaldassarre.com/blogs/watches/rolex-submariner", "title": "Rolex Submariner Guide", "publication": "Teddy Baldassarre", "author": "Mark Bernardo", "type": "overview", "focus": "model arc + buying context" },
+    { "url": "https://www.rolexmagazine.com/2020/08/a-brief-history-of-rolex-submariner.html", "title": "A Brief History of the Rolex Submariner", "publication": "Rolex Magazine", "type": "history-archival", "focus": "Cousteau / prototypes / early Submariner", "flags": { "cross_check": true } },
+    { "url": "https://www.rolexmagazine.com/2019/06/1958-rolex-submariner-brochure.html", "title": "1958 Rolex Submariner Brochure", "publication": "Rolex Magazine", "type": "archival-brochure", "focus": "6536/6538 period marketing" },
+
+    { "url": "https://www.fratellowatches.com/fratellos-top-5-rolex-submariner-references-ever-produced/", "title": "Fratello's Top 5 Rolex Submariner References Ever", "publication": "Fratello", "author": "Jorg Weppelink", "type": "reference-map", "focus": "6204/6538/5513/1680/modern" },
+    { "url": "https://www.fratellowatches.com/fratellos-top-5-vintage-and-neo-vintage-rolex-submariner-models/", "title": "Fratello's Top 5 Vintage and Neo-Vintage Submariner Models", "publication": "Fratello", "author": "Jorg Weppelink", "type": "reference-map", "focus": "four-digit → five-digit bridge" },
+    { "url": "https://www.gq.com/story/rolex-submariner-buying-guide", "title": "The Rolex Submariner Buying Guide", "publication": "GQ", "type": "buying-guide-culture", "focus": "cultural centrality" },
+    { "url": "https://www.fratellowatches.com/can-we-appreciate-the-rolex-submariner-as-just-a-great-dive-watch/", "title": "Can We Appreciate the Submariner as Just a Great Dive Watch?", "publication": "Fratello", "author": "Henry Black", "type": "collector-culture", "focus": "watch beyond hype" },
+    { "url": "https://www.fratellowatches.com/everyone-needs-one-of-these-iconic-dive-watches/", "title": "Everyone Needs One of These Iconic Dive Watches", "publication": "Fratello", "type": "iconic-context", "focus": "dive-watch archetype" },
+    { "url": "https://www.watchfinder.com/articles/feature-the-25-best-dive-watches", "title": "Feature: The 25 Best Dive Watches", "publication": "Watchfinder", "author": "Craig Hawes", "type": "context-list", "focus": "dive peers: Fifty Fathoms, Seamaster, Doxa" },
+
+    { "url": "https://perezcope.com/2020/06/28/the-sea-dweller-chronicles-dry-run-and-teaming-up-with-comex/", "title": "The Sea-Dweller Chronicles: Dry Run and Teaming Up With Comex", "publication": "Perezcope", "author": "Jose Pereztroika", "type": "deep-research", "focus": "5513 GEV / COMEX / Sea-Dweller" },
+    { "url": "https://perezcope.com/2022/07/15/hands-on-the-most-important-rolex-dive-watch/", "title": "Hands-On: The Most Important (Rolex) Dive Watch", "publication": "Perezcope", "author": "Jose Pereztroika", "type": "deep-research", "focus": "Single Red Sea-Dweller / gas-escape valve" },
+    { "url": "https://perezcope.com/2020/02/25/the-doxa-hrv/", "title": "The Doxa HRV", "publication": "Perezcope", "author": "Jose Pereztroika", "type": "deep-research", "focus": "Doxa / Rolex / helium valve" },
+    { "url": "https://perezcope.com/2025/04/18/the-doxa-helium-release-valve-reloaded-doxa-beat-rolex/", "title": "The Doxa Helium Release Valve Reloaded — Doxa Beat Rolex!", "publication": "Perezcope", "author": "Jose Pereztroika", "type": "deep-research", "focus": "HRV / COMEX / Doxa vs Rolex (complicates Rolex-first narrative)" },
+    { "url": "https://www.bobswatches.com/rolex-blog/history-of-time/vintage-rolex-submariner-5513-comex-prototype.html", "title": "Vintage Rolex Submariner 5513 COMEX Prototype", "publication": "Bob's Watches", "type": "commercial-article", "focus": "modified 5513 / COMEX prototype" },
+    { "url": "https://www.rolexforums.com/showthread.php?t=52067", "title": "5514 w/ helium escape valve?", "publication": "Rolex Forums", "type": "forum-discourse", "focus": "5514 / COMEX debate", "flags": { "bot_blocked": true, "discourse_only": true } },
+
+    { "url": "https://perezcope.com/2023/05/07/the-shadow-a-unique-factory-blacked-out-rolex-submariner-5513-milsub/", "title": "The Shadow — A Unique Factory Blacked-Out 5513 MilSub", "publication": "Perezcope", "author": "Jose Pereztroika", "type": "deep-research", "focus": "5513 MilSub" },
+    { "url": "https://teddybaldassarre.com/blogs/watches/rolex-5513-submariner-review", "title": "Rolex Submariner 5513 Review", "publication": "Teddy Baldassarre", "type": "overview", "focus": "5513 / MilSub mention" },
+
+    { "url": "https://www.jamesbondlifestyle.com/tags/rolex-submariner", "title": "Rolex Submariner (Bond appearances)", "publication": "James Bond Lifestyle", "type": "bond-index", "focus": "Submariner in Bond" },
+    { "url": "https://www.jamesbondlifestyle.com/tags/rolex-submariner-6538", "title": "Rolex Submariner 6538 (Bond)", "publication": "James Bond Lifestyle", "type": "bond-reference", "focus": "6538 early Bond" },
+    { "url": "https://www.jamesbondlifestyle.com/tags/rolex-submariner-5513", "title": "Rolex Submariner 5513 (Bond)", "publication": "James Bond Lifestyle", "type": "bond-reference", "focus": "5513 Bond + auction notes" },
+    { "url": "https://www.phillips.com/detail/rolex/CH080515/290", "title": "Rolex Ref. 5513 Submariner — Geneva Watch Auction: TWO", "publication": "Phillips", "type": "auction-record", "focus": "Live and Let Die 5513 prop" },
+    { "url": "https://www.christies.com/en/lot/lot-1290106", "title": "Live and Let Die, 1973", "publication": "Christie's", "type": "auction-record", "focus": "Live and Let Die 5513 prop" },
+
+    { "url": "http://5513mattedial.com/About.html", "title": "5513 Matte Dial — A Review", "publication": "Beaumont Miller II", "type": "dial-taxonomy", "focus": "5513 matte dials", "flags": { "http_only": true } },
+    { "url": "http://5513mattedial.com/TheSequence.html", "title": "5513 Matte Dial — The Sequence", "publication": "Beaumont Miller II", "type": "dial-taxonomy", "focus": "5513 dial sequence", "flags": { "http_only": true } },
+    { "url": "http://5513mattedial.com/MaxiDials.html", "title": "5513 Matte Dial — Maxi Dials", "publication": "Beaumont Miller II", "type": "dial-taxonomy", "focus": "Maxi Mk I–V", "flags": { "http_only": true } },
+    { "url": "https://www.vrfm.io/red-submariner-dials.html", "title": "Dials of the Vintage Red Rolex Submariner", "publication": "Vintage Rolex Field Manual", "author": "Colin A. White", "type": "dial-taxonomy", "focus": "1680 Red Sub dials" },
+    { "url": "https://www.vrfm.io/gold-submariners.html", "title": "The Vintage Solid Gold Rolex Submariner", "publication": "Vintage Rolex Field Manual", "author": "Colin A. White", "type": "variant-guide", "focus": "gold Submariners" },
+    { "url": "https://www.windvintage.com/blog/collectors-guide-rolex-submariner-reference-5512", "title": "What to Know About the Reference 5512", "publication": "Wind Vintage", "author": "Charlie Dunne", "type": "reference-guide", "focus": "5512" },
+    { "url": "https://www.hodinkee.com/articles/a-collectors-guide-to-the-vintage-rolex-submariner-5513", "title": "How to Buy a Vintage Submariner 5513", "publication": "Hodinkee", "author": "Anthony Traina", "type": "buying-guide", "focus": "5513 collecting" }
+  ],
+  "books": [
+    { "title": "Oyster Perpetual Submariner: The Watch That Unlocked the Deep", "author": "Nicholas Foulkes · Wallpaper* / ACC Art Books", "url": "https://www.accartbooks.com/us/book/oyster-perpetual-submariner/", "note": "Rolex-authorized history; broad cultural framing." },
+    { "title": "Rolex Submariner, Sea-Dweller and DeepSea", "author": "Giorgia & Guido Mondani / Mondani Books", "url": "https://mondanibooks.com/prod/books/book-watch-rolex-submariner-sea-dweller/", "note": "Dedicated Rolex dive-watch reference.", "flags": { "bot_blocked": true } },
+    { "title": "100 Superlative Rolex Watches", "author": "John Goldberger", "url": "https://www.johngoldbergerwatches.com/100superlativerolxwatches.htm", "note": "High-level vintage Rolex visual reference." },
+    { "title": "Vintage Rolex Sports Models, 4th Edition", "author": "Martin Skeet & Nick Urul / Schiffer", "url": "https://schifferbooks.com/products/vintage-rolex-sports-models-4th-edition", "note": "Submariner alongside the other four-digit sports models." },
+    { "title": "The Vintage Rolex Field Manual", "author": "Colin A. White / MorningTundra", "url": "https://www.vrfm.io/", "note": "Practical authentication mindset." }
+  ]
+}

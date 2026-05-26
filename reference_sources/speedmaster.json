@@ -1,0 +1,38 @@
+{
+  "node": "speedmaster",
+  "brand": "Omega",
+  "model_line": "Speedmaster",
+  "reference_focus": ["105.012", "145.012"],
+  "reference_focus_label": "calibre-321 Moonwatch era",
+  "where_next_refs": ["CK2915", "CK2998", "105.002", "105.003", "105.012", "145.012", "145.022", "BA145.022", "Alaska Project", "X-33", "3861"],
+  "framing": "The Speedmaster is not just 'the Moonwatch.' That is the story that made it famous, but not where it starts. It begins as a racing chronograph in 1957, then gets pulled into one of the most important technology and exploration stories of the twentieth century — a watch with two strong identities: motorsport instrument and space-flight object. The reference trail is the fun: CK2915 the broad-arrow origin; CK2998 closer to the shape Wally Schirra wore into space; the 105.003 'Ed White' keeping the straight-lug case alive; the 105.012 and 145.012 as Moonwatch core; the 145.022 a long-running collecting universe of its own; then the branches — Alaska Project, gold Apollo XI tributes, Snoopy, X-33, Speedy Tuesday, the modern 3861.",
+  "sources": [
+    { "url": "https://www.hodinkee.com/articles/understanding-the-omega-speedmaster-professional", "title": "Reference Points: Understanding the Omega Speedmaster", "publication": "Hodinkee", "type": "definitive-guide", "focus": "full vintage lineage" },
+    { "url": "https://www.hodinkee.com/articles/everything-you-need-to-know-about-the-omega-speedmaster", "title": "Everything You Need to Know About the Omega Speedmaster", "publication": "Hodinkee", "author": "Danny Milton", "type": "resource-hub", "focus": "articles + buying context" },
+    { "url": "https://quillandpad.com/2025/03/04/omega-speedmaster-moonwatch-the-making-of-an-icon-2/", "title": "Omega Speedmaster Moonwatch: The Making of an Icon", "publication": "Quill & Pad", "type": "history", "focus": "racing → NASA → Moonwatch" },
+    { "url": "https://www.baileybox.com/blog/history-of-omega-speedmaster-moonwatch/", "title": "The History of the Omega Speedmaster Moonwatch", "publication": "Bailey's Fine Jewelry", "type": "overview-commercial", "focus": "NASA testing / Moonwatch story" },
+    { "url": "https://www.watchtime.com/brands/manufacture-movement/flight-qualified-for-space-the-story-behind-nasas-choice-of-the-omega-speedmaster", "title": "Flight-Qualified for Space: NASA's Choice of the Omega Speedmaster", "publication": "WatchTime", "type": "history", "focus": "NASA flight-qualification", "flags": { "bot_blocked": true } },
+    { "url": "https://wristbuddys.com/blogs/blog/the-story-of-the-omega-speedmaster-from-the-racetrack-to-space", "title": "The Legendary Story of the Omega Speedmaster Moonwatch", "publication": "Wristbuddys", "type": "overview-commercial", "focus": "racetrack → space" },
+
+    { "url": "https://monochrome-watches.com/exclusive-truth-real-armstrong-aldrin-speedmaster-references-how-omega-speedmaster-became-moonwatch/", "title": "The Truth About Armstrong's and Aldrin's Speedmaster References", "publication": "Monochrome", "type": "deep-research", "focus": "Apollo 11 references" },
+    { "url": "https://www.thingap.com/how-a-flight-qualified-watch-helped-save-apollo-13/", "title": "How a Flight-Qualified Watch Helped Save Apollo 13", "publication": "Thingap", "type": "story", "focus": "Apollo 13 timing" },
+    { "url": "https://www.gq.com/story/omega-speedmaster-moon-landing", "title": "Omega's Moonshot", "publication": "GQ", "type": "culture", "focus": "NASA / Apollo 11 / marketing" },
+    { "url": "https://www.vanityfair.com/news/2009/06/astronaut-buzz-aldrin-lands-at-the-omega-store-in-new-york-city", "title": "Buzz Aldrin Lands at the Omega Store in New York City", "publication": "Vanity Fair", "type": "culture-news", "focus": "Aldrin / Apollo 11 anniversary" },
+    { "url": "https://nypost.com/2026/04/08/us-news/artemis-ii-astronauts-wore-top-of-the-line-omega-wristwatches-around-the-moon-and-one-slipped-on-an-old-school-nasa-icon/", "title": "Artemis II Astronauts Wore Omega Watches Around the Moon", "publication": "New York Post", "type": "news-recent", "focus": "Artemis II / X-33 / classic Speedmaster" },
+
+    { "url": "https://speedmaster101.com/", "title": "How to Buy an Omega Speedmaster", "publication": "Speedmaster101", "author": "William Roberts", "type": "collector-guide", "focus": "condition / originality / reference differences / value" },
+    { "url": "https://revolutionwatch.com/talking-speedmasters-william-robert-k-speedmaster101/", "title": "Talking Speedmasters with William Roberts (@Speedmaster101)", "publication": "Revolution", "author": "Wei Koh", "type": "interview", "focus": "collecting philosophy" },
+    { "url": "https://www.fratellowatches.com/speedy-tuesday-moonwatch-only-3rd-edition-book-review/", "title": "Moonwatch Only — 3rd Edition Book Review", "publication": "Fratello", "author": "Robert-Jan Broer", "type": "book-review", "focus": "Moonwatch Only 3rd ed." },
+    { "url": "https://quillandpad.com/2014/11/24/moonwatch-only-the-ultimate-omega-speedmaster-guide/", "title": "Moonwatch Only: The Ultimate Omega Speedmaster Guide", "publication": "Quill & Pad", "type": "book-review", "focus": "Moonwatch Only" },
+    { "url": "https://www.watchfid.com/moonwatch-only/", "title": "Moonwatch Only", "publication": "Watchfid", "type": "book-overview", "focus": "what the book covers" },
+
+    { "url": "https://www.hodinkee.com/articles/omega-speedmaster-3861-complete-buyers-guide", "title": "The Complete Buyer's Guide to the New Speedmaster Moonwatch", "publication": "Hodinkee", "type": "buying-guide", "focus": "3861 Moonwatch / DON bezel" },
+    { "url": "https://www.wired.com/story/white-omega-speedmaster-moonwatch-2024", "title": "A Rejected NASA Prototype Inspired Omega's White Speedmaster", "publication": "Wired", "type": "news-context", "focus": "white dial / Alaska Project inspiration" },
+    { "url": "https://www.wired.com/story/omega-speedmaster-apollo-11-50th-anniversary", "title": "Omega's Speedmaster Apollo 11 Remake", "publication": "Wired", "type": "news-context", "focus": "Apollo 11 50th / Moonshine Gold / 3861" }
+  ],
+  "books": [
+    { "title": "Moonwatch Only: The Ultimate OMEGA Speedmaster Guide, 3rd Edition", "author": "Grégoire Rossier & Anthony Marquié / Watchprint", "url": "https://watchprint.com/en/omega/259-moonwatch-only-the-ultimate-speedmaster-guide-3rd-edition.html", "note": "Core Speedmaster reference book — model, dial, bezel, case, variant coverage." },
+    { "title": "Moonwatch Only (bookseller)", "author": "Rossier & Marquié / Amazon", "url": "https://www.amazon.com/Moonwatch-Only-Ultimate-OMEGA-Speedmaster/dp/2940506302", "note": "Accessible purchase link." },
+    { "title": "A Man & His Watch", "author": "Matt Hranek / Hachette", "url": "https://www.hachettebookgroup.com/titles/matt-hranek/a-man-his-watch/9781579657147/", "note": "Collector-story context; Speedmaster/Apollo narratives sit well here." }
+  ]
+}

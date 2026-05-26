@@ -1,0 +1,91 @@
+# Reference-intelligence pipeline (Mark, 2026-05-25).
+#
+# Stage 1 (reference_corpus_scraper.py) builds an attributed body corpus from a
+# per-node manifest (reference_sources/<node>.json) — reusing the editorial
+# corpus where we already hold a URL, fetching + extracting the rest. Stage 2
+# (reference_synthesis.py) runs ONE Claude Opus 4.7 pass producing a structured,
+# source-grounded synthesis (public/reference_synthesis_<node>.json) for human
+# review before it feeds a reference page. This synthesised + chunked corpus is
+# also the input to the future RAG bot.
+#
+# Manual-only (workflow_dispatch) — this spends Anthropic credit, so it doesn't
+# run on a schedule. Outputs are committed for review; nothing is wired to the
+# live page until a human approves the synthesis.
+#
+# COST: one Opus 4.7 pass per node over a curated corpus (~tens of sources) —
+# low single-dollar range per node. Budget tracked in memory anthropic_api_config.
+#
+# Secrets required: ANTHROPIC_API_KEY (Anthropic Console → API Keys).
+name: Reference intelligence pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      node:
+        description: 'Which node to build'
+        required: true
+        default: 'submariner'
+        type: choice
+        options:
+          - submariner
+          - speedmaster
+          - all
+
+concurrency:
+  group: reference-intelligence
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install pipeline deps
+        run: pip install -r requirements-pipeline.txt
+
+      - name: Resolve node list
+        id: nodes
+        run: |
+          if [ "${{ github.event.inputs.node }}" = "all" ]; then
+            echo "list=submariner speedmaster" >> "$GITHUB_OUTPUT"
+          else
+            echo "list=${{ github.event.inputs.node }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Stage 1 — build reference corpus
+        run: python reference_corpus_scraper.py ${{ steps.nodes.outputs.list }}
+
+      - name: Stage 2 — Opus synthesis
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python reference_synthesis.py ${{ steps.nodes.outputs.list }}
+
+      - name: Commit + push outputs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add reference_sources/ \
+                  public/reference_corpus_*.json \
+                  public/reference_synthesis_*.json
+          if git diff --staged --quiet; then
+            echo "No changes — nothing to commit."
+            exit 0
+          fi
+          git commit -m "Reference synthesis (${{ github.event.inputs.node }}) $(date -u '+%Y-%m-%d %H:%M UTC')"
+          for i in 1 2 3; do
+            if git push; then exit 0; fi
+            echo "Push failed; rebasing and retrying ($i/3)…"
+            git pull --rebase
+            sleep 5
+          done
+          echo "Push failed after 3 attempts."
+          exit 1

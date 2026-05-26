@@ -1,0 +1,5 @@
+# Reference-intelligence pipeline (scrape → synthesis → RAG input).
+# Installed by .github/workflows/reference-synthesis.yml.
+requests>=2.31
+trafilatura>=1.12   # generic main-text extraction across heterogeneous sources
+anthropic>=0.69     # Opus 4.7 synthesis pass (adaptive thinking, structured output)
