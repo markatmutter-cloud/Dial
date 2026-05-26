@@ -27,7 +27,8 @@ Writes:  public/bonhams_lots.json  (URL-keyed; same shape as auction_lots.json)
 import json
 import os
 import sys
-from datetime import date
+import time
+from datetime import date, datetime, timezone
 
 # Reuse the shared enumerator + gating from the comprehensive scraper.
 # Importing is safe — its main() is guarded by `if __name__ == "__main__"`.
@@ -41,6 +42,60 @@ AUCTIONS_JSON = "public/auctions.json"
 OUTPUT_JSON = "public/bonhams_lots.json"
 HOUSE = "Bonhams"
 URL_NEEDLE = "bonhams.com/auction/"
+
+# ── Adaptive throttle (B-24 ramp / B-25 host) ───────────────────────────
+# The launchd host (B-25) ticks at a fixed, fine cadence (hourly). The
+# DECISION of whether to actually scrape lives here, keyed to how close any
+# in-window sale is to ending — because Bonhams' JSON carries no live bid
+# (only estimates + the realised hammerPremium that lands AT close), the
+# only thing worth chasing frequently is the post-close results window.
+#
+# Day-precision: auctions.json carries dateEnd as a date, not a datetime, so
+# the ramp resolves to days. Could be sharpened to hours by reading each
+# sale's hammerTime, but that needs a fetch — exactly what we're throttling.
+RESULTS_WINDOW_MIN = 60     # a sale ending today / ended in the last ~2 days
+ACTIVE_MIN = 360            # something live or upcoming-with-catalog (6h)
+IDLE_MIN = 720              # nothing close to a boundary (12h)
+RESULTS_WINDOW_DAYS = 2     # days after dateEnd to keep hammering for results
+# Host state (last-run timestamp) lives OUTSIDE the repo — it's per-machine
+# orchestration state, not repo data, so it must never be committed.
+STATE_PATH = os.path.expanduser("~/.watchlist_bonhams_scrape.json")
+
+
+def _desired_interval_minutes(targets, today=None):
+    """Minutes to wait between scrapes given the in-window sales' proximity
+    to their end date. Smaller = scrape more often."""
+    today = today or date.today()
+    interval = IDLE_MIN
+    for sale in targets:
+        de = (sale.get("dateEnd") or sale.get("dateStart") or "")[:10]
+        try:
+            d_end = datetime.fromisoformat(de).date()
+        except (ValueError, TypeError):
+            continue
+        days_since_end = (today - d_end).days
+        if 0 <= days_since_end <= RESULTS_WINDOW_DAYS or d_end == today:
+            return RESULTS_WINDOW_MIN          # in/just-past a close — finest
+        interval = min(interval, ACTIVE_MIN)   # live/upcoming — moderate
+    return interval
+
+
+def _minutes_since_last_run():
+    try:
+        with open(STATE_PATH) as f:
+            ts = json.load(f).get("last_run_ts")
+        return (time.time() - float(ts)) / 60.0
+    except Exception:
+        return None  # no prior run recorded → always due
+
+
+def _record_run():
+    try:
+        with open(STATE_PATH, "w") as f:
+            json.dump({"last_run_ts": time.time(),
+                       "last_run_iso": datetime.now(timezone.utc).isoformat()}, f)
+    except Exception as e:
+        print(f"  warn: couldn't write throttle state {STATE_PATH}: {e}")
 
 
 def load_prior():
@@ -71,6 +126,20 @@ def main():
         and URL_NEEDLE in (sale.get("url") or "")
         and in_active_window(sale, today)
     ]
+
+    # --throttle: launchd ticks hourly; only actually scrape when due, where
+    # "due" tightens to hourly near a sale's close (see the constants above).
+    # --force overrides (manual run). Skipping is a clean exit 0.
+    if "--throttle" in sys.argv and "--force" not in sys.argv:
+        interval = _desired_interval_minutes(targets, today)
+        since = _minutes_since_last_run()
+        if since is not None and since < interval:
+            print(f"Throttled: {since:.0f} min since last run, want ≥{interval} "
+                  f"({len(targets)} sale(s) in window). Skipping.")
+            return
+        print(f"Due: {('%.0f min' % since) if since is not None else 'no prior run'} "
+              f"since last run, threshold {interval} min.")
+
     print(f"Bonhams lot scrape: {len(targets)} sale(s) in active window\n")
 
     out = {}
@@ -133,6 +202,7 @@ def main():
 
     with open(OUTPUT_JSON, "w") as f:
         json.dump(out, f, separators=(",", ":"))
+    _record_run()  # mark the throttle clock only on a real, completed scrape
     sold = sum(1 for v in out.values() if isinstance(v, dict) and v.get("sold_price"))
     print(f"\n✓ Wrote {len(out)} Bonhams lot(s) to {OUTPUT_JSON} "
           f"({new_active} active · {sold} sold)")
