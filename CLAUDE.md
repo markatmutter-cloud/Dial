@@ -146,8 +146,13 @@ diagram, data model, and folder layout.
   comes from the rendered "Sold For" panel, not JSON-LD (that's the low estimate).- **Comprehensive auction houses (5):** Antiquorum (use `live.antiquorum.swiss`
   + live-URL fallback when the catalog lags), Christie's, Monaco Legend
   (server-rendered Livewire), Sotheby's (`apolloCache` lotCards, not
-  algoliaJson alone), Phillips. **Bonhams is blocked from CI** by Cloudflare
-  IP-reputation — works locally; don't burn time on client-side disguise.
+  algoliaJson alone), Phillips. **Bonhams runs from a residential host, not CI**
+  — its lot pages 403 datacenter IPs (Cloudflare), so `enumerate_bonhams` is
+  dormant in CI; the laptop `launchd` agent (`bonhams_lots_scraper.py`) scrapes
+  it into a SEPARATE `public/bonhams_lots.json` (frontend folds it by URL key;
+  CI's `auction_lots.json` would otherwise clobber it). Calendar still scrapes
+  in CI. Setup/operate: `scripts/RESIDENTIAL_SCRAPE_SETUP.md`. Don't try to
+  un-block Bonhams in CI — the residential host is the answer.
   Mechanics per house live as comments in `auction_lots_scraper.py`.
 - **Archive pipeline:** append to `data/manual_archive_sales.json`, run
   `manual_archive_scraper.py`, commit `public/manual_archive_lots.json`
