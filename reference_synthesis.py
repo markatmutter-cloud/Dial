@@ -62,6 +62,20 @@ GROUNDING (non-negotiable):
 smooth it over. Flag claims that are contested or that sources hedge.
 - Do not invent sources or URLs. Only cite URLs present in the corpus.
 
+SCOPE TAGGING (non-negotiable — a single reference page must not show content \
+about a different reference):
+- Tag EVERY consensus / mark / conflict / story with `applies_to`: a list of the \
+reference number(s) it concerns (e.g. "5512", "5513", "1680", "5514", "5517", \
+"1665", "6538") AND/OR topic tags from this exact set: `model-wide` (true of the \
+whole model line, fine to show on any reference page), `early` (pre-crown-guard \
+6204/6205/6536/6538/5508/5510), `milsub`, `comex`, `sea-dweller`, `gold`, \
+`modern` (14060 and later), `bond`, `dive-watch-context`.
+- Be precise. A helium-escape-valve / gas-escape-valve item is `sea-dweller` + \
+`comex` — NOT 5512/5513. The Red/White Sub is `1680`. A Connery 6538 Bond story \
+is `6538` + `bond`; a Roger Moore 5513 prop is `5513` + `bond`. Use `model-wide` \
+only for things genuinely true of the model generally (origins, the Jeanneret/ \
+Cousteau story, "why people wanted it").
+
 REQUIRED COVERAGE:
 - model_context: where this model sits in the brand's range, why it was made, \
   where it came from, and why people wanted it (the demand story). This must be \
@@ -87,8 +101,9 @@ SCHEMA = {
                     "claim": {"type": "string"},
                     "sources": {"type": "array", "items": {"type": "string"}},
                     "confidence": {"type": "string", "enum": ["high", "medium", "low"]},
+                    "applies_to": {"type": "array", "items": {"type": "string"}},
                 },
-                "required": ["claim", "sources", "confidence"],
+                "required": ["claim", "sources", "confidence", "applies_to"],
             },
         },
         "source_contributions": {
@@ -111,8 +126,9 @@ SCHEMA = {
                     "name": {"type": "string"},
                     "explanation": {"type": "string"},
                     "sources": {"type": "array", "items": {"type": "string"}},
+                    "applies_to": {"type": "array", "items": {"type": "string"}},
                 },
-                "required": ["name", "explanation", "sources"],
+                "required": ["name", "explanation", "sources", "applies_to"],
             },
         },
         "conflicts": {
@@ -123,8 +139,9 @@ SCHEMA = {
                     "topic": {"type": "string"},
                     "positions": {"type": "array", "items": {"type": "string"}},
                     "note": {"type": "string"},
+                    "applies_to": {"type": "array", "items": {"type": "string"}},
                 },
-                "required": ["topic", "positions", "note"],
+                "required": ["topic", "positions", "note", "applies_to"],
             },
         },
         "stories": {
@@ -135,8 +152,9 @@ SCHEMA = {
                     "title": {"type": "string"},
                     "why": {"type": "string"},
                     "source": {"type": "string"},
+                    "applies_to": {"type": "array", "items": {"type": "string"}},
                 },
-                "required": ["title", "why", "source"],
+                "required": ["title", "why", "source", "applies_to"],
             },
         },
         "module_candidates": {
