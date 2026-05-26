@@ -93,6 +93,11 @@ const AUCTION_LOTS_URL = "/auction_lots.json";
 // added sale and the result never changes (archive sales don't update
 // post-hoc). Loaded alongside auction_lots.json and merged by URL key.
 const MANUAL_ARCHIVE_LOTS_URL = "/manual_archive_lots.json";
+// Bonhams auction lots — Cloudflare blocks Bonhams' lot pages from CI
+// (datacenter IPs), so they're scraped from a residential host (B-24/B-25)
+// into their own file rather than auction_lots.json (which CI would
+// overwrite, dropping Bonhams active lots). Same shape; folded by URL key.
+const BONHAMS_LOTS_URL = "/bonhams_lots.json";
 // Loupe This auction lots — populated by loupethis_scraper.py. Loupe
 // This is structurally a one-watch-per-auction marketplace (closer to
 // eBay than to catalog houses), so it doesn't fit auction_lots_scraper's
@@ -284,6 +289,7 @@ export default function Watchlist() {
   // hearting is layered on top via watchlist_items.
   const [auctionLotsState, setAuctionLotsState] = useState({});
   const [manualArchiveLotsState, setManualArchiveLotsState] = useState({});
+  const [bonhamsLotsState, setBonhamsLotsState] = useState({});
   // Loupe This — one-watch-per-auction marketplace, scraped daily into
   // its own file. Same shape as auction_lots.json so it folds into the
   // same projection.
@@ -1351,6 +1357,12 @@ export default function Watchlist() {
         .then(r => r.ok ? r.json() : {})
         .then(d => setManualArchiveLotsState(d && typeof d === "object" ? d : {}))
         .catch(() => {});
+      // Bonhams auction lots — residential-scraped (B-24/B-25), same shape
+      // as auction_lots.json, merged into the same projection below.
+      fetch(BONHAMS_LOTS_URL, fetchOpts)
+        .then(r => r.ok ? r.json() : {})
+        .then(d => setBonhamsLotsState(d && typeof d === "object" ? d : {}))
+        .catch(() => {});
       // Loupe This auction lots — independent scraper, same shape.
       fetch(LOUPETHIS_LOTS_URL, fetchOpts)
         .then(r => r.ok ? r.json() : {})
@@ -1573,6 +1585,7 @@ export default function Watchlist() {
     // long-closed sales and the comprehensive scrape walks active ones.
     const merged = {
       ...(manualArchiveLotsState || {}),
+      ...(bonhamsLotsState || {}),
       ...(trackedLotsState || {}),
       ...(auctionLotsState || {}),
       ...(loupethisLotsState || {}),
@@ -1727,7 +1740,7 @@ export default function Watchlist() {
       });
     }
     return arr;
-  }, [trackedLotsState, auctionLotsState, manualArchiveLotsState, loupethisLotsState]);
+  }, [trackedLotsState, auctionLotsState, manualArchiveLotsState, bonhamsLotsState, loupethisLotsState]);
 
   // Main feed = dealer listings ∪ auction lots. Powers the Listings
   // tab's allFiltered memo; the listingsSubTab (live / auctions /
