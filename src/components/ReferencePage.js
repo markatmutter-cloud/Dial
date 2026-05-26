@@ -1,28 +1,28 @@
 // ReferencePage — the editorial reference-guide surface (Collecting ▸ References).
 //
-// First visible node of the Submariner reference graph (ROADMAP Epic 5). Renders
-// a hand-authored content node (src/data/referencePages/*) as a long-form
-// collector guide, enriched at render by the LLM synthesis
-// (public/reference_synthesis_<synthesisNode>.json — stories, conflicts, module
-// candidates from the scraped+analyzed corpus). Purpose: "why you should love
-// this watch" — celebrate + contextualise; the collecting JOURNEY lives in
-// coaching, never here.
+// First visible node of the Submariner reference graph (ROADMAP Epic 5). A
+// hand-authored content node (src/data/referencePages/*) enriched at render by
+// the LLM synthesis (public/reference_synthesis_<synthesisNode>.json), presented
+// as a guided learning JOURNEY: start → read it → learn to see → see real ones →
+// go deeper → go wider. Purpose: "why you should love this watch" — celebrate +
+// contextualise; the collecting journey lives in coaching, not here.
 //
-// Layout: mobile is a single vertical column; desktop uses the width — guides,
-// marks and variants pair their text BESIDE the image (sides alternate so the
-// sections read distinctly). Reading prose stays at an editorial measure.
-//
-// Built from the shared library (CardStrip, Card, Eyebrow, imgSrc) on the
-// design-system token scales. Live/market + connection examples pull from
-// `items` at render; nothing about the market is stored in the content node.
+// UX (2026-05-26 pass, docs/REFERENCE_PAGE_UX_REVIEW.md):
+//  - Sticky scroll-spy section nav (chip bar) for "where am I" + jump.
+//  - Real section-header tier (kicker + serif title + guided intro + top rule).
+//  - One shared content width so left edges align; reading prose left-aligned at
+//    an editorial measure.
+//  - Desktop pairs intro + story; market cards live INSIDE the "real examples"
+//    box; debated shows both sides (non-debates dropped); confident copy.
 
 import React, { useState, useEffect } from "react";
 import CardStrip from "./CardStrip";
 import { Card } from "./Card";
-import Eyebrow from "./Eyebrow";
 import { imgSrc } from "../utils";
 
 const SERIF = "'Iowan Old Style', Georgia, 'Times New Roman', serif";
+const MAXW = 1080;
+const NONDEBATE = /(not a factual conflict|no source ranks|tonal|sibling watches|consensus is that)/i;
 
 const itemBlob = (it) =>
   `${it.ref || ""} ${it.reference_no || ""} ${it.model_line || ""} ${it.brand || ""}`.toLowerCase();
@@ -45,11 +45,11 @@ export function ReferencePage({
   watchlist = {}, handleWish, openCollectionPicker, handleShare,
   hidden = {}, primaryCurrency, onClickListing, compact, user, onViewAll,
 }) {
-  const [segment, setSegment] = useState("live");
+  const [segment, setSegment] = useState(null);
   const [openConn, setOpenConn] = useState(null);
   const [synthesis, setSynthesis] = useState(null);
+  const [active, setActive] = useState(null);
 
-  // Pull the LLM synthesis for this node (stories / conflicts / modules).
   useEffect(() => {
     const sn = node && node.synthesisNode;
     if (!sn || typeof fetch !== "function") { setSynthesis(null); return; }
@@ -61,6 +61,19 @@ export function ReferencePage({
     return () => { alive = false; };
   }, [node && node.synthesisNode]);
 
+  // Scroll-spy: highlight the section in the nav as it crosses the top third.
+  useEffect(() => {
+    if (typeof IntersectionObserver !== "function") return;
+    const els = Array.from(document.querySelectorAll("[data-refsection]"));
+    if (!els.length) return;
+    const obs = new IntersectionObserver(
+      (entries) => entries.forEach((e) => { if (e.isIntersecting) setActive(e.target.id); }),
+      { rootMargin: "-18% 0px -72% 0px", threshold: 0 }
+    );
+    els.forEach((el) => obs.observe(el));
+    return () => obs.disconnect();
+  }, [synthesis, node && node.id]);
+
   if (!node) return null;
 
   const matched = items.filter((it) => matchItem(it, node.market));
@@ -69,14 +82,53 @@ export function ReferencePage({
     auctions: matched.filter((it) => isAuctionItem(it) && !it.sold),
     sold: matched.filter((it) => it.sold),
   };
+  const seg = segment || (market.live.length ? "live" : market.auctions.length ? "auctions" : "sold");
 
-  // Only show synthesis items scoped to this reference (or model-wide). Branch
-  // items (sea-dweller/comex/1680…) route to their own pages. Untagged items
-  // (older synthesis without applies_to) show, for back-compat.
+  // Synthesis, filtered to this reference's scope; debated = real debates only.
   const scope = node.synthesisScope || node.refs || [];
   const inScope = (it) => !it.applies_to || !it.applies_to.length || it.applies_to.some((t) => scope.includes(t));
   const synStories = (synthesis?.stories || []).filter(inScope);
-  const synConflicts = (synthesis?.conflicts || []).filter(inScope);
+  const realConflicts = (synthesis?.conflicts || []).filter(inScope).filter((c) => !NONDEBATE.test(c.note || ""));
+
+  const has = {
+    guides: node.guides?.length > 0,
+    marks: node.marks?.length > 0,
+    variants: node.variants?.length > 0,
+    debated: realConflicts.length > 0,
+    stories: node.storiesAndImages?.length > 0 || synStories.length > 0,
+    explore: node.connections?.length > 0,
+    library: node.books?.length > 0,
+  };
+  const NAV = [
+    { id: "overview", label: "Overview", show: true },
+    { id: "guides", label: "Guides", show: has.guides },
+    { id: "marks", label: "Marks", show: has.marks },
+    { id: "variants", label: "Variants", show: has.variants },
+    { id: "examples", label: "Examples", show: true },
+    { id: "debated", label: "Debated", show: has.debated },
+    { id: "stories", label: "Stories", show: has.stories },
+    { id: "explore", label: "Explore", show: has.explore },
+    { id: "library", label: "Library", show: has.library },
+  ].filter((s) => s.show);
+  const goTo = (id) => { const el = document.getElementById(id); if (el) el.scrollIntoView({ behavior: "smooth", block: "start" }); };
+
+  // ── shared layout helpers (one width → aligned left edges) ──
+  const PAD = isMobile ? 16 : 20;
+  const shell = (children, style) => <div style={{ maxWidth: MAXW, margin: "0 auto", width: "100%", padding: `0 ${PAD}px`, ...style }}>{children}</div>;
+  const sectionGap = isMobile ? 40 : 64;
+
+  const Section = (id, kicker, title, intro, children) => (
+    <section id={id} data-refsection style={{ scrollMarginTop: 70, marginTop: sectionGap }}>
+      {shell(
+        <div style={{ borderTop: "0.5px solid var(--border)", paddingTop: isMobile ? 22 : 30, marginBottom: isMobile ? 16 : 22 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--brand-olive-text)", marginBottom: 8 }}>{kicker}</div>
+          <h2 style={{ fontFamily: SERIF, fontWeight: 600, fontSize: isMobile ? 25 : 30, lineHeight: 1.08, letterSpacing: "-0.01em", color: "var(--text1)", margin: 0 }}>{title}</h2>
+          {intro && <p style={{ fontSize: isMobile ? 15 : 16, lineHeight: 1.5, color: "var(--text2)", marginTop: 10, marginBottom: 0, maxWidth: 640 }}>{intro}</p>}
+        </div>
+      )}
+      {children}
+    </section>
+  );
 
   const renderListingCard = (item) => (
     <Card item={item} wished={!!watchlist[item.id]} onWish={handleWish} compact={compact}
@@ -96,28 +148,18 @@ export function ReferencePage({
     </a>
   );
 
-  const wide = (children) => <div style={{ maxWidth: 1040, margin: "0 auto", width: "100%", padding: isMobile ? "0 16px" : "0 20px" }}>{children}</div>;
-  const wrapStrip = (children) => <div style={{ maxWidth: 1080, margin: "0 auto", width: "100%" }}>{children}</div>;
-  const prose = { maxWidth: 720, margin: "0 auto", padding: isMobile ? "0 16px" : "0 20px" };
-  const gap = isMobile ? 34 : 56;
-
-  // two-column paired row. flip=true → image on the LEFT (desktop) so adjacent
-  // sections read distinctly. ratio controls media height (narrower = wider ratio).
+  // paired two-column row (desktop). flip → image left. ratio → media height.
   const paired = (text, media, key, { flip = false, ratio = "4 / 3" } = {}) => {
-    const mediaEl = media && (
-      <div key="m" style={{ borderRadius: 10, overflow: "hidden", background: "var(--surface)", aspectRatio: ratio }}>{media}</div>
-    );
+    const m = media && <div key="m" style={{ borderRadius: 10, overflow: "hidden", background: "var(--surface)", aspectRatio: ratio }}>{media}</div>;
     return (
       <div key={key} style={{ display: "grid", gridTemplateColumns: isMobile || !media ? "1fr" : "1fr 1fr", gap: isMobile ? 14 : 36, alignItems: "center", padding: isMobile ? "16px 0" : "20px 0", borderTop: "0.5px solid var(--border)" }}>
-        {isMobile ? <>{mediaEl}{text}</> : (flip ? <>{mediaEl}{text}</> : <>{text}{mediaEl}</>)}
+        {isMobile ? <>{m}{text}</> : (flip ? <>{m}{text}</> : <>{text}{m}</>)}
       </div>
     );
   };
 
-  const firstPara = node.story[0] || "";
-  const stripHead = (eyebrow, tone) => (
-    <div style={{ padding: isMobile ? "0 16px 10px" : "0 20px 12px" }}><Eyebrow tone={tone}>{eyebrow}</Eyebrow></div>
-  );
+  const story = node.story || [];
+  const firstPara = story[0] || "";
 
   return (
     <div style={{ background: "var(--bg)", paddingBottom: isMobile ? 60 : 48 }}>
@@ -126,7 +168,7 @@ export function ReferencePage({
         <img src={imgSrc(node.hero.img)} alt={`${node.brand} ${node.modelLine} ${node.group}`} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.74) 0%, rgba(0,0,0,0.18) 48%, rgba(0,0,0,0.05) 100%)" }} />
         <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, padding: isMobile ? "0 16px 20px" : "0 20px 34px" }}>
-          <div style={{ maxWidth: 1040, margin: "0 auto" }}>
+          <div style={{ maxWidth: MAXW, margin: "0 auto" }}>
             <div style={{ fontSize: isMobile ? 15 : 20, fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.86)", marginBottom: isMobile ? 8 : 10 }}>{node.brand} · {node.modelLine}</div>
             <h1 style={{ fontFamily: SERIF, fontWeight: 600, color: "#fff", margin: 0, fontSize: isMobile ? 44 : 72, lineHeight: 0.98, letterSpacing: "-0.01em" }}>{node.group}</h1>
             <div style={{ color: "rgba(255,255,255,0.82)", fontSize: isMobile ? 13 : 14, marginTop: 10 }}>{node.definer}</div>
@@ -137,170 +179,190 @@ export function ReferencePage({
         )}
       </div>
 
-      {/* MODEL INTRO */}
-      {node.modelIntro && (
-        <div style={{ ...prose, marginTop: gap }}>
-          <Eyebrow style={{ marginBottom: 12 }}>The {node.modelLine}</Eyebrow>
-          <p style={{ fontFamily: SERIF, fontSize: isMobile ? 17 : 19, lineHeight: 1.6, color: "var(--text2)", margin: 0 }}>{node.modelIntro}</p>
-        </div>
-      )}
+      {/* STICKY SCROLL-SPY NAV — where am I + jump */}
+      <nav style={{ position: "sticky", top: 0, zIndex: 20, background: "var(--bg)", borderBottom: "0.5px solid var(--border)" }}>
+        {shell(
+          <div style={{ display: "flex", gap: 4, overflowX: "auto", scrollbarWidth: "none", msOverflowStyle: "none", padding: "9px 0" }}>
+            {NAV.map((s) => {
+              const on = active === s.id;
+              return (
+                <button key={s.id} onClick={() => goTo(s.id)} style={{
+                  border: "none", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap",
+                  fontSize: 12, fontWeight: 600, letterSpacing: "0.02em", padding: "5px 11px", borderRadius: 999,
+                  background: on ? "var(--brand-olive)" : "transparent", color: on ? "#fff" : "var(--text2)",
+                }}>{s.label}</button>
+              );
+            })}
+          </div>
+        )}
+      </nav>
 
-      {/* STORY */}
-      <div style={{ ...prose, marginTop: gap }}>
-        <Eyebrow style={{ marginBottom: 14 }}>The {node.group}</Eyebrow>
-        <p style={{ fontFamily: SERIF, fontSize: isMobile ? 18 : 20, lineHeight: 1.6, color: "var(--text1)", margin: 0 }}>
-          <span style={{ fontFamily: SERIF, float: "left", fontSize: isMobile ? 52 : 66, lineHeight: 0.82, fontWeight: 600, color: "var(--brand-olive-text)", paddingRight: 10, marginTop: 4 }}>{firstPara.charAt(0)}</span>
-          {firstPara.slice(1)}
-        </p>
-        {node.story.slice(1).map((p, i) => (
-          <p key={i} style={{ fontFamily: SERIF, fontSize: isMobile ? 16 : 18, lineHeight: 1.65, color: "var(--text1)", marginTop: 18, marginBottom: 0 }}>{p}</p>
-        ))}
-      </div>
-
-      {/* STORIES — moved high; visual strip + synthesised text stories */}
-      {(node.storiesAndImages?.length > 0 || synStories.length > 0) && (
-        <div style={{ marginTop: gap }}>
-          {wrapStrip(stripHead("Stories", "secondary"))}
-          {node.storiesAndImages?.length > 0 && wrapStrip(<CardStrip items={node.storiesAndImages} isMobile={isMobile} background="var(--border)" renderCard={renderEditorialCard} />)}
-          {synStories.length > 0 && wide(
-            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 0 : "0 36px", marginTop: node.storiesAndImages?.length ? 18 : 0 }}>
-              {synStories.map((s, i) => (
-                <div key={i} style={{ padding: "11px 0", borderTop: "0.5px solid var(--border)" }}>
-                  <div style={{ fontFamily: SERIF, fontSize: isMobile ? 16 : 17, fontWeight: 600, color: "var(--text1)", lineHeight: 1.3 }}>
-                    {s.title}{s.source ? <a href={s.source} target="_blank" rel="noopener noreferrer" style={{ color: "var(--brand)", textDecoration: "none", fontSize: 11, fontWeight: 600, marginLeft: 6 }}>↗</a> : null}
-                  </div>
-                  <div style={{ fontSize: 13, lineHeight: 1.5, color: "var(--text2)", marginTop: 3 }}>{s.why}</div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* THE BEST GUIDES — paired, image right */}
-      {node.guides?.length > 0 && (
-        <div style={{ marginTop: gap }}>
-          {wide(<Eyebrow style={{ marginBottom: 4 }}>The guides to read first</Eyebrow>)}
-          {wide(
+      {/* OVERVIEW — model intro + the reference story, side by side on desktop */}
+      <section id="overview" data-refsection style={{ scrollMarginTop: 70, marginTop: sectionGap }}>
+        {shell(
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "0.8fr 1.2fr", gap: isMobile ? 26 : 52, alignItems: "start" }}>
+            {node.modelIntro && (
+              <div>
+                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--brand-olive-text)", marginBottom: 8 }}>The {node.modelLine}</div>
+                <p style={{ fontFamily: SERIF, fontSize: isMobile ? 16 : 17, lineHeight: 1.6, color: "var(--text2)", margin: 0 }}>{node.modelIntro}</p>
+              </div>
+            )}
             <div>
-              {node.guides.map((g, i) => paired(
-                <div key="t">
-                  <div style={{ fontSize: 10, color: "var(--text3)", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 6 }}>{g.publication}</div>
-                  <a href={g.url} target="_blank" rel="noopener noreferrer" style={{ fontFamily: SERIF, fontSize: isMobile ? 20 : 24, fontWeight: 600, color: "var(--text1)", textDecoration: "none", lineHeight: 1.2, display: "block" }}>{g.title}</a>
-                  <p style={{ fontSize: isMobile ? 14 : 15, lineHeight: 1.55, color: "var(--text2)", marginTop: 10, marginBottom: 10 }}>{g.blurb}</p>
-                  <div style={{ fontSize: 13, color: "var(--text2)" }}><span style={{ fontWeight: 600 }}>Read this for:</span> {g.readThisFor}. <a href={g.url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--brand)", textDecoration: "none", whiteSpace: "nowrap" }}>Read ↗</a></div>
-                </div>,
-                g.img
-                  ? <a href={g.url} target="_blank" rel="noopener noreferrer" style={{ display: "block", width: "100%", height: "100%" }}><img src={imgSrc(g.img)} alt={g.title} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} /></a>
-                  : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: SERIF, color: "var(--text3)", fontSize: 16, textAlign: "center", padding: 16 }}>{g.publication}</div>,
-                i
+              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--brand-olive-text)", marginBottom: 8 }}>Start here</div>
+              <h2 style={{ fontFamily: SERIF, fontWeight: 600, fontSize: isMobile ? 25 : 30, lineHeight: 1.08, letterSpacing: "-0.01em", color: "var(--text1)", margin: "0 0 12px" }}>The {node.group}</h2>
+              <p style={{ fontFamily: SERIF, fontSize: isMobile ? 17 : 19, lineHeight: 1.6, color: "var(--text1)", margin: 0 }}>
+                {firstPara && <span style={{ fontFamily: SERIF, float: "left", fontSize: isMobile ? 48 : 60, lineHeight: 0.8, fontWeight: 600, color: "var(--text1)", paddingRight: 9, marginTop: 5 }}>{firstPara.charAt(0)}</span>}
+                {firstPara.slice(1)}
+              </p>
+              {story.slice(1).map((p, i) => (
+                <p key={i} style={{ fontFamily: SERIF, fontSize: isMobile ? 16 : 17, lineHeight: 1.65, color: "var(--text1)", marginTop: 16, marginBottom: 0 }}>{p}</p>
               ))}
             </div>
-          )}
-        </div>
+          </div>
+        )}
+      </section>
+
+      {/* GUIDES — read it first */}
+      {has.guides && Section("guides", "Read it first", "The guides to read first", "Four pieces, in the order a collector would actually read them.",
+        shell(
+          <div>
+            {node.guides.map((g, i) => paired(
+              <div key="t">
+                <div style={{ fontSize: 10, color: "var(--text3)", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 6 }}>{String(i + 1).padStart(2, "0")} · {g.publication}</div>
+                <a href={g.url} target="_blank" rel="noopener noreferrer" style={{ fontFamily: SERIF, fontSize: isMobile ? 20 : 24, fontWeight: 600, color: "var(--text1)", textDecoration: "none", lineHeight: 1.2, display: "block" }}>{g.title}</a>
+                <p style={{ fontSize: isMobile ? 14 : 15, lineHeight: 1.55, color: "var(--text2)", marginTop: 10, marginBottom: 10 }}>{g.blurb}</p>
+                <div style={{ fontSize: 13, color: "var(--text2)" }}><span style={{ fontWeight: 600 }}>Read this for:</span> {g.readThisFor}. <a href={g.url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--brand)", textDecoration: "none", whiteSpace: "nowrap" }}>Read ↗</a></div>
+              </div>,
+              g.img
+                ? <a href={g.url} target="_blank" rel="noopener noreferrer" style={{ display: "block", width: "100%", height: "100%" }}><img src={imgSrc(g.img)} alt={g.title} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} /></a>
+                : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: SERIF, color: "var(--text3)", fontSize: 16, textAlign: "center", padding: 16 }}>{g.publication}</div>,
+              i
+            ))}
+          </div>
+        )
       )}
 
-      {/* READING THE MARKS — flipped (image left), narrower */}
-      {node.marks?.length > 0 && (
-        <div style={{ marginTop: gap }}>
-          {wide(<Eyebrow style={{ marginBottom: 4 }}>Reading the marks</Eyebrow>)}
-          {wide(
-            <div>
-              {node.marks.map((m, i) => paired(
-                <div key="t">
-                  <div style={{ fontFamily: SERIF, fontSize: isMobile ? 19 : 22, fontWeight: 600, color: "var(--text1)", marginBottom: 8 }}>{m.name}</div>
-                  <p style={{ fontSize: isMobile ? 15 : 16, lineHeight: 1.6, color: "var(--text2)", margin: 0 }}>{m.body}</p>
-                  {m.source && m.url && <a href={m.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, color: "var(--text3)", letterSpacing: "0.04em", textTransform: "uppercase", textDecoration: "none", display: "inline-block", marginTop: 8 }}>{m.source} ↗</a>}
-                </div>,
-                m.img
-                  ? <a href={m.url || undefined} target="_blank" rel="noopener noreferrer" style={{ display: "block", width: "100%", height: "100%" }}><img src={imgSrc(m.img)} alt={m.name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} /></a>
-                  : null,
-                i, { flip: true, ratio: "3 / 2" }
-              ))}
-            </div>
-          )}
-        </div>
+      {/* MARKS — learn to see it (image left) */}
+      {has.marks && Section("marks", "Learn to see it", "Reading the marks", "The handful of details that decide what a dial is — and what's worth a second look.",
+        shell(
+          <div>
+            {node.marks.map((m, i) => paired(
+              <div key="t">
+                <div style={{ fontFamily: SERIF, fontSize: isMobile ? 19 : 22, fontWeight: 600, color: "var(--text1)", marginBottom: 8 }}>{m.name}</div>
+                <p style={{ fontSize: isMobile ? 15 : 16, lineHeight: 1.6, color: "var(--text2)", margin: 0 }}>{m.body}</p>
+                {m.source && m.url && <a href={m.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, color: "var(--text3)", letterSpacing: "0.04em", textTransform: "uppercase", textDecoration: "none", display: "inline-block", marginTop: 8 }}>{m.source} ↗</a>}
+              </div>,
+              m.img ? <a href={m.url || undefined} target="_blank" rel="noopener noreferrer" style={{ display: "block", width: "100%", height: "100%" }}><img src={imgSrc(m.img)} alt={m.name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} /></a> : null,
+              i, { flip: true, ratio: "3 / 2" }
+            ))}
+          </div>
+        )
       )}
 
-      {/* VARIANTS WORTH SEEING — paired rows (image + text + link), image right */}
-      {node.variants?.length > 0 && (
-        <div style={{ marginTop: gap }}>
-          {wide(<Eyebrow style={{ marginBottom: 4 }}>Variants worth seeing</Eyebrow>)}
-          {wide(
-            <div>
-              {node.variants.map((v, i) => paired(
-                <div key="t">
-                  <div style={{ fontFamily: SERIF, fontSize: isMobile ? 18 : 21, fontWeight: 600, color: "var(--text1)", marginBottom: 6 }}>{v.name}</div>
-                  <p style={{ fontSize: isMobile ? 14 : 15, lineHeight: 1.55, color: "var(--text2)", margin: 0 }}>{v.traits}</p>
-                  <a href={v.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, color: "var(--brand)", fontWeight: 600, textDecoration: "none", display: "inline-block", marginTop: 8 }}>View example — {v.source} ↗</a>
-                </div>,
-                <a href={v.url} target="_blank" rel="noopener noreferrer" style={{ display: "block", width: "100%", height: "100%" }}><img src={imgSrc(v.img)} alt={v.name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} /></a>,
-                i, { ratio: "3 / 2" }
-              ))}
-            </div>
-          )}
-        </div>
+      {/* VARIANTS — learn by example */}
+      {has.variants && Section("variants", "Learn by example", "Variants worth seeing", "A few real examples that show the range — gilt to matte, meters-first, Maxi, COMEX, the 3-6-9 dial.",
+        shell(
+          <div>
+            {node.variants.map((v, i) => paired(
+              <div key="t">
+                <div style={{ fontFamily: SERIF, fontSize: isMobile ? 18 : 21, fontWeight: 600, color: "var(--text1)", marginBottom: 6 }}>{v.name}</div>
+                <p style={{ fontSize: isMobile ? 14 : 15, lineHeight: 1.55, color: "var(--text2)", margin: 0 }}>{v.traits}</p>
+                <a href={v.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, color: "var(--brand)", fontWeight: 600, textDecoration: "none", display: "inline-block", marginTop: 8 }}>View example — {v.source} ↗</a>
+              </div>,
+              <a href={v.url} target="_blank" rel="noopener noreferrer" style={{ display: "block", width: "100%", height: "100%" }}><img src={imgSrc(v.img)} alt={v.name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} /></a>,
+              i, { ratio: "3 / 2" }
+            ))}
+          </div>
+        )
       )}
 
-      {/* LOOK AT REAL EXAMPLES — compact call-out box, smaller text, 2-col */}
-      {node.howToLook && (
-        <div style={{ marginTop: gap }}>
-          {wide(
-            <div style={{ background: "var(--surface)", borderRadius: 12, padding: isMobile ? "16px 16px 6px" : "20px 24px 10px" }}>
-              <Eyebrow style={{ marginBottom: 10 }}>Look at real examples</Eyebrow>
+      {/* EXAMPLES — see real ones: how-to-look + the market, one grey unit */}
+      <section id="examples" data-refsection style={{ scrollMarginTop: 70, marginTop: sectionGap }}>
+        {shell(
+          <div style={{ borderTop: "0.5px solid var(--border)", paddingTop: isMobile ? 22 : 30, marginBottom: isMobile ? 16 : 22 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--brand-olive-text)", marginBottom: 8 }}>See real ones</div>
+            <h2 style={{ fontFamily: SERIF, fontWeight: 600, fontSize: isMobile ? 25 : 30, lineHeight: 1.08, color: "var(--text1)", margin: 0 }}>Look at real examples</h2>
+          </div>
+        )}
+        {shell(
+          <div style={{ background: "var(--surface)", borderRadius: 12, padding: isMobile ? 16 : "22px 24px", overflow: "hidden" }}>
+            {node.howToLook && <>
               <p style={{ fontSize: isMobile ? 14 : 15, lineHeight: 1.55, color: "var(--text1)", marginTop: 0, marginBottom: 12 }}>{node.howToLook.intro}</p>
-              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "0 28px" }}>
+              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "0 28px", marginBottom: 14 }}>
                 {node.howToLook.checks.map((c, i) => (
                   <div key={i} style={{ display: "flex", gap: 8, padding: "6px 0", fontSize: 13, lineHeight: 1.45, color: "var(--text2)" }}>
                     <span style={{ color: "var(--brand-olive-text)", flex: "0 0 auto" }}>·</span>{c}
                   </div>
                 ))}
               </div>
-              {node.howToLook.outro && <p style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: 14, color: "var(--text2)", marginTop: 10, marginBottom: 8 }}>{node.howToLook.outro}</p>}
+            </>}
+            {/* segmented control */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 12, flexWrap: "wrap" }}>
+              <div style={{ display: "flex", gap: 6 }}>
+                {[{ k: "live", label: "Available" }, { k: "auctions", label: "At auction" }, { k: "sold", label: "Sold" }].map(({ k, label }) => {
+                  const on = seg === k;
+                  return (
+                    <button key={k} onClick={() => setSegment(k)} style={{ border: "none", cursor: "pointer", fontFamily: "inherit", fontSize: 13, fontWeight: 600, padding: "6px 12px", borderRadius: 999, background: on ? "var(--brand-olive)" : "var(--card-bg)", color: on ? "#fff" : "var(--text2)" }}>
+                      {label} <span style={{ opacity: 0.7, fontWeight: 500 }}>{market[k].length}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              {market[seg].length > 0 && onViewAll && (
+                <button onClick={() => onViewAll(node.market.refs, seg)} style={{ border: "none", background: "none", cursor: "pointer", padding: 0, color: "var(--brand)", fontSize: 12, fontWeight: 600, fontFamily: "inherit", whiteSpace: "nowrap" }}>View all →</button>
+              )}
             </div>
-          )}
-        </div>
-      )}
-
-      {/* THE MARKET — one segmented strip */}
-      <div style={{ marginTop: gap }}>
-        {wrapStrip(
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: isMobile ? "0 16px 12px" : "0 20px 14px", flexWrap: "wrap" }}>
-            <div style={{ display: "flex", gap: 6 }}>
-              {[{ k: "live", label: "Available" }, { k: "auctions", label: "At auction" }, { k: "sold", label: "Sold" }].map(({ k, label }) => {
-                const active = segment === k;
-                return (
-                  <button key={k} onClick={() => setSegment(k)} style={{ border: "none", cursor: "pointer", fontFamily: "inherit", fontSize: 13, fontWeight: 600, padding: "6px 12px", borderRadius: 999, background: active ? "var(--brand-olive)" : "var(--surface)", color: active ? "#fff" : "var(--text2)" }}>
-                    {label} <span style={{ opacity: 0.7, fontWeight: 500 }}>{market[k].length}</span>
-                  </button>
-                );
-              })}
-            </div>
-            {market[segment].length > 0 && onViewAll && (
-              <button onClick={() => onViewAll(node.market.refs, segment)} style={{ border: "none", background: "none", cursor: "pointer", padding: 0, color: "var(--brand)", fontSize: 12, fontWeight: 600, fontFamily: "inherit", whiteSpace: "nowrap" }}>View all →</button>
-            )}
+            {market[seg].length > 0
+              ? <div style={{ margin: "0 -8px" }}><CardStrip items={market[seg]} isMobile={isMobile} max={12} inset={false} background="transparent" renderCard={renderListingCard} /></div>
+              : <div style={{ fontSize: 13, color: "var(--text3)", padding: "4px 0 8px" }}>None in this bucket right now — it refreshes as the scrape runs.</div>}
+            {node.howToLook?.outro && <p style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: 14, color: "var(--text2)", margin: "12px 0 0" }}>{node.howToLook.outro}</p>}
           </div>
         )}
-        {market[segment].length > 0
-          ? wrapStrip(<CardStrip items={market[segment]} isMobile={isMobile} max={12} background="var(--border)" renderCard={renderListingCard} />)
-          : wrapStrip(<div style={{ padding: isMobile ? "0 16px" : "0 20px", fontSize: 13, color: "var(--text3)" }}>Nothing here right now — this refreshes as the scrape runs.</div>)}
-      </div>
+      </section>
 
-      {/* WHERE TO EXPLORE NEXT — the rabbit hole + synthesised module candidates */}
-      {node.connections?.length > 0 && (
-        <div style={{ marginTop: gap }}>
-          {wrapStrip(
-            <div style={{ padding: isMobile ? "0 16px 6px" : "0 20px 8px" }}>
-              <Eyebrow>Where to explore next</Eyebrow>
-              {node.whereNext && <p style={{ fontFamily: SERIF, fontSize: isMobile ? 16 : 18, lineHeight: 1.6, color: "var(--text1)", marginTop: 12, marginBottom: 10, maxWidth: 720 }}>{node.whereNext}</p>}
-              <div style={{ fontSize: 12, color: "var(--text3)", lineHeight: 1.5, maxWidth: 560 }}>
-                An AI map across thousands of listings and write-ups — part machine, part human, and still learning. Something look off?{" "}
-                <a href="mailto:mark@mutter.co.uk?subject=Reference%20suggestion%3A%205512%2F5513" style={{ color: "var(--brand)", textDecoration: "none" }}>Suggest a fix</a>.
+      {/* DEBATED — go deeper: real debates, both sides */}
+      {has.debated && Section("debated", "Go deeper", "Debated & contested", "Questions serious collectors still argue — here's where each side stands.",
+        shell(
+          <div>
+            {realConflicts.map((c, i) => (
+              <div key={i} style={{ padding: isMobile ? "14px 0" : "16px 0", borderTop: "0.5px solid var(--border)" }}>
+                <div style={{ fontFamily: SERIF, fontSize: isMobile ? 17 : 19, fontWeight: 600, color: "var(--text1)" }}>{c.topic}</div>
+                <div style={{ fontSize: 14, lineHeight: 1.5, color: "var(--text2)", marginTop: 4 }}>{c.note}</div>
+                {c.positions?.length > 0 && (
+                  <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 8 : 24, marginTop: 10 }}>
+                    {c.positions.map((p, j) => (
+                      <div key={j} style={{ fontSize: 13, lineHeight: 1.5, color: "var(--text2)", borderLeft: "2px solid var(--border)", paddingLeft: 12 }}>{p}</div>
+                    ))}
+                  </div>
+                )}
               </div>
+            ))}
+          </div>
+        )
+      )}
+
+      {/* STORIES — moved down; the lore */}
+      {has.stories && Section("stories", "The lore", "Stories", "Where the 5512/5513 turns up — in service, on screen, and at depth.",
+        <>
+          {node.storiesAndImages?.length > 0 && shell(<div style={{ margin: "0 -8px" }}><CardStrip items={node.storiesAndImages} isMobile={isMobile} inset={false} background="transparent" renderCard={renderEditorialCard} /></div>)}
+          {synStories.length > 0 && shell(
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 0 : "0 36px", marginTop: node.storiesAndImages?.length ? 16 : 0 }}>
+              {synStories.map((s, i) => (
+                <a key={i} href={s.source || undefined} target={s.source ? "_blank" : undefined} rel="noopener noreferrer" style={{ display: "block", textDecoration: "none", color: "inherit", padding: "12px 0", borderTop: "0.5px solid var(--border)" }}>
+                  <div style={{ fontFamily: SERIF, fontSize: isMobile ? 16 : 17, fontWeight: 600, color: "var(--text1)", lineHeight: 1.3 }}>{s.title}{s.source ? " ↗" : ""}</div>
+                  <div style={{ fontSize: 13, lineHeight: 1.5, color: "var(--text2)", marginTop: 4 }}>{s.why}</div>
+                </a>
+              ))}
             </div>
           )}
-          {wrapStrip(
-            <div style={{ marginTop: 8 }}>
+        </>
+      )}
+
+      {/* EXPLORE — go wider: the rabbit hole */}
+      {has.explore && Section("explore", "Go wider", "Where to explore next", node.whereNext,
+        <>
+          {shell(
+            <div>
               {node.connections.map((conn, i) => {
                 const ex = items.filter((it) => matchItem(it, conn.match));
                 ex.sort((a, b) => (a.sold === b.sold ? 0 : a.sold ? 1 : -1));
@@ -310,21 +372,19 @@ export function ReferencePage({
                 if (open) {
                   return (
                     <div key={i} style={{ borderTop: "0.5px solid var(--border)", padding: isMobile ? "14px 0" : "16px 0" }}>
-                      <div style={{ padding: isMobile ? "0 16px" : "0 20px" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 5, flexWrap: "wrap" }}>
-                          <button onClick={() => setOpenConn(null)} style={{ border: "none", background: "var(--surface)", color: "var(--text2)", cursor: "pointer", fontFamily: "inherit", fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", padding: "3px 10px", borderRadius: 999 }}>✕ Close</button>
-                          {chip}<span style={{ fontFamily: SERIF, fontSize: isMobile ? 17 : 19, fontWeight: 600, color: "var(--text1)" }}>{conn.label}</span>
-                        </div>
-                        <div style={{ fontSize: 14, lineHeight: 1.5, color: "var(--text2)", maxWidth: 640 }}>{conn.why}</div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 5, flexWrap: "wrap" }}>
+                        <button onClick={() => setOpenConn(null)} style={{ border: "none", background: "var(--surface)", color: "var(--text2)", cursor: "pointer", fontFamily: "inherit", fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", padding: "3px 10px", borderRadius: 999 }}>✕ Close</button>
+                        {chip}<span style={{ fontFamily: SERIF, fontSize: isMobile ? 17 : 19, fontWeight: 600, color: "var(--text1)" }}>{conn.label}</span>
                       </div>
-                      {ex.length > 0 && <div style={{ marginTop: 12 }}><CardStrip items={ex} isMobile={isMobile} max={14} background="var(--border)" renderCard={renderListingCard} /></div>}
+                      <div style={{ fontSize: 14, lineHeight: 1.5, color: "var(--text2)", maxWidth: 640 }}>{conn.why}</div>
+                      {ex.length > 0 && <div style={{ marginTop: 12, marginLeft: -8, marginRight: -8 }}><CardStrip items={ex} isMobile={isMobile} max={14} inset={false} background="transparent" renderCard={renderListingCard} /></div>}
                     </div>
                   );
                 }
                 const thumb = ex[0]?.img;
                 const canOpen = ex.length > 0;
                 return (
-                  <div key={i} onClick={canOpen ? () => setOpenConn(i) : undefined} style={{ display: "flex", gap: 12, alignItems: "center", borderTop: "0.5px solid var(--border)", padding: isMobile ? "12px 16px" : "14px 20px", cursor: canOpen ? "pointer" : "default" }}>
+                  <div key={i} onClick={canOpen ? () => setOpenConn(i) : undefined} style={{ display: "flex", gap: 12, alignItems: "center", borderTop: "0.5px solid var(--border)", padding: "14px 0", cursor: canOpen ? "pointer" : "default" }}>
                     <div style={{ flex: "0 0 auto", width: 56, height: 56, borderRadius: 8, overflow: "hidden", background: "var(--surface)" }}>
                       {thumb && <img src={imgSrc(thumb)} alt={conn.label} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />}
                     </div>
@@ -338,61 +398,45 @@ export function ReferencePage({
               })}
             </div>
           )}
-          {synthesis?.module_candidates?.length > 0 && wrapStrip(
-            <div style={{ padding: isMobile ? "14px 16px 0" : "16px 20px 0" }}>
-              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--text3)", marginBottom: 8 }}>More threads to open</div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                {synthesis.module_candidates.map((m, i) => (
-                  <span key={i} title={m.rationale} style={{ fontSize: 12, color: "var(--text2)", background: "var(--surface)", padding: "5px 11px", borderRadius: 999 }}>{m.module}</span>
-                ))}
+          {synthesis?.module_candidates?.length > 0 && shell(
+            <div style={{ marginTop: 16 }}>
+              <div style={{ fontSize: 11, color: "var(--text3)", lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 600 }}>Also in the Submariner family, coming as their own pages:</span>{" "}
+                {synthesis.module_candidates.map((m) => m.module).join(" · ")}
               </div>
             </div>
           )}
-        </div>
+        </>
       )}
 
-      {/* DEBATED & CONTESTED — from the synthesis conflicts */}
-      {synConflicts.length > 0 && (
-        <div style={{ ...prose, marginTop: gap }}>
-          <Eyebrow style={{ marginBottom: 4 }}>Debated &amp; contested</Eyebrow>
-          <div style={{ fontSize: 12, color: "var(--text3)", marginBottom: 8 }}>Where good sources disagree — we show both sides rather than pick.</div>
-          {synConflicts.map((c, i) => (
-            <div key={i} style={{ padding: "12px 0", borderTop: "0.5px solid var(--border)" }}>
-              <div style={{ fontFamily: SERIF, fontSize: isMobile ? 16 : 17, fontWeight: 600, color: "var(--text1)" }}>{c.topic}</div>
-              <div style={{ fontSize: 14, lineHeight: 1.5, color: "var(--text2)", marginTop: 3 }}>{c.note}</div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* BOOKS — two-column grid (no longer a lonely centred column) */}
-      {node.books?.length > 0 && (
-        <div style={{ marginTop: gap }}>
-          {wide(
-            <>
-              <Eyebrow style={{ marginBottom: 4 }}>Books worth having nearby</Eyebrow>
-              <div style={{ fontSize: 12, color: "var(--text3)", marginBottom: 14 }}>Credited links, no affiliations.</div>
-              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 0 : "0 36px" }}>
-                {node.books.map((b, i) => (
-                  <a key={i} href={b.url} target="_blank" rel="noopener noreferrer" style={{ display: "block", textDecoration: "none", color: "inherit", padding: "12px 0", borderTop: "0.5px solid var(--border)" }}>
-                    <div style={{ fontFamily: SERIF, fontSize: isMobile ? 16 : 17, color: "var(--text1)", lineHeight: 1.3 }}>{b.title}</div>
-                    <div style={{ fontSize: 11, color: "var(--text3)", marginTop: 3, letterSpacing: "0.02em" }}>{b.author} ↗</div>
-                    {b.note && <div style={{ fontSize: 13, color: "var(--text2)", marginTop: 5, lineHeight: 1.45 }}>{b.note}</div>}
-                  </a>
-                ))}
-              </div>
-            </>
-          )}
-        </div>
-      )}
-
-      {/* SCOPE & SOURCING */}
-      {node.scopeNote && (
-        <div style={{ ...prose, marginTop: gap }}>
-          <div style={{ borderTop: "0.5px solid var(--border)", paddingTop: 14 }}>
-            <Eyebrow style={{ marginBottom: 8 }}>Scope &amp; sourcing</Eyebrow>
-            <div style={{ fontSize: 12, lineHeight: 1.6, color: "var(--text3)" }}>{node.scopeNote}</div>
+      {/* LIBRARY — books, two columns */}
+      {has.library && Section("library", "The shelf", "Books worth having nearby", "Credited links, no affiliations.",
+        shell(
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 0 : "0 36px" }}>
+            {node.books.map((b, i) => (
+              <a key={i} href={b.url} target="_blank" rel="noopener noreferrer" style={{ display: "block", textDecoration: "none", color: "inherit", padding: "12px 0", borderTop: "0.5px solid var(--border)" }}>
+                <div style={{ fontFamily: SERIF, fontSize: isMobile ? 16 : 17, color: "var(--text1)", lineHeight: 1.3 }}>{b.title}</div>
+                <div style={{ fontSize: 11, color: "var(--text3)", marginTop: 3, letterSpacing: "0.02em" }}>{b.author} ↗</div>
+                {b.note && <div style={{ fontSize: 13, color: "var(--text2)", marginTop: 5, lineHeight: 1.45 }}>{b.note}</div>}
+              </a>
+            ))}
           </div>
+        )
+      )}
+
+      {/* SCOPE & SOURCING — footer (incl. the honest AI-provenance line, demoted here) */}
+      {node.scopeNote && (
+        <div style={{ marginTop: sectionGap }}>
+          {shell(
+            <div style={{ borderTop: "0.5px solid var(--border)", paddingTop: 14 }}>
+              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--text3)", marginBottom: 8 }}>Scope &amp; sourcing</div>
+              <div style={{ fontSize: 12, lineHeight: 1.6, color: "var(--text2)" }}>{node.scopeNote}</div>
+              <div style={{ fontSize: 12, lineHeight: 1.6, color: "var(--text3)", marginTop: 8 }}>
+                Compiled from thousands of dealer listings and write-ups, reviewed by hand. Spot something off?{" "}
+                <a href="mailto:mark@mutter.co.uk?subject=Reference%20note%3A%205512%2F5513" style={{ color: "var(--brand)", textDecoration: "none" }}>Suggest a fix</a>.
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
