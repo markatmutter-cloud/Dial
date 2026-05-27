@@ -68,12 +68,9 @@ function AuctionDateBlock({ a }) {
 export function AuctionCalendar({
   auctions = [],
   // url → scraped lot count, for surfacing "N lots" on each row +
-  // gating Add/Review on whether the actions actually have items.
+  // gating the "View lots" action on whether the sale has lots.
   lotCounts = {},
   onOpenSale,
-  onReviewCatalog,
-  onAddToList,
-  busyAuctionUrl,
   isMobile = false,
 }) {
   // Archive expands on demand — past auctions accumulate forever and
@@ -199,9 +196,6 @@ export function AuctionCalendar({
         <MonthBlock key={group.key} group={group} firstBlock={idx === 0}
           lotCounts={lotCounts}
           onOpenSale={onOpenSale}
-          onReviewCatalog={onReviewCatalog}
-          onAddToList={onAddToList}
-          busyAuctionUrl={busyAuctionUrl}
           isMobile={isMobile} />
       ))}
 
@@ -234,9 +228,6 @@ export function AuctionCalendar({
             <MonthBlock key={group.key} group={group} firstBlock={idx === 0} archive
               lotCounts={lotCounts}
               onOpenSale={onOpenSale}
-              onReviewCatalog={onReviewCatalog}
-              onAddToList={onAddToList}
-              busyAuctionUrl={busyAuctionUrl}
               isMobile={isMobile} />
           ))}
         </div>
@@ -248,7 +239,7 @@ export function AuctionCalendar({
 // One month-banded section of the calendar. Lifted from the inline
 // map in 2026-05-10's calendar/Archive split — same render shape
 // reused for both upcoming and past sections.
-function MonthBlock({ group, firstBlock, archive = false, lotCounts = {}, onOpenSale, onReviewCatalog, onAddToList, busyAuctionUrl, isMobile = false }) {
+function MonthBlock({ group, firstBlock, archive = false, lotCounts = {}, onOpenSale, isMobile = false }) {
   return (
     <div style={{ marginBottom: 28 }}>
       <div style={{
@@ -269,9 +260,6 @@ function MonthBlock({ group, firstBlock, archive = false, lotCounts = {}, onOpen
           <AuctionRow key={a.id} a={a} archive={archive}
             lotCount={lotCounts[a.url] || 0}
             onOpenSale={onOpenSale}
-            onReviewCatalog={onReviewCatalog}
-            onAddToList={onAddToList}
-            busy={busyAuctionUrl === a.url}
             isMobile={isMobile} />
         ))}
       </div>
@@ -279,20 +267,13 @@ function MonthBlock({ group, firstBlock, archive = false, lotCounts = {}, onOpen
   );
 }
 
-// Single calendar row + three inline action buttons (Mark spec
+// Single calendar row + inline action buttons (Mark spec
 // 2026-05-14, revised): visible buttons beat a hidden ⋯ menu —
-// one click to act, no discovery cost. Buttons hide entirely when
-// the auction has no lots scraped yet (the actions would no-op).
-//   • View catalog — opens the house's external auction page in a
-//     new tab
-//   • Add to list — bulk-adds every lot from the catalog into the
-//     auction's auto-list (idempotent — re-tapping doesn't dupe)
-//   • Review — bulk-adds every lot to the auction's auto-list, then
-//     opens the screener in mode="list" so Pass items survive in the
-//     Disliked bucket like a shared list (post-#55, 2026-05-15)
-// On closed past auctions only View catalog renders — there's
-// nothing useful to add to a watchlist or review for upcoming.
-function AuctionRow({ a, archive, lotCount = 0, onOpenSale, onReviewCatalog, onAddToList, busy, isMobile = false }) {
+// one click to act, no discovery cost. Buttons hide when the
+// auction has no lots scraped yet (the actions would no-op).
+//   • View lots — opens the in-app grid pre-filtered to this sale
+//   • ↗ — opens the house's external auction page in a new tab
+function AuctionRow({ a, archive, lotCount = 0, onOpenSale, isMobile = false }) {
   const isLive   = a.status === "live";
   const isClosed = a.status === "past";
   const catalogAgeDays = a.catalogLiveAt
@@ -334,16 +315,6 @@ function AuctionRow({ a, archive, lotCount = 0, onOpenSale, onReviewCatalog, onA
       {/* Subtle external link to the auction house's own page. */}
       <ActionButton label="↗" onClick={openExternal}
         title={`View on ${a.house || "the auction house"} site`} />
-      {lotActionsAvailable && onAddToList && (
-        <ActionButton label="Add to list"
-          onClick={() => onAddToList(a)}
-          disabled={busy} />
-      )}
-      {lotActionsAvailable && onReviewCatalog && (
-        <ActionButton label="Review"
-          onClick={() => onReviewCatalog(a)}
-          disabled={busy} />
-      )}
     </div>
   );
 
