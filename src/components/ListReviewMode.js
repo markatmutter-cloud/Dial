@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { imgSrc, fmtUSD } from "../utils";
 import { producedPill } from "../styles";
@@ -43,7 +43,7 @@ function haptic(pattern) {
 }
 
 // Per-list persistence keyed by rowId so resume locates the right
-// card even when the queue shrinks (items reacted to drop out).
+// card even when the queue order is stable across visits.
 const persistenceKey = (listId) => `screening_${listId || "default"}`;
 function readPersistedRowId(listId) {
   try {
@@ -62,54 +62,28 @@ function clearPersistedRowId(listId) {
   try { localStorage.removeItem(persistenceKey(listId)); } catch {}
 }
 
+// Binary screening (Mark spec 2026-05-26, supersedes the old Yes/Pass
+// reactions machinery): the swipe is now a two-way shortlist pass.
+//   Swipe RIGHT  → heart (save to the watchlist) + advance.
+//   Swipe LEFT   → skip (records NOTHING) + advance.
+// No reactions table, no per-item verdict, no recap tally — results
+// ARE the hearted watchlist. Collaborative "who-hearted-what"
+// visibility is a deliberate later add.
 export function ListReviewMode({
   items,
   listId,
   listName,
-  // B-02 (2026-05-24): auction catalogs get watch-vs-save onboarding copy.
-  isAuctionCatalog = false,
   ownerName,
-  currentUserId,
-  reactionsByItem,
-  onToggleReaction,
   onClose,
   primaryCurrency,
   watchlist,
   handleWish,
   openCollectionPicker,
   onShare,
-  onOpenDetail,
-  onReset,           // parent clears the reactions; we just trigger
-  // When true, queue ALL items (not just unreacted ones). Used by
-  // the "Re-screen this list" affordance — Mark spec 2026-05-14:
-  // re-screening should let the user walk every item and change
-  // any prior reaction, not jump straight to the recap. Default
-  // false preserves the resume-where-you-left-off flow.
-  screenAll = false,
-  // Screening mode (Mark spec 2026-05-14):
-  //   "list" (default) — list screening. Yes/Pass write reactions to
-  //                      collection_item_reactions; Heart toggles
-  //                      watchlist. Used for shared lists AND for
-  //                      auction-catalog lists (post-#55, 2026-05-15)
-  //                      so Pass items survive in the Disliked bucket
-  //                      instead of being lost to a session-only skip.
-  //   "feed" — feed-screening (e.g., "new listings since last visit").
-  //            No reactions table involved. "Yes" gestures act as
-  //            heart-toggles; "Pass" gestures are pure skip. Recap
-  //            counts hearted vs passed, not the three-way list
-  //            tally.
-  mode = "list",
 }) {
   // Frozen queue at mount.
   // initialQueue uses useState lazy init (snapshot at mount), NOT useMemo — useMemo re-derives when deps change and would shift the current card out from under the user mid-flow.
-  const [initialQueue] = useState(() => {
-    if (screenAll) return items;
-    if (!currentUserId) return items;
-    return items.filter(it => {
-      const rs = reactionsByItem.get(it.rowId) || [];
-      return !rs.some(r => r.user_id === currentUserId);
-    });
-  });
+  const [initialQueue] = useState(() => items);
 
   const total = initialQueue.length;
 
@@ -117,15 +91,15 @@ export function ListReviewMode({
     const persistedRowId = readPersistedRowId(listId);
     if (!persistedRowId) return 0;
     const directHit = initialQueue.findIndex(it => it.rowId === persistedRowId);
-    if (directHit >= 0) return directHit;
-    const persistedPos = items.findIndex(it => it.rowId === persistedRowId);
-    if (persistedPos < 0) return 0;
-    const next = initialQueue.findIndex(it => items.indexOf(it) > persistedPos);
-    return next >= 0 ? next : initialQueue.length;
+    return directHit >= 0 ? directHit : 0;
   });
   const done = idx >= total;
   const current = done ? null : initialQueue[idx];
   const nextCard = !done && idx + 1 < total ? initialQueue[idx + 1] : null;
+
+  // Light session feedback — how many cards the user hearted this
+  // pass. Drives the completion line ("N saved to your watchlist").
+  const [heartedThisSession, setHeartedThisSession] = useState(0);
 
   // Persist current rowId.
   useEffect(() => {
@@ -135,7 +109,7 @@ export function ListReviewMode({
   }, [current, done, listId]);
 
   // Completion haptic — fires once when the queue finishes.
-  // Three-pulse pattern reads as "done" vs the per-reaction tap.
+  // Three-pulse pattern reads as "done" vs the per-action tap.
   const didCompleteHapticRef = useRef(false);
   useEffect(() => {
     if (done && total > 0 && !didCompleteHapticRef.current) {
@@ -156,7 +130,8 @@ export function ListReviewMode({
     }
   }, [idx, done]);
 
-  // ESC closes; arrows nav.
+  // ESC closes; arrows nav (pure navigation — hearting is an explicit
+  // swipe-right / Save action, never a side effect of stepping).
   useEffect(() => {
     const onKey = (e) => {
       if (e.key === "Escape") onClose?.();
@@ -184,45 +159,6 @@ export function ListReviewMode({
     document.body.style.overflow = "hidden";
     return () => { document.body.style.overflow = prev; };
   }, [isWide]);
-
-  const myReactionOnCurrent = useMemo(() => {
-    // Feed mode doesn't write to the reactions table, so there's no
-    // "current reaction" to highlight — one-pass-through-the-queue.
-    if (mode === "feed") return null;
-    if (!current || !currentUserId) return null;
-    const rs = reactionsByItem.get(current.rowId) || [];
-    const mine = rs.find(r => r.user_id === currentUserId);
-    return mine?.emoji || null;
-  }, [mode, current, currentUserId, reactionsByItem]);
-
-  // Cumulative tally — list mode derives from reactionsByItem so
-  // resume + recap reflect ALL reactions on this list; feed mode
-  // tracks session-only counts since there are no per-item reaction
-  // rows in collection_item_reactions for that surface.
-  const [sessionPassedSet, setSessionPassedSet] = useState(() => new Set());
-  const cumulativeTally = useMemo(() => {
-    let yes = 0, pass = 0, hearted = 0;
-    if (mode === "feed") {
-      // Feed mode: hearted = current count from watchlist within
-      // the screened queue; pass = items the user explicitly skipped
-      // this session. No "yes" concept here.
-      pass = sessionPassedSet.size;
-      for (const item of items) {
-        if (watchlist && watchlist[item.id]) hearted++;
-      }
-      return { yes, pass, hearted };
-    }
-    if (!currentUserId) return { yes, pass, hearted };
-    for (const item of items) {
-      const rs = reactionsByItem.get(item.rowId) || [];
-      const hasYes = rs.some(r => r.user_id === currentUserId && r.emoji === "👍");
-      const hasPass = rs.some(r => r.user_id === currentUserId && r.emoji === "❌");
-      if (hasYes) yes++;
-      else if (hasPass) pass++;
-      if (watchlist && watchlist[item.id]) hearted++;
-    }
-    return { yes, pass, hearted };
-  }, [items, reactionsByItem, currentUserId, watchlist, mode, sessionPassedSet]);
 
   // Swipe / mount-rise state.
   const dragStartRef = useRef(null);
@@ -255,94 +191,34 @@ export function ListReviewMode({
     setIdx(i => Math.max(0, i - 1));
   };
 
-  const recordReaction = async (emoji) => {
-    if (!current) return;
-    // Short tap haptic on every reaction. Android only — iOS no-ops.
-    haptic(15);
-    // Screening enforces a single primary reaction per item (Yes XOR
-    // Pass — Heart is a separate signal). The underlying
-    // toggleReaction RPC only acts on the SPECIFIC emoji passed, so
-    // switching from Yes to Pass without explicitly clearing Yes
-    // leaves both rows in the DB. Fix: enumerate the user's existing
-    // Yes/Pass on this item and clear them all before inserting the
-    // new one. Same pattern in handleClearCurrent / handleUndo below.
-    const mineYesPass = (reactionsByItem.get(current.rowId) || [])
-      .filter(r => r.user_id === currentUserId && (r.emoji === "👍" || r.emoji === "❌"));
-    for (const r of mineYesPass) {
-      try { await onToggleReaction(current.rowId, r.emoji); }
-      catch (e) { /* swallow */ }
-    }
-    const tappingSameAsOnly = mineYesPass.length === 1
-      && mineYesPass[0].emoji === emoji;
-    if (!tappingSameAsOnly) {
-      try { await onToggleReaction(current.rowId, emoji); }
-      catch (e) { /* swallow */ }
-    }
-    advance();
-  };
-
-  // Feed mode (Mark spec 2026-05-14): no reactions-table writes —
-  // Yes = heart-toggle, Pass = pure skip + record in the session set
-  // so the recap tally is accurate. List mode (auction lists
-  // included, post-#55) writes 👍 / ❌ to collection_item_reactions
-  // via recordReaction so Pass items survive in the Disliked bucket.
-  const handleYes = () => {
-    if (mode === "feed") {
-      haptic(15);
-      if (current && handleWish && !(watchlist && watchlist[current.id])) {
-        handleWish(current);
-      }
-      advance();
-      return;
-    }
-    recordReaction("👍");
-  };
-  const handlePass = () => {
-    if (mode === "feed") {
-      haptic(15);
-      if (current) {
-        setSessionPassedSet(prev => {
-          const next = new Set(prev);
-          next.add(current.id);
-          return next;
-        });
-      }
-      advance();
-      return;
-    }
-    recordReaction("❌");
-  };
-  const handleSkip = () => advance();
-
-  // Undo — step back one AND clear ALL the user's Yes/Pass on the
-  // previous card (defensive against pre-fix stale duplicates).
-  const handleUndo = async () => {
-    if (idx === 0) return;
-    const prevItem = initialQueue[idx - 1];
-    const myPrev = (reactionsByItem.get(prevItem.rowId) || [])
-      .filter(r => r.user_id === currentUserId && (r.emoji === "👍" || r.emoji === "❌"));
-    for (const r of myPrev) {
-      try { await onToggleReaction(prevItem.rowId, r.emoji); }
-      catch (e) { /* swallow */ }
-    }
-    goBack();
-  };
-
-  const handleClearCurrent = async () => {
-    if (!current) return;
-    const mine = (reactionsByItem.get(current.rowId) || [])
-      .filter(r => r.user_id === currentUserId && (r.emoji === "👍" || r.emoji === "❌"));
-    for (const r of mine) {
-      try { await onToggleReaction(current.rowId, r.emoji); }
-      catch (e) { /* swallow */ }
-    }
-  };
-
   const isHearted = !!(watchlist && current && watchlist[current.id]);
+
+  // Heart toggle from the on-card button — saves/unsaves WITHOUT
+  // advancing, so the user can correct a save and keep screening.
   const handleHeart = () => {
     if (!current || !handleWish) return;
     handleWish(current);
   };
+
+  // Swipe RIGHT / Save: ensure the card is in the watchlist (idempotent
+  // — never un-hearts on a right swipe), then advance.
+  const handleSaveAndAdvance = () => {
+    haptic(15);
+    if (current && handleWish && !isHearted) {
+      handleWish(current);
+      setHeartedThisSession(n => n + 1);
+    }
+    advance();
+  };
+
+  // Swipe LEFT / Skip: records nothing, just moves on.
+  const handleSkip = () => {
+    haptic(15);
+    advance();
+  };
+
+  // Undo simply steps back a card — there's no verdict to unwind.
+  const handleUndo = () => goBack();
 
   // ⋯ menu state.
   const [menuOpen, setMenuOpen] = useState(false);
@@ -354,12 +230,6 @@ export function ListReviewMode({
     markIntroSeen();
     setShowIntro(false);
   };
-
-  // Reset action retired from the in-screening UI 2026-05-14 (Mark
-  // spec: "take the reset off desktop as well"). Reset still
-  // reachable via the list-level ⋯ overflow menu ("Reset my
-  // reactions (N)"). The onReset prop is currently unused — leaving
-  // wired in case a future surface (e.g., post-recap CTA) wants it.
 
   // Pointer handlers — skip drag when target is a no-drag descendant
   // (heart, ⋯ menu) so their onClicks fire.
@@ -394,21 +264,19 @@ export function ListReviewMode({
     if (dx > SWIPE_THRESHOLD_X) {
       setFlyOut("right");
       setDrag({ x: window.innerWidth + 200, y: dy * 0.4 });
-      // Route through handleYes so feed mode's heart-toggle path
-      // fires instead of the reactions-table write.
-      setTimeout(() => handleYes(), 220);
+      setTimeout(() => handleSaveAndAdvance(), 220);
     } else if (dx < -SWIPE_THRESHOLD_X) {
       setFlyOut("left");
       setDrag({ x: -window.innerWidth - 200, y: dy * 0.4 });
-      setTimeout(() => handlePass(), 220);
+      setTimeout(() => handleSkip(), 220);
     } else {
       setDrag({ x: 0, y: 0 });
     }
   };
 
   // Open the listing's source URL in a new tab. Used by the
-  // clickable side detail block and the ⋯ menu's "View original
-  // listing" item.
+  // clickable side detail block and the ⋯ menu's "View listing"
+  // item.
   const openSourceListing = () => {
     if (!current?.url) return;
     try { window.open(current.url, "_blank", "noopener,noreferrer"); }
@@ -517,40 +385,6 @@ export function ListReviewMode({
         }} />
       </div>
 
-      {/* Running tally — Mark spec 2026-05-14: surface what you've
-          done so far at the top of the screening surface, not just
-          at the end. Tiny chip row in the screening palette; only
-          renders buckets with non-zero counts so a fresh queue
-          starts clean. */}
-      {/* Running tally — Mark feedback 2026-05-22: "don't like the
-          emoji reaction triple icons." Retired on desktop; mobile
-          keeps a slimmer chip row since the vertical stack has the
-          room. Desktop surfaces the same counts inside the right
-          column instead (closer to the action buttons). */}
-      {!isWide && (cumulativeTally.hearted > 0 || cumulativeTally.yes > 0 || cumulativeTally.pass > 0) && (
-        <div style={{
-          display: "flex",
-          gap: 6,
-          padding: "8px 16px 6px",
-          borderBottom: "0.5px solid var(--border)",
-          background: "var(--bg)",
-          flexShrink: 0,
-          justifyContent: "center",
-          alignItems: "center",
-          flexWrap: "wrap",
-        }}>
-          {cumulativeTally.hearted > 0 && (
-            <TallyChip emoji="❤️" count={cumulativeTally.hearted} />
-          )}
-          {cumulativeTally.yes > 0 && (
-            <TallyChip emoji="👍" count={cumulativeTally.yes} />
-          )}
-          {cumulativeTally.pass > 0 && (
-            <TallyChip emoji="❌" count={cumulativeTally.pass} />
-          )}
-        </div>
-      )}
-
       {/* Body */}
       <div style={{
         flex: 1, overflow: "hidden",
@@ -565,13 +399,17 @@ export function ListReviewMode({
             edges as the card flies off. */}
         {!done && current && (
           <>
-            <EdgeWash side="left" color="rgba(30,30,30,1)" label="Pass" opacity={washOpacity(-1)} />
-            <EdgeWash side="right" color="var(--brand-olive-text)" label="Yes" opacity={washOpacity(1)} />
+            <EdgeWash side="left" color="rgba(30,30,30,1)" label="Skip" opacity={washOpacity(-1)} />
+            <EdgeWash side="right" color="var(--heart)" label="Save" opacity={washOpacity(1)} />
           </>
         )}
 
         {done ? (
-          <RecapView tally={cumulativeTally} total={total} ownerName={ownerName} listName={listName} onClose={onClose} mode={mode} />
+          <CompletionView
+            total={total}
+            heartedThisSession={heartedThisSession}
+            onClose={onClose}
+          />
         ) : current ? (
           <>
             {/* Image stack with peek behind. Desktop card sized so
@@ -627,9 +465,7 @@ export function ListReviewMode({
                 // advance — otherwise CSS transitions the transform
                 // from the fly-out position (off-screen) back to 0,
                 // making the next card "slide in from the side"
-                // instead of rising up from the deck. Feed-mode
-                // items don't carry rowId (that's a collection_items
-                // concept), so fall back to listing id.
+                // instead of rising up from the deck.
                 key={current.rowId || current.id}
                 onPointerDown={onPointerDown}
                 onPointerMove={onPointerMove}
@@ -685,7 +521,7 @@ export function ListReviewMode({
                 )}
 
                 {/* ⋯ menu — top-right under heart. */}
-                {(openCollectionPicker || onShare || onOpenDetail) && (
+                {(openCollectionPicker || onShare) && (
                   <button data-no-drag ref={menuTriggerRef}
                     onClick={(e) => { e.stopPropagation(); setMenuOpen(v => !v); }}
                     aria-label="More actions"
@@ -807,14 +643,13 @@ export function ListReviewMode({
             {/* Desktop-only inline action zone (PR 2026-05-22 Mark
                 spec: "horizontal engagement design... buttons at the
                 bottom of the screen are too big but also feel in the
-                wrong place"). Pass / Yes sit alongside the details
+                wrong place"). Skip / Save sit alongside the details
                 column so the user's eye doesn't have to travel from
-                the card to a far-away bottom bar. Undo / Skip
-                demoted to small text links underneath. Mobile keeps
-                the bottom-pinned action bar (vertical-stacking
-                pattern works there). Note: this is OUTSIDE the <a>
-                so clicks on the buttons don't bubble through to
-                "open listing." */}
+                the card to a far-away bottom bar. Undo demoted to a
+                small text link underneath. Mobile keeps the
+                bottom-pinned action bar (vertical-stacking pattern
+                works there). Note: this is OUTSIDE the <a> so clicks
+                on the buttons don't bubble through to "open listing." */}
             {isWide && (
               <div style={{
                 width: "100%",
@@ -827,17 +662,18 @@ export function ListReviewMode({
                   gridTemplateColumns: "1fr 1fr",
                   gap: 12,
                 }}>
-                  <button onClick={handlePass} style={reactionBtnStyle("pass", myReactionOnCurrent === "❌")}>
+                  <button onClick={handleSkip} style={skipBtnStyle()}>
                     <span style={{ fontSize: 18, fontWeight: 300, letterSpacing: 0, marginRight: -2 }}>←</span>
-                    <span>Pass</span>
+                    <span>Skip</span>
                   </button>
-                  <button onClick={handleYes} style={reactionBtnStyle("yes", myReactionOnCurrent === "👍")}>
-                    <span>{mode === "feed" ? "Save" : "Yes"}</span>
+                  <button onClick={handleSaveAndAdvance} style={saveBtnStyle(isHearted)}>
+                    <HeartGlyph filled={isHearted} />
+                    <span>{isHearted ? "Saved" : "Save"}</span>
                     <span style={{ fontSize: 18, fontWeight: 300, letterSpacing: 0, marginLeft: -2 }}>→</span>
                   </button>
                 </div>
-                {/* Secondary nav as quiet text links — much less
-                    visual weight than the primary reaction CTAs. */}
+                {/* Secondary nav as a quiet text link — much less
+                    visual weight than the primary action CTAs. */}
                 <div style={{
                   display: "flex", alignItems: "center", gap: 16,
                   marginTop: 12,
@@ -855,33 +691,16 @@ export function ListReviewMode({
                     }}>
                     Undo
                   </button>
-                  <button onClick={handleSkip}
-                    style={{
-                      background: "transparent", border: "none",
-                      padding: "4px 0", cursor: "pointer",
-                      fontFamily: SANS_STACK, fontSize: 12,
-                      color: "var(--text2)",
-                      textDecoration: "underline", textUnderlineOffset: 2,
-                      letterSpacing: "0.02em",
+                  {heartedThisSession > 0 && (
+                    <span style={{
+                      marginLeft: "auto",
+                      fontSize: 11, color: "var(--text3)",
+                      fontVariantNumeric: "tabular-nums",
+                      letterSpacing: "0.06em",
                     }}>
-                    Skip
-                  </button>
-                  {myReactionOnCurrent && (
-                    <button onClick={handleClearCurrent} style={subtleLinkStyle}>
-                      Remove my reaction
-                    </button>
+                      {heartedThisSession} saved
+                    </span>
                   )}
-                  {/* Inline tally — replaces the retired top-of-page
-                      chip row (Mark didn't like the emoji icons). */}
-                  <span style={{
-                    marginLeft: "auto",
-                    fontSize: 11, color: "var(--text3)",
-                    fontVariantNumeric: "tabular-nums",
-                    letterSpacing: "0.06em",
-                  }}>
-                    {cumulativeTally.hearted > 0 && `${cumulativeTally.hearted} hearted · `}
-                    {cumulativeTally.yes} yes · {cumulativeTally.pass} pass
-                  </span>
                 </div>
               </div>
             )}
@@ -903,44 +722,26 @@ export function ListReviewMode({
         }}>
           <div style={{
             display: "grid",
-            gridTemplateColumns: "auto 1fr 1fr auto",
+            gridTemplateColumns: "auto 1fr 1fr",
             gap: 10, alignItems: "center",
             maxWidth: 720, margin: "0 auto",
           }}>
-            {/* Action bar (Mark feedback 2026-05-14): arrows
-                migrate from the secondary buttons (Undo / Skip) onto
-                the primary reactions so the direction reads "Pass =
-                swipe left" / "Yes = swipe right". Undo + Skip drop
-                arrows entirely and shrink so they don't compete with
-                the rating decision. */}
+            {/* Undo sits quiet on the left; Skip / Save are the
+                primary pair, arrow-cued to match the swipe direction
+                ("Skip = swipe left" / "Save = swipe right"). */}
             <button onClick={handleUndo} disabled={idx === 0} style={edgeNavStyle(idx === 0, { small: true })}>
               Undo
             </button>
-            <button onClick={handlePass} style={reactionBtnStyle("pass", myReactionOnCurrent === "❌")}>
+            <button onClick={handleSkip} style={skipBtnStyle()}>
               <span style={{ fontSize: 18, fontWeight: 300, letterSpacing: 0, marginRight: -2 }}>←</span>
-              <span>Pass</span>
+              <span>Skip</span>
             </button>
-            <button onClick={handleYes} style={reactionBtnStyle("yes", myReactionOnCurrent === "👍")}>
-              <span>
-                {mode === "feed" ? "Save" : "Yes"}
-              </span>
+            <button onClick={handleSaveAndAdvance} style={saveBtnStyle(isHearted)}>
+              <HeartGlyph filled={isHearted} />
+              <span>{isHearted ? "Saved" : "Save"}</span>
               <span style={{ fontSize: 18, fontWeight: 300, letterSpacing: 0, marginLeft: -2 }}>→</span>
             </button>
-            <button onClick={handleSkip} style={edgeNavStyle(false, { small: true })}>
-              Skip
-            </button>
           </div>
-          {myReactionOnCurrent && (
-            <div style={{
-              textAlign: "right",
-              marginTop: 6, maxWidth: 720,
-              marginLeft: "auto", marginRight: "auto",
-            }}>
-              <button onClick={handleClearCurrent} style={subtleLinkStyle}>
-                Remove my reaction
-              </button>
-            </div>
-          )}
         </div>
       )}
 
@@ -961,7 +762,6 @@ export function ListReviewMode({
         <OnboardingCard
           ownerName={ownerName}
           total={total}
-          isAuction={isAuctionCatalog}
           onDismiss={dismissIntro}
         />
       )}
@@ -995,6 +795,19 @@ function modelTitle(item) {
 function referenceChip(item) {
   if (item.reference && item.reference.trim()) return item.reference.trim();
   return null;
+}
+
+// Small heart glyph for the Save button — filled once the card is in
+// the watchlist so the button doubles as a saved-state indicator.
+function HeartGlyph({ filled }) {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24"
+      fill={filled ? "currentColor" : "none"}
+      stroke="currentColor"
+      strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+    </svg>
+  );
 }
 
 function EdgeWash({ side, color, label, opacity }) {
@@ -1089,7 +902,7 @@ function MenuItem({ label, onClick }) {
   );
 }
 
-function OnboardingCard({ ownerName, total, isAuction = false, onDismiss }) {
+function OnboardingCard({ ownerName, total, onDismiss }) {
   return (
     <div style={modalScrim(2120)}>
       <div style={editorialPanel(420)}>
@@ -1116,9 +929,9 @@ function OnboardingCard({ ownerName, total, isAuction = false, onDismiss }) {
           fontSize: 13, color: "var(--text2)",
           lineHeight: 1.55, marginBottom: 18,
         }}>
-          Screen watches one by one to get through a list or auction
-          catalog and quickly shortlist what's worth coming back to.
-          Results group at the bottom of this list when you're done.
+          Go through the list one watch at a time and save the ones
+          worth coming back to. Saves land in your watchlist — skip
+          the rest.
         </div>
         <div style={{
           fontFamily: SANS_STACK,
@@ -1134,17 +947,11 @@ function OnboardingCard({ ownerName, total, isAuction = false, onDismiss }) {
           lineHeight: 1.55,
           marginBottom: 24,
         }}>
-          {/* B-02 (2026-05-24, Mark): auction catalogs distinguish "watch"
-              (Yes) from "save + very interested" (Heart). Other lists keep
-              the original consider/save framing. */}
-          <IntroRow color="var(--accent-positive)" glyph="→">
-            <strong>Yes</strong> — swipe right or tap Yes. {isAuction ? "Watches you want to watch." : "Watches you want to consider."}
-          </IntroRow>
-          <IntroRow color="var(--danger)" glyph="←">
-            <strong>Pass</strong> — swipe left or tap Pass. {isAuction ? "Not interested." : "Not for you."}
-          </IntroRow>
           <IntroRow color="var(--heart)" glyph="♥">
-            <strong>Heart</strong> — {isAuction ? "tap to save. Watches you want to save and are very interested in." : "tap to save to your watchlist. Independent from this list."}
+            <strong>Save</strong> — swipe right or tap Save. Adds the watch to your watchlist.
+          </IntroRow>
+          <IntroRow color="var(--text2)" glyph="←">
+            <strong>Skip</strong> — swipe left or tap Skip. Moves on, saves nothing.
           </IntroRow>
           <IntroRow color="var(--text2)" glyph="↗">
             <strong>Details</strong> — tap the card to read the full listing.
@@ -1178,46 +985,6 @@ function IntroRow({ color, glyph, children }) {
       </span>
       <span>{children}</span>
     </li>
-  );
-}
-
-function ResetConfirm({ onCancel, onConfirm }) {
-  return (
-    <div style={modalScrim(2130)}>
-      <div style={editorialPanel(360)}>
-        <div style={{
-          fontFamily: SANS_STACK,
-          fontSize: 11, color: "var(--text3)",
-          letterSpacing: "0.20em", textTransform: "uppercase",
-          fontWeight: 500, marginBottom: 14,
-        }}>
-          Reset
-        </div>
-        <div style={{
-          fontFamily: SANS_STACK,
-          fontSize: 18, fontWeight: 600, color: "var(--text1)",
-          lineHeight: 1.25, marginBottom: 10,
-          letterSpacing: "-0.005em",
-        }}>
-          Clear all your reactions?
-        </div>
-        <div style={{
-          fontFamily: SANS_STACK,
-          fontSize: 13, color: "var(--text2)",
-          lineHeight: 1.5, marginBottom: 22,
-        }}>
-          Removes every Yes / Pass you've placed on this list and starts you over at the first card. Hearted items stay in your watchlist.
-        </div>
-        <div style={{ display: "flex", gap: 10 }}>
-          <button onClick={onCancel} style={ghostBtnStyle()}>
-            Keep my reactions
-          </button>
-          <button onClick={onConfirm} style={dangerBtnStyle()}>
-            Clear &amp; restart
-          </button>
-        </div>
-      </div>
-    </div>
   );
 }
 
@@ -1261,8 +1028,10 @@ function BreakInterstitial({ idx, total, onContinue, onPause }) {
   );
 }
 
-function RecapView({ tally, total, ownerName, listName, onClose, mode }) {
-  const isFeed = mode === "feed";
+// Completion view — shown when the queue runs out. Binary screening
+// has no recap tally (results ARE the hearted watchlist); this is a
+// light close-out with a count of what was saved this pass.
+function CompletionView({ total, heartedThisSession, onClose }) {
   return (
     <div style={{
       textAlign: "center", maxWidth: 460,
@@ -1279,70 +1048,25 @@ function RecapView({ tally, total, ownerName, listName, onClose, mode }) {
       <div style={{
         fontFamily: SANS_STACK,
         fontSize: 22, fontWeight: 600, color: "var(--text1)",
-        lineHeight: 1.2, marginBottom: 26,
+        lineHeight: 1.2, marginBottom: 14,
         letterSpacing: "-0.005em",
       }}>
-        {isFeed
-          ? `You reviewed ${total} new listings.`
-          : "Your take on this list."}
-      </div>
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: isFeed ? "repeat(2, 1fr)" : "repeat(3, 1fr)",
-        gap: 10, margin: "0 auto 26px",
-        maxWidth: isFeed ? 240 : 340,
-      }}>
-        {!isFeed && (
-          <TallyCard label="Yes" value={tally.yes} color="var(--brand-olive-text)" />
-        )}
-        <TallyCard label="Hearted" value={tally.hearted} color="var(--heart)" />
-        <TallyCard label="Pass" value={tally.pass} color="var(--text2)" />
+        {heartedThisSession > 0
+          ? `Saved ${heartedThisSession} of ${total}.`
+          : "Nothing saved this time."}
       </div>
       <div style={{
         fontSize: 13, color: "var(--text2)",
         marginBottom: 26, lineHeight: 1.5,
         fontStyle: "italic",
       }}>
-        {isFeed
-          ? "Hearts saved to your watchlist."
-          : ownerName
-            ? `${ownerName} will see your reactions next time they open the list.`
-            : listName
-              ? `Your reactions saved to "${listName}".`
-              : "Your reactions are saved."}
+        {heartedThisSession > 0
+          ? "Your saves are in your watchlist."
+          : "Swipe right or tap Save to add a watch to your watchlist."}
       </div>
       <button onClick={onClose} style={primaryBtnStyle()}>
-        {isFeed ? "Done" : "Back to list"}
+        Done
       </button>
-    </div>
-  );
-}
-
-function TallyCard({ label, value, color }) {
-  return (
-    <div style={{
-      padding: "16px 8px",
-      border: "0.5px solid var(--border)",
-      borderRadius: 10,
-      background: "var(--surface)",
-    }}>
-      <div style={{
-        fontFamily: SANS_STACK,
-        fontSize: 22, fontWeight: 600,
-        color: value > 0 ? color : "var(--text3)",
-        fontVariantNumeric: "tabular-nums lining-nums",
-        lineHeight: 1,
-      }}>
-        {value}
-      </div>
-      <div style={{
-        fontFamily: SANS_STACK,
-        fontSize: 10, color: "var(--text3)",
-        letterSpacing: "0.18em", textTransform: "uppercase",
-        marginTop: 8, fontWeight: 500,
-      }}>
-        {label}
-      </div>
     </div>
   );
 }
@@ -1359,97 +1083,34 @@ const topLinkStyle = {
   letterSpacing: "0.02em",
 };
 
-const subtleLinkStyle = {
-  border: "none", background: "transparent",
-  color: "var(--text3)",
-  fontFamily: SANS_STACK,
-  fontSize: 12, padding: "4px 10px",
-  cursor: "pointer", textDecoration: "underline",
-  textUnderlineOffset: 2,
-  letterSpacing: "0.04em",
-};
-
-// Compact running-tally chip — used at the top of the screening
-// surface to show how many ❤ / 👍 / ❌ you've put down in this list.
-// Monochrome SVG glyphs in the screening palette so the visual
-// language matches the bottom action buttons + the per-card
-// aggregate cluster in the list view.
-function TallyChip({ emoji, count }) {
-  const color = emoji === "❤️" ? "var(--heart)"
-              : emoji === "👍" ? "var(--brand-olive-text)"
-              : "var(--text3)";
-  return (
-    <span style={{
-      display: "inline-flex",
-      alignItems: "center",
-      gap: 5,
-      padding: "2px 8px",
-      borderRadius: 999,
-      border: "0.5px solid var(--border)",
-      background: "var(--surface)",
-      color,
-      fontFamily: SANS_STACK,
-      fontSize: 11, fontWeight: 600,
-      fontVariantNumeric: "tabular-nums",
-      lineHeight: 1.4,
-      letterSpacing: "0.02em",
-    }}>
-      {emoji === "❤️" && (
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"
-          stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" aria-hidden="true">
-          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-        </svg>
-      )}
-      {emoji === "👍" && (
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" strokeWidth="2.4"
-          strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-          <path d="M20 6L9 17l-5-5"/>
-        </svg>
-      )}
-      {emoji === "❌" && (
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" strokeWidth="2"
-          strokeLinecap="round" aria-hidden="true">
-          <path d="M18 6L6 18M6 6l12 12"/>
-        </svg>
-      )}
-      <span style={{ color: "var(--text2)" }}>{count}</span>
-    </span>
-  );
-}
-
-function reactionBtnStyle(kind, active) {
-  // Mark feedback 2026-05-14: action buttons "look a bit basic text"
-  // — needed stronger presence to read as designed primary/secondary
-  // CTAs rather than text-on-rectangles. Yes is now a solid brand-blue
-  // primary fill (high contrast, weight 600); Pass is a substantial
-  // ghost with a heavier 1px border + var(--text1) label. Active
-  // states stay subtle so the rated card doesn't shout.
-  if (kind === "yes") {
-    return {
-      padding: "14px 20px",
-      border: "1px solid var(--brand-olive-text)",
-      background: "var(--brand-olive-text)",
-      color: "#fff",
-      fontFamily: SANS_STACK,
-      fontSize: 14, fontWeight: 600,
-      letterSpacing: "0.18em", textTransform: "uppercase",
-      borderRadius: 8, cursor: "pointer",
-      display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
-      minHeight: 52,
-      // Subtle press-state shadow so it feels like a CTA, not flat.
-      boxShadow: active
-        ? "inset 0 0 0 2px var(--brand-olive-text), 0 0 0 1px var(--brand-olive-text)"
-        : "0 1px 2px rgba(0,0,0,0.08)",
-    };
-  }
-  // Pass — substantial outlined ghost.
+// Save — solid heart-red fill so the primary "save to watchlist"
+// action carries the watchlist's own color language (matches the
+// active on-card heart). Subtle press shadow so it reads as a CTA.
+function saveBtnStyle(saved) {
   return {
     padding: "14px 20px",
-    border: active ? "1px solid var(--text1)" : "1px solid var(--border)",
-    background: active ? "var(--text1)" : "var(--surface)",
-    color: active ? "var(--bg)" : "var(--text1)",
+    border: "1px solid var(--heart)",
+    background: "var(--heart)",
+    color: "#fff",
+    fontFamily: SANS_STACK,
+    fontSize: 14, fontWeight: 600,
+    letterSpacing: "0.18em", textTransform: "uppercase",
+    borderRadius: 8, cursor: "pointer",
+    display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+    minHeight: 52,
+    boxShadow: saved
+      ? "inset 0 0 0 2px var(--heart), 0 0 0 1px var(--heart)"
+      : "0 1px 2px rgba(0,0,0,0.08)",
+  };
+}
+
+// Skip — substantial outlined ghost (the neutral, no-op pass).
+function skipBtnStyle() {
+  return {
+    padding: "14px 20px",
+    border: "1px solid var(--border)",
+    background: "var(--surface)",
+    color: "var(--text1)",
     fontFamily: SANS_STACK,
     fontSize: 14, fontWeight: 600,
     letterSpacing: "0.18em", textTransform: "uppercase",
@@ -1538,19 +1199,6 @@ function primaryBtnStyle() {
     fontFamily: SANS_STACK,
     fontSize: 13, fontWeight: 500,
     letterSpacing: "0.14em", textTransform: "uppercase",
-    cursor: "pointer",
-  };
-}
-
-function dangerBtnStyle() {
-  return {
-    flex: 1, padding: "12px 14px",
-    border: "none",
-    background: "var(--danger)", color: "#fff",
-    borderRadius: 8,
-    fontFamily: SANS_STACK,
-    fontSize: 13, fontWeight: 500,
-    letterSpacing: "0.06em",
     cursor: "pointer",
   };
 }
