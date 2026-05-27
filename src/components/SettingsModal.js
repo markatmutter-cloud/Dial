@@ -108,8 +108,8 @@ export function SettingsModal({
                 padding: "10px 12px",
                 borderRadius: 8,
                 border: "0.5px solid var(--border)",
-                background: active ? "var(--text1)" : "var(--card-bg)",
-                color: active ? "var(--bg)" : "var(--text1)",
+                background: active ? "var(--brand-olive)" : "var(--card-bg)",
+                color: active ? "#fff" : "var(--text1)",
                 cursor: "pointer",
                 fontFamily: "inherit",
                 fontSize: 13, fontWeight: active ? 600 : 500,
@@ -131,8 +131,8 @@ export function SettingsModal({
               <button key={key} onClick={() => setDarkOverride(key === "dark")} style={{
                 flex: 1, padding: "10px 12px", borderRadius: 8,
                 border: "0.5px solid var(--border)",
-                background: active ? "var(--text1)" : "var(--card-bg)",
-                color: active ? "var(--bg)" : "var(--text1)",
+                background: active ? "var(--brand-olive)" : "var(--card-bg)",
+                color: active ? "#fff" : "var(--text1)",
                 cursor: "pointer", fontFamily: "inherit",
                 fontSize: 13, fontWeight: active ? 600 : 500,
               }}>{lbl}</button>
@@ -147,8 +147,8 @@ export function SettingsModal({
               <button key={n} onClick={() => setMobileCols(n)} style={{
                 flex: 1, padding: "10px 12px", borderRadius: 8,
                 border: "0.5px solid var(--border)",
-                background: mobileCols === n ? "var(--text1)" : "var(--card-bg)",
-                color: mobileCols === n ? "var(--bg)" : "var(--text1)",
+                background: mobileCols === n ? "var(--brand-olive)" : "var(--card-bg)",
+                color: mobileCols === n ? "#fff" : "var(--text1)",
                 cursor: "pointer", fontFamily: "inherit",
                 fontSize: 13, fontWeight: mobileCols === n ? 600 : 500,
               }}>{n}</button>
@@ -161,8 +161,8 @@ export function SettingsModal({
                 <button key={n} onClick={() => setDesktopCols(n)} style={{
                   flex: "1 1 auto", minWidth: 44, padding: "10px 12px", borderRadius: 8,
                   border: "0.5px solid var(--border)",
-                  background: desktopCols === n ? "var(--text1)" : "var(--card-bg)",
-                  color: desktopCols === n ? "var(--bg)" : "var(--text1)",
+                  background: desktopCols === n ? "var(--brand-olive)" : "var(--card-bg)",
+                  color: desktopCols === n ? "#fff" : "var(--text1)",
                   cursor: "pointer", fontFamily: "inherit",
                   fontSize: 13, fontWeight: desktopCols === n ? 600 : 500,
                 }}>{n === "auto" ? "Auto" : n}</button>
