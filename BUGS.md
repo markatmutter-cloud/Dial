@@ -32,25 +32,12 @@ delete — the history is useful.
 ## Open
 
 ### B-06 — Post-screening flow is underspecified (design thread → plan-mode)
-- **Reported:** 2026-05-24 · **Type:** Design/product question, **not** a code defect · **Severity:** — (needs plan, not a quick fix) · **Surface:** Screening / RecapView · **Status:** Open — flagged for plan-mode · **Priority:** HIGH — Mark confirmed 2026-05-24 the screening workflow is "still incomplete" and he's "not happy with it"; this is the surface to fix next in screening, via plan-mode.
-- **Detail:** Open questions Mark raised at the end of a screening session:
-  1. What happens when you're done screening?
-  2. Where do you see your **auction screening results** (the watches you said Yes to / hearted)?
-  3. Can you **rescreen / reset / share** the list you built?
-  4. On a shared list, **who likes what** — visible per-person reactions?
-- **What exists today:** `RecapView` (`ListReviewMode.js:1257`) shows "All
-  reviewed", a Yes/Hearted/Pass tally, a "reactions saved" note, and a single
-  button ("Back to list" / "Done"). It does **not** let you view the Yes set,
-  rescreen/reset, share the result, or see per-person reactions. So all four
-  questions are genuine gaps, not bugs.
-- **Why this is a plan item, not a quick fix:** it's the whole post-screening
-  outcome surface — touches results storage/retrieval, the share flow, and
-  collaborative reaction visibility. Connects to [[feedback-screening-mode-surfaces]]
-  (shared lists / auction catalogs / "new since last visit"),
-  [[feedback-reaction-context-lives-in-lists]] (who-likes-what = list-membership
-  reactions, stay binary), and [[feedback-screening-long-queues]] (pause/resume).
-  **Recommend graduating this to a plan-mode session**, not patching RecapView
-  piecemeal.
+- **Reported:** 2026-05-24 · **Type:** Design/product question · **Status:** Largely RESOLVED by the screening collapse 2026-05-26 (PRs #598–602). The original four questions are answered or obsoleted by the new binary model:
+  1. *Done screening?* → light `CompletionView` ("Saved N of M"); results = your watchlist.
+  2. *Where are results?* → the **Saved/watchlist** (the swipe hearts there; there's no separate per-list result set anymore).
+  3. *Rescreen / reset / share?* → rescreen = tap **Screen** again; reset is obsolete (no reactions to clear); share = the normal list Share. Unsave-while-screening shipped (#602, Undo reverses a save).
+  4. *Who likes what on a shared list?* → **deliberately deferred** — collaborative reactions were removed in the collapse; "who-hearted-what" is a planned LATER re-add (memory [[feedback_reaction_context_lives_in_lists]]).
+- **What remains (the only open slice):** collaborative per-person visibility on shared lists when the team re-adds it. Not a current defect — a future feature. Connects to [[feedback-screening-mode-surfaces]] and [[project_auction_tab_redesign]] (Phase 3 heart-an-auction / Phase 4 integrated tab).
 
 ### B-08 — Unify the Watchlists tab into one sectioned screen (design thread → plan-mode)
 - **Reported:** 2026-05-24 · **Type:** Design/product thread, **not** a defect · **Severity:** — (needs plan) · **Surface:** Watchlists tab (UI "Watchlists"/"Saved") · **Status:** Open — flagged for plan-mode
