@@ -559,7 +559,7 @@ function ActionButton({ label, onClick, primary, disabled, title }) {
         letterSpacing: "0.02em",
         padding: "6px 12px", borderRadius: 999,
         border: primary ? "none" : "0.5px solid var(--text2)",
-        background: primary ? "var(--brand)" : "transparent",
+        background: primary ? "var(--brand-olive)" : "transparent",
         color: primary ? "#fff" : "var(--text2)",
         opacity: disabled ? 0.5 : 1,
         lineHeight: 1.2,
