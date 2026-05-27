@@ -82,7 +82,10 @@ shared component** (cross-surface consistency), not per-tab band-aids.
 
 ## The AI spine (what Mark is most excited about)
 This is also a **builder / personal-development project** — the dual passion is the
-momentum engine. Turn **like/share/view signals** into help. Three roles:
+momentum engine. Turn **like/share/view signals + list/dossier contents** into help —
+the bots **engage with a list** to *offer*, never auto-insert ("looks like you're
+building 1960s dive-watch icons — want suggestions / this listing / this reference /
+learn the 5512?"). Three roles:
 1. **Grounded RAG Q&A** — answer from corpus excerpts only; cite every claim; "not
    covered" rather than guess; surface differing collector perspectives; voice =
    about the watch, not the collector's taste/status.
@@ -150,8 +153,10 @@ place.
 
 ### ▶ Phase 1 — Watchlists = the living dossier (THE BIG BUILD — START HERE)
 The keystone. **1a spec is locked → [docs/WATCHLISTS_DOSSIER_SPEC.md](WATCHLISTS_DOSSIER_SPEC.md)**
-(title-as-anchor · single notes field · stored-vs-derived sections · additive
-`reference_id` + `notes` columns, no new collection type). Shippable steps:
+— user-composed **free-order blocks** (saved-search live previews · saved items ·
+articles · reference guides · notes), arranged in any order. The app does **NOT** derive
+from the title or auto-compose; the AI layer *engages* with the list to suggest, never
+inserts. One new `collection_blocks` table; existing tables untouched. Shippable steps:
 - **1a — Spec + data model (design, little/no UI).** Define the dossier = a list
   of ordered, **typed sections**: reference guide · saved search (live) · live
   listings · sold comps · shortlist · articles · notes. Map each to existing
