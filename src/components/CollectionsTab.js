@@ -2066,28 +2066,15 @@ function ListsView({
             items={items}
             listId={selected.id}
             listName={selected.name}
-            isAuctionCatalog={isAuctionList}
-            // Owner-self-review: don't surface "{ownerName} will see
-            // your reactions" — the user IS the owner. Recipient
-            // flow gets the attribution copy.
+            // Owner-self-review passes no ownerName; the recipient
+            // flow surfaces "{ownerName}'s list" attribution.
             ownerName={isOwner ? null : ownerName}
-            currentUserId={user?.id || null}
-            reactionsByItem={reactionsByItem}
-            onToggleReaction={onToggleReaction}
             onClose={() => { setReviewModeOpen(false); setScreenAllMode(false); }}
             primaryCurrency={primaryCurrency}
             watchlist={watchlist}
             handleWish={wrappedHandleWish}
             openCollectionPicker={openCollectionPicker}
             onShare={handleShare}
-            onOpenDetail={(item) => setDetailRowId(item.rowId)}
-            screenAll={screenAllMode}
-            onReset={async () => {
-              if (!myUserId || !reactionsByItem || myReactionsOnList.length === 0) return;
-              await Promise.all(myReactionsOnList.map(({ itemId, emoji }) =>
-                onToggleReaction(itemId, emoji)));
-              setScreeningResetTick(t => t + 1);
-            }}
           />
         )}
         {/* On desktop, the screening surface replaces the drill-in
