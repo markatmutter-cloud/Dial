@@ -13,6 +13,7 @@ import { WatchDetailSheet } from "./WatchDetailSheet";
 import { ListReviewMode } from "./ListReviewMode";
 import { articleAsListing } from "./EditorialView";
 import CardShell from "./CardShell";
+import { DossierBlocks } from "./DossierBlocks";
 import { fmtUSD, matchesSearch, imgSrc } from "../utils";
 import { actionButton, signInButton } from "../styles";
 import { EmptyState } from "./EmptyState";
@@ -288,6 +289,7 @@ export function CollectionsTab({
     body = (
       <ListsView
         user={user}
+        allListings={allListings}
         cols={cols}
         itemsByColl={itemsByColl}
         hiddenItems={hiddenItems}
@@ -1148,6 +1150,7 @@ function PoolCard({ item, busy, onAdd, primaryCurrency }) {
 // row are surfaced.
 function ListsView({
   user,
+  allListings = [],
   cols, itemsByColl, hiddenItems,
   watchItems,
   watchlist, toggleHide,
@@ -1806,6 +1809,15 @@ function ListsView({
             // (To review / Loved / Liked / Passed) are gone.
             return (
               <>
+                {!isHiddenColl && !isSavedColl && !selected.isSharedInbox && (
+                  <DossierBlocks
+                    collectionId={selected.id}
+                    user={user}
+                    allListings={allListings}
+                    canEdit={isOwner}
+                    onClickListing={onClickListing}
+                  />
+                )}
                 <div style={{ ...gridStyle, borderRadius: 10, overflow: "hidden" }}>
                   {listingItems.map(renderItemCard)}
                 </div>
