@@ -2472,7 +2472,7 @@ function SavedArticlesView({ items, isWide, gridStyle, watchlist, handleWish, op
       </div>
 
       <div style={{ fontSize: 13, color: "var(--text2)", lineHeight: 1.5, marginBottom: 16 }}>
-        Auto-populated from articles you've hearted on the Editorial tab. Tap the heart
+        Auto-populated from articles you've hearted on the Articles tab. Tap the heart
         on any card to remove it from this list.
       </div>
 
@@ -2481,7 +2481,7 @@ function SavedArticlesView({ items, isWide, gridStyle, watchlist, handleWish, op
           padding: 32, color: "var(--text2)", textAlign: "center",
           border: "0.5px dashed var(--border)", borderRadius: 8,
         }}>
-          You haven't hearted any articles yet. Open the Editorial tab and tap the heart on any article you'd like to save.
+          You haven't hearted any articles yet. Open the Articles tab and tap the heart on any article you'd like to save.
         </div>
       ) : (
         <div style={gridStyle}>
