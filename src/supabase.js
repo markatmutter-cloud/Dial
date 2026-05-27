@@ -1603,46 +1603,6 @@ export function useCollections(user) {
     return { error: null, added: true };
   }, [user]);
 
-  // Auction-catalog auto-list (Mark spec 2026-05-14). Returns the
-  // collection id for the user's auction-typed list keyed by
-  // `auction_url`. Creates the list on first call; reuses it on
-  // subsequent calls so re-tapping "Review catalog" lands the user
-  // back in the same list. SECURITY DEFINER RPC, same pattern as
-  // createChallenge (see CLAUDE.md Supabase note for why direct
-  // insert hits RLS edge cases).
-  const getOrCreateAuctionList = useCallback(async (auction) => {
-    if (!user || !supabase) return { error: 'not signed in' };
-    if (!auction?.url) return { error: 'auction url required' };
-    const name = auction.title || `${auction.house || 'Auction'} catalog`;
-    const { data, error } = await supabase.rpc('get_or_create_auction_list', {
-      p_url: auction.url,
-      p_name: name,
-      p_target_count: null,
-    });
-    if (error) return { error: error.message };
-    // Optimistic projection — if this list is fresh and the
-    // collections fetcher hasn't reseen it yet, surface it locally
-    // so the Lists view (and the post-#55 auto-open Review hand-off)
-    // pick it up immediately. The next collections refresh replaces
-    // this with the canonical shape.
-    setCollections(prev => prev.some(c => c.id === data) ? prev : [
-      ...prev,
-      {
-        id: data,
-        userId: user.id,
-        name,
-        description: null,
-        type: 'auction',
-        sourceAuctionUrl: auction.url,
-        isSharedInbox: false,
-        isSystem: false,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-    ]);
-    return { id: data, error: null };
-  }, [user]);
-
   // Bulk add — wraps addItemToCollection in a Promise.all. Used by
   // "Add to a list" on the auction calendar (single tap adds every
   // lot from the catalog) and the Review-catalog Yes path (single
@@ -1668,7 +1628,6 @@ export function useCollections(user) {
     deleteCollection,
     addItemToCollection,
     addItemsToCollection,
-    getOrCreateAuctionList,
     removeItemFromCollection,
     ensureSharedInbox,
     addToSharedInbox,

@@ -18,7 +18,6 @@ import { useViewSettings } from "./hooks/useViewSettings";
 import { useFilters } from "./hooks/useFilters";
 import { useHomeHidden } from "./hooks/useHomeHidden";
 import { useRecentSearches } from "./hooks/useRecentSearches";
-import { ListReviewMode } from "./components/ListReviewMode";
 import { Card } from "./components/Card";
 import { ActiveFiltersStrip } from "./components/ActiveFiltersStrip";
 // AuctionsTab retired 2026-04-30 — Tracked lots merged into Watchlist
@@ -501,7 +500,7 @@ export default function Watchlist() {
   // (Mark spec, "while at it, move the challenge tab from watchlist
   // to collecting"). Challenges sits as a Collecting sub-tab
   // alongside Editorial / Size compare / Links.
-  const REFERENCES_SUB_VALUES = ["editorial", "references", "screening", "challenges", "size", "links"];
+  const REFERENCES_SUB_VALUES = ["editorial", "references", "challenges", "size", "links"];
   const [referencesSubTab, setReferencesSubTab] = useState(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
@@ -953,10 +952,6 @@ export default function Watchlist() {
     return () => { cancelled = true; };
   }, [searchAllActive, searchAllBodiesLoaded, search]);
   // Tracks the URL of the auction whose "Add to list" / "Review"
-  // mutation is currently in flight so the calendar row buttons
-  // can show disabled state. Single-slot — we don't expect two
-  // catalogs to be bulk-added simultaneously.
-  const [auctionActionBusyUrl, setAuctionActionBusyUrl] = useState(null);
   // (colDrillInId state moved up earlier in the file — needed by the
   // savedItemsSnapshot effect which depends on it.)
   // Bumps each time the user explicitly navigates away from a
@@ -972,15 +967,6 @@ export default function Watchlist() {
   // this; CollectionsTab forwards it to ChallengesView, which reads
   // it on mount and drills in.
   const [pendingChallengeDrillId, setPendingChallengeDrillId] = useState(null);
-  // Auction Review hand-off (post-#55, 2026-05-15). Set after
-  // handleReviewCatalog bulk-adds the catalog's lots; CollectionsTab
-  // / ListsView consumes it to drill into the list and auto-open the
-  // screener in mode="list" (so Pass items survive in the Disliked
-  // bucket like a shared list). Same set/consume/clear shape as
-  // pendingChallengeDrillId. Hooks live BEFORE the loading early
-  // returns to avoid the React #310 trap (CLAUDE.md "Don't add new
-  // useState near render-conditional code paths").
-  const [pendingReviewListId, setPendingReviewListId] = useState(null);
 
   // Two-phase sign-in: every "Sign in" CTA in the app fires the
   // SignInPromptModal first (the explainer + Google button). Mark
@@ -1988,84 +1974,9 @@ export default function Watchlist() {
   }, [setFilterBrands, setFilterSources, setFilterModels, setFilterHearted,
       setFilterSaleUrls, setTab, setListingsSubTab]);
 
-  // Review-catalog (post-#55, 2026-05-15 — replaces the bespoke
-  // mode="auction" screener). Bulk-adds every lot to the auction's
-  // auto-list so Pass items survive in the Disliked bucket, then
-  // hands off to CollectionsTab via pendingReviewListId — ListsView
-  // drills into the list and auto-opens the screener in mode="list".
-  // Idempotent on the bulk-add (unique (collection_id, listing_id)
-  // index eats duplicates), so re-tapping Review after a previous
-  // pass adds nothing and re-screening just resumes / completes.
-  const handleReviewCatalog = useCallback(async (auction) => {
-    if (!auction?.url) return;
-    // Don't create a phantom empty list. The AuctionCalendar gates
-    // the Review button on lotCount > 0, but the url→lots lookup can
-    // still return zero (e.g. all lots sold/hidden between count
-    // computation and tap, or the calendar URL doesn't match the
-    // lots' auction_url field — Antiquorum currently). Mirrors the
-    // guard already on handleAddCatalogToList.
-    const lots = lotsByAuctionUrl.get(auction.url) || [];
-    if (lots.length === 0) return;
-    if (!user) {
-      // Signed-out: prompt sign-in instead of trying to create a list.
-      setSignInPromptOpen(true);
-      return;
-    }
-    setAuctionActionBusyUrl(auction.url);
-    try {
-      const create = await collectionsApi.getOrCreateAuctionList(auction);
-      if (create.error || !create.id) {
-        console.warn("getOrCreateAuctionList failed:", create.error);
-        return;
-      }
-      // Bulk-add (idempotent) — ensures every lot is in the list
-      // before screening starts so Pass writes to a real row.
-      // 23505 unique-violations on re-tap count as added.
-      const bulk = await collectionsApi.addItemsToCollection(create.id, lots, {
-        sourceOfEntry: "auction_bulk",
-      });
-      if (bulk?.added === 0) {
-        // Total bulk-add failure (likely network). Don't navigate to
-        // an empty list — leave the user where they are. The Add to
-        // list / Review buttons stay re-tappable.
-        console.warn("addItemsToCollection: 0 items added", bulk?.errors);
-        return;
-      }
-      // Navigate + hand off to ListsView's auto-open effect.
-      setTab("watchlist");
-      setWatchTopTab("lists");
-      setPendingReviewListId(create.id);
-    } finally {
-      setAuctionActionBusyUrl(null);
-    }
-  }, [user, collectionsApi, lotsByAuctionUrl, setTab, setWatchTopTab]);
-
-  // Bulk-add every lot from the catalog into the auction's auto-list.
-  // Idempotent — the unique (collection_id, listing_id) index on
-  // collection_items eats duplicates, so re-tapping after picking a
-  // few extras via Review is safe.
-  const handleAddCatalogToList = useCallback(async (auction) => {
-    if (!auction?.url) return;
-    if (!user) {
-      setSignInPromptOpen(true);
-      return;
-    }
-    const lots = lotsByAuctionUrl.get(auction.url) || [];
-    if (lots.length === 0) return;
-    setAuctionActionBusyUrl(auction.url);
-    try {
-      const create = await collectionsApi.getOrCreateAuctionList(auction);
-      if (create.error) {
-        console.warn("getOrCreateAuctionList failed:", create.error);
-        return;
-      }
-      await collectionsApi.addItemsToCollection(create.id, lots, {
-        sourceOfEntry: "auction_bulk",
-      });
-    } finally {
-      setAuctionActionBusyUrl(null);
-    }
-  }, [user, collectionsApi, lotsByAuctionUrl]);
+  // Auction auto-list workflow (Review / Add-to-list) retired
+  // 2026-05-26 with the screening collapse: auctions open the in-app
+  // pre-filtered grid via handleOpenSale (Phase 1A), no bespoke list.
 
   // (feedScreenerItems memo retired 2026-05-22 alongside the
   // feed-mode entry points. Was computing "live non-hidden items
@@ -3602,21 +3513,12 @@ export default function Watchlist() {
   // Watchlist > Calendar sub-tab used to render before the
   // 2026-05-04 unification; it now lives at Listings > Auction calendar
   // (its own sub-tab) after the listings sub-tabs restructure.
-  // (handleReviewCatalog + handleAddCatalogToList moved BEFORE the
-  // `loading` / `loadError` early returns above on 2026-05-14 — they
-  // were sitting at line ~2496, past the returns, which crashed with
-  // React #310 "rendered more hooks than during the previous render"
-  // when loading flipped false. Hooks must be defined BEFORE every
-  // early return; see CLAUDE.md Things-to-never-do.)
   const auctionCalendarJSX = (
     <div style={{ paddingTop: 4 }}>
       <AuctionCalendar
         auctions={auctions || []}
         lotCounts={lotCountsByAuctionUrl}
         onOpenSale={handleOpenSale}
-        onReviewCatalog={handleReviewCatalog}
-        onAddToList={handleAddCatalogToList}
-        busyAuctionUrl={auctionActionBusyUrl}
         isMobile={isMobile}
       />
     </div>
@@ -3869,7 +3771,6 @@ export default function Watchlist() {
         {[
           ["editorial",  "Editorial"],
           ["references", "References"],
-          ["screening",  "Screening"],
           ["challenges", "Challenges"],
           ["size",       "Size comparison"],
           ["links",      "Links"],
@@ -4104,22 +4005,6 @@ export default function Watchlist() {
       primaryCurrency={primaryCurrency}
       pendingChallengeDrillId={pendingChallengeDrillId}
       clearPendingChallengeDrill={() => setPendingChallengeDrillId(null)}
-      // Screening landing (PR 2026-05-22): destination that lists
-      // pools (auction catalogs, lists, shared lists) as cards.
-      // Auction tap → existing handleReviewCatalog (bulk-add +
-      // drill-in + auto-Review). List tap → setPendingReviewListId
-      // + nav to Watchlists > Lists (CollectionsTab routes the
-      // rest, same wire as the auction calendar already uses).
-      auctions={auctions}
-      lotCountsByAuctionUrl={lotCountsByAuctionUrl}
-      onReviewAuctionCatalog={handleReviewCatalog}
-      onScreeningOpenList={(listId) => {
-        if (!listId) return;
-        setPendingReviewListId(listId);
-        setTab("watchlist");
-        setWatchTopTab("lists");
-        setPage(1);
-      }}
       // Reference pages (2026-05-24): "View all" on a market slider deep-links
       // to Listings pre-filtered by the page's reference set (same pattern as
       // homeJumpToDealer). onClickListing carries the existing card telemetry.
@@ -4171,8 +4056,6 @@ export default function Watchlist() {
       onClickListing={onClickListing}
       pendingChallengeDrillId={pendingChallengeDrillId}
       clearPendingChallengeDrill={() => setPendingChallengeDrillId(null)}
-      pendingReviewListId={pendingReviewListId}
-      clearPendingReviewList={() => setPendingReviewListId(null)}
       collectionsSubTab={collectionsSubTab}
       setCollectionsSubTab={setCollectionsSubTab}
       tabResetTick={tab === "watchlist" && SUB_VALUES_COLLECTIONS.includes(watchTopTab) ? tabResetTick : 0}

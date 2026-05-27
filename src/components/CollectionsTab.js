@@ -86,13 +86,6 @@ export function CollectionsTab({
   onClickListing,
   pendingChallengeDrillId,
   clearPendingChallengeDrill,
-  // Auction calendar Review entry-point (post-#55, 2026-05-15). App.js
-  // sets pendingReviewListId after handleReviewCatalog bulk-adds the
-  // lots; ListsView consumes it to drill in + auto-open the screener
-  // once items + reactions have loaded for the target list. Same
-  // shape as pendingChallengeDrillId — set / consume / clear.
-  pendingReviewListId,
-  clearPendingReviewList,
   collectionsSubTab,
   setCollectionsSubTab,
   tabResetTick,
@@ -209,16 +202,6 @@ export function CollectionsTab({
     }
   }, [pendingChallengeDrillId, setCollectionsSubTab]);
 
-  // Auction Review hand-off — when App.js sets pendingReviewListId,
-  // switch to the Lists sub-tab so ListsView mounts and can pick up
-  // the prop. ListsView itself owns the "open screener once items
-  // load" effect.
-  useEffect(() => {
-    if (pendingReviewListId && setCollectionsSubTab) {
-      setCollectionsSubTab("lists");
-    }
-  }, [pendingReviewListId, setCollectionsSubTab]);
-
   if (!user) {
     return (
       <EmptyState
@@ -333,8 +316,6 @@ export function CollectionsTab({
         toggleReaction={collectionsApi?.toggleReaction}
         fetchReactionCounts={collectionsApi?.fetchReactionCounts}
         fetchMyReactions={collectionsApi?.fetchMyReactions}
-        pendingReviewListId={pendingReviewListId}
-        clearPendingReviewList={clearPendingReviewList}
       />
     );
   } else if (subTab === "challenges") {
@@ -1334,10 +1315,6 @@ function ListsView({
   toggleReaction,
   fetchReactionCounts,
   fetchMyReactions,
-  // Auction Review entry (post-#55). When set, drill into this list
-  // and auto-open the screener once items + reactions are loaded.
-  pendingReviewListId,
-  clearPendingReviewList,
 }) {
   // One-at-a-time recipient review mode (Mark spec 2026-05-11).
   // Triggered by the recipient banner's "Start review" CTA. Opens a
@@ -1374,33 +1351,6 @@ function ListsView({
   // user taps Review on a fully-reacted list; otherwise resume.
   const [screenAllMode, setScreenAllMode] = useState(false);
 
-  // Auction Review hand-off (post-#55, 2026-05-15). Two stages:
-  //   1. pendingReviewListId arrives → drill into that list.
-  //   2. We're drilled in AND the bulk-added items have appeared in
-  //      itemsByColl → open the screener and clear the signal so a
-  //      subsequent visit doesn't auto-open again.
-  // Items can land asynchronously after addItemsToCollection resolves
-  // (useCollections's local cache update isn't always synchronous);
-  // gating on itemsByColl[id].length > 0 keeps the screener from
-  // mounting against an empty queue.
-  const pendingReviewItemCount = pendingReviewListId
-    ? ((itemsByColl || {})[pendingReviewListId] || []).length
-    : 0;
-  useEffect(() => {
-    if (!pendingReviewListId) return;
-    if (selectedListId !== pendingReviewListId) {
-      setSelectedListId(pendingReviewListId);
-      return;
-    }
-    if (pendingReviewItemCount > 0) {
-      setScreenAllMode(false);
-      setReviewModeOpen(true);
-      if (clearPendingReviewList) clearPendingReviewList();
-    }
-  }, [
-    pendingReviewListId, selectedListId, pendingReviewItemCount,
-    setSelectedListId, clearPendingReviewList,
-  ]);
   // Per-bucket density override (in-memory only). `expanded` flips a
   // bucket from slider → grid even when its count is ≤ threshold; the
   // opposite (force-slider when >threshold) is also stored here. Reset
@@ -1435,24 +1385,11 @@ function ListsView({
     return () => { cancelled = true; };
   }, [selectedListId, fetchListMembers]);
 
-  // Whether the active drill-in is an auction-catalog list (post-#55,
-  // 2026-05-15). Auction lists are always solo (memberCount=1) but
-  // get the same screening + reactions surface as shared lists so
-  // Pass items survive in the Disliked bucket instead of being lost
-  // to a session-only skip. Driven off the col's `type` field —
-  // populated by useCollections from the `collections` table.
-  const isSelectedAuctionList = useMemo(() => {
-    if (!selectedListId) return false;
-    const col = (cols || []).find(c => c.id === selectedListId);
-    return col?.type === 'auction';
-  }, [selectedListId, cols]);
-
   // Reactions for the active drill-in (2026-05-10). Loaded on shared
-  // lists (memberCount >= 2) AND on auction lists (post-#55) so the
-  // sentiment buckets work. Solo non-auction lists skip the load —
-  // no other reader, no buckets, nothing to fetch. Realtime
-  // subscription pushes co-collaborator reactions live so the
-  // wife/whoever sees Mark's tap immediately.
+  // lists (memberCount >= 2) so the sentiment buckets work. Solo
+  // lists skip the load — no other reader, no buckets, nothing to
+  // fetch. Realtime subscription pushes co-collaborator reactions
+  // live so the wife/whoever sees Mark's tap immediately.
   //
   // 2026-05-10 hardening: subscription set up + teardown wrapped in
   // try/catch so a transient supabase-realtime issue (stale token,
@@ -1467,7 +1404,7 @@ function ListsView({
         || selectedListId === HIDDEN_COLLECTION_ID
         || selectedListId === SAVED_COLLECTION_ID
         || !fetchReactions
-        || (memberCount < 2 && !isSelectedAuctionList)) {
+        || memberCount < 2) {
       setReactionsByItem(new Map());
       return undefined;
     }
@@ -1517,7 +1454,7 @@ function ListsView({
         catch (e) { /* swallow — cleanup shouldn't crash */ }
       }
     };
-  }, [selectedListId, fetchReactions, memberCount, isSelectedAuctionList]);
+  }, [selectedListId, fetchReactions, memberCount]);
 
   const onToggleReaction = React.useCallback(async (itemId, emoji) => {
     if (!toggleReaction) return;
@@ -1784,14 +1721,9 @@ function ListsView({
       && !isHiddenColl
       && !isSavedColl
       && !selected.isSharedInbox;
-    // Auction-catalog list (post-#55, 2026-05-15) — solo by definition
-    // but joins isSharedList in lighting up the screening primitive
-    // (Review button, ListReviewMode, sentiment buckets, ReactionStrip).
-    // Recipient/owner-share concepts (banner copy, ❤️ love-sync to
-    // mirror hearts cross-user) stay gated on isSharedList alone since
-    // an auction list has no other readers.
-    const isAuctionList = selected?.type === 'auction';
-    const screensEnabled = isSharedList || isAuctionList;
+    // Screening (the binary skip/heart swipe) is scoped to shared
+    // lists. The auction auto-list path was retired 2026-05-26.
+    const screensEnabled = isSharedList;
     const isRecipient = isSharedList && !isOwner;
     const ownerName = (selected?.userId && memberMap.get(selected.userId)) || "Someone";
     const myUserId = user?.id || null;
@@ -2357,19 +2289,16 @@ function ListsView({
   // headers matches the bucket headers in a drill-in for visual
   // consistency.
   const myUserId = user?.id || null;
-  // Auction catalogs get their own group — type='auction' lists are
-  // auto-created when the user taps Review catalog or Add to list on
-  // an auction calendar row. Filtered out of "My lists" so the
-  // user-created lists section doesn't get diluted by every catalog
-  // the user has ever reviewed.
+  // The auction auto-list workflow was retired 2026-05-26; any
+  // pre-existing type='auction' lists now fold into "My lists" until
+  // the DB clean-slate removes them.
   const ownedUserLists = userCols.filter(c => c.userId && c.userId === myUserId);
-  const ownedLists      = ownedUserLists.filter(c => c.type !== 'auction');
-  const auctionLists    = ownedUserLists.filter(c => c.type === 'auction');
+  const ownedLists  = ownedUserLists;
   const collabLists = userCols.filter(c => c.userId && c.userId !== myUserId);
   // The owned group is special: even when empty we render its
   // header + "+ New list" CTA so the user can always discover the
   // create flow (Mark spec 2026-05-14, after SubTabIntro was
-  // retired). Saved / Shared / Auctions groups hide entirely when empty.
+  // retired). Saved / Shared groups hide entirely when empty.
   const sharedRows = [
     ...(sharedInbox ? [sharedInbox] : []),
     ...collabLists,
@@ -2384,9 +2313,8 @@ function ListsView({
     { key: "review",   title: "Review",           rows: reviewRows,                 hideIfEmpty: true },
     { key: "owned",    title: "My lists",         rows: ownedLists,                 hideIfEmpty: false },
     { key: "shared",   title: "Shared with me",   rows: sharedRows,                 hideIfEmpty: true },
-    { key: "auctions", title: "Auction catalogs", rows: auctionLists,               hideIfEmpty: true },
   ].filter(g => !g.hideIfEmpty || g.rows.length > 0);
-  const totalRows = savedRows.length + reviewRows.length + ownedLists.length + sharedRows.length + auctionLists.length;
+  const totalRows = savedRows.length + reviewRows.length + ownedLists.length + sharedRows.length;
 
   // Per-row renderer — shared across all three groups so the row
   // styling stays in one place. Closes over the local state of
