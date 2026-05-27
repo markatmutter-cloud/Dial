@@ -22,6 +22,26 @@ function fmtMonthBand(key) {
 // fmtShortDate + fmtSaleDateRange moved to ../utils (Phase 4) so the
 // sale-sectioned auctions grid can share them. Imported above.
 
+// Deterministic muted tint for the text-only calendar placeholder —
+// shown before a sale publishes a cover image (Mark spec 2026-05-26,
+// mirroring the auction houses' "Weekly Watches London" colored card).
+// Each house gets a stable soft colour so the squares read as branded,
+// not random. Light pastels read as image stand-ins in both themes.
+const PLACEHOLDER_TINTS = [
+  { bg: "#ece3da", fg: "#3a3128" }, // warm sand
+  { bg: "#e3e7ec", fg: "#2c343d" }, // cool slate
+  { bg: "#e7e9e2", fg: "#33372c" }, // olive stone
+  { bg: "#ece2e4", fg: "#3d2c30" }, // muted rose
+  { bg: "#e2e8e8", fg: "#2a3838" }, // teal grey
+  { bg: "#eae4ec", fg: "#352c3d" }, // mauve
+];
+function houseTint(house) {
+  const s = String(house || "");
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+  return PLACEHOLDER_TINTS[h % PLACEHOLDER_TINTS.length];
+}
+
 export function AuctionCalendar({
   auctions = [],
   // url → scraped lot count, for surfacing "N lots" on each row +
@@ -328,32 +348,48 @@ function AuctionRow({ a, archive, lotCount = 0, heroImg = "", saved = false, onT
       opacity: archive ? 0.85 : 1,
       position: "relative",
     }}>
-      {/* Hero — the sale's top lot image (Phase 2 image-forward card).
-          Left rail on desktop, full-width banner on mobile; clicking it
-          opens the sale's lots. Falls back to the house name when the
-          sale has no scraped lots yet. */}
+      {/* Hero — FIXED size so every card reads uniform regardless of
+          the image (Mark report 2026-05-26: cards were different sizes
+          following the photo). Source preference: a scraped sale cover
+          (a.image, populated later) → the sale's top-lot image → a
+          branded text-only placeholder (house · title · date on a soft
+          per-house tint, mirroring the houses' own "coming soon" cards).
+          Left rail on desktop, full-width banner on mobile; click opens
+          the sale's lots. */}
       <div
         onClick={lotActionsAvailable && onOpenSale ? () => onOpenSale(a) : undefined}
         style={{
           position: "relative",
           flexShrink: 0,
-          width: isMobile ? "100%" : 116,
-          height: isMobile ? 148 : "auto",
-          minHeight: isMobile ? undefined : 104,
+          width: isMobile ? "100%" : 120,
+          height: isMobile ? 150 : 120,
           background: "var(--surface)",
           overflow: "hidden",
-          display: "flex", alignItems: "center", justifyContent: "center",
+          display: "flex", alignItems: "stretch", justifyContent: "center",
           cursor: (lotActionsAvailable && onOpenSale) ? "pointer" : "default",
         }}>
-        {heroImg ? (
-          <img src={imgSrc(heroImg)} alt="" loading="lazy"
+        {(a.image || heroImg) ? (
+          <img src={imgSrc(a.image || heroImg)} alt="" loading="lazy"
             style={{ width: "100%", height: "100%", objectFit: "cover" }}
             onError={(e) => { e.currentTarget.style.visibility = "hidden"; }} />
         ) : (
-          <span style={{ fontSize: 11, color: "var(--text3)", letterSpacing: "0.14em",
-                         textTransform: "uppercase", fontWeight: 600, textAlign: "center", padding: 8 }}>
-            {a.house || "Auction"}
-          </span>
+          <div style={{
+            width: "100%", height: "100%",
+            background: houseTint(a.house).bg, color: houseTint(a.house).fg,
+            display: "flex", flexDirection: "column", justifyContent: "center",
+            gap: 4, padding: "12px 14px", overflow: "hidden",
+          }}>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.04em",
+                          textTransform: "uppercase", lineHeight: 1.2 }}>
+              {a.house || "Auction"}
+            </div>
+            <div style={{ fontSize: 12, fontWeight: 500, lineHeight: 1.25,
+                          display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
+                          overflow: "hidden" }}>
+              {a.title}
+            </div>
+            <div style={{ fontSize: 10, opacity: 0.75 }}>{fmtSaleDateRange(a)}</div>
+          </div>
         )}
         {/* Heart the SALE (Phase 3). Overlay top-right of the hero,
             mirroring listing-card hearts. Hidden when signed out. */}
