@@ -1930,6 +1930,19 @@ export default function Watchlist() {
     return m;
   }, [auctions]);
 
+  // Saved auctions joined to their calendar entry + hero/lot-count, in
+  // saved-order (added_at desc). Backs the Watchlists "Saved auctions"
+  // synthetic row (Phase 3b). Sales no longer in the feed drop out.
+  const savedAuctionItems = useMemo(() => {
+    return savedAuctionUrls
+      .map(url => {
+        const a = salesByUrl.get(url);
+        if (!a) return null;
+        return { ...a, _heroImg: auctionHeroByUrl[url] || "", _lotCount: lotCountsByAuctionUrl[url] || 0 };
+      })
+      .filter(Boolean);
+  }, [savedAuctionUrls, salesByUrl, auctionHeroByUrl, lotCountsByAuctionUrl]);
+
   // Per-target match counts for the Home search dropdown. Recomputed
   // on each homeLiveQuery change (the search-bar's onChange feeds it,
   // gated to 2+ chars). matchesSearch is O(n × tokens) substring —
@@ -4071,6 +4084,9 @@ export default function Watchlist() {
       watchItems={watchItems}
       hidden={hidden}
       allListings={items}
+      savedAuctions={savedAuctionItems}
+      onOpenSale={handleOpenSale}
+      onToggleSaveAuction={user ? toggleSavedAuction : null}
       primaryCurrency={primaryCurrency}
       handleShare={handleShare}
       handleWish={handleWish}
