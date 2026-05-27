@@ -463,6 +463,86 @@ export function useSearches(user) {
 }
 
 
+// ── COLLECTION BLOCKS (dossier composition) ──────────────────────────────────
+// The ordered "blocks" a user composes into a list (Watchlists living dossier;
+// docs/WATCHLISTS_DOSSIER_SPEC.md). One hook per opened collection. Block kinds:
+// note · reference_guide · saved_search (saved_items/articles still render from
+// the existing collection_items grid). RLS gates on the parent collection via
+// can_view/can_edit_collection. Self-contained so it's called from DossierBlocks,
+// not App.js (no new top-level App hook → no React #310 / App.test churn).
+export function useCollectionBlocks(collectionId, user) {
+  const [blocks, setBlocks] = useState([]);
+
+  useEffect(() => {
+    if (!collectionId || !supabase) { setBlocks([]); return; }
+    let cancelled = false;
+    supabase.from('collection_blocks').select('*')
+      .eq('collection_id', collectionId)
+      .order('position', { ascending: true })
+      .order('created_at', { ascending: true })
+      .then(({ data, error }) => {
+        if (cancelled) return;
+        if (error) { console.warn('blocks load failed', error); return; }
+        setBlocks((data || []).map(_mapBlock));
+      });
+    return () => { cancelled = true; };
+  }, [collectionId, user?.id]);
+
+  const addBlock = useCallback(async (kind, fields = {}) => {
+    if (!collectionId || !supabase) return;
+    const position = blocks.length ? Math.max(...blocks.map(b => b.position)) + 1 : 0;
+    const { data, error } = await supabase.from('collection_blocks').insert({
+      collection_id: collectionId, kind, position,
+      saved_search_id: fields.savedSearchId || null,
+      reference_id: fields.referenceId || null,
+      note_text: fields.noteText != null ? fields.noteText : null,
+    }).select().single();
+    if (!error && data) setBlocks(prev => [...prev, _mapBlock(data)]);
+    else if (error) console.warn('block add', error);
+  }, [collectionId, blocks]);
+
+  const removeBlock = useCallback(async (id) => {
+    if (!supabase) return;
+    setBlocks(prev => prev.filter(b => b.id !== id));
+    const { error } = await supabase.from('collection_blocks').delete().eq('id', id);
+    if (error) console.warn('block remove', error);
+  }, []);
+
+  const updateNote = useCallback(async (id, noteText) => {
+    if (!supabase) return;
+    setBlocks(prev => prev.map(b => (b.id === id ? { ...b, noteText } : b)));
+    const { error } = await supabase.from('collection_blocks')
+      .update({ note_text: noteText, updated_at: new Date().toISOString() }).eq('id', id);
+    if (error) console.warn('block note update', error);
+  }, []);
+
+  // Reorder by swapping position with the neighbour (free-order blocks).
+  const move = useCallback(async (id, dir) => {
+    if (!supabase) return;
+    const idx = blocks.findIndex(b => b.id === id);
+    if (idx < 0) return;
+    const swap = dir === 'up' ? idx - 1 : idx + 1;
+    if (swap < 0 || swap >= blocks.length) return;
+    const a = blocks[idx], b = blocks[swap];
+    const ap = a.position, bp = b.position;
+    setBlocks(prev => prev
+      .map(x => (x.id === a.id ? { ...x, position: bp } : x.id === b.id ? { ...x, position: ap } : x))
+      .sort((x, y) => x.position - y.position));
+    await supabase.from('collection_blocks').update({ position: bp }).eq('id', a.id);
+    await supabase.from('collection_blocks').update({ position: ap }).eq('id', b.id);
+  }, [blocks]);
+
+  return { blocks, addBlock, removeBlock, updateNote, move };
+}
+
+function _mapBlock(r) {
+  return {
+    id: r.id, kind: r.kind, position: r.position,
+    savedSearchId: r.saved_search_id, referenceId: r.reference_id, noteText: r.note_text,
+  };
+}
+
+
 // ── COLLECTIONS ─────────────────────────────────────────────────────────────
 // User-created collections beyond the default "Watchlist" — "For Wife",
 // "Reference comps - 5512", etc. — plus the auto "Shared with me"
