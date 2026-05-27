@@ -91,6 +91,18 @@ function buildProps(overrides = {}) {
     collectionsSubTab: "my-collection",
     setCollectionsSubTab: noop,
     tabResetTick: 0,
+    // B-08 unified Watchlists landing props (searches section + Watchbox
+    // hero). ListsView guards/defaults each; pass them so the "Lists
+    // sub-tab" test exercises the real prop set.
+    isMobile: false,
+    goToWatchbox: noop,
+    watchboxCounts: { owned: 0, wishlist: 0, sold: 0 },
+    watchboxCovers: [],
+    savedSearchStats: [],
+    startAddSearch: noop,
+    startEditSearch: noop,
+    removeSearch: noop,
+    runSearch: noop,
     ...overrides,
   };
 }

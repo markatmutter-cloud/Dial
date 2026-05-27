@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { supabase } from "../supabase";
 import { Card } from "./Card";
-import { ListRow } from "./ListRow";
 import { ChallengesView } from "./ChallengesView";
 import { ManualEntryForm } from "./ManualEntryForm";
 import { ListingPickerModal } from "./ListingPickerModal";
@@ -59,6 +58,301 @@ const SAVED_ARTICLES_COLLECTION_ID = "__saved_articles__";
 // as image cards that deep-link to each sale's pre-filtered grid.
 const SAVED_AUCTIONS_COLLECTION_ID = "__saved_auctions__";
 
+// ── B-08 unified Watchlists landing ──────────────────────────────
+// The Lists + Searches sub-tabs collapsed into ONE rich single-scroll
+// screen (no sub-tabs), built in the ReferencePage visual language so
+// landing here is "impactful like the 5512/13 page" rather than "a
+// bunch of lines you click into" (Mark, 2026-05-27). The helpers +
+// presentational leaf components below are pure/props-driven; ListsView
+// composes them in its landing return.
+const WL_SERIF = "'Iowan Old Style', Georgia, 'Times New Roman', serif";
+
+// imgUrl from a mixed item (list item / hearted listing / article).
+const wlItemImg = (it) =>
+  (it && (it.img || it.image || (it.listing_snapshot && it.listing_snapshot.img))) || "";
+
+// Cover images for a list — promoted hero wins, else first item images.
+function listCoverImages(c, items, n = 4) {
+  if (c && c.coverImageUrl) return [c.coverImageUrl];
+  const out = [];
+  for (const it of (items || [])) {
+    const src = wlItemImg(it);
+    if (src && !out.includes(src)) out.push(src);
+    if (out.length >= n) break;
+  }
+  return out;
+}
+
+// Flavour chips — "8 watches · 3 articles" from already-loaded items.
+function listFlavour(items) {
+  let watches = 0, articles = 0;
+  for (const it of (items || [])) {
+    if (it && it.kind === "article") articles++;
+    else watches++;
+  }
+  const chips = [];
+  if (watches) chips.push(`${watches} watch${watches === 1 ? "" : "es"}`);
+  if (articles) chips.push(`${articles} article${articles === 1 ? "" : "s"}`);
+  return chips;
+}
+
+// Recency signal for "recently touched first".
+function listLastActivity(c, items) {
+  let t = 0;
+  const stamp = (s) => { const v = Date.parse(s || ""); if (!Number.isNaN(v) && v > t) t = v; };
+  if (c) { stamp(c.updatedAt); stamp(c.createdAt); }
+  for (const it of (items || [])) { stamp(it.savedAt); stamp(it.createdAt); stamp(it.created_at); }
+  return t;
+}
+
+const wlIsSold = (it) => !!(it && (it.sold || it.soldDate || it.soldPrice != null));
+
+// A small neutral chip (editorial, quiet — not colored noise).
+function WLChip({ children }) {
+  return (
+    <span style={{
+      fontSize: 11, color: "var(--text2)", lineHeight: 1.4,
+      border: "0.5px solid var(--border)", borderRadius: 999,
+      padding: "1px 8px", whiteSpace: "nowrap",
+    }}>{children}</span>
+  );
+}
+
+// Section band — kicker eyebrow + optional serif title + top rule +
+// generous gap, mirroring ReferencePage's Section chrome.
+function WLBand({ id, kicker, title, isMobile, action, children }) {
+  return (
+    <section id={id} data-wl-section={id}
+      style={{ scrollMarginTop: 70, marginTop: isMobile ? 28 : 40 }}>
+      <div style={{
+        display: "flex", alignItems: "flex-end", gap: 12,
+        borderTop: "0.5px solid var(--border)",
+        paddingTop: isMobile ? 16 : 20, marginBottom: isMobile ? 12 : 16,
+      }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{
+            fontSize: 11, fontWeight: 600, letterSpacing: "0.12em",
+            textTransform: "uppercase", color: "var(--brand-olive-text)",
+            marginBottom: title ? 6 : 0,
+          }}>{kicker}</div>
+          {title && <h2 style={{
+            fontFamily: WL_SERIF, fontWeight: 600,
+            fontSize: isMobile ? 22 : 26, lineHeight: 1.1,
+            letterSpacing: "-0.01em", color: "var(--text1)", margin: 0,
+          }}>{title}</h2>}
+        </div>
+        {action ? <div style={{ flexShrink: 0 }}>{action}</div> : null}
+      </div>
+      {children}
+    </section>
+  );
+}
+
+// Cover collage — 1 hero or a 2×2 grid of item images; placeholder if none.
+function WLCover({ images, height }) {
+  const imgs = (images || []).slice(0, 4);
+  const base = {
+    height, borderRadius: 10, overflow: "hidden",
+    border: "0.5px solid var(--border)",
+  };
+  if (imgs.length === 0) {
+    return <div style={{
+      ...base, display: "flex", alignItems: "center", justifyContent: "center",
+      background: "var(--bg)", color: "var(--text3)", fontSize: 22,
+    }}>📂</div>;
+  }
+  if (imgs.length === 1) {
+    return <div style={base}>
+      <img src={imgSrc(imgs[0])} alt="" loading="lazy"
+        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+    </div>;
+  }
+  return (
+    <div style={{
+      ...base, display: "grid", gridTemplateColumns: "1fr 1fr",
+      gridTemplateRows: imgs.length > 2 ? "1fr 1fr" : "1fr", gap: 1,
+      background: "var(--border)",
+    }}>
+      {imgs.map((src, i) => (
+        <img key={i} src={imgSrc(src)} alt="" loading="lazy"
+          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+      ))}
+    </div>
+  );
+}
+
+// A list rendered as a cover-image card (the visual hero of the screen).
+function WLListCard({ name, images, chips, shared, isMobile, onOpen }) {
+  return (
+    <button onClick={onOpen} style={{
+      textAlign: "left", cursor: "pointer", fontFamily: "inherit",
+      border: "0.5px solid var(--border)", borderRadius: 12,
+      background: "var(--bg)", padding: 0, overflow: "hidden",
+      display: "flex", flexDirection: "column",
+    }}>
+      <WLCover images={images} height={isMobile ? 116 : 144} />
+      <div style={{ padding: "10px 12px 12px" }}>
+        <div style={{
+          fontSize: 15, fontWeight: 600, color: "var(--text1)",
+          lineHeight: 1.25, overflow: "hidden", textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+        }}>{name}</div>
+        {(chips && chips.length) || shared ? (
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 7 }}>
+            {(chips || []).map((c, i) => <WLChip key={i}>{c}</WLChip>)}
+            {shared ? <WLChip>shared</WLChip> : null}
+          </div>
+        ) : null}
+      </div>
+    </button>
+  );
+}
+
+// "+ Start a list" CTA rendered as a card so it sits in the grid.
+function WLStartCard({ isMobile, onClick }) {
+  return (
+    <button onClick={onClick} style={{
+      cursor: "pointer", fontFamily: "inherit",
+      border: "0.5px dashed var(--text3)", borderRadius: 12,
+      background: "transparent", color: "var(--text2)",
+      minHeight: isMobile ? 116 + 64 : 144 + 70,
+      display: "flex", flexDirection: "column", alignItems: "center",
+      justifyContent: "center", gap: 6, padding: 16, textAlign: "center",
+    }}>
+      <span style={{ fontSize: 24, lineHeight: 1 }}>＋</span>
+      <span style={{ fontSize: 14, fontWeight: 600, color: "var(--text1)" }}>Start a list</span>
+      <span style={{ fontSize: 11.5, color: "var(--text3)", lineHeight: 1.4, maxWidth: 200 }}>
+        Pick a watch or reference; pull in articles, comps, examples & notes.
+      </span>
+    </button>
+  );
+}
+
+// Responsive card grid wrapper for the list cards.
+function WLCardGrid({ isMobile, children }) {
+  return (
+    <div style={{
+      display: "grid",
+      gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(auto-fill, minmax(190px, 1fr))",
+      gap: isMobile ? 12 : 16,
+    }}>{children}</div>
+  );
+}
+
+// Watchbox hero anchor — wide band, cover strip of owned watches +
+// counts; opens the standalone Watchbox tab.
+function WLWatchboxHero({ counts, covers, isMobile, onOpen }) {
+  const imgs = (covers || []).map(wlItemImg).filter(Boolean).slice(0, isMobile ? 4 : 7);
+  const parts = [];
+  if (counts.owned) parts.push(`${counts.owned} owned`);
+  if (counts.wishlist) parts.push(`${counts.wishlist} wishlist`);
+  if (counts.sold) parts.push(`${counts.sold} sold`);
+  const sub = parts.length ? parts.join(" · ") : "Your owned, wishlist & sold watches";
+  return (
+    <button onClick={onOpen} style={{
+      width: "100%", textAlign: "left", cursor: "pointer", fontFamily: "inherit",
+      border: "0.5px solid var(--border)", borderRadius: 14,
+      background: "var(--brand-olive-tint-12, var(--bg))",
+      padding: isMobile ? 14 : 18, marginTop: isMobile ? 14 : 18,
+      display: "flex", flexDirection: "column", gap: 12,
+    }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <span style={{ fontSize: 16 }}>★</span>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: isMobile ? 17 : 19, fontWeight: 700, color: "var(--text1)", fontFamily: WL_SERIF }}>
+            My Watchbox
+          </div>
+          <div style={{ fontSize: 12.5, color: "var(--text2)", marginTop: 2 }}>{sub}</div>
+        </div>
+        <span style={{ fontSize: 20, color: "var(--text3)" }}>›</span>
+      </div>
+      {imgs.length > 0 && (
+        <div style={{ display: "flex", gap: 6, overflow: "hidden" }}>
+          {imgs.map((src, i) => (
+            <img key={i} src={imgSrc(src)} alt="" loading="lazy" style={{
+              width: isMobile ? 52 : 64, height: isMobile ? 52 : 64,
+              objectFit: "cover", borderRadius: 8, flexShrink: 0,
+              border: "0.5px solid var(--border)",
+            }} />
+          ))}
+        </div>
+      )}
+    </button>
+  );
+}
+
+// Horizontal image strip of saved items (watches/articles/auctions).
+function WLSavedStrip({ items, onClickItem }) {
+  if (!items.length) {
+    return <div style={{ fontSize: 12.5, color: "var(--text3)", padding: "4px 2px" }}>
+      Nothing here yet — heart a watch, article or sale to find it again.
+    </div>;
+  }
+  return (
+    <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 4, WebkitOverflowScrolling: "touch" }}>
+      {items.slice(0, 18).map((it, i) => {
+        const src = wlItemImg(it);
+        return (
+          <button key={it.id || it.url || i} onClick={() => onClickItem(it)} style={{
+            flexShrink: 0, width: 104, cursor: "pointer", fontFamily: "inherit",
+            border: "none", background: "transparent", padding: 0, textAlign: "left",
+          }}>
+            {src ? (
+              <img src={imgSrc(src)} alt="" loading="lazy" style={{
+                width: 104, height: 104, objectFit: "cover", borderRadius: 8,
+                border: "0.5px solid var(--border)", display: "block",
+              }} />
+            ) : (
+              <div style={{
+                width: 104, height: 104, borderRadius: 8, border: "0.5px solid var(--border)",
+                background: "var(--bg)",
+              }} />
+            )}
+            <div style={{
+              fontSize: 11, color: "var(--text2)", marginTop: 4, lineHeight: 1.3,
+              display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
+            }}>{it.title || it.name || ""}</div>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+// A saved search rendered as a tap-to-run card.
+function WLSearchCard({ search, isMobile, onRun, onEdit, onRemove }) {
+  const priceBits = [];
+  if (search.minPrice != null) priceBits.push(`$${Number(search.minPrice).toLocaleString()}`);
+  if (search.maxPrice != null) priceBits.push(`$${Number(search.maxPrice).toLocaleString()}`);
+  const meta = [search.query ? `"${search.query}"` : null,
+    priceBits.length ? priceBits.join("–") : null,
+    search.count != null ? `${search.count.toLocaleString()} for sale` : null,
+  ].filter(Boolean).join(" · ");
+  return (
+    <div style={{
+      display: "flex", alignItems: "center", gap: 10,
+      border: "0.5px solid var(--border)", borderRadius: 12,
+      padding: "10px 12px", background: "var(--bg)",
+    }}>
+      <button onClick={onRun} style={{
+        flex: 1, minWidth: 0, textAlign: "left", cursor: "pointer",
+        fontFamily: "inherit", border: "none", background: "transparent", padding: 0,
+      }}>
+        <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text1)" }}>🔍 {search.label}</div>
+        {meta && <div style={{ fontSize: 12, color: "var(--text3)", marginTop: 2,
+          overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{meta}</div>}
+      </button>
+      {onEdit && <button onClick={onEdit} aria-label="Edit search" style={wlIconBtn}>✎</button>}
+      {onRemove && <button onClick={onRemove} aria-label="Delete search" style={wlIconBtn}>🗑</button>}
+    </div>
+  );
+}
+const wlIconBtn = {
+  flexShrink: 0, cursor: "pointer", fontFamily: "inherit", fontSize: 13,
+  border: "0.5px solid var(--border)", borderRadius: 8, background: "transparent",
+  color: "var(--text2)", padding: "4px 8px", lineHeight: 1,
+};
+
 export function CollectionsTab({
   user,
   isAuthConfigured,
@@ -97,6 +391,19 @@ export function CollectionsTab({
   // App.js mirror — call with the current drill-in id (or null) so
   // the shell can render the filter row when we're drilled in.
   onDrillInChange,
+  // B-08 unified Watchlists landing — searches + Watchbox now render
+  // as sections on the ListsView screen (the Searches sub-tab is gone).
+  isMobile,
+  goToWatchbox,
+  savedSearchStats,
+  searchEditor,
+  setSearchEditor,
+  startAddSearch,
+  startEditSearch,
+  cancelSearchEdit,
+  commitSearch,
+  removeSearch,
+  runSearch,
 }) {
   // Sub-tab routing: the parent owns the state but if for some reason
   // it isn't passed (smoke tests, signed-out flows), fall back to a
@@ -317,6 +624,25 @@ export function CollectionsTab({
         savedAuctions={savedAuctions}
         onOpenSale={onOpenSale}
         onToggleSaveAuction={onToggleSaveAuction}
+        // B-08 unified landing: Watchbox hero anchor + searches section.
+        isMobile={isMobile}
+        goToWatchbox={goToWatchbox}
+        watchboxCounts={{
+          owned: hardOwned ? (itemsByColl[hardOwned.id] || []).length : 0,
+          wishlist: hardWishlist ? (itemsByColl[hardWishlist.id] || []).length : 0,
+          sold: hardSold ? (itemsByColl[hardSold.id] || []).length : 0,
+        }}
+        watchboxCovers={hardOwned ? (itemsByColl[hardOwned.id] || []) : []}
+        savedSearchStats={savedSearchStats}
+        searchEditor={searchEditor}
+        setSearchEditor={setSearchEditor}
+        startAddSearch={startAddSearch}
+        startEditSearch={startEditSearch}
+        cancelSearchEdit={cancelSearchEdit}
+        commitSearch={commitSearch}
+        removeSearch={removeSearch}
+        runSearch={runSearch}
+        setCollectionCover={collectionsApi?.setCollectionCover}
       />
     );
   } else if (subTab === "challenges") {
@@ -1157,8 +1483,8 @@ function ListsView({
   compact, gridStyle, primaryCurrency,
   handleShare, handleWish,
   openCollectionPicker, observeCard, onClickListing,
-  startCreateCollection, setEditingCollection,
-  deleteCollection, removeItemFromCollection,
+  startCreateCollection,
+  removeItemFromCollection,
   selectedListId, setSelectedListId,
   setManageListOpen,
   // Watch-detail sheet trigger from inside the drill-in (tap card
@@ -1176,6 +1502,16 @@ function ListsView({
   savedAuctions = [],
   onOpenSale,
   onToggleSaveAuction,
+  // B-08 unified landing — Watchbox hero + searches section + covers.
+  isMobile,
+  goToWatchbox,
+  watchboxCounts = { owned: 0, wishlist: 0, sold: 0 },
+  watchboxCovers = [],
+  savedSearchStats = [],
+  startAddSearch,
+  startEditSearch,
+  removeSearch,
+  runSearch,
 }) {
   // One-at-a-time recipient review mode (Mark spec 2026-05-11).
   // Triggered by the recipient banner's "Start review" CTA. Opens a
@@ -1190,6 +1526,10 @@ function ListsView({
   // the drill-in header. Skipped for Saved (it's all hearted) and
   // Hidden (the watchlist filter would empty it).
   const [heartedOnly, setHeartedOnly] = useState(false);
+  // B-08 unified Saved band — type filter (all/watches/articles/sold/
+  // auctions). Declared up here with the other hooks so it sits before
+  // the drill-in early return (React #310: no hooks after an early return).
+  const [savedTypeFilter, setSavedTypeFilter] = useState("all");
   // Reset the toggle when switching between lists so a previous
   // session's filter doesn't carry over.
   useEffect(() => { setHeartedOnly(false); }, [selectedListId]);
@@ -1859,198 +2199,156 @@ function ListsView({
     ...(sharedInbox ? [sharedInbox] : []),
     ...collabLists,
   ];
-  const savedRows = [
-    ...(savedRow ? [savedRow] : []),
-    ...(savedArticlesRow ? [savedArticlesRow] : []),
-    ...(savedAuctionsRow ? [savedAuctionsRow] : []),
-  ];
-  const groups = [
-    { key: "saved",    title: "Saved",            rows: savedRows,                  hideIfEmpty: true },
-    { key: "owned",    title: "My lists",         rows: ownedLists,                 hideIfEmpty: false },
-    { key: "shared",   title: "Shared with me",   rows: sharedRows,                 hideIfEmpty: true },
-  ].filter(g => !g.hideIfEmpty || g.rows.length > 0);
-  const totalRows = savedRows.length + ownedLists.length + sharedRows.length;
-
-  // Per-row renderer — shared across all three groups so the row
-  // styling stays in one place. Closes over the local state of
-  // ListsView (watchItems / hiddenItems / itemsByColl / etc.).
-  const renderListRow = (c) => {
-    const isInbox = c.isSharedInbox;
-    const isHiddenRowItem = c.id === HIDDEN_COLLECTION_ID;
-    const isSavedRowItem  = c.id === SAVED_COLLECTION_ID;
-    const isSavedArticlesRowItem = c.id === SAVED_ARTICLES_COLLECTION_ID;
-    const isSavedAuctionsRowItem = c.id === SAVED_AUCTIONS_COLLECTION_ID;
-    const count = isSavedRowItem
-      ? (watchItems || []).length
-      : isHiddenRowItem
-        ? hiddenItems.length
-        : isSavedArticlesRowItem
-          ? savedArticlesCount
-          : isSavedAuctionsRowItem
-            ? savedAuctionsCount
-            : (itemsByColl[c.id] || []).length;
-    const isShared = sharedListIds.has(c.id);
-    const icon = isSavedRowItem ? heartIcon
-               : isSavedArticlesRowItem ? bookmarkIcon
-               : isSavedAuctionsRowItem ? hammerIcon
-               : isInbox        ? inboxIcon
-               : isHiddenRowItem ? eyeOffIcon
-               : isShared      ? usersIcon
-               : folderIcon;
-    // B-05 (2026-05-24): auction-catalog rows show house + sale date so
-    // near-identically-named catalogs ("Important Watches" × N) are
-    // distinguishable. Saved lots carry house + auction_date_label in their
-    // listing_snapshot (supabase.js `...snap`); read the first item that has
-    // them. Degrades to count-only for old snapshots / manual items.
-    const auctionMeta = c.type === "auction"
-      ? (() => {
-          const its = itemsByColl[c.id] || [];
-          const m = its.find(it => it.house || it.auction_date_label) || {};
-          const parts = [m.house, m.auction_date_label].filter(Boolean);
-          return parts.length ? ` · ${parts.join(" · ")}` : "";
-        })()
-      : "";
-    const subtitle = isSavedRowItem
-      ? `${count} hearted watch${count === 1 ? "" : "es"}`
-      : isSavedArticlesRowItem
-        ? `${count} hearted article${count === 1 ? "" : "s"}`
-        : isSavedAuctionsRowItem
-          ? `${count} saved sale${count === 1 ? "" : "s"}`
-          : isInbox
-            ? `${count} listing${count === 1 ? "" : "s"} shared with you`
-            : isHiddenRowItem
-              ? `${count} listing${count === 1 ? "" : "s"} hidden from feed`
-              : `${count} watch${count === 1 ? "" : "es"}${auctionMeta}${isShared ? " · shared" : ""}`;
-    const isOwner = !!(myUserId && c?.userId && myUserId === c.userId);
-    const isSyntheticOrInbox = isInbox || isHiddenRowItem || isSavedRowItem || isSavedArticlesRowItem || isSavedAuctionsRowItem;
-    const actions = [];
-    if (!isSyntheticOrInbox && isOwner && setEditingCollection) {
-      actions.push({
-        ariaLabel: `Rename ${c.name}`,
-        title: "Rename list",
-        icon: pencilIcon,
-        onClick: () => setEditingCollection({ id: c.id, name: c.name }),
-      });
-    }
-    if (!isSyntheticOrInbox && isOwner && deleteCollection) {
-      actions.push({
-        ariaLabel: `Delete ${c.name}`,
-        title: "Delete list",
-        icon: trashIcon,
-        onClick: async () => {
-          if (!(await confirm({
-            title: "Delete list?",
-            message: `"${c.name}" will be removed. Items inside aren't deleted from your watchlist — they're just unbundled from this list.`,
-            confirmLabel: "Delete",
-            tone: "danger",
-          }))) return;
-          await deleteCollection(c.id);
-        },
-      });
-    }
-    // Inbox row sits inside the "Shared with me" group whose header
-    // already says that — rename the row's display title to
-    // "Listings" so the two don't echo. Other rows use c.name.
-    const displayName = isInbox ? "Listings" : c.name;
-    return (
-      <ListRow
-        key={c.id}
-        icon={icon}
-        title={displayName}
-        subtitle={subtitle}
-        onClick={() => setSelectedListId(c.id)}
-        actions={actions.length > 0 ? actions : undefined}
-      />
-    );
+  // ── B-08 unified landing — derived sets. (The savedRow / articles /
+  // auctions *singular* synthetic rows above still feed the `selected`
+  // drill-in resolver; only the old grouped-ListRow arrays are gone.) ──
+  const ownedByRecency = [...ownedLists].sort(
+    (a, b) => listLastActivity(b, itemsByColl[b.id]) - listLastActivity(a, itemsByColl[a.id])
+  );
+  const heartedWatches = watchItems || [];
+  const soldWatchItems = heartedWatches.filter(wlIsSold);
+  const savedAllItems = [...heartedWatches, ...savedArticleItems, ...savedAuctions];
+  const savedTypeOptions = [
+    { key: "all", label: "All", n: heartedWatches.length + savedArticleItems.length + savedAuctions.length },
+    { key: "watches", label: "Watches", n: heartedWatches.length },
+    { key: "articles", label: "Articles", n: savedArticleItems.length },
+    { key: "sold", label: "Sold", n: soldWatchItems.length },
+    { key: "auctions", label: "Auctions", n: savedAuctions.length },
+  ].filter(o => o.key === "all" || o.n > 0);
+  const activeSavedFilter = savedTypeOptions.some(o => o.key === savedTypeFilter) ? savedTypeFilter : "all";
+  const savedFilteredItems =
+      activeSavedFilter === "watches"  ? heartedWatches
+    : activeSavedFilter === "articles" ? savedArticleItems
+    : activeSavedFilter === "sold"     ? soldWatchItems
+    : activeSavedFilter === "auctions" ? savedAuctions
+    : savedAllItems;
+  const savedViewAllId =
+      activeSavedFilter === "articles" ? SAVED_ARTICLES_COLLECTION_ID
+    : activeSavedFilter === "auctions" ? SAVED_AUCTIONS_COLLECTION_ID
+    : SAVED_COLLECTION_ID;
+  const onClickSavedItem = (it) => {
+    if (savedAuctions.includes(it)) { if (onOpenSale) onOpenSale(it); return; }
+    if (onClickListing) onClickListing(it);
   };
-
-  // Empty-state CTA shape — reused from the Searches view so the
-  // "no entries yet" pattern reads identical across sub-tabs.
-  const ctaButtonStyle = {
-    cursor: "pointer", fontFamily: "inherit",
-    fontSize: 13, fontWeight: 600, letterSpacing: "0.04em",
-    padding: "8px 16px", borderRadius: 999,
-    border: "0.5px solid var(--text2)",
-    background: "transparent",
-    color: "var(--text2)",
-    display: "inline-flex", alignItems: "center", gap: 4,
-  };
-  // Inline "+ New" CTA on the My Lists group header (replaces the
-  // SubTabIntro action button retired 2026-05-14).
-  const inlineNewListStyle = {
+  const wlHeaderBtn = {
     flexShrink: 0, cursor: "pointer", fontFamily: "inherit",
-    fontSize: 12, fontWeight: 600, letterSpacing: "0.04em",
+    fontSize: 12.5, fontWeight: 600, letterSpacing: "0.02em",
     padding: "6px 12px", borderRadius: 999,
-    border: "0.5px solid var(--text2)",
-    background: "transparent",
-    color: "var(--text2)",
-    display: "inline-flex", alignItems: "center", gap: 4,
-    lineHeight: 1,
+    border: "0.5px solid var(--text2)", background: "transparent",
+    color: "var(--text2)", display: "inline-flex", alignItems: "center", gap: 4, lineHeight: 1,
   };
+
+  // (renderListRow + the ListRow row family retired in B-08 — the
+  // landing now renders cover-image cards, not icon+text rows. Rename/
+  // delete live on the drill-in's Manage button. The synthetic
+  // savedRow/articles/auctions still drive the `selected` drill-in.)
 
   return (
-    // paddingTop bumped 4 → 16 on 2026-05-14 (Mark feedback): the
-    // sub-tab strip was crowding the first group banner. The grouped
-    // eyebrow headers now use the Listings date-divider shape (grey
-    // surface band) so the visual primitive is consistent across
-    // both tabs.
-    <div style={{ paddingTop: 16 }}>
-      {totalRows === 0 ? (
-        <EmptyState
-          icon="📂"
-          heading="No lists yet"
-          blurb="Group watches the way you think about them — by reference, era, occasion, anything. Lists are private by default; share to invite a collaborator."
-          action={
-            <button onClick={startCreateCollection} style={ctaButtonStyle}>
-              + New list
-            </button>
-          }
-        />
-      ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-          {groups.map(g => (
-            <section key={g.key}>
-              <div style={{
-                display: "flex", alignItems: "center", gap: 12,
-                padding: "2px 4px 8px",
-                marginBottom: 8,
-              }}>
-                <span style={{
-                  fontSize: 12, fontWeight: 600, color: "var(--text2)",
-                  textTransform: "uppercase", letterSpacing: "0.08em",
-                }}>
-                  {g.title}
-                </span>
-                <span style={{
-                  fontSize: 12, color: "var(--text3)",
-                  fontVariantNumeric: "tabular-nums",
-                  marginLeft: "auto",
-                }}>
-                  {g.rows.length.toLocaleString()}
-                </span>
-                {g.key === "owned" && (
-                  <button onClick={startCreateCollection}
-                    style={inlineNewListStyle}>
-                    + New list
-                  </button>
-                )}
-              </div>
-              {g.rows.length > 0 ? (
-                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  {g.rows.map(renderListRow)}
-                </div>
-              ) : g.key === "owned" ? (
-                <div style={{
-                  fontSize: 12, color: "var(--text3)",
-                  padding: "8px 4px 4px",
-                  fontStyle: "italic",
-                }}>
-                  Create your first list to start grouping watches.
-                </div>
-              ) : null}
-            </section>
+    <div style={{ paddingTop: 4 }}>
+      {/* Purpose line — the empty-state-descriptor pattern Mark likes,
+          kept to one line. The full shared dispatch component is Phase 2. */}
+      <p style={{
+        fontSize: isMobile ? 14 : 15, lineHeight: 1.5,
+        color: "var(--text2)", margin: 0, maxWidth: 580,
+      }}>
+        Your watch notebooks — gather examples, articles, prices &amp; notes for any watch you're into.
+      </p>
+
+      {/* ★ Watchbox hero anchor → the standalone Watchbox tab. */}
+      {user && goToWatchbox && (
+        <WLWatchboxHero counts={watchboxCounts} covers={watchboxCovers}
+          isMobile={isMobile} onOpen={goToWatchbox} />
+      )}
+
+      {/* YOUR LISTS — cover-image cards, recently-touched first, + Start CTA. */}
+      <WLBand id="lists" kicker="Your lists" isMobile={isMobile}>
+        <WLCardGrid isMobile={isMobile}>
+          {ownedByRecency.map(c => (
+            <WLListCard key={c.id}
+              name={c.name}
+              images={listCoverImages(c, itemsByColl[c.id])}
+              chips={listFlavour(itemsByColl[c.id])}
+              shared={sharedListIds.has(c.id)}
+              isMobile={isMobile}
+              onOpen={() => setSelectedListId(c.id)} />
           ))}
-        </div>
+          <WLStartCard isMobile={isMobile} onClick={startCreateCollection} />
+        </WLCardGrid>
+      </WLBand>
+
+      {/* SAVED — unified, type-filterable (fixes "where did my heart go"). */}
+      {savedAllItems.length > 0 && (
+        <WLBand id="saved" kicker="Saved" isMobile={isMobile}
+          action={
+            <button onClick={() => setSelectedListId(savedViewAllId)} style={wlHeaderBtn}>
+              See all
+            </button>
+          }>
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 12 }}>
+            {savedTypeOptions.map(o => {
+              const on = o.key === activeSavedFilter;
+              return (
+                <button key={o.key} onClick={() => setSavedTypeFilter(o.key)} style={{
+                  cursor: "pointer", fontFamily: "inherit", fontSize: 12,
+                  padding: "4px 10px", borderRadius: 999,
+                  border: "0.5px solid " + (on ? "var(--brand)" : "var(--border)"),
+                  background: on ? "var(--brand-tint-10, transparent)" : "transparent",
+                  color: on ? "var(--brand)" : "var(--text2)",
+                  fontWeight: on ? 600 : 500,
+                }}>{o.label}{o.n ? ` ${o.n}` : ""}</button>
+              );
+            })}
+          </div>
+          <WLSavedStrip items={savedFilteredItems} onClickItem={onClickSavedItem} />
+        </WLBand>
+      )}
+
+      {/* SAVED SEARCHES — tap to re-run on Listings. */}
+      <WLBand id="searches" kicker="Saved searches" isMobile={isMobile}
+        action={startAddSearch
+          ? <button onClick={startAddSearch} style={wlHeaderBtn}>+ New search</button>
+          : null}>
+        {savedSearchStats && savedSearchStats.length > 0 ? (
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {savedSearchStats.map(s => (
+              <WLSearchCard key={s.id} search={s} isMobile={isMobile}
+                onRun={() => runSearch && runSearch(s)}
+                onEdit={startEditSearch ? () => startEditSearch(s) : null}
+                onRemove={removeSearch ? async () => {
+                  if (await confirm({
+                    title: "Delete search?",
+                    message: `"${s.label}" will be removed.`,
+                    confirmLabel: "Delete", tone: "danger",
+                  })) removeSearch(s.id);
+                } : null} />
+            ))}
+          </div>
+        ) : (
+          <div style={{ fontSize: 12.5, color: "var(--text3)", padding: "4px 2px" }}>
+            Save a search to pre-filter Listings, then jump straight back to it here.
+          </div>
+        )}
+      </WLBand>
+
+      {/* SHARED WITH YOU — collaborator lists + the shared inbox. */}
+      {sharedRows.length > 0 && (
+        <WLBand id="shared" kicker="Shared with you" isMobile={isMobile}>
+          <WLCardGrid isMobile={isMobile}>
+            {sharedRows.map(c => {
+              const isInbox = c.isSharedInbox;
+              const items = isInbox ? [] : (itemsByColl[c.id] || []);
+              return (
+                <WLListCard key={c.id}
+                  name={isInbox ? "Shared listings" : c.name}
+                  images={listCoverImages(c, items)}
+                  chips={isInbox ? [] : listFlavour(items)}
+                  shared
+                  isMobile={isMobile}
+                  onOpen={() => setSelectedListId(c.id)} />
+              );
+            })}
+          </WLCardGrid>
+        </WLBand>
       )}
     </div>
   );
@@ -2286,87 +2584,9 @@ const menuItemStyle = (color) => ({
   color,
 });
 
-// ── Inline icons (SVG) ──────────────────────────────────────────
-// PR 2026-05-22: stroke color swapped var(--brand) → var(--brand-olive)
-// across the Lists-view icon family per Mark spec ("all these icons
-// — can you add them to UI review — green?"). Single olive thread
-// across Watchlists sub-tabs (Lists, Searches, Challenges).
-const inboxIcon = (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brand-olive)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/>
-    <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
-  </svg>
-);
-
-const folderIcon = (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brand-olive)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
-  </svg>
-);
-
-// Gavel/hammer icon for the Saved-auctions synthetic row (Phase 3b).
-const hammerIcon = (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brand-olive)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="m14 13-7.5 7.5a2.12 2.12 0 0 1-3-3L11 10"/>
-    <path d="m16 16 6-6"/>
-    <path d="m8 8 6-6"/>
-    <path d="m9 7 8 8"/>
-    <path d="m21 11-8-8"/>
-  </svg>
-);
-
-// Two-people icon for lists shared with at least one accepted
-// collaborator. 2026-05-10 Mark spec.
-const usersIcon = (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brand-olive)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-    <circle cx="9" cy="7" r="4"/>
-    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-  </svg>
-);
-
-const eyeOffIcon = (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brand-olive)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M17.94 17.94A10.06 10.06 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
-    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
-    <path d="M14.12 14.12A3 3 0 1 1 9.88 9.88"/>
-    <line x1="1" y1="1" x2="23" y2="23"/>
-  </svg>
-);
-
-const heartIcon = (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="var(--brand-olive)" stroke="var(--brand-olive)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-  </svg>
-);
-// Bookmark icon for the Saved-articles synthetic row (PR_Q). Line-art
-// SVG to match the rest of the synthetic-row icons; bookmark shape
-// reads as "saved reading material" — visually distinct from the
-// solid heart on the Saved (watches) row above it.
-const bookmarkIcon = (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brand-olive)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
-  </svg>
-);
-
-// Inline-action icons for ListRow row-level edit/delete (2026-05-09).
-// Sized 14×14 to match ChallengesView's pattern.
-const pencilIcon = (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 20h9"/>
-    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
-  </svg>
-);
-const trashIcon = (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="3 6 5 6 21 6"/>
-    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-    <path d="M10 11v6"/>
-    <path d="M14 11v6"/>
-    <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/>
-  </svg>
-);
+// (Inline Lists-view SVG icon family retired in B-08 — the landing's
+// cover-image cards don't use icon+text rows. Synthetic-row icons
+// lived only in the removed renderListRow.)
 
 // ── Drill-in filter helper (2026-05-09) ─────────────────────────
 //

@@ -127,7 +127,9 @@ export function buildMockShellProps(overrides = {}) {
     shareReceiverJSX: null,
     statusSegmentJSX: null,
     trackNewItemModalJSX: null,
-    watchSubTabsJSX: <div data-testid="watch-sub-tabs" />,
+    // B-08: the Watchlists sub-tab strip was retired (the tab is one
+    // unified single-scroll screen). App passes null for this slot now.
+    watchSubTabsJSX: null,
     watchHeartedToggleJSX: null,
     collectionsSubTabsJSX: <div data-testid="collections-sub-tabs" />,
     endingSoonJSX: null,
