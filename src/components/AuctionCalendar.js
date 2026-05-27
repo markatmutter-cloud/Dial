@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { innerToggleButton } from "../styles";
+import { imgSrc } from "../utils";
 
 // Auction calendar — month-banded list of every auction-house sale
 // in the emitted feed. Live + upcoming render in the top section;
@@ -37,39 +38,13 @@ function fmtSaleDateRange(a) {
   return a.dateLabel || "Date TBD";
 }
 
-function AuctionDateBlock({ a }) {
-  if (!a.dateStart) {
-    return (
-      <div style={{
-        width: 56, flexShrink: 0,
-        display: "flex", alignItems: "center", justifyContent: "center",
-        fontSize: 10, color: "var(--text3)", textTransform: "uppercase", letterSpacing: "0.06em",
-        borderRight: "0.5px solid var(--border)",
-      }}>TBD</div>
-    );
-  }
-  const d = new Date(a.dateStart);
-  const day = d.getUTCDate();
-  const monthAbbrev = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][d.getUTCMonth()];
-  return (
-    <div style={{
-      width: 56, flexShrink: 0,
-      display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-      padding: "6px 0", borderRight: "0.5px solid var(--border)",
-    }}>
-      <div style={{ fontSize: 22, fontWeight: 600, lineHeight: 1, color: "var(--text1)" }}>{day}</div>
-      <div style={{ fontSize: 10, color: "var(--text3)", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: 4, fontWeight: 600 }}>
-        {monthAbbrev}
-      </div>
-    </div>
-  );
-}
-
 export function AuctionCalendar({
   auctions = [],
   // url → scraped lot count, for surfacing "N lots" on each row +
   // gating the "View lots" action on whether the sale has lots.
   lotCounts = {},
+  // url → top-lot image, the hero for the image-forward card (Phase 2).
+  heroImgByUrl = {},
   onOpenSale,
   isMobile = false,
 }) {
@@ -195,6 +170,7 @@ export function AuctionCalendar({
       {upcomingGroups.map((group, idx) => (
         <MonthBlock key={group.key} group={group} firstBlock={idx === 0}
           lotCounts={lotCounts}
+          heroImgByUrl={heroImgByUrl}
           onOpenSale={onOpenSale}
           isMobile={isMobile} />
       ))}
@@ -227,6 +203,7 @@ export function AuctionCalendar({
           {archiveOpen && pastGroups.map((group, idx) => (
             <MonthBlock key={group.key} group={group} firstBlock={idx === 0} archive
               lotCounts={lotCounts}
+              heroImgByUrl={heroImgByUrl}
               onOpenSale={onOpenSale}
               isMobile={isMobile} />
           ))}
@@ -239,7 +216,7 @@ export function AuctionCalendar({
 // One month-banded section of the calendar. Lifted from the inline
 // map in 2026-05-10's calendar/Archive split — same render shape
 // reused for both upcoming and past sections.
-function MonthBlock({ group, firstBlock, archive = false, lotCounts = {}, onOpenSale, isMobile = false }) {
+function MonthBlock({ group, firstBlock, archive = false, lotCounts = {}, heroImgByUrl = {}, onOpenSale, isMobile = false }) {
   return (
     <div style={{ marginBottom: 28 }}>
       <div style={{
@@ -259,6 +236,7 @@ function MonthBlock({ group, firstBlock, archive = false, lotCounts = {}, onOpen
         {group.items.map(a => (
           <AuctionRow key={a.id} a={a} archive={archive}
             lotCount={lotCounts[a.url] || 0}
+            heroImg={heroImgByUrl[a.url] || ""}
             onOpenSale={onOpenSale}
             isMobile={isMobile} />
         ))}
@@ -273,7 +251,7 @@ function MonthBlock({ group, firstBlock, archive = false, lotCounts = {}, onOpen
 // auction has no lots scraped yet (the actions would no-op).
 //   • View lots — opens the in-app grid pre-filtered to this sale
 //   • ↗ — opens the house's external auction page in a new tab
-function AuctionRow({ a, archive, lotCount = 0, onOpenSale, isMobile = false }) {
+function AuctionRow({ a, archive, lotCount = 0, heroImg = "", onOpenSale, isMobile = false }) {
   const isLive   = a.status === "live";
   const isClosed = a.status === "past";
   const catalogAgeDays = a.catalogLiveAt
@@ -330,15 +308,40 @@ function AuctionRow({ a, archive, lotCount = 0, onOpenSale, isMobile = false }) 
       opacity: archive ? 0.85 : 1,
       position: "relative",
     }}>
-      {/* Header row: date block + title block. Mobile keeps the
-          horizontal date/title pairing but loses the 3-button column
-          to its own row below. `flex: 1` so on desktop the title
-          block actually grows into the row width, pushing the
-          action cluster to the right edge (Mark report 2026-05-15:
-          buttons were hugging the title instead of sitting flush
-          right). */}
-      <div style={{ display: "flex", alignItems: "stretch", minWidth: 0, flex: 1 }}>
-        <AuctionDateBlock a={a} />
+      {/* Hero — the sale's top lot image (Phase 2 image-forward card).
+          Left rail on desktop, full-width banner on mobile; clicking it
+          opens the sale's lots. Falls back to the house name when the
+          sale has no scraped lots yet. */}
+      <div
+        onClick={lotActionsAvailable && onOpenSale ? () => onOpenSale(a) : undefined}
+        style={{
+          flexShrink: 0,
+          width: isMobile ? "100%" : 116,
+          height: isMobile ? 148 : "auto",
+          minHeight: isMobile ? undefined : 104,
+          background: "var(--surface)",
+          overflow: "hidden",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          cursor: (lotActionsAvailable && onOpenSale) ? "pointer" : "default",
+        }}>
+        {heroImg ? (
+          <img src={imgSrc(heroImg)} alt="" loading="lazy"
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            onError={(e) => { e.currentTarget.style.visibility = "hidden"; }} />
+        ) : (
+          <span style={{ fontSize: 11, color: "var(--text3)", letterSpacing: "0.14em",
+                         textTransform: "uppercase", fontWeight: 600, textAlign: "center", padding: 8 }}>
+            {a.house || "Auction"}
+          </span>
+        )}
+      </div>
+
+      {/* Content + actions. Desktop: text grows, actions flush right +
+          vertically centered. Mobile: text, then a full-width action
+          row beneath. */}
+      <div style={{ display: "flex", minWidth: 0, flex: 1,
+                  flexDirection: isMobile ? "column" : "row",
+                  alignItems: isMobile ? "stretch" : "center" }}>
         <div style={{ flex: 1, minWidth: 0, padding: "12px 14px",
                     display: "flex", flexDirection: "column", justifyContent: "center", gap: 4 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
@@ -363,7 +366,7 @@ function AuctionRow({ a, archive, lotCount = 0, onOpenSale, isMobile = false }) 
           <div
             onClick={lotActionsAvailable && onOpenSale ? () => onOpenSale(a) : undefined}
             title={lotActionsAvailable && onOpenSale ? "View this sale's lots" : undefined}
-            style={{ fontSize: 14, fontWeight: 500, color: "var(--text1)",
+            style={{ fontSize: 15, fontWeight: 600, color: "var(--text1)", lineHeight: 1.25,
                       overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
                       cursor: (lotActionsAvailable && onOpenSale) ? "pointer" : "default" }}>
             {a.title}
@@ -374,9 +377,8 @@ function AuctionRow({ a, archive, lotCount = 0, onOpenSale, isMobile = false }) 
             {a.location ? ` · ${a.location}` : ""}
           </div>
         </div>
-        {!isMobile && actionCluster}
+        {actionCluster}
       </div>
-      {isMobile && actionCluster}
     </div>
   );
 }
