@@ -1890,6 +1890,26 @@ export default function Watchlist() {
     return o;
   }, [lotsByAuctionUrl]);
 
+  // Hero image per sale for the image-forward calendar card (Phase 2,
+  // 2026-05-26). No sale image exists in auctions.json, so we borrow
+  // the top lot's image — ranked by estimate/realised/bid, falling
+  // back to the first lot that has one. Zero scraper change; real
+  // scraped sale heroes are a later refinement.
+  const auctionHeroByUrl = useMemo(() => {
+    const o = {};
+    for (const [url, arr] of lotsByAuctionUrl) {
+      let best = null, bestScore = -1;
+      for (const lot of arr) {
+        if (!lot || !lot.img) continue;
+        const score = lot.estimate_high_usd || lot.sold_price_usd
+          || lot.current_bid_usd || lot.savedPriceUSD || lot.priceUSD || 0;
+        if (score > bestScore) { bestScore = score; best = lot; }
+      }
+      if (best) o[url] = best.img;
+    }
+    return o;
+  }, [lotsByAuctionUrl]);
+
   // Sale-level metadata lookup (auction_url → calendar entry). Lets
   // the lots grid render sale-grouping headers with house + title +
   // date label. Mark spec 2026-05-22 (Auction IA Slice 1): when on
@@ -3518,6 +3538,7 @@ export default function Watchlist() {
       <AuctionCalendar
         auctions={auctions || []}
         lotCounts={lotCountsByAuctionUrl}
+        heroImgByUrl={auctionHeroByUrl}
         onOpenSale={handleOpenSale}
         isMobile={isMobile}
       />
