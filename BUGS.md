@@ -150,7 +150,7 @@ install/decision tails remaining.*
 - **Detail (two parts):** (1) On the **Sold** sub-tab the **"Calendar"** filter-row button should read **"Auctions"** and take the user to / filter the **closed auctions** (the modal's Closed view). (2) Clicking a **closed (past) auction** should open the **closed listings for that sale** (its lots) — the same way a live sale opens its lots. Mark: "I want it to work like that." Likely the closed-sale card's onClick (`handleOpenSale`) doesn't filter the Sold grid by that sale's lots.
 
 ### B-30 — Auction calendar modal: month pills don't filter (only scroll); "ALL" + CLOSED layout
-- **Reported:** 2026-05-27 · **Type:** Auction redesign defect + polish · **Severity:** 2 · **Surface:** `AuctionCalendar` modal (month nav + house filter row) · **Status:** Open — queued.
+- **Reported:** 2026-05-27 · **Type:** Auction redesign defect + polish · **Severity:** 2 · **Surface:** `AuctionCalendar` modal (month nav + house filter row) · **Status:** Fixed (auction-cal-closed-left) — Mark's call: month pills stay **scroll-to** (NOT filtering), the no-op **"ALL" removed**, **"CLOSED" moved left** ahead of the months.
 - **Detail:** (1) **Filtering:** tapping a month pill (MAY/JUN/…) does NOT filter to that month — all sales still render, it just **scrolls** to the month. Mark questions whether **"ALL"** should exist if months don't actually filter. Decide: make month pills *filter* (hide other months) OR keep scroll-to + drop "ALL". (2) **Layout:** the **"CLOSED"** pill sits far-right on the month row; Mark wants it on the **same line but left-aligned**, ahead of the months.
 
 ### B-31 — Search results: Auctions strip cards misaligned
