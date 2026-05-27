@@ -82,6 +82,12 @@ in-app since Claude can't run the app here.*
 ### B-14 — BRAND.md review (Plan thread)
 - **Reported:** 2026-05-24 (`Plan:`) · **Type:** Plan-mode thread, not a bug · **Status:** Queued for a coming session. Mark wants a review of `BRAND.md` (voice/brand). Pairs naturally with the card design system's "breathing-space & brand impact" dial — brand voice + visual brand expression. Surface at a replanning step.
 
+### B-36 — Hearted items are scattered across Listings/Auctions/Sold (can't find "what I saved")
+- **Reported:** 2026-05-27 (Mark's wife, real user test) · **Type:** Usability / save-tangle · **Severity:** 2 (discoverability) · **Surface:** Watchlists tab · **Status:** Being addressed by **B-08** (the unified Watchlists landing). A user hearted an item and couldn't find it again — hearts live in three separate buckets (Saved listings / Saved auctions / Saved sold), with no single "everything I saved" view. The B-08 build folds them into **one unified "Saved" view with an All · Watches · Articles · Sold type filter**. Close when B-08 ships; verify the wife's flow (heart → find it) lands.
+
+### B-37 — Can't heart / add-to-list from article or reference pages (dossier input side)
+- **Reported:** 2026-05-27 (Mark's wife, real user test + Mark) · **Type:** Feature gap / save-tangle · **Severity:** 2 · **Surface:** article page (`EditorialView`/article detail) + `ReferencePage` · **Status:** Open — **immediate fast-follow PR after B-08** (Mark wants it). Today only listings can be hearted; articles and reference guides have no heart / "add to list" affordance from where you encounter them. But the dossier (Phase 1) is meant to hold articles + reference guides + watches, so you must be able to **save them at the point of reading**. Add a heart / add-to-list control on the article detail + reference node pages, routing through the existing collection-picker (`openCollectionPicker`) + the `listing_snapshot.kind = 'article'` / reference-node patterns. Different files from B-08 → its own branch.
+
 ### ⓑ Epic B — Platform Health
 *Audit remediation + reliability. Low-risk, noise-reducing; mostly independent of
 the redesign.*

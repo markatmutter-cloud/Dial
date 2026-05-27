@@ -376,14 +376,13 @@ export default function Watchlist() {
     // with no visible pill. Legacy URL redirects handle the tab=watchlist
     // + sub=my-collection case separately in the setTab init.
     const normalize = (v) => {
-      if (v === "calendar") return "listings";
-      if (v === "my-collection") return "lists";
-      // PR 2026-05-22: "challenges" moved off Watchlists → Collecting.
-      // A user whose localStorage still holds "challenges" would
-      // land on a sub-tab with no pill. Coerce to "lists" (default
-      // Watchlists landing). Old URL params with sub=challenges
-      // still redirect via the setTab init above.
-      if (v === "challenges") return "lists";
+      // B-08 (2026-05-27): the Watchlists tab is now ONE unified
+      // screen (no sub-tabs). Every legacy sub-tab value collapses to
+      // "lists" so old URLs + stored prefs land on the single landing.
+      // (sub=challenges still redirects to the Collecting tab via the
+      // setTab init above; this only governs watchTopTab.)
+      if (["calendar", "listings", "auctions", "sold", "searches",
+           "my-collection", "wishlist", "challenges"].includes(v)) return "lists";
       return v;
     };
     if (typeof window !== "undefined") {
@@ -734,9 +733,9 @@ export default function Watchlist() {
       if (nextTab === "listings") {
         setListingsSubTab(LISTINGS_SUB_VALUES.includes(sub) ? sub : "live");
       } else if (nextTab === "watchlist") {
-        const norm = (v) => (v === "calendar") ? "listings" : v;
-        const w = norm(sub);
-        setWatchTopTab(SUB_VALUES.includes(w) ? w : "lists");
+        // B-08: the Watchlists tab is one unified screen — every legacy
+        // ?sub value lands on the single landing, so pin to "lists".
+        setWatchTopTab("lists");
       } else if (nextTab === "references") {
         setReferencesSubTab(REFERENCES_SUB_VALUES.includes(sub) ? sub : "editorial");
       }
@@ -4071,7 +4070,9 @@ export default function Watchlist() {
       toggleHomeHide={isAdmin ? toggleHomeHide : undefined}
       // Signed-in user's most-recently hearted strip + View-all route.
       homeRecentlyHearted={homeRecentlyHearted}
-      goToSavedHearts={() => { setTab("watchlist"); setWatchTopTab("listings"); setPage(1); }}
+      // B-08: Watchlists is one unified screen; saved hearts live in
+      // the "Saved" band there. Land on the unified landing ("lists").
+      goToSavedHearts={() => { setTab("watchlist"); setWatchTopTab("lists"); setPage(1); }}
       // Dealer typeahead — popover under the search bar suggests
       // matching dealer names when the user starts typing. Clicking
       // a dealer routes to Listings filtered by that source.
@@ -4222,6 +4223,22 @@ export default function Watchlist() {
       onClickListing={onClickListing}
       pendingChallengeDrillId={pendingChallengeDrillId}
       clearPendingChallengeDrill={() => setPendingChallengeDrillId(null)}
+      // B-08 unified Watchlists landing: searches + Watchbox now live
+      // as sections on the one ListsView screen (no more Searches
+      // sub-tab). Pass the same search-editor handles WatchlistTab got,
+      // plus a Watchbox jump. The AddSearchModal (App-level) fires on
+      // searchEditor.id === "new", so add/edit reuse it directly.
+      isMobile={isMobile}
+      goToWatchbox={() => { setTab("watchbox"); setPage(1); }}
+      savedSearchStats={savedSearchStats}
+      searchEditor={searchEditor}
+      setSearchEditor={setSearchEditor}
+      startAddSearch={startAddSearch}
+      startEditSearch={startEditSearch}
+      cancelSearchEdit={cancelSearchEdit}
+      commitSearch={commitSearch}
+      removeSearch={removeSearch}
+      runSearch={runSearch}
       collectionsSubTab={collectionsSubTab}
       setCollectionsSubTab={setCollectionsSubTab}
       tabResetTick={tab === "watchlist" && SUB_VALUES_COLLECTIONS.includes(watchTopTab) ? tabResetTick : 0}
@@ -4299,79 +4316,14 @@ export default function Watchlist() {
   // ending-soonest default sort. Const + shellProps wiring removed
   // in the same cleanup pass.)
 
-  // Watchlist sub-tab strip — lifted out of WatchlistTab.js on
-  // 2026-04-30 so it sits between the main tab strip and the filter
-  // row rather than below the filter row. Sits in the layout flow
-  // only when tab === "watchlist". Inline contextual buttons:
-  // "+ Track new item" on Listings, "+ Add search" on Searches,
-  // none on Auction Calendar.
-  const watchSubTabsJSX = tab !== "watchlist" ? null : (
-    // Sub-tab strip uses underline-style buttons (see tabPill in
-    // styles.js). Pre-2026-05-04 the strip also carried a trailing
-    // contextual action button; that's gone now.
-    //
-    // Bundle 2A.2 (2026-05-07) folded the four Collections sub-tabs
-    // into this strip — eight sub-tabs total. On 375px viewports
-    // that's wider than the screen, so the wrapper needs horizontal
-    // overflow scrolling. Mirror the listingsSubTabsJSX shape: same
-    // overflowX:auto + scrollbar-hiding CSS so the strip scrolls
-    // touch-style with no visible scrollbar. Mark feedback
-    // 2026-05-08: "the sub tabs don't slide horizontally" — pre-fix
-    // the wrapper was display:flex without overflow, so the buttons
-    // got clipped.
-    <div style={{
-      // Tighter gap + side padding on mobile so the 4 longer Saved
-      // labels (Lists / Searches / My Watches / Challenges) fit on
-      // one line at iPhone SE (375px) without horizontal-scrolling.
-      display: "flex", gap: isMobile ? 14 : 20, alignItems: "center",
-      padding: isMobile ? "0 14px" : "0 20px",
-      background: isMobile ? "var(--brand-olive)" : "var(--bg)",
-      borderBottom: isMobile ? "none" : "0.5px solid var(--border)",
-      flexShrink: 0,
-      overflowX: "auto",
-      overflowY: "hidden",
-      WebkitOverflowScrolling: "touch",
-      scrollbarWidth: "none",
-      msOverflowStyle: "none",
-    }}>
-      {/* 2026-05-08 IA pass — Mark feedback: the previous "Saved"
-          sub-tab duplicated the Listings tab + the heart filter
-          (Listings → Saved chip) gave users the same browse-hearts
-          flow inline with Listings, making the Saved pill feel
-          redundant. Removed. The hearted-views (?sub=listings/
-          auctions/sold) still work via direct URL for back-compat
-          but have no pill in the strip. New strip pill order:
-          Lists / Favorite searches / Owned Watches / Challenges
-          (4 pills, lists is the new default landing). The "wishlist"
-          sub-tab also lost its pill; the value still routes to
-          MyCollectionView in shortlist-toggle mode for old URLs. */}
-      {[
-        ["lists",      "Lists"],
-        ["searches",   "Searches"],
-        // "challenges" moved to Collecting (PR 2026-05-22). Pill
-        // removed; legacy `?tab=watchlist&sub=challenges` URLs
-        // redirect to `?tab=references&sub=challenges` on init.
-      ].map(([key, label]) => {
-        const active = watchTopTab === key;
-        return (
-          <button key={key}
-            onClick={() => {
-              // Mark spec 2026-05-14: re-tapping the active sub-tab
-              // while drilled into a list (Lists > [a list]) should
-              // pop back to the list-of-lists. CollectionsTab listens
-              // on `tabResetTick` and clears its `selectedListId` on
-              // bump — same reset path the main tab pill uses. Bump
-              // on every sub-tab tap (including switches) so the
-              // drill-in never lingers across sub-tab changes.
-              setTabResetTick(t => t + 1);
-              setWatchTopTab(key);
-              setDrawerOpen(false);
-            }}
-            style={{ ...tabPill(active, { onOlive: isMobile }), flexShrink: 0 }}>{label}</button>
-        );
-      })}
-    </div>
-  );
+  // Watchlist sub-tab strip RETIRED in B-08 (2026-05-27). The
+  // Watchlists tab is now ONE unified single-scroll screen (Watchbox
+  // hero · Your lists · Saved · Saved searches · Shared) rendered by
+  // CollectionsTab/ListsView — no Lists/Searches pills. Kept as a null
+  // const so the shells' `watchSubTabsJSX` slot stays wired (both
+  // shells already null-guard it). The contextual "+ New search" /
+  // "+ Start a list" actions now live inline in the landing's bands.
+  const watchSubTabsJSX = null;
 
   // Internal Listings/Auctions/Sold toggle for the Saved tab.
   // Bundle 2A.2b — the three hearted views still exist as separate
