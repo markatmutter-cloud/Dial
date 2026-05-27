@@ -1679,6 +1679,65 @@ export function useTrackedLots(user) {
 }
 
 
+// ── SAVED AUCTIONS ──────────────────────────────────────────────────────────
+// Per-user. You heart the SALE, not its lots — each row is a
+// (user_id, auction_url) pairing keyed by the sale's URL. The sale's
+// metadata (house/title/date) lives in public/auctions.json; the
+// frontend joins the two. Mirrors useTrackedLots (Auction Phase 3,
+// 2026-05-26). Replaces the deleted auction auto-list model with a
+// lightweight bookmark.
+export function useSavedAuctions(user) {
+  const [urls, setUrls] = useState([]);
+  const [addedAt, setAddedAt] = useState({});
+
+  useEffect(() => {
+    if (!user || !supabase) { setUrls([]); setAddedAt({}); return; }
+    let cancelled = false;
+    supabase.from('saved_auctions').select('auction_url, added_at')
+      .order('added_at', { ascending: false })
+      .then(({ data, error }) => {
+        if (cancelled) return;
+        if (error) { console.warn('saved auctions load failed', error); return; }
+        const rows = data || [];
+        setUrls(rows.map(r => r.auction_url));
+        setAddedAt(Object.fromEntries(rows.map(r => [r.auction_url, r.added_at])));
+      });
+    return () => { cancelled = true; };
+  }, [user?.id]);
+
+  // Toggle — adds if absent, removes if present. Optimistic; rolls
+  // back the local change on a failed insert.
+  const toggle = useCallback(async (rawUrl) => {
+    if (!user || !supabase) return { error: 'not signed in' };
+    const url = (rawUrl || '').trim();
+    if (!url) return { error: 'empty URL' };
+    if (urls.includes(url)) {
+      setUrls(prev => prev.filter(u => u !== url));
+      setAddedAt(prev => { const n = { ...prev }; delete n[url]; return n; });
+      const { error } = await supabase.from('saved_auctions').delete()
+        .match({ user_id: user.id, auction_url: url });
+      if (error) console.warn('saved auction remove', error);
+      return { error: error ? error.message : null };
+    }
+    const ts = new Date().toISOString();
+    setUrls(prev => [url, ...prev]);
+    setAddedAt(prev => ({ ...prev, [url]: ts }));
+    const { error } = await supabase.from('saved_auctions').insert({
+      user_id: user.id, auction_url: url, added_at: ts,
+    });
+    if (error) {
+      setUrls(prev => prev.filter(u => u !== url));
+      setAddedAt(prev => { const n = { ...prev }; delete n[url]; return n; });
+      console.warn('saved auction add', error);
+      return { error: error.message };
+    }
+    return { error: null };
+  }, [user, urls]);
+
+  return { urls, toggle, addedAt };
+}
+
+
 // ── USER SETTINGS ───────────────────────────────────────────────────────────
 // Cross-device user-level preferences (vs theme/columns which are
 // per-device + localStorage). v1 holds primary_currency only; future
