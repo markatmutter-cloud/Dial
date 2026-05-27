@@ -23,7 +23,7 @@ export function DesktopShell(props) {
     aboutModalOpen, activeFilterPop,
     brandsExpanded, sourcesExpanded, setSourcesExpanded,
     currentIsSaved,
-    filterBrands, filterSources, filterModels, filterSaleUrls,
+    filterBrands, filterSources, filterModels,
     effectiveBrandsCount = 0, effectiveSourcesCount = 0, effectiveModelsCount = 0,
     listingsSubTab,
     allFiltered, displayedCount,
@@ -40,10 +40,10 @@ export function DesktopShell(props) {
     setMaxPriceText, setMinPriceText,
     setFilterHearted, setPage, setSearch, setSignInPromptOpen, setSort,
     setTab,
-    toggleBrand, toggleHide, toggleSource, toggleModel, toggleSaleUrl,
-    // Sale filter (PR 2026-05-22): list of active sales for the
-    // dropdown + the lot counts so the chip can show counts.
-    auctions, lotCountsByAuctionUrl, setFilterSaleUrls,
+    toggleBrand, toggleHide, toggleSource, toggleModel,
+    // Open the auction calendar modal (Phase 4) — replaces the old
+    // Sale-picker pill on the auction surfaces.
+    onOpenCalendar,
     // Pre-built JSX
     addSearchModalJSX,
     authJSX, baseStyle,
@@ -245,8 +245,7 @@ export function DesktopShell(props) {
     const expandedSource = activeFilterPop === "source";
     const expandedBrand  = activeFilterPop === "brand";
     const expandedModel  = activeFilterPop === "model";
-    const expandedSale   = activeFilterPop === "sale";
-    const anyExpanded = expandedSource || expandedBrand || expandedModel || expandedSale;
+    const anyExpanded = expandedSource || expandedBrand || expandedModel;
     return (
     <>
     <FilterRow expanded={anyExpanded} paddingX={20} paddingY={6}>
@@ -265,12 +264,6 @@ export function DesktopShell(props) {
         style={dtPill(filterBrands.length > 0 || activeFilterPop === "brand")}>
         Brand{filterBrands.length > 0 ? ` · ${filterBrands.length}` : ""}
       </button>
-      {tab === "listings" && listingsSubTab === "auctions" && (
-        <button onClick={() => setActiveFilterPop(p => p === "sale" ? null : "sale")}
-          style={dtPill((filterSaleUrls?.length || 0) > 0 || activeFilterPop === "sale")}>
-          Sale{(filterSaleUrls?.length || 0) > 0 ? ` · ${filterSaleUrls.length}` : ""}
-        </button>
-      )}
       {(MODELS?.length || 0) > 0 && (
         <button onClick={() => setActiveFilterPop(p => p === "model" ? null : "model")}
           style={dtPill((filterModels?.length || 0) > 0 || activeFilterPop === "model")}>
@@ -387,6 +380,29 @@ export function DesktopShell(props) {
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
             </svg>
             Saved
+          </button>
+        )}
+        {/* Auction calendar launcher (Phase 4) — prominent, on the same
+            line as the filter pills. Opens the calendar modal (the
+            sale-picker now). Auction surfaces only. */}
+        {tab === "listings" && (listingsSubTab === "auctions" || listingsSubTab === "sold") && onOpenCalendar && (
+          <button onClick={onOpenCalendar}
+            title="Browse the auction calendar"
+            style={{
+              display: "inline-flex", alignItems: "center", gap: 6, flexShrink: 0,
+              cursor: "pointer", fontFamily: "inherit",
+              fontSize: 13, fontWeight: 600, letterSpacing: "0.02em",
+              padding: "7px 14px", borderRadius: 999,
+              border: "none", background: "var(--brand-olive)", color: "#fff",
+              whiteSpace: "nowrap",
+            }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <rect x="3" y="4" width="18" height="18" rx="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            Calendar
           </button>
         )}
         {/* Count + Clear-all tail at the end of the right cluster. */}
@@ -511,52 +527,6 @@ export function DesktopShell(props) {
         )}
       </div>
     )}
-    {expandedSale && (() => {
-      // Sale picker — active sales only, sorted closing-soonest.
-      // Skips sales with zero lots (the chip wouldn't be useful).
-      const active = ((auctions || []) || []).filter(a =>
-        a && a.url && ((lotCountsByAuctionUrl || {})[a.url] || 0) > 0
-      ).filter(a => {
-        // Skip past sales (date_end > 1 day ago).
-        const end = a.dateEnd ? new Date(a.dateEnd).getTime() : 0;
-        if (!end) return true;
-        return end > Date.now() - 86400000;
-      }).sort((a, b) => {
-        const da = a.dateEnd ? new Date(a.dateEnd).getTime() : 0;
-        const db = b.dateEnd ? new Date(b.dateEnd).getTime() : 0;
-        return da - db;
-      });
-      return (
-        <div style={expansionPanelStyle}>
-          {active.length === 0 ? (
-            <span style={{ fontSize: 12, color: "var(--text3)" }}>
-              No active sales with lots.
-            </span>
-          ) : (
-            <>
-              {active.map(a => {
-                const isOn = (filterSaleUrls || []).includes(a.url);
-                const count = (lotCountsByAuctionUrl || {})[a.url] || 0;
-                const label = `${a.house || ""}${a.title ? " · " + a.title : ""}`.trim()
-                  + (a.dateLabel ? ` · ${a.dateLabel}` : "")
-                  + ` · ${count}`;
-                return (
-                  <Chip key={a.url} label={label} active={isOn}
-                    onClick={() => toggleSaleUrl && toggleSaleUrl(a.url)} />
-                );
-              })}
-              {(filterSaleUrls?.length || 0) > 0 && (
-                <button onClick={() => setFilterSaleUrls && setFilterSaleUrls([])} style={{
-                  marginLeft: "auto", fontSize: 12, padding: "4px 10px", borderRadius: 6,
-                  border: "0.5px solid var(--border)", background: "transparent",
-                  color: "var(--text2)", cursor: "pointer", fontFamily: "inherit",
-                }}>Clear</button>
-              )}
-            </>
-          )}
-        </div>
-      );
-    })()}
     </>
     );
   })();
