@@ -12,7 +12,7 @@ import { WatchDetailSheet } from "./WatchDetailSheet";
 import { ListReviewMode } from "./ListReviewMode";
 import { articleAsListing } from "./EditorialView";
 import CardShell from "./CardShell";
-import { DossierBlocks } from "./DossierBlocks";
+import { DossierBlocks, matchListings } from "./DossierBlocks";
 import { fmtUSD, matchesSearch, imgSrc } from "../utils";
 import { actionButton, signInButton } from "../styles";
 import { EmptyState } from "./EmptyState";
@@ -239,44 +239,66 @@ function WLCardGrid({ isMobile, children }) {
   );
 }
 
-// Watchbox hero anchor — wide band, cover strip of owned watches +
-// counts; opens the standalone Watchbox tab.
+// Watchbox anchor — the bold focal element of the page. A wide band
+// with an edge-to-edge image strip of owned watches, serif title,
+// small-caps stats, and an explicit "Open the box →" cue. No star.
 function WLWatchboxHero({ counts, covers, isMobile, onOpen }) {
-  const imgs = (covers || []).map(wlItemImg).filter(Boolean).slice(0, isMobile ? 4 : 7);
-  const parts = [];
-  if (counts.owned) parts.push(`${counts.owned} owned`);
-  if (counts.wishlist) parts.push(`${counts.wishlist} wishlist`);
-  if (counts.sold) parts.push(`${counts.sold} sold`);
-  const sub = parts.length ? parts.join(" · ") : "Your owned, wishlist & sold watches";
+  const imgs = (covers || []).map(wlItemImg).filter(Boolean).slice(0, isMobile ? 5 : 9);
+  const stats = [
+    { n: counts.owned, label: "owned" },
+    { n: counts.wishlist, label: "wishlist" },
+    { n: counts.sold, label: "sold" },
+  ].filter((s) => s.n);
   return (
-    <button onClick={onOpen} style={{
+    <button onClick={onOpen} aria-label="Open my Watchbox" style={{
       width: "100%", textAlign: "left", cursor: "pointer", fontFamily: "inherit",
-      border: "0.5px solid var(--border)", borderRadius: 14,
+      border: "0.5px solid var(--border)", borderRadius: 16,
       background: "var(--brand-olive-tint-12, var(--bg))",
-      padding: isMobile ? 14 : 18, marginTop: isMobile ? 14 : 18,
-      display: "flex", flexDirection: "column", gap: 12,
+      padding: 0, overflow: "hidden", display: "block",
+      marginTop: isMobile ? 16 : 22,
     }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <span style={{ fontSize: 16 }}>★</span>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: isMobile ? 17 : 19, fontWeight: 700, color: "var(--text1)", fontFamily: WL_SERIF }}>
-            My Watchbox
-          </div>
-          <div style={{ fontSize: 12.5, color: "var(--text2)", marginTop: 2 }}>{sub}</div>
-        </div>
-        <span style={{ fontSize: 20, color: "var(--text3)" }}>›</span>
-      </div>
       {imgs.length > 0 && (
-        <div style={{ display: "flex", gap: 6, overflow: "hidden" }}>
+        <div style={{ display: "flex", height: isMobile ? 96 : 140 }}>
           {imgs.map((src, i) => (
-            <img key={i} src={imgSrc(src)} alt="" loading="lazy" style={{
-              width: isMobile ? 52 : 64, height: isMobile ? 52 : 64,
-              objectFit: "cover", borderRadius: 8, flexShrink: 0,
-              border: "0.5px solid var(--border)",
-            }} />
+            <div key={i} style={{
+              flex: 1, minWidth: 0,
+              borderRight: i < imgs.length - 1 ? "1px solid var(--bg)" : "none",
+            }}>
+              <img src={imgSrc(src)} alt="" loading="lazy"
+                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+            </div>
           ))}
         </div>
       )}
+      <div style={{
+        display: "flex", alignItems: "center", gap: 14,
+        padding: isMobile ? "14px 16px" : "18px 22px",
+      }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{
+            fontFamily: WL_SERIF, fontSize: isMobile ? 21 : 26, fontWeight: 600,
+            color: "var(--text1)", lineHeight: 1.05, letterSpacing: "-0.01em",
+          }}>My Watchbox</div>
+          <div style={{ display: "flex", gap: 16, marginTop: 9, flexWrap: "wrap" }}>
+            {stats.length ? stats.map((s, i) => (
+              <span key={i}>
+                <strong style={{ fontSize: isMobile ? 15 : 16, fontWeight: 700, color: "var(--text1)" }}>{s.n}</strong>
+                <span style={{
+                  marginLeft: 5, fontSize: 10.5, fontWeight: 600, textTransform: "uppercase",
+                  letterSpacing: "0.08em", color: "var(--text3)",
+                }}>{s.label}</span>
+              </span>
+            )) : (
+              <span style={{ fontSize: 13, color: "var(--text2)" }}>Your owned, wishlist &amp; sold watches</span>
+            )}
+          </div>
+        </div>
+        <span style={{
+          flexShrink: 0, fontSize: 12.5, fontWeight: 600, whiteSpace: "nowrap",
+          color: "var(--brand-olive-text)", border: "0.5px solid var(--brand-olive-text)",
+          borderRadius: 999, padding: "8px 15px",
+        }}>Open the box →</span>
+      </div>
     </button>
   );
 }
@@ -319,8 +341,10 @@ function WLSavedStrip({ items, onClickItem }) {
   );
 }
 
-// A saved search rendered as a tap-to-run card.
-function WLSearchCard({ search, isMobile, onRun, onEdit, onRemove }) {
+// A saved search rendered as a tap-to-run card. Previews the first
+// few live results (real watch images) instead of a generic icon, so
+// a search reads like what it returns.
+function WLSearchCard({ search, previews = [], isMobile, onRun, onEdit, onRemove }) {
   const priceBits = [];
   if (search.minPrice != null) priceBits.push(`$${Number(search.minPrice).toLocaleString()}`);
   if (search.maxPrice != null) priceBits.push(`$${Number(search.maxPrice).toLocaleString()}`);
@@ -328,22 +352,98 @@ function WLSearchCard({ search, isMobile, onRun, onEdit, onRemove }) {
     priceBits.length ? priceBits.join("–") : null,
     search.count != null ? `${search.count.toLocaleString()} for sale` : null,
   ].filter(Boolean).join(" · ");
+  const thumbs = previews.slice(0, 3);
   return (
     <div style={{
-      display: "flex", alignItems: "center", gap: 10,
+      display: "flex", alignItems: "center", gap: 12,
       border: "0.5px solid var(--border)", borderRadius: 12,
-      padding: "10px 12px", background: "var(--bg)",
+      padding: 8, background: "var(--bg)",
     }}>
       <button onClick={onRun} style={{
         flex: 1, minWidth: 0, textAlign: "left", cursor: "pointer",
         fontFamily: "inherit", border: "none", background: "transparent", padding: 0,
+        display: "flex", alignItems: "center", gap: 12,
       }}>
-        <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text1)" }}>🔍 {search.label}</div>
-        {meta && <div style={{ fontSize: 12, color: "var(--text3)", marginTop: 2,
-          overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{meta}</div>}
+        <div style={{ display: "flex", gap: 3, flexShrink: 0 }}>
+          {thumbs.length ? thumbs.map((src, i) => (
+            <img key={i} src={imgSrc(src)} alt="" loading="lazy" style={{
+              width: 44, height: 44, objectFit: "cover", borderRadius: 7,
+              border: "0.5px solid var(--border)", display: "block",
+            }} />
+          )) : (
+            <div style={{
+              width: 44, height: 44, borderRadius: 7, border: "0.5px solid var(--border)",
+              background: "var(--bg)", display: "flex", alignItems: "center",
+              justifyContent: "center", color: "var(--text3)", fontSize: 16,
+            }}>⌕</div>
+          )}
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text1)" }}>{search.label}</div>
+          {meta && <div style={{ fontSize: 12, color: "var(--text3)", marginTop: 2,
+            overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{meta}</div>}
+        </div>
       </button>
       {onEdit && <button onClick={onEdit} aria-label="Edit search" style={wlIconBtn}>✎</button>}
       {onRemove && <button onClick={onRemove} aria-label="Delete search" style={wlIconBtn}>🗑</button>}
+    </div>
+  );
+}
+
+// Sticky scroll-spy section nav — jump to a band + show where you are.
+// NOT sub-tabs (it scrolls, doesn't swap content). Mirrors the
+// ReferencePage chip-bar pattern (position:sticky; top:0).
+function WLSectionNav({ sections, active, onJump }) {
+  if (sections.length < 2) return null;
+  return (
+    <nav style={{
+      position: "sticky", top: 0, zIndex: 12, background: "var(--bg)",
+      borderBottom: "0.5px solid var(--border)", margin: "0 -2px",
+    }}>
+      <div style={{
+        display: "flex", gap: 18, padding: "10px 2px", overflowX: "auto",
+        scrollbarWidth: "none", msOverflowStyle: "none", WebkitOverflowScrolling: "touch",
+      }}>
+        {sections.map((s) => {
+          const on = s.id === active;
+          return (
+            <button key={s.id} onClick={() => onJump(s.id)} style={{
+              flexShrink: 0, cursor: "pointer", fontFamily: "inherit",
+              border: "none", background: "transparent", padding: "2px 0",
+              fontSize: 11.5, fontWeight: 600, letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              color: on ? "var(--text1)" : "var(--text3)",
+              borderBottom: on ? "1.5px solid var(--brand-olive-text)" : "1.5px solid transparent",
+            }}>{s.label}</button>
+          );
+        })}
+      </div>
+    </nav>
+  );
+}
+
+// "This week in your watchlists" pulse — a compact line of real
+// signals mixed from across the app (no AI yet). Each chip jumps to /
+// opens the relevant surface.
+function WLPulse({ items }) {
+  if (!items.length) return null;
+  return (
+    <div style={{
+      display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center",
+      marginTop: 12,
+    }}>
+      <span aria-hidden style={{
+        width: 7, height: 7, borderRadius: 999, background: "var(--brand-olive-text)",
+        flexShrink: 0,
+      }} />
+      {items.map((it, i) => (
+        <button key={i} onClick={it.onClick} style={{
+          cursor: "pointer", fontFamily: "inherit", fontSize: 12.5,
+          border: "0.5px solid var(--border)", borderRadius: 999,
+          background: "var(--bg)", color: "var(--text2)", padding: "4px 11px",
+          whiteSpace: "nowrap",
+        }}>{it.text}</button>
+      ))}
     </div>
   );
 }
@@ -1530,6 +1630,22 @@ function ListsView({
   // auctions). Declared up here with the other hooks so it sits before
   // the drill-in early return (React #310: no hooks after an early return).
   const [savedTypeFilter, setSavedTypeFilter] = useState("all");
+  // Scroll-spy for the landing's sticky section nav (hook stays above
+  // the drill-in early return — React #310). Observes [data-wl-section]
+  // bands; only meaningful on the landing (selectedListId null).
+  const [activeSection, setActiveSection] = useState(null);
+  useEffect(() => {
+    if (selectedListId) return undefined;
+    if (typeof IntersectionObserver !== "function") return undefined;
+    const els = Array.from(document.querySelectorAll("[data-wl-section]"));
+    if (!els.length) return undefined;
+    const obs = new IntersectionObserver(
+      (entries) => entries.forEach((e) => { if (e.isIntersecting) setActiveSection(e.target.id); }),
+      { rootMargin: "-15% 0px -75% 0px", threshold: 0 }
+    );
+    els.forEach((el) => obs.observe(el));
+    return () => obs.disconnect();
+  }, [selectedListId]);
   // Reset the toggle when switching between lists so a previous
   // session's filter doesn't carry over.
   useEffect(() => { setHeartedOnly(false); }, [selectedListId]);
@@ -2238,6 +2354,37 @@ function ListsView({
     color: "var(--text2)", display: "inline-flex", alignItems: "center", gap: 4, lineHeight: 1,
   };
 
+  // Sticky section-nav entries (only bands that actually render).
+  const wlNavSections = [
+    savedAllItems.length > 0 ? { id: "saved", label: "Saved" } : null,
+    { id: "lists", label: "Lists" },
+    { id: "searches", label: "Searches" },
+    sharedRows.length > 0 ? { id: "shared", label: "Shared" } : null,
+  ].filter(Boolean);
+  const goToSection = (id) => {
+    if (typeof document === "undefined") return;
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  // v1 "this week" pulse — real signals mixed from existing data (no
+  // AI). The conversational missed-it/coach bot is the Phase 3 build.
+  const savedSearchTotal = (savedSearchStats || []).reduce((s, x) => s + (x.count || 0), 0);
+  const wlPulse = [
+    savedSearchTotal > 0 ? {
+      text: `${savedSearchTotal.toLocaleString()} match your saved searches`,
+      onClick: () => goToSection("searches"),
+    } : null,
+    soldWatchItems.length > 0 ? {
+      text: `${soldWatchItems.length} saved watch${soldWatchItems.length === 1 ? "" : "es"} sold`,
+      onClick: () => { setSavedTypeFilter("sold"); goToSection("saved"); },
+    } : null,
+    savedAuctions.length > 0 ? {
+      text: `${savedAuctions.length} saved auction${savedAuctions.length === 1 ? "" : "s"}`,
+      onClick: () => { setSavedTypeFilter("auctions"); goToSection("saved"); },
+    } : null,
+  ].filter(Boolean);
+
   // (renderListRow + the ListRow row family retired in B-08 — the
   // landing now renders cover-image cards, not icon+text rows. Rename/
   // delete live on the drill-in's Manage button. The synthetic
@@ -2245,38 +2392,29 @@ function ListsView({
 
   return (
     <div style={{ paddingTop: 4 }}>
-      {/* Purpose line — the empty-state-descriptor pattern Mark likes,
-          kept to one line. The full shared dispatch component is Phase 2. */}
+      {/* Refined descriptor (NOT a masthead — Mark) + pulse = a designed
+          header strip, not a lone Word-doc line. */}
       <p style={{
-        fontSize: isMobile ? 14 : 15, lineHeight: 1.5,
-        color: "var(--text2)", margin: 0, maxWidth: 580,
+        fontSize: isMobile ? 13.5 : 14.5, lineHeight: 1.55,
+        color: "var(--text2)", margin: 0, maxWidth: 600, letterSpacing: "0.01em",
       }}>
-        Your watch notebooks — gather examples, articles, prices &amp; notes for any watch you're into.
+        Your watch notebook — consolidate saved watches, articles, searches, auctions, prices &amp; notes for anything you're into.
       </p>
 
-      {/* ★ Watchbox hero anchor → the standalone Watchbox tab. */}
+      {/* "This week" pulse — real signals mixed from across the app (no AI yet). */}
+      <WLPulse items={wlPulse} />
+
+      {/* Watchbox anchor — the bold focal element (no star). */}
       {user && goToWatchbox && (
         <WLWatchboxHero counts={watchboxCounts} covers={watchboxCovers}
           isMobile={isMobile} onOpen={goToWatchbox} />
       )}
 
-      {/* YOUR LISTS — cover-image cards, recently-touched first, + Start CTA. */}
-      <WLBand id="lists" kicker="Your lists" isMobile={isMobile}>
-        <WLCardGrid isMobile={isMobile}>
-          {ownedByRecency.map(c => (
-            <WLListCard key={c.id}
-              name={c.name}
-              images={listCoverImages(c, itemsByColl[c.id])}
-              chips={listFlavour(itemsByColl[c.id])}
-              shared={sharedListIds.has(c.id)}
-              isMobile={isMobile}
-              onOpen={() => setSelectedListId(c.id)} />
-          ))}
-          <WLStartCard isMobile={isMobile} onClick={startCreateCollection} />
-        </WLCardGrid>
-      </WLBand>
+      {/* Sticky scroll-spy section nav — jump-to, NOT sub-tabs. */}
+      <WLSectionNav sections={wlNavSections} active={activeSection} onJump={goToSection} />
 
-      {/* SAVED — unified, type-filterable (fixes "where did my heart go"). */}
+      {/* SAVED — moved ABOVE Lists (Mark: hearted higher, still visible).
+          Unified + type-filterable (fixes "where did my heart go"). */}
       {savedAllItems.length > 0 && (
         <WLBand id="saved" kicker="Saved" isMobile={isMobile}
           action={
@@ -2303,6 +2441,22 @@ function ListsView({
         </WLBand>
       )}
 
+      {/* YOUR LISTS — cover-image cards, recently-touched first, + Start CTA. */}
+      <WLBand id="lists" kicker="Your lists" isMobile={isMobile}>
+        <WLCardGrid isMobile={isMobile}>
+          {ownedByRecency.map(c => (
+            <WLListCard key={c.id}
+              name={c.name}
+              images={listCoverImages(c, itemsByColl[c.id])}
+              chips={listFlavour(itemsByColl[c.id])}
+              shared={sharedListIds.has(c.id)}
+              isMobile={isMobile}
+              onOpen={() => setSelectedListId(c.id)} />
+          ))}
+          <WLStartCard isMobile={isMobile} onClick={startCreateCollection} />
+        </WLCardGrid>
+      </WLBand>
+
       {/* SAVED SEARCHES — tap to re-run on Listings. */}
       <WLBand id="searches" kicker="Saved searches" isMobile={isMobile}
         action={startAddSearch
@@ -2312,6 +2466,7 @@ function ListsView({
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {savedSearchStats.map(s => (
               <WLSearchCard key={s.id} search={s} isMobile={isMobile}
+                previews={matchListings(allListings, s.query, s.minPrice, s.maxPrice).map(wlItemImg).filter(Boolean)}
                 onRun={() => runSearch && runSearch(s)}
                 onEdit={startEditSearch ? () => startEditSearch(s) : null}
                 onRemove={removeSearch ? async () => {
