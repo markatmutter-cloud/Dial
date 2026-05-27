@@ -44,6 +44,9 @@ jest.mock("./supabase", () => {
     useTrackedLots: () => ({
       urls: [], addedAt: {}, add: noopAsync, remove: noopAsync,
     }),
+    useSavedAuctions: () => ({
+      urls: [], addedAt: {}, toggle: noopAsync,
+    }),
     useCollections: () => ({
       collections: [],
       itemsByCollection: {},
