@@ -12,8 +12,13 @@
 // a hint show; desktop fixed 210px so ~6 show on a 1440px window. The action
 // buttons on the card are absolute and don't shrink with the tile, which is
 // why mobile didn't go narrower than 38%.
+//
+// Scroll affordance (B-33, 2026-05-27): a slim always-on scroll indicator under
+// the strip on DESKTOP (mobile relies on touch + the peeking next tile), so it's
+// obvious the row scrolls sideways. Native scrollbars stay hidden; this is a
+// custom thin track + thumb sized to the visible/total ratio.
 
-import React from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 
 export default function CardStrip({
   items,
@@ -24,22 +29,61 @@ export default function CardStrip({
   inset = true,          // false = bleed to edges (Home inverted band)
 }) {
   const slice = max != null ? items.slice(0, max) : items;
+  const scrollRef = useRef(null);
+  // thumb: width + left as % of the track; show only when the strip overflows.
+  const [thumb, setThumb] = useState({ w: 0, l: 0, show: false });
+
+  const update = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const { scrollWidth, clientWidth, scrollLeft } = el;
+    const overflowing = scrollWidth > clientWidth + 2;
+    setThumb({
+      w: overflowing ? Math.max((clientWidth / scrollWidth) * 100, 8) : 0,
+      l: overflowing ? (scrollLeft / scrollWidth) * 100 : 0,
+      show: overflowing,
+    });
+  }, []);
+
+  useEffect(() => {
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, [update, slice.length, isMobile]);
+
+  const padX = inset ? (isMobile ? 16 : 20) : 0;
+
   return (
-    <div style={{
-      display: "flex", gap: 1, overflowX: "auto", overflowY: "hidden",
-      padding: inset ? (isMobile ? "0 16px 4px" : "0 20px 4px") : "0 0 4px",
-      scrollSnapType: "x mandatory",
-      WebkitOverflowScrolling: "touch",
-      scrollbarWidth: "none", msOverflowStyle: "none",
-      background,
-    }}>
-      {slice.map((item, i) => (
-        <div key={item.id || item.url || i} style={isMobile
-          ? { flex: "0 0 38%", maxWidth: 170, scrollSnapAlign: "start", background: "var(--card-bg)", position: "relative" }
-          : { flex: "0 0 210px", scrollSnapAlign: "start", background: "var(--card-bg)", position: "relative" }}>
-          {renderCard(item)}
+    <div>
+      <div ref={scrollRef} onScroll={update} style={{
+        display: "flex", gap: 1, overflowX: "auto", overflowY: "hidden",
+        padding: inset ? (isMobile ? "0 16px 4px" : "0 20px 4px") : "0 0 4px",
+        scrollSnapType: "x mandatory",
+        WebkitOverflowScrolling: "touch",
+        scrollbarWidth: "none", msOverflowStyle: "none",
+        background,
+      }}>
+        {slice.map((item, i) => (
+          <div key={item.id || item.url || i} style={isMobile
+            ? { flex: "0 0 38%", maxWidth: 170, scrollSnapAlign: "start", background: "var(--card-bg)", position: "relative" }
+            : { flex: "0 0 210px", scrollSnapAlign: "start", background: "var(--card-bg)", position: "relative" }}>
+            {renderCard(item)}
+          </div>
+        ))}
+      </div>
+      {/* Slim scroll indicator — desktop only, only when the strip overflows. */}
+      {!isMobile && thumb.show && (
+        <div style={{
+          height: 3, margin: `4px ${padX}px 0`, borderRadius: 2,
+          background: "var(--border)", position: "relative",
+        }}>
+          <div style={{
+            position: "absolute", top: 0, height: 3, borderRadius: 2,
+            width: `${thumb.w}%`, left: `${thumb.l}%`,
+            background: "var(--text3)", transition: "left 0.06s linear",
+          }} />
         </div>
-      ))}
+      )}
     </div>
   );
 }
