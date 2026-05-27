@@ -31,6 +31,15 @@ delete — the history is useful.
 
 ## Open
 
+Grouped by **epic** (see [docs/IA_REDESIGN.md](docs/IA_REDESIGN.md) Deliverable 1)
+so `/start` reads the backlog as coherent threads, not a flat list. **Clean-close
+rule:** a partial ship *closes* its item and opens **one** crisply-scoped
+follow-up — no vague "phase 2 open" tails.
+
+### ⓐ Epic A — IA / UX Redesign
+*Design threads, not defects — this epic's working checklist. Also tracked outside
+BUGS as memories: chrome-unification, card-design-system.*
+
 ### B-06 — Post-screening flow is underspecified (design thread → plan-mode)
 - **Reported:** 2026-05-24 · **Type:** Design/product question · **Status:** Largely RESOLVED by the screening collapse 2026-05-26 (PRs #598–602). The original four questions are answered or obsoleted by the new binary model:
   1. *Done screening?* → light `CompletionView` ("Saved N of M"); results = your watchlist.
@@ -56,6 +65,10 @@ delete — the history is useful.
 
 ### B-14 — BRAND.md review (Plan thread)
 - **Reported:** 2026-05-24 (`Plan:`) · **Type:** Plan-mode thread, not a bug · **Status:** Queued for a coming session. Mark wants a review of `BRAND.md` (voice/brand). Pairs naturally with the card design system's "breathing-space & brand impact" dial — brand voice + visual brand expression. Surface at a replanning step.
+
+### ⓑ Epic B — Platform Health
+*Audit remediation + reliability. Low-risk, noise-reducing; mostly independent of
+the redesign.*
 
 ### B-16 — Dependencies unpinned (no lockfiles, JS + Python)
 - **Reported:** 2026-05-24 · **Source:** `audit:2026-05-24` · **Severity:** 2 (reliability + supply-chain) · **Surface:** build / CI / workflows · **Status:** Partly fixed — **Python pinned #578**; **JS lockfile still open** (pending a Node environment — `npm` unavailable locally).
@@ -84,6 +97,16 @@ delete — the history is useful.
 - **Done (#579):** AdminTab (admin-only) `React.lazy` + `Suspense` — its chunk now loads only when an admin opens the tab.
 - **Remaining (phase 2):** the receivers (mount only on inbound share/challenge/list links), `EditorialView`, `SizeCompare`, `ChallengeFlow`, modals. Confirm where each is imported (some are inside sub-components, not App.js). Detail: `docs/audits/2026-05-24-vibe-code/findings-frontend.md` (H1).
 
+### B-27 — Inert-code visibility scan (maintenance thread)
+- **Reported:** 2026-05-26 · **Type:** Maintenance/hygiene thread, not a defect · **Severity:** 3 (maintainability) · **Status:** Open — queued for a maintenance pass.
+- **Why:** building B-24 surfaced that `enumerate_bonhams` was complete and wired into `ENUMERATORS` but **inert in CI** (Cloudflare 403) — code that exists, looks live, but never produces output in its current environment. Its docstring even claimed "works cleanly from CI" (true once, then false). This is a *different* axis than the 2026-05-24 vibe-code audit (which covered correctness/security/perf, not dormant-but-valid code), so it's not tracked anywhere. Mark's question (2026-05-26): "how much of this is in the codebase, just not visible?"
+- **Scope of the scan:** find code that is wired in but effectively inert — enumerators/scrapers that return `[]` in their runtime, workflows built but never scheduled (e.g. `scrape-listings-matrix.yml`), flag-guarded **retired UI surfaces** (CLAUDE.md's "don't reintroduce" list), dead imports (e.g. App.js imports `ListReviewMode` but renders it 0× — noted in a prior handoff). For each: decide keep-with-marker / reactivate / delete.
+- **Convention to adopt:** dormant-but-valid code carries a `DORMANT:` marker stating *why it's inert + what reactivates it* (done for `enumerate_bonhams`, #-this-PR). And: sanity-check plan docs (BUGS/ROADMAP) against actual code before writing "build X" (the B-24 framing miss). Pairs with the `/maintenance` skill.
+
+### ⓒ Epic C — Auctions & Scraping
+*The parallel backend session's domain. Phase-0-adjacent; mostly shipped, with
+install/decision tails remaining.*
+
 ### B-23 — Browse AI 403 (Tropical Watch) + in-batch scrape failures are invisible
 - **Reported:** 2026-05-26 · **Severity:** 2 (a source stops updating; operability) · **Surface:** `tropicalwatch_scraper.py`, `.github/workflows/scrape-listings.yml`, `notify-scrape-failure.yml` · **Status:** Partly fixed — **error-surfacing shipped (this branch)**; **account-side fix pending Mark**; **silent-gap proposal pending decision**.
 - **Detail:** Tropical Watch (the **only** active Browse AI source — Analog Shift fetches Shopify directly, Grey & Patina migrated to WooCommerce) started getting **`403 Forbidden`** from `POST /robots/{id}/tasks` on 2026-05-26 06:09Z, opening scrape-failure issue **#569**. The key is present (not 401), so 403 = account-side: most likely **exhausted Browse AI task credits**, lapsed billing, or a rotated key. Not a code bug — needs the Browse AI dashboard.
@@ -108,18 +131,15 @@ delete — the history is useful.
 - **Pluggable-fetcher abstraction:** the orchestration (schedule → URL → window → results → merge) is identical whether the fetcher is direct-`requests`, Playwright, or Browse AI. Build it **once**; the fetcher is a swap. For both Bonhams and TW, **direct fetch works → Browse AI is droppable.**
 - **Security:** needs git push creds on the box (Mark has git set up). If ever a self-hosted GitHub *runner* instead of `launchd`, lock it down — self-hosted runners on a public repo are a known risk.
 
+### ◆ One-off (no epic)
+*Small correctness fix.*
+
 ### B-26 — A shared item leaks into the brand-filtered Listings grid
 - **Reported:** 2026-05-26 · **Severity:** 2 (correctness; possible cross-user/private-content leak — verify) · **Surface:** Listings brand filter / user-data projection into listings · **Status:** Open — held for later (Mark, 2026-05-26)
 - **Detail:** Filtering Listings by brand **Enicar** surfaces a card that links to a **share URL** — `https://the-watch-list.app/share/484b499a302c?from=Mark+Mutter` — instead of a real dealer listing. A `/share/<id>` link is a *shared item*, not a marketplace listing, so it shouldn't appear in the public brand-filtered grid at all.
 - **What I found (triage):** the `/share/` item is **not** in static `public/listings.json` (none of the 9 Enicar items there have a `/share/` URL). So it's coming from **user data** — a Supabase row (collection/shared item) carrying a `listing_snapshot`, which is projected into the listings memo client-side (`src/supabase.js` `listing_snapshot` pattern; CLAUDE.md "Articles flow through the listing tables"). The snapshot's `brand` is `Enicar`, so it matches the Enicar brand filter, but its link resolves to the `/share/<id>` URL rather than a dealer URL.
 - **Hypothesis:** the listings projection / brand filter doesn't exclude share-kind (or non-dealer `listing_snapshot`) items — they should live only in their own surface, not the cross-source Listings grid. Likely fix near the listings memo in `src/App.js` (gate out share/`listing_snapshot`-only items) or wherever shared snapshots are folded into the grid. **Verify the privacy dimension:** confirm whether this leaks one user's shared item into *another* user's listings, or only the sharer's own session.
 - **Adjacent smell (maybe separate):** one static Enicar item is titled "Richard Mille RM 002-V2 Tourbillon…" but `brand: Enicar` (windvintage URL) — a brand-misclassification worth a look while in this code.
-
-### B-27 — Inert-code visibility scan (maintenance thread)
-- **Reported:** 2026-05-26 · **Type:** Maintenance/hygiene thread, not a defect · **Severity:** 3 (maintainability) · **Status:** Open — queued for a maintenance pass.
-- **Why:** building B-24 surfaced that `enumerate_bonhams` was complete and wired into `ENUMERATORS` but **inert in CI** (Cloudflare 403) — code that exists, looks live, but never produces output in its current environment. Its docstring even claimed "works cleanly from CI" (true once, then false). This is a *different* axis than the 2026-05-24 vibe-code audit (which covered correctness/security/perf, not dormant-but-valid code), so it's not tracked anywhere. Mark's question (2026-05-26): "how much of this is in the codebase, just not visible?"
-- **Scope of the scan:** find code that is wired in but effectively inert — enumerators/scrapers that return `[]` in their runtime, workflows built but never scheduled (e.g. `scrape-listings-matrix.yml`), flag-guarded **retired UI surfaces** (CLAUDE.md's "don't reintroduce" list), dead imports (e.g. App.js imports `ListReviewMode` but renders it 0× — noted in a prior handoff). For each: decide keep-with-marker / reactivate / delete.
-- **Convention to adopt:** dormant-but-valid code carries a `DORMANT:` marker stating *why it's inert + what reactivates it* (done for `enumerate_bonhams`, #-this-PR). And: sanity-check plan docs (BUGS/ROADMAP) against actual code before writing "build X" (the B-24 framing miss). Pairs with the `/maintenance` skill.
 
 ---
 

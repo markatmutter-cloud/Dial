@@ -1,71 +1,72 @@
-# Watchlist — Session Handoff (2026-05-27, screening collapse + auction redesign)
+# Watchlist — Session Handoff (2026-05-27, IA redesign plan graduated)
 
 Conventions: [CLAUDE.md](CLAUDE.md). Direction: [ROADMAP.md](ROADMAP.md).
-History: [SHIPPED.md](SHIPPED.md). Backlog: [BUGS.md](BUGS.md). Plan archive:
-`.claude/plans/declarative-drifting-bonbon.md` (Phase 4 plan). Prior handoff
-archived to `archive/SESSION_HANDOFF_2026-05-26.md`.
+History: [SHIPPED.md](SHIPPED.md). Backlog: [BUGS.md](BUGS.md). **IA build brief:
+[docs/IA_REDESIGN.md](docs/IA_REDESIGN.md).** Prior handoff (screening collapse +
+auction redesign) archived to
+`archive/SESSION_HANDOFF_2026-05-27-screening-auction.md`.
 
-## TL;DR — a marathon: 24 PRs (#598–621), all merged + CI-green, branches deleted
-Two big arcs + ~10 live-polish rounds.
+## TL;DR — the IA/UX redesign plan is now filed + official
+A plan-mode thinking session designed the site's IA/UX redesign, but a terminal
+crash lost the plan-mode buffer before it could be filed. Mark re-pasted the plan
++ transcript; this session **graduated it into the doc system** (Deliverable 3 of
+the plan). Branch `ia-redesign-plan-graduation` (docs-only, off `main`) — **no app
+code touched**.
 
-**1. Screening collapse (#598–603 + #602).** The swipe screener is now **binary
-skip/heart**: swipe right = heart→watchlist, left = skip (records nothing); Undo
-reverses a save. The **entire collaborative-reaction system is GONE — code AND
-data**: `collection_item_reactions` table + 3 RPCs (`list_item_reactions`,
-`list_reaction_counts_for_user`, `my_reactions_with_items`) + `get_or_create_auction_list`
-were **DROPPED from prod** (PR4 migration `supabase/schema/2026-05-26_drop_reaction_substrate.sql`,
-applied via MCP); 191 reaction rows + 3 auction-type collections + 740 items
-deleted. Removed from the frontend: the To-review/Loved/Liked/Passed buckets,
-per-card 👍/❌ rating, `ReactionAggregateChips`, the "My reactions" Saved row +
-`MyReactionsView`, realtime sub, the 4 supabase fns. Lists render a **flat grid**;
-shared lists get a **"Screen"** button. **Do NOT reference** `reactionsByItem`,
-`toggleReaction`, `onRate`/`myRating`, sentiment buckets, or `collection_item_reactions`.
+## What landed this session (all docs)
+- **`docs/IA_REDESIGN.md`** — the canonical plan, saved verbatim (three-speeds
+  model, dossier keystone, Watchbox/planning resolution, dispatch layer, reference
+  drill-down, wireframes, AI prompts, phases, migration landmines). This is the
+  build brief for the next sessions.
+- **BUGS.md** — flat `B-NN` list restructured into **Epic A (IA/UX: B-06, B-08,
+  B-14) · Epic B (Platform Health: B-16, B-18, B-19, B-20, B-22, B-27) · Epic C
+  (Auctions & Scraping: B-23, B-24, B-25) · One-off (B-26)**, + the **clean-close
+  rule** at the top.
+- **ROADMAP.md** — added **Epic 9: IA / UX redesign** + a priority-intro paragraph
+  anchoring it to the doc.
+- **CLAUDE.md** — added the **clean-close rule** (Close protocol) + a
+  dispatch-layer clause on the existing cross-surface-consistency rule. (2438 →
+  still well under budget.)
+- **Memory** — 4 new files: `project_ia_redesign`, `project_watchlists_dossier_keystone`,
+  `project_watchbox_planning`, `feedback_tempo_not_label` (+ MEMORY.md index).
 
-**2. Auction redesign — Phases 1–4 (#604–617) + cover foundation (#619).**
-- **Grid**: flat (no per-sale dividers); **closing-time date headers** back
-  (Ending now / Closing today / tomorrow / this week / month / Later). A single
-  **house · title · date · N lots** header shows only when filtered to one sale.
-- **Calendar = modal** (not a sub-tab) — **auto-opens on first Auctions visit**
-  per session; brand-olive header; launched by a **Calendar pill far-left** on
-  the filter row. Sub-tabs now **Listings · Auctions · Sold** (4→3). The Sale
-  filter pill is gone (the modal IS the sale-picker; `filterSaleUrls` + the
-  Active-Filters chip remain).
-- **Cards**: image-forward, fixed-size/uniform, `imgSrc(a.image || top-lot →
-  colored placeholder)`. Month-jump nav (sticky; Archive→"Closed" pinned right).
-- **Heart/save a sale** → `saved_auctions` table (mirrors `tracked_lots`, RLS) +
-  Hearted filter + a **"Saved auctions"** row in Watchlists (`useSavedAuctions`).
-- Dates show the **year** now.
+## The model (one screen)
+Organize the 3 tabs by **tempo, not data type** (tempo = rationale, never a UI
+label — tabs stay nouns):
+- **Listings (fast)** — encounter the market: one dense grid, cut by new/price/brand/house.
+- **Watchlists (medium)** — the "living dossier" keystone (lists mixing ref guide +
+  live saved search + listings + comps + shortlist + articles + notes); Watchbox =
+  elevated anchor list. Learning tool, not a shopping cart.
+- **Collecting (slow)** — explore-watches + develop-as-a-collector, AI spine (RAG ·
+  coach · missed-it); Brand › Model › Reference drill-down above the 5512/5513 leaf.
+- **Dispatch layer** (one shared component) on every tab = the clarity mechanism.
+  **Planning** = one experience, two doors. **Screening** = a mode, not a tab.
 
-## ⭐ NEXT PICKUP — cover-image scraping, remaining 5 houses
-Frontend + plumbing are DONE: `merge.py process_auctions` reads/emits `image`;
-the calendar prefers `a.image` over the top-lot hero. **Christie's shipped** (#619)
-as the pattern — its `__NEXT_DATA__` ships `ImageUrl` (host not hot-link-protected,
-no proxy needed). **Remaining: Antiquorum, Bonhams, Monaco Legend, Phillips,
-Sotheby's** — each needs per-house cover extraction (Phillips calendar is
-client-rendered / no static covers; Sotheby's CDN is hash-signed; Bonhams runs on
-the residential host). Each adds an `image` column to its `*_auctions.csv`; verifies
-only on a live `scrape-auctions` run. **Christie's covers populate at the next
-`scrape-auctions` (06:00 UTC) or a manual `gh workflow run scrape-auctions.yml`** —
-not yet visible on prod until then.
+## ⭐ NEXT PICKUP — Phase 1: Watchlists living dossier (the keystone)
+Phase 0 (Listings/auctions restructure + Bonhams) shipped #612–621. The next build
+is **Phase 1**, the only genuinely-new capability:
+- **1a — spec + data model** (start here): the dossier = ordered typed sections
+  (reference guide · live saved search · live listings · sold comps · shortlist ·
+  articles · notes). Map each to existing storage (`watchlist_items`,
+  `collection_items`, `saved_searches`, editorial) + the ONE new type (free-text
+  notes → new column/table). Decide the live-saved-search re-run mechanism.
+- **1b** dossier container UI · **1c** Watchbox anchor · **1d** notes.
+Sequencing principle: build the capability before the dispatch layer that advertises
+it. See docs/IA_REDESIGN.md for wireframes + the full phase plan.
 
-## Other open threads (don't lose)
-- **B-26** share-link leaks into brand-filtered Listings (held).
-- **B-27** inert-code visibility scan + `DORMANT` marker convention.
-- **B-16** JS lockfile · **B-18** FX drift · **B-19** RLS versioning · **B-20**
-  scraper rename — audit-track, open.
-- **Heritage** developer API (Mark to register a key); **Phillips essays**
-  (CI-WAF-blocked, testable via the residential host).
-- Reference-page follow-ups (synthesis prompt tightening, browse index, gap
-  backlog) — see ROADMAP NOW #2.
+## Knock-off-before-the-build (from the plan's priority)
+Cheap correctness/hygiene wins, independent + low-risk: **B-18** FX drift · **B-26**
+grid leak · **B-20** scraper rename. Defer **B-22** code-split (don't optimize App.js
+you're about to rewrite) + **B-16** JS lockfile (needs a Node env) to after.
 
-## Operating note
-The laptop launchd agent pushes "Bonhams lots refresh" commits to `main` a few
-times/day — expected (`scripts/RESIDENTIAL_SCRAPE_SETUP.md`). The calendar modal
-auto-opens once per browser session on the Auctions sub-tab (sessionStorage
-`auctions_calendar_autoopened_v1`).
+## Open state
+- This branch is **docs-only, not yet pushed/merged.** Per the plan, push/merge is
+  the last Deliverable-3 step — confirm with Mark before pushing.
+- Auction cover-image scraping for the remaining 5 houses is still open (Christie's
+  shipped #619; merge.py plumbing done) — see ROADMAP NEXT #6.
+- Other carried threads unchanged: B-25 launchd install, Heritage API, Phillips essays.
 
 ## Bottom line
-Clean close: main synced, no open PRs, no stranded branches, tree clean. Screening
-is binary + reaction-free (DB clean); the auction surface is fully redesigned
-(grid + calendar modal + heart/save + covers-ready). Next: finish cover scraping
-for the other 5 houses, then trigger a scrape to see covers live.
+The IA/UX redesign is no longer trapped in a lost plan-mode buffer — it's a
+canonical doc, a ROADMAP epic, an organized backlog, and memory. Next real work:
+Phase 1a (the Watchlists dossier data model). Push the docs branch when Mark's ready.
