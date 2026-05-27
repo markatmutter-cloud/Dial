@@ -40,6 +40,22 @@ follow-up — no vague "phase 2 open" tails.
 *Design threads, not defects — this epic's working checklist. Also tracked outside
 BUGS as memories: chrome-unification, card-design-system.*
 
+**⭐ IA Redesign — phase status (the BIG plan; full detail [docs/IA_REDESIGN.md](docs/IA_REDESIGN.md)).
+Kept here, above the small B-xx items, so the headline work never gets lost in the noise:**
+- ✅ **Phase 0** — Listings/Auctions restructure (calendar modal + Bonhams) — shipped.
+- 🟡 **Phase 1 — Watchlists "living dossier"** (the keystone) — composable blocks +
+  data model + notes SHIPPED (#628). **Needs visual polish ("looks crappy").** Watchbox-as-
+  anchor (1c) not done.
+- 🟡 **Reference browsing** (Brand › Model line › Reference, pulled forward) — structure
+  SHIPPED (#627). **Needs visual polish.**
+- 🔴 **Phase 2** — dispatch layers on every tab + de-junk Collecting + tools shelf — NOT
+  built (only the References landing exists as a mini-dispatch).
+- 🔴 **AI spine — RAG Q&A chatbot · journey coach · "missed-it"/discovery** — the
+  exciting builds; each its own session. *Not a B-xx item — don't let it get buried.*
+- 🔴 **Recommender** (Epic 7) + **two-door planning** — future.
+*Visual polish is the recurring gap (structures built, pixels rough) — best done with Mark
+in-app since Claude can't run the app here.*
+
 ### B-06 — Post-screening flow is underspecified (design thread → plan-mode)
 - **Reported:** 2026-05-24 · **Type:** Design/product question · **Status:** Largely RESOLVED by the screening collapse 2026-05-26 (PRs #598–602). The original four questions are answered or obsoleted by the new binary model:
   1. *Done screening?* → light `CompletionView` ("Saved N of M"); results = your watchlist.
