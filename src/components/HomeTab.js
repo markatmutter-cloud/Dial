@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { Card } from "./Card";
 import CardStrip from "./CardStrip";
+import CardShell from "./CardShell";
 import { SearchIcon, TabIcon } from "./icons";
 import { MoonPhaseIndicator } from "./MoonPhaseIndicator";
 
@@ -898,6 +899,7 @@ export function HomeTab(props) {
   const {
     homeRecentAdded, homeRecentSold, homeEndingNext,
     homeRecentlyHearted, goToSavedHearts,
+    homeRecentArticles, goToArticles,
     homeDealerSources, homeJumpToDealer,
     goToRecentAdded, goToRecentSold, goToEndingNext,
     homeSearchSubmit,
@@ -1046,15 +1048,32 @@ export function HomeTab(props) {
         openCollectionPicker={openCollectionPicker} isAdmin={isAdmin}
         user={user} compact={compact}
       />
-      {/* Signed-in user's most-recently hearted strip — Mark spec
-          2026-05-11: "users most recent hearted items on the home
-          page as a strip... if they are logged in... second row".
-          SectionStrip already returns null on empty items so signed-
-          out users / users with no hearts get no row. */}
+      {/* Recent editorial articles (B-32, 2026-05-27) — idle-loaded; renders
+          via CardShell article tiles (not SectionStrip, which is listing-shaped). */}
+      {homeRecentArticles && homeRecentArticles.length > 0 && (
+        <section style={{ padding: isMobile ? "16px 0" : "20px 0" }}>
+          <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", padding: isMobile ? "0 16px 10px" : "0 20px 12px" }}>
+            <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
+              <h2 style={{ margin: 0, fontSize: isMobile ? 16 : 18, fontWeight: 600, color: "var(--text1)", fontFamily: "inherit" }}>Articles</h2>
+              <span style={{ fontSize: 12, color: "var(--text3)" }}>{homeRecentArticles.length}</span>
+            </div>
+            {goToArticles && (
+              <button onClick={goToArticles} style={{ background: "transparent", border: "0.5px solid var(--border)", borderRadius: 18, padding: "6px 14px", fontFamily: "inherit", fontSize: 13, fontWeight: 500, color: "var(--text1)", cursor: "pointer" }}>View all →</button>
+            )}
+          </div>
+          <CardStrip items={homeRecentArticles} isMobile={isMobile} renderCard={a => (
+            <CardShell href={a.url} aspect="square" bodyPadding="10px 12px 12px"
+              image={a.image ? { src: a.image, alt: "" } : null}
+              level2={<div style={{ fontSize: 10, fontWeight: 600, color: "var(--text3)", textTransform: "uppercase", letterSpacing: 0.4, marginBottom: 4 }}>{(a._source && a._source.label) || a.source || ""}</div>}
+              level1={<div style={{ fontSize: 12, fontWeight: 500, color: "var(--text1)", lineHeight: 1.3, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{a.title}</div>}
+            />
+          )} />
+        </section>
+      )}
       <SectionStrip
-        heading="Recently hearted"
-        items={homeRecentlyHearted}
-        onViewAll={goToSavedHearts}
+        heading="Recently sold"
+        items={homeRecentSold}
+        onViewAll={goToRecentSold}
         isMobile={isMobile} shellPad={shellPad}
         watchlist={watchlist} hidden={hidden} handleWish={handleWish}
         toggleHide={toggleHide} toggleHomeHide={toggleHomeHide} primaryCurrency={primaryCurrency}
@@ -1062,10 +1081,14 @@ export function HomeTab(props) {
         openCollectionPicker={openCollectionPicker} isAdmin={isAdmin}
         user={user} compact={compact}
       />
+      {/* Signed-in user's most-recently hearted strip (moved below Sold per
+          Mark's Home order 2026-05-27: added · articles · sold · hearted ·
+          ending). SectionStrip returns null on empty so signed-out users get
+          no row. */}
       <SectionStrip
-        heading="Recently sold"
-        items={homeRecentSold}
-        onViewAll={goToRecentSold}
+        heading="Recently hearted"
+        items={homeRecentlyHearted}
+        onViewAll={goToSavedHearts}
         isMobile={isMobile} shellPad={shellPad}
         watchlist={watchlist} hidden={hidden} handleWish={handleWish}
         toggleHide={toggleHide} toggleHomeHide={toggleHomeHide} primaryCurrency={primaryCurrency}
