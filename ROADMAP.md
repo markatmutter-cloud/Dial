@@ -511,10 +511,14 @@ is the clarity mechanism — not a nicety. **Planning = one experience, two door
 
 **Build sequence** — capability before the dispatch layer that advertises it:
 - ✅ **Phase 0** — Listings/Auctions restructure (calendar modal + Bonhams) — shipped #612–621.
-- ▶ **Phase 1** — Watchlists living dossier (the keystone, the only genuinely new
-  build): 1a spec + data model · 1b dossier container UI · 1c Watchbox anchor · 1d notes.
+- ▶ **Phase 1** — Watchlists living dossier (the keystone): **1a spec done**
+  ([docs/WATCHLISTS_DOSSIER_SPEC.md](docs/WATCHLISTS_DOSSIER_SPEC.md)) · 1b container UI ·
+  1c Watchbox anchor · 1d notes.
+- ▶ **Reference structure** (pulled forward 2026-05-27) — Brand › Model line › Reference
+  tree + breadcrumbs above the 5512/5513 leaf; underpins the dossier's reference-guide section.
 - **Phase 2** — dispatch layers + de-junk Collecting + tools shelf.
-- **Phase 3** — AI spine + two-door planning + reference drill-down.
+- **Phase 3** — two-door planning + journey coach. The **RAG Q&A bot** and the
+  **missed-it / discovery bot** are each their own dedicated session.
 
 ## Explicitly NOT on the roadmap
 
