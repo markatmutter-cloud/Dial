@@ -314,6 +314,8 @@ export default function Watchlist() {
   // attribution without re-importing the EditorialView SOURCES list.
   const [searchAllArticles, setSearchAllArticles] = useState([]);
   const [searchAllArticlesLoaded, setSearchAllArticlesLoaded] = useState(false);
+  // Home "Articles" strip (B-32) — recent editorial meta, idle-loaded.
+  const [homeArticles, setHomeArticles] = useState([]);
   // Article body text — lazy-loaded SEPARATELY from meta (~14 MB
   // vs ~2 MB for meta only). First non-trivial keystroke in the
   // Search-all input triggers the fetch so the user's title-level
@@ -931,6 +933,43 @@ export default function Watchlist() {
     })();
     return () => { cancelled = true; };
   }, [searchAllActive, searchAllArticlesLoaded]);
+
+  // Home "Articles" strip (B-32, 2026-05-27) — idle-load the editorial META
+  // (recent 12 by date) so it doesn't touch first paint (B-17 pattern). Reuses
+  // EDITORIAL_SOURCE_URLS; meta only (no bodies). Falls back to setTimeout.
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const fetched = await Promise.all(
+          EDITORIAL_SOURCE_URLS.map(async (url) => {
+            try {
+              const r = await fetch(url);
+              if (!r.ok) return [];
+              const data = await r.json();
+              const key = url.replace(/^\//, "").replace(/\.json$/, "");
+              const records = Array.isArray(data) ? data : Object.values(data || {});
+              return records
+                .filter((rec) => rec && rec.url && rec.title)
+                .map((a) => ({ ...a, _source: { key, label: key } }));
+            } catch { return []; }
+          })
+        );
+        if (cancelled) return;
+        const all = fetched.flat()
+          .sort((a, b) => (b.published_at || "").localeCompare(a.published_at || ""))
+          .slice(0, 12);
+        setHomeArticles(all);
+      } catch (e) { console.warn("home articles fetch failed", e); }
+    };
+    const ric = window.requestIdleCallback;
+    const id = ric ? ric(load, { timeout: 2500 }) : setTimeout(load, 1400);
+    return () => {
+      cancelled = true;
+      if (ric && window.cancelIdleCallback) window.cancelIdleCallback(id);
+      else clearTimeout(id);
+    };
+  }, []);
 
   // Article-body lazy load — fires on the first non-trivial Search-all
   // query (length >= 2). Bodies are heavy (~14 MB across sources) so
@@ -3992,6 +4031,8 @@ export default function Watchlist() {
       goToRecentAdded={() => { setTab("listings"); setListingsSubTab("live"); setPage(1); }}
       goToRecentSold={() => { setTab("listings"); setListingsSubTab("sold"); setPage(1); }}
       goToEndingNext={() => { setTab("listings"); setListingsSubTab("auctions"); setPage(1); }}
+      homeRecentArticles={homeArticles}
+      goToArticles={() => { setTab("references"); setReferencesSubTab("editorial"); setPage(1); }}
       homeSearchSubmit={(query, target) => {
         // Commit the typed query to App.js's existing `search` state
         // (which feeds `allFiltered`) and land on the chosen sub-tab.
