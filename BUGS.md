@@ -103,6 +103,10 @@ the redesign.*
 - **Scope of the scan:** find code that is wired in but effectively inert — enumerators/scrapers that return `[]` in their runtime, workflows built but never scheduled (e.g. `scrape-listings-matrix.yml`), flag-guarded **retired UI surfaces** (CLAUDE.md's "don't reintroduce" list), dead imports (e.g. App.js imports `ListReviewMode` but renders it 0× — noted in a prior handoff). For each: decide keep-with-marker / reactivate / delete.
 - **Convention to adopt:** dormant-but-valid code carries a `DORMANT:` marker stating *why it's inert + what reactivates it* (done for `enumerate_bonhams`, #-this-PR). And: sanity-check plan docs (BUGS/ROADMAP) against actual code before writing "build X" (the B-24 framing miss). Pairs with the `/maintenance` skill.
 
+### B-34 — Load-speed audit: measure + improve first-paint; verify Vercel downgrade impact
+- **Reported:** 2026-05-27 · **Type:** Performance · **Severity:** 2 · **Surface:** first-load / Vercel hosting · **Status:** Open — queued (Mark).
+- **Detail:** Measure real load speed (first paint + time-to-interactive) and find the wins. **Check whether the recent Vercel Pro→Hobby downgrade changed anything** (edge caching / bandwidth / build limits). Known levers already on the roadmap: ~22 MB JSON on first paint (listings.json split **Phase 2** + lazy-gate non-default fetches), **code-split Phase 2** (B-22), a CI size-budget guard. Deliverable: a before/after baseline (Lighthouse / WebPageTest) + a prioritized fix list. Pairs with ROADMAP "Payload + data-growth budget".
+
 ### ⓒ Epic C — Auctions & Scraping
 *The parallel backend session's domain. Phase-0-adjacent; mostly shipped, with
 install/decision tails remaining.*
