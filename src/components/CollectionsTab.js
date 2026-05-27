@@ -45,15 +45,6 @@ const HIDDEN_COLLECTION_ID = "__hidden__";
 // it's UI-only.
 const SAVED_COLLECTION_ID = "__saved__";
 
-// My-reactions virtual list (2026-05-20). Aggregates every reaction
-// the current user has placed across every list they have access to,
-// surfaced inside Collections > Lists as a synthetic row so the user
-// can audit + reconsider their own sentiment history. Backed by the
-// SECURITY DEFINER RPC `my_reactions_with_items`. Mark spec: the dust
-// in the system isn't hearts (those are filterable + reachable) — it's
-// reactions on shared lists and auction catalogs that get forgotten.
-const MY_REACTIONS_COLLECTION_ID = "__my_reactions__";
-
 // Saved-articles virtual list (PR_Q, 2026-05-20). Aggregates every
 // hearted editorial article (kind='article' entries in watchlist_items)
 // into a synthetic row in Collections > Lists alongside Saved. Mark
@@ -312,10 +303,6 @@ export function CollectionsTab({
         setDetailRowId={setDetailRowId}
         filterValues={filterValues}
         fetchListMembers={collectionsApi?.fetchListMembers}
-        fetchReactions={collectionsApi?.fetchReactions}
-        toggleReaction={collectionsApi?.toggleReaction}
-        fetchReactionCounts={collectionsApi?.fetchReactionCounts}
-        fetchMyReactions={collectionsApi?.fetchMyReactions}
       />
     );
   } else if (subTab === "challenges") {
@@ -1135,152 +1122,12 @@ function PoolCard({ item, busy, onAdd, primaryCurrency }) {
 // slider-only by nature — they're discovery surfaces with a
 // "View all" handoff to the dedicated tab.
 //
-// BUCKET_TOGGLE_MIN — past this count the Linear/Grid toggle is
-// exposed in the bucket header. Below it, slider vs grid look
-// nearly identical so the toggle is hidden as noise.
-const BUCKET_TOGGLE_MIN = 6;
-
-const BUCKET_LABEL = {
-  toReview: "To review",
-  loved: "Loved",
-  liked: "Liked",
-  passed: "Passed",
-};
-
 // ShareMenu retired 2026-05-14 — replaced by a single flat Share
 // button that opens the unified Share modal (ManageListSheet) for
 // owners or fires the native share sheet directly for non-owners.
 // Mark feedback: the dropdown chevron was too subtle and the
 // "Share this list" + "Manage collaborators" split confused users
 // when both end up surfacing the same kind of link.
-
-// One bucket section in the Lists drill-in. Header mirrors the
-// Listings tab's date-divider banner — same surface band, label
-// weight, and right-aligned count — so the two surfaces read as
-// the same primitive when scanning. The density toggle hangs off
-// the right of the count on buckets that pass the size threshold.
-function BucketSection({
-  label, count,
-  isGrid, showDensitySwitch, onToggleDensity,
-  gridStyle, items, renderItem, isMobile,
-}) {
-  return (
-    <section>
-      <div style={{
-        // 2026-05-14: match the Listings tab date-divider banner so
-        // bucket headers and date dividers read as the same primitive
-        // when scanning. Surface background + baseline alignment +
-        // count pushed to far right (above the density toggle).
-        gridColumn: "1/-1",
-        display: "flex", alignItems: "baseline", gap: 12,
-        padding: "14px 14px 12px",
-        borderBottom: "0.5px solid var(--border)",
-        background: "var(--surface)",
-        marginBottom: 4,
-      }}>
-        <span style={{
-          fontSize: 14, fontWeight: 600,
-          color: "var(--text1)",
-        }}>
-          {label}
-        </span>
-        <span style={{
-          fontSize: 12, color: "var(--text3)",
-          fontVariantNumeric: "tabular-nums",
-          fontWeight: 400,
-          marginLeft: "auto",
-        }}>
-          {count}
-        </span>
-        {showDensitySwitch && (
-          <button
-            onClick={onToggleDensity}
-            aria-label={isGrid ? "Switch to linear view" : "Switch to grid view"}
-            style={{
-              // Match the Home "View all" pill (HomeTab.js) — Mark
-              // feedback 2026-05-14: the bucket toggle had grown
-              // too heavy after the produced-CTA pass and clashed
-              // with Home's lighter pills. Same hairline outline +
-              // weight + tracking + radius 999.
-              flexShrink: 0, cursor: "pointer", fontFamily: "inherit",
-              fontSize: 12, fontWeight: 600, letterSpacing: "0.04em",
-              padding: "6px 12px", borderRadius: 999,
-              border: "0.5px solid var(--text2)",
-              background: "transparent",
-              color: "var(--text2)",
-              display: "inline-flex", alignItems: "center", gap: 6,
-              lineHeight: 1,
-            }}>
-            {isGrid ? (
-              <>
-                {/* Linear / row icon — three horizontal bars. */}
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" strokeWidth="2"
-                  strokeLinecap="round" aria-hidden="true">
-                  <line x1="4" y1="7" x2="20" y2="7"/>
-                  <line x1="4" y1="12" x2="20" y2="12"/>
-                  <line x1="4" y1="17" x2="20" y2="17"/>
-                </svg>
-                Linear view
-              </>
-            ) : (
-              <>
-                {/* Grid icon — 2x2 squares. */}
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" strokeWidth="2"
-                  strokeLinejoin="round" aria-hidden="true">
-                  <rect x="3.5" y="3.5" width="7" height="7"/>
-                  <rect x="13.5" y="3.5" width="7" height="7"/>
-                  <rect x="3.5" y="13.5" width="7" height="7"/>
-                  <rect x="13.5" y="13.5" width="7" height="7"/>
-                </svg>
-                Grid view
-              </>
-            )}
-          </button>
-        )}
-      </div>
-      {isGrid ? (
-        <div style={{ ...gridStyle, borderRadius: 10, overflow: "hidden" }}>
-          {items.map(renderItem)}
-        </div>
-      ) : (
-        // Tile sizing matches the Home page strips (HomeTab.js) —
-        // Mark spec 2026-05-14: Linear view should read at the same
-        // scale as Home, ~7 tiles visible on a typical desktop
-        // viewport instead of the wider ~4-tile pattern that was
-        // here before. Mobile: 44% flex-basis / 180px cap. Desktop:
-        // fixed 210px so the slider feels intentional at any width.
-        <div
-          style={{
-            display: "flex",
-            gap: 1,
-            overflowX: "auto",
-            scrollSnapType: "x mandatory",
-            padding: "0 14px 8px",
-            scrollbarWidth: "none",
-            msOverflowStyle: "none",
-            WebkitOverflowScrolling: "touch",
-          }}
-        >
-          {items.map((it) => (
-            <div key={it.id} style={isMobile ? {
-              flex: "0 0 44%", maxWidth: 180,
-              scrollSnapAlign: "start",
-              background: "var(--card-bg)",
-            } : {
-              flex: "0 0 210px",
-              scrollSnapAlign: "start",
-              background: "var(--card-bg)",
-            }}>
-              {renderItem(it)}
-            </div>
-          ))}
-        </div>
-      )}
-    </section>
-  );
-}
 
 // ── Lists sub-tab ─────────────────────────────────────────────────
 // Existing list-of-lists pattern. Hard system lists (Owned/Sold/
@@ -1310,11 +1157,6 @@ function ListsView({
   // (Slice 4) — fetch members for the active drill-in so the
   // who_added chip can resolve user_id → display_name.
   fetchListMembers,
-  // Reactions on shared list items (2026-05-10).
-  fetchReactions,
-  toggleReaction,
-  fetchReactionCounts,
-  fetchMyReactions,
 }) {
   // One-at-a-time recipient review mode (Mark spec 2026-05-11).
   // Triggered by the recipient banner's "Start review" CTA. Opens a
@@ -1346,18 +1188,7 @@ function ListsView({
     return () => window.removeEventListener("resize", onResize);
   }, []);
   const [screeningResetTick, setScreeningResetTick] = useState(0);
-  // Whether the next screening pass walks ALL items or just unreacted
-  // ones (Mark spec 2026-05-14 re-screen fix). Set true when the
-  // user taps Review on a fully-reacted list; otherwise resume.
-  const [screenAllMode, setScreenAllMode] = useState(false);
 
-  // Per-bucket density override (in-memory only). `expanded` flips a
-  // bucket from slider → grid even when its count is ≤ threshold; the
-  // opposite (force-slider when >threshold) is also stored here. Reset
-  // on list change since "Liked is expanded" only makes sense in
-  // context of the active list.
-  const [bucketDensityOverride, setBucketDensityOverride] = useState({});
-  useEffect(() => { setBucketDensityOverride({}); }, [selectedListId]);
   // Membership map for the active drill-in. Populated on drill-in
   // (best-effort — non-members get an empty array, which means no
   // chips). Used to resolve `whoAdded` user_id → display name.
@@ -1385,110 +1216,10 @@ function ListsView({
     return () => { cancelled = true; };
   }, [selectedListId, fetchListMembers]);
 
-  // Reactions for the active drill-in (2026-05-10). Loaded on shared
-  // lists (memberCount >= 2) so the sentiment buckets work. Solo
-  // lists skip the load — no other reader, no buckets, nothing to
-  // fetch. Realtime subscription pushes co-collaborator reactions
-  // live so the wife/whoever sees Mark's tap immediately.
-  //
-  // 2026-05-10 hardening: subscription set up + teardown wrapped in
-  // try/catch so a transient supabase-realtime issue (stale token,
-  // websocket failure, etc.) doesn't crash the drill-in. Any error
-  // logs to console; the user gets a non-realtime view of reactions
-  // and can still toggle their own (toggleReaction does its own
-  // round-trip + setReactionsByItem updates locally on the next
-  // refetch).
-  const [reactionsByItem, setReactionsByItem] = useState(() => new Map());
-  useEffect(() => {
-    if (!selectedListId
-        || selectedListId === HIDDEN_COLLECTION_ID
-        || selectedListId === SAVED_COLLECTION_ID
-        || !fetchReactions
-        || memberCount < 2) {
-      setReactionsByItem(new Map());
-      return undefined;
-    }
-    let cancelled = false;
-    const reload = async () => {
-      try {
-        const { rows } = await fetchReactions(selectedListId);
-        if (cancelled) return;
-        const map = new Map();
-        for (const r of (rows || [])) {
-          if (!r || !r.collection_item_id) continue;
-          if (!map.has(r.collection_item_id)) map.set(r.collection_item_id, []);
-          map.get(r.collection_item_id).push(r);
-        }
-        setReactionsByItem(map);
-      } catch (e) {
-        // eslint-disable-next-line no-console
-        console.warn("reactions reload failed", e);
-      }
-    };
-    reload();
-    // Realtime subscription on collection_item_reactions. We can't
-    // filter server-side by collection_id (the table joins to
-    // collection_items for that), so we listen to all changes and
-    // refetch — the RPC's RLS gates membership so we only see our
-    // own collections' reactions anyway. Wrap the channel build in
-    // try/catch so a setup error never crashes the render.
-    let channel = null;
-    try {
-      if (supabase && typeof supabase.channel === "function") {
-        channel = supabase
-          .channel(`reactions-${selectedListId}`)
-          .on('postgres_changes',
-            { event: '*', schema: 'public', table: 'collection_item_reactions' },
-            () => reload())
-          .subscribe();
-      }
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.warn("reactions realtime subscribe failed", e);
-      channel = null;
-    }
-    return () => {
-      cancelled = true;
-      if (channel && supabase && typeof supabase.removeChannel === "function") {
-        try { supabase.removeChannel(channel); }
-        catch (e) { /* swallow — cleanup shouldn't crash */ }
-      }
-    };
-  }, [selectedListId, fetchReactions, memberCount]);
-
-  const onToggleReaction = React.useCallback(async (itemId, emoji) => {
-    if (!toggleReaction) return;
-    await toggleReaction(itemId, emoji);
-    // Realtime will refetch; no optimistic update needed.
-  }, [toggleReaction]);
-
   const sharedInbox = cols.find(c => c.isSharedInbox) || null;
   const userCols = cols.filter(c =>
     !c.isSharedInbox && !c.isSystem && c.type !== "challenge"
   );
-
-  // 2026-05-10 — per-list count of reactions by other people.
-  // Surfaces on the list row as a small chip so a glance at the
-  // Lists view tells you which lists have new collaborator activity
-  // ("how do I know Jackie reacted?"). Excludes the user's own
-  // reactions server-side; RLS gates membership.
-  const [otherReactionCounts, setOtherReactionCounts] = useState(() => new Map());
-  useEffect(() => {
-    if (!user || !fetchReactionCounts) {
-      setOtherReactionCounts(new Map());
-      return undefined;
-    }
-    let cancelled = false;
-    fetchReactionCounts().then(({ counts }) => {
-      if (cancelled) return;
-      setOtherReactionCounts(counts || new Map());
-    });
-    return () => { cancelled = true; };
-  }, [user?.id, fetchReactionCounts, selectedListId]);
-  // selectedListId in deps so closing a drill-in (which is when the
-  // viewer just saw the latest reactions) re-fetches counts. The
-  // count surfaces "since I last looked" implicitly because every
-  // list-view return refreshes the count.
 
   // 2026-05-10 — Mark spec: list rows with at least one accepted
   // collaborator render with a two-person icon (and a "· shared"
@@ -1549,39 +1280,6 @@ function ListsView({
     isSaved: true,
   } : null;
 
-  // My reactions synthetic row (2026-05-20, PR_K). Backed by the
-  // `my_reactions_with_items` RPC. The fetched rows + count drive
-  // both the row chip in the Lists view AND the drill-in render.
-  const [myReactions, setMyReactions] = useState([]);
-  const [myReactionsLoading, setMyReactionsLoading] = useState(false);
-  const [myReactionsTick, setMyReactionsTick] = useState(0);
-  useEffect(() => {
-    if (!user || !fetchMyReactions) {
-      setMyReactions([]);
-      return undefined;
-    }
-    let cancelled = false;
-    setMyReactionsLoading(true);
-    fetchMyReactions().then(({ rows, error }) => {
-      if (cancelled) return;
-      setMyReactionsLoading(false);
-      if (error) {
-        console.warn('my reactions load failed', error);
-        setMyReactions([]);
-        return;
-      }
-      setMyReactions(rows || []);
-    });
-    return () => { cancelled = true; };
-  }, [user?.id, fetchMyReactions, myReactionsTick]);
-  const myReactionsCount = myReactions.length;
-  const myReactionsRow = (user && myReactionsCount > 0) ? {
-    id: MY_REACTIONS_COLLECTION_ID,
-    name: "My reactions",
-    isSystem: true,
-    isMyReactions: true,
-  } : null;
-
   // Saved-articles synthetic row (PR_Q, 2026-05-20). Walks the
   // watchlist map for entries flagged kind='article' on the snapshot.
   // useWatchlist exposes `items` as a map where each value is the
@@ -1614,7 +1312,6 @@ function ListsView({
     if (!selectedListId) return null;
     if (selectedListId === HIDDEN_COLLECTION_ID) return hiddenRow;
     if (selectedListId === SAVED_COLLECTION_ID) return savedRow;
-    if (selectedListId === MY_REACTIONS_COLLECTION_ID) return myReactionsRow;
     if (selectedListId === SAVED_ARTICLES_COLLECTION_ID) return savedArticlesRow;
     return cols.find(c => c.id === selectedListId) || null;
   })();
@@ -1636,34 +1333,6 @@ function ListsView({
           openCollectionPicker={openCollectionPicker}
           handleShare={handleShare}
           onBack={() => setSelectedListId(null)}
-        />
-      );
-    }
-
-    // My-reactions virtual list (2026-05-20). Focused render —
-    // doesn't share the shared-list / recipient / auction logic
-    // below, because the items here aren't tied to a single
-    // collection. Renders sentiment-bucketed cards with per-card
-    // "remove my reaction" + a breadcrumb to the source list.
-    if (selected.id === MY_REACTIONS_COLLECTION_ID) {
-      return (
-        <MyReactionsView
-          rows={myReactions}
-          loading={myReactionsLoading}
-          isWide={isWide}
-          gridStyle={gridStyle}
-          onBack={() => setSelectedListId(null)}
-          onRemoveReaction={async (collectionItemId, emoji) => {
-            if (!toggleReaction) return;
-            const { error } = await toggleReaction(collectionItemId, emoji);
-            if (error) {
-              console.warn('remove reaction failed', error);
-              return;
-            }
-            // Bump the tick so the row + drill-in refetch.
-            setMyReactionsTick((t) => t + 1);
-          }}
-          onOpenList={(collectionId) => setSelectedListId(collectionId)}
         />
       );
     }
@@ -1727,17 +1396,6 @@ function ListsView({
     const isRecipient = isSharedList && !isOwner;
     const ownerName = (selected?.userId && memberMap.get(selected.userId)) || "Someone";
     const myUserId = user?.id || null;
-    const itemHasMyReaction = (item) => {
-      if (!myUserId) return false;
-      const rs = reactionsByItem.get(item.rowId) || [];
-      return rs.some(r => r.user_id === myUserId);
-    };
-    // Compute for the owner as well as recipients — owner-self-review
-    // needs the same "have I reacted to everything yet" signal to
-    // decide between resume + re-screen on the Review button.
-    const myReactedCount = screensEnabled
-      ? items.reduce((acc, i) => acc + (itemHasMyReaction(i) ? 1 : 0), 0)
-      : 0;
     // Share callback — copies a `?list=<id>&shared=1` link via the Web
     // Share API (or clipboard fallback). Recipients land on
     // ListReceiver which fetches via the public `get_public_list` RPC.
@@ -1762,60 +1420,10 @@ function ListsView({
         }
       }
     };
-    // My reactions on this list — used by the Manage panel's
-    // "Reset my reactions" action. Mark spec 2026-05-14: Reset
-    // **must not touch hearts**. Hearts (watchlist_items) are an
-    // explicit "save this watch" signal that should never be wiped
-    // by a list-level reset; the ❤️/🔥 rows in
-    // collection_item_reactions exist (post-Slice-B) only as the
-    // shared-list mirror of those hearts. Filter them out here so
-    // every reset path (panel, ListReviewMode) sees only the Yes
-    // (👍) / Pass (❌) verdicts.
-    const myReactionsOnList = [];
-    if (myUserId && reactionsByItem && screensEnabled) {
-      for (const [itemId, rs] of reactionsByItem.entries()) {
-        for (const r of rs) {
-          if (r.user_id !== myUserId) continue;
-          if (r.emoji === "❤️" || r.emoji === "🔥") continue;
-          myReactionsOnList.push({ itemId, emoji: r.emoji });
-        }
-      }
-    }
-    // Heart-on-shared-list also writes a ❤️ reaction (Mark spec
-    // 2026-05-14 Slice B). On solo lists the heart stays private —
-    // only watchlist_items moves — so this wrapper is a no-op there.
-    // On shared lists the action stays "tap the heart once" from the
-    // user's perspective; under the hood we sync the love-reaction
-    // so other members see your hearts in the aggregate strip.
-    //
-    // Idempotent: reads the current reaction state before deciding
-    // whether to insert or delete the ❤️ row, so out-of-sync legacy
-    // data (a heart already in watchlist but no ❤️ reaction yet, or
-    // vice versa) converges on the next toggle rather than getting
-    // stuck. Both legacy emojis (❤️ and 🔥) are treated as "love"
-    // when deciding what to clear.
-    const wrappedHandleWish = (item) => {
-      // Fire the underlying watchlist toggle first — this is what
-      // the user sees as the primary effect. Errors from reaction
-      // sync below don't block it.
-      handleWish(item);
-      if (!isSharedList || !item?.rowId || !myUserId || !onToggleReaction) return;
-      const wasWished = !!watchlist[item.id];
-      const willBeWished = !wasWished;
-      const mine = (reactionsByItem.get(item.rowId) || [])
-        .filter(r => r.user_id === myUserId
-                  && (r.emoji === "❤️" || r.emoji === "🔥"));
-      if (willBeWished && mine.length === 0) {
-        // Heart was off → now on. Add a ❤️ reaction.
-        Promise.resolve(onToggleReaction(item.rowId, "❤️")).catch(() => {});
-      } else if (!willBeWished && mine.length > 0) {
-        // Heart was on → now off. Remove every legacy love-reaction
-        // row from this user (covers both ❤️ and 🔥 from old picker).
-        for (const r of mine) {
-          Promise.resolve(onToggleReaction(item.rowId, r.emoji)).catch(() => {});
-        }
-      }
-    };
+    // Heart toggle for cards in the drill-in. Reactions retired
+    // 2026-05-26 — the heart is now a plain watchlist toggle on every
+    // list (shared lists no longer mirror it as a ❤️ reaction).
+    const wrappedHandleWish = handleWish;
 
     // 2026-05-14: the inline overflow menu retired in favour of the
     // sectioned Manage panel (back link · title · ⋯ Manage). Every
@@ -1900,65 +1508,36 @@ function ListsView({
                 </span>
               </button>
             )}
-            {/* Review + Reset cluster — Mark spec 2026-05-14: pair
-                lives next to the list name (not at the far right
-                with Share) so the relationship between them reads
-                visually. "Reset ratings" spells out what Reset
-                clears so the action isn't ambiguous next to other
-                affordances. Share moves to the right edge by itself. */}
-            {(screensEnabled || myReactionsOnList.length > 0) && (
+            {/* Screen — launches the binary skip/heart swipe over the
+                list's items (shared lists only). Sits next to the list
+                name; Share is on the right edge. */}
+            {screensEnabled && (
               <div style={{
                 display: "inline-flex", alignItems: "center", gap: 6,
                 flexShrink: 0,
               }}>
-                {screensEnabled && (
-                  <button
-                    onClick={() => {
-                      setScreenAllMode(myReactedCount >= items.length && items.length > 0);
-                      setReviewModeOpen(true);
-                      setScreeningResetTick(t => t + 1);
-                    }}
-                    title={myReactedCount >= items.length && items.length > 0
-                      ? "Re-screen this list"
-                      : "Walk through unreacted items one at a time"}
-                    style={{
-                      ...actionButton({ variant: "subtle" }),
-                      flexShrink: 0,
-                      display: "inline-flex", alignItems: "center", gap: 6,
-                    }}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                      stroke="currentColor" strokeWidth="1.6"
-                      strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/>
-                      <circle cx="12" cy="12" r="3"/>
-                    </svg>
-                    Review
-                  </button>
-                )}
-                {myReactionsOnList.length > 0 && (
-                  <button
-                    onClick={async () => {
-                      if (!(await confirm({
-                        title: "Clear your ratings?",
-                        message: `Reset all ${myReactionsOnList.length} of your Yes / Pass ratings on this list. Your hearts stay where they are.`,
-                        confirmLabel: "Clear ratings",
-                        tone: "danger",
-                      }))) return;
-                      await Promise.all(myReactionsOnList.map(({ itemId, emoji }) =>
-                        onToggleReaction(itemId, emoji)));
-                    }}
-                    title={`Reset your ${myReactionsOnList.length} Yes / Pass ratings`}
-                    style={{
-                      ...actionButton({ variant: "subtle" }),
-                      flexShrink: 0,
-                      color: "var(--danger, #c0392b)",
-                    }}>
-                    Reset ratings
-                  </button>
-                )}
+                <button
+                  onClick={() => {
+                    setReviewModeOpen(true);
+                    setScreeningResetTick(t => t + 1);
+                  }}
+                  title="Screen this list one watch at a time"
+                  style={{
+                    ...actionButton({ variant: "subtle" }),
+                    flexShrink: 0,
+                    display: "inline-flex", alignItems: "center", gap: 6,
+                  }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" strokeWidth="1.6"
+                    strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                  Screen
+                </button>
               </div>
             )}
-            {isRecipient && items.length > 0 && myReactedCount < items.length && (
+            {isRecipient && items.length > 0 && (
               <>
                 <span style={{ color: "var(--text3)", fontSize: 13, flexShrink: 0 }}>·</span>
                 <span style={{
@@ -1967,7 +1546,7 @@ function ListsView({
                   minWidth: 0,
                 }}>
                   <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    <strong style={{ color: "var(--text1)", fontWeight: 500 }}>{ownerName}</strong> shared · {myReactedCount}/{items.length} reacted
+                    <strong style={{ color: "var(--text1)", fontWeight: 500 }}>{ownerName}</strong> shared this list
                   </span>
                 </span>
               </>
@@ -2001,7 +1580,7 @@ function ListsView({
             // Owner-self-review passes no ownerName; the recipient
             // flow surfaces "{ownerName}'s list" attribution.
             ownerName={isOwner ? null : ownerName}
-            onClose={() => { setReviewModeOpen(false); setScreenAllMode(false); }}
+            onClose={() => setReviewModeOpen(false)}
             primaryCurrency={primaryCurrency}
             watchlist={watchlist}
             handleWish={wrappedHandleWish}
@@ -2029,19 +1608,14 @@ function ListsView({
           />
         ) : (
           (() => {
-            // Per-item card render — shared between flat and bucketed
-            // paths so reactions / attribution / Card wiring stay in
-            // one place. Mark spec 2026-05-14: bucket the list view by
-            // each user's own reactions (To review / Loved / Liked /
-            // Passed) and let the user collapse / re-density each
-            // section. Solo lists and Flat-list view fall through to
-            // the plain grid.
+            // Per-item card render. Reactions retired 2026-05-26 —
+            // cards no longer carry a rating picker or aggregate
+            // chips; the list view is a plain grid (no buckets).
             const renderItemCard = (item) => {
               const showChip = memberCount >= 2
                 && !!item.whoAdded
                 && item.whoAdded !== user?.id;
               const addedByName = showChip ? memberMap.get(item.whoAdded) : null;
-              const itemReactions = reactionsByItem.get(item.rowId) || [];
               return (
                 <div key={item.id} style={{
                   display: "flex", flexDirection: "column",
@@ -2070,19 +1644,7 @@ function ListsView({
                     onShare={handleShare}
                     onView={observeCard}
                     onClickListing={onClickListing}
-                    myRating={screensEnabled && item.rowId
-                      ? (() => {
-                          const mine = (itemReactions || []).find(r => r.user_id === user?.id);
-                          return mine?.emoji || null;
-                        })()
-                      : null}
-                    onRate={screensEnabled && item.rowId
-                      ? (emoji) => onToggleReaction(item.rowId, emoji)
-                      : undefined}
                   />
-                  {screensEnabled && item.rowId && (
-                    <ReactionAggregateChips reactions={itemReactions} />
-                  )}
                   {addedByName && (
                     <div style={{
                       padding: "4px 10px 8px",
@@ -2197,76 +1759,16 @@ function ListsView({
               );
             };
 
-            const useBuckets = screensEnabled;
-            if (!useBuckets) {
-              return (
-                <>
-                  <div style={{ ...gridStyle, borderRadius: 10, overflow: "hidden" }}>
-                    {listingItems.map(renderItemCard)}
-                  </div>
-                  {renderArticlesSection()}
-                </>
-              );
-            }
-
-            // Classify by the current user's reaction. Loved (❤️/🔥)
-            // beats Liked (👍) beats Passed (❌); legacy emojis still
-            // bucket sensibly (🔥 → loved, 🤔 → toReview by default
-            // since it doesn't match any of the active sets).
-            const myUid = user?.id || null;
-            const myReactionFor = (item) => {
-              if (!myUid) return null;
-              const rs = reactionsByItem.get(item.rowId) || [];
-              let love = false, like = false, pass = false;
-              for (const r of rs) {
-                if (r.user_id !== myUid) continue;
-                if (r.emoji === "❤️" || r.emoji === "🔥") love = true;
-                else if (r.emoji === "👍") like = true;
-                else if (r.emoji === "❌") pass = true;
-              }
-              if (love) return "loved";
-              if (like) return "liked";
-              if (pass) return "passed";
-              return null;
-            };
-            const buckets = { toReview: [], loved: [], liked: [], passed: [] };
-            for (const it of listingItems) {
-              const r = myReactionFor(it);
-              if (r) buckets[r].push(it);
-              else buckets.toReview.push(it);
-            }
-            const order = ["toReview", "loved", "liked", "passed"];
+            // Reactions retired 2026-05-26 — every list (shared
+            // included) renders as a flat grid; the sentiment buckets
+            // (To review / Loved / Liked / Passed) are gone.
             return (
-              <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-                {order.map((key) => {
-                  const bucketItems = buckets[key];
-                  if (bucketItems.length === 0) return null;
-                  const override = bucketDensityOverride[key];
-                  // Default = grid; user can opt into linear via the
-                  // header toggle. Override wins over the default.
-                  const isGrid = override !== "slider";
-                  return (
-                    <BucketSection
-                      key={key}
-                      label={BUCKET_LABEL[key]}
-                      count={bucketItems.length}
-                      isGrid={isGrid}
-                      showDensitySwitch={bucketItems.length > BUCKET_TOGGLE_MIN}
-                      onToggleDensity={() =>
-                        setBucketDensityOverride((prev) => ({
-                          ...prev,
-                          [key]: isGrid ? "slider" : "grid",
-                        }))
-                      }
-                      gridStyle={gridStyle}
-                      items={bucketItems}
-                      renderItem={renderItemCard}
-                      isMobile={!isWide}
-                    />
-                  );
-                })}
+              <>
+                <div style={{ ...gridStyle, borderRadius: 10, overflow: "hidden" }}>
+                  {listingItems.map(renderItemCard)}
+                </div>
                 {renderArticlesSection()}
-              </div>
+              </>
             );
           })()
         )}
@@ -2303,18 +1805,16 @@ function ListsView({
     ...(sharedInbox ? [sharedInbox] : []),
     ...collabLists,
   ];
-  const reviewRows = myReactionsRow ? [myReactionsRow] : [];
   const savedRows = [
     ...(savedRow ? [savedRow] : []),
     ...(savedArticlesRow ? [savedArticlesRow] : []),
   ];
   const groups = [
     { key: "saved",    title: "Saved",            rows: savedRows,                  hideIfEmpty: true },
-    { key: "review",   title: "Review",           rows: reviewRows,                 hideIfEmpty: true },
     { key: "owned",    title: "My lists",         rows: ownedLists,                 hideIfEmpty: false },
     { key: "shared",   title: "Shared with me",   rows: sharedRows,                 hideIfEmpty: true },
   ].filter(g => !g.hideIfEmpty || g.rows.length > 0);
-  const totalRows = savedRows.length + reviewRows.length + ownedLists.length + sharedRows.length;
+  const totalRows = savedRows.length + ownedLists.length + sharedRows.length;
 
   // Per-row renderer — shared across all three groups so the row
   // styling stays in one place. Closes over the local state of
@@ -2323,21 +1823,17 @@ function ListsView({
     const isInbox = c.isSharedInbox;
     const isHiddenRowItem = c.id === HIDDEN_COLLECTION_ID;
     const isSavedRowItem  = c.id === SAVED_COLLECTION_ID;
-    const isMyReactionsRowItem = c.id === MY_REACTIONS_COLLECTION_ID;
     const isSavedArticlesRowItem = c.id === SAVED_ARTICLES_COLLECTION_ID;
     const count = isSavedRowItem
       ? (watchItems || []).length
       : isHiddenRowItem
         ? hiddenItems.length
-        : isMyReactionsRowItem
-          ? myReactionsCount
-          : isSavedArticlesRowItem
-            ? savedArticlesCount
-            : (itemsByColl[c.id] || []).length;
+        : isSavedArticlesRowItem
+          ? savedArticlesCount
+          : (itemsByColl[c.id] || []).length;
     const isShared = sharedListIds.has(c.id);
     const icon = isSavedRowItem ? heartIcon
                : isSavedArticlesRowItem ? bookmarkIcon
-               : isMyReactionsRowItem ? thumbsUpIcon
                : isInbox        ? inboxIcon
                : isHiddenRowItem ? eyeOffIcon
                : isShared      ? usersIcon
@@ -2359,15 +1855,13 @@ function ListsView({
       ? `${count} hearted watch${count === 1 ? "" : "es"}`
       : isSavedArticlesRowItem
         ? `${count} hearted article${count === 1 ? "" : "s"}`
-        : isMyReactionsRowItem
-          ? `${count} item${count === 1 ? "" : "s"} you've reacted on · revisit + clean up`
-          : isInbox
-            ? `${count} listing${count === 1 ? "" : "s"} shared with you`
-            : isHiddenRowItem
-              ? `${count} listing${count === 1 ? "" : "s"} hidden from feed`
-              : `${count} watch${count === 1 ? "" : "es"}${auctionMeta}${isShared ? " · shared" : ""}`;
+        : isInbox
+          ? `${count} listing${count === 1 ? "" : "s"} shared with you`
+          : isHiddenRowItem
+            ? `${count} listing${count === 1 ? "" : "s"} hidden from feed`
+            : `${count} watch${count === 1 ? "" : "es"}${auctionMeta}${isShared ? " · shared" : ""}`;
     const isOwner = !!(myUserId && c?.userId && myUserId === c.userId);
-    const isSyntheticOrInbox = isInbox || isHiddenRowItem || isSavedRowItem || isMyReactionsRowItem || isSavedArticlesRowItem;
+    const isSyntheticOrInbox = isInbox || isHiddenRowItem || isSavedRowItem || isSavedArticlesRowItem;
     const actions = [];
     if (!isSyntheticOrInbox && isOwner && setEditingCollection) {
       actions.push({
@@ -2393,37 +1887,15 @@ function ListsView({
         },
       });
     }
-    const otherCount = otherReactionCounts.get(c.id) || 0;
     // Inbox row sits inside the "Shared with me" group whose header
     // already says that — rename the row's display title to
     // "Listings" so the two don't echo. Other rows use c.name.
     const displayName = isInbox ? "Listings" : c.name;
-    const titleNode = otherCount > 0 ? (
-      <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-        <span>{displayName}</span>
-        <span title={`${otherCount} reaction${otherCount === 1 ? "" : "s"} from collaborators`}
-          style={{
-            display: "inline-flex", alignItems: "center", gap: 4,
-            padding: "2px 8px", borderRadius: 999,
-            // PR 2026-05-22: olive treatment for the reaction count
-            // chip — matches the disc-tint of the row's icon above.
-            background: "var(--brand-olive-tint-12)",
-            color: "var(--brand-olive)",
-            fontSize: 11, fontWeight: 600, lineHeight: 1.3,
-          }}>
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-               strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>
-          </svg>
-          {otherCount}
-        </span>
-      </span>
-    ) : displayName;
     return (
       <ListRow
         key={c.id}
         icon={icon}
-        title={titleNode}
+        title={displayName}
         subtitle={subtitle}
         onClick={() => setSelectedListId(c.id)}
         actions={actions.length > 0 ? actions : undefined}
@@ -2796,15 +2268,6 @@ const heartIcon = (
     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
   </svg>
 );
-// Thumbs-up icon for the My-reactions synthetic row (PR_K). Matches
-// the reaction-strip emoji set conceptually (👍 / ❤️ / ❌) while
-// keeping the row visually consistent with the other synthetic-row
-// icons (line-art SVG, olive accent).
-const thumbsUpIcon = (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brand-olive)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>
-  </svg>
-);
 // Bookmark icon for the Saved-articles synthetic row (PR_Q). Line-art
 // SVG to match the rest of the synthetic-row icons; bookmark shape
 // reads as "saved reading material" — visually distinct from the
@@ -2832,105 +2295,6 @@ const trashIcon = (
     <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/>
   </svg>
 );
-
-// ── Reactions strip (2026-05-10) ─────────────────────────────────
-//
-// Small row of emoji-reaction chips below shared-list cards.
-// Mark spec: he and his wife can "vote" on watches in their shared
-// lists with a small set of emojis. Renders only on lists with 2+
-// members (memberCount in ListsView gates this).
-//
-// Aggregates reactions by emoji → count + tooltip listing reactor
-// names. The current user's reaction shows with a filled / brand-
-// coloured chip; tap toggles it on/off. The "+" button reveals a
-// preset emoji picker.
-//
-// Realtime publication broadcasts inserts/deletes so the other
-// member sees the chip update without a refresh (ListsView's
-// effect refetches on every event).
-
-// Screening-palette glyphs — shared across the reaction surfaces so
-// the aggregate strip + the in-menu picker + the bucket headers all
-// read as one visual system. Stroke colour comes from the parent.
-const REACTION_GLYPH = {
-  "❤️": (s = 12) => (
-    <svg width={s} height={s} viewBox="0 0 24 24" fill="currentColor"
-      stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"
-      aria-hidden="true">
-      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-    </svg>
-  ),
-  "👍": (s = 12) => (
-    <svg width={s} height={s} viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2.2"
-      strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M20 6L9 17l-5-5"/>
-    </svg>
-  ),
-  "❌": (s = 12) => (
-    <svg width={s} height={s} viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"
-      aria-hidden="true">
-      <path d="M18 6L6 18M6 6l12 12"/>
-    </svg>
-  ),
-};
-const REACTION_COLOR = {
-  "❤️": "var(--heart)",
-  "👍": "var(--brand)",
-  "❌": "var(--text3)",
-};
-
-// Aggregate count chips below each card on shared lists (Mark spec
-// 2026-05-14, Slice A). iMessage / Teams-style "who reacted" cluster
-// — ❤ 3 · 👍 5 · ✕ 1, only buckets with non-zero counts. Read-only
-// in Slice A; Slice C will wire the tap-to-see-who attribution sheet
-// off this same chip cluster.
-//
-// Legacy emoji rollup: 🔥 → ❤️ (intensifier on love), 🤔 → ignored
-// (those were retired from the picker in 2026-05-11). Same set as
-// the bucket classifier.
-function ReactionAggregateChips({ reactions }) {
-  const counts = { "❤️": 0, "👍": 0, "❌": 0 };
-  for (const r of (reactions || [])) {
-    if (r.emoji === "❤️" || r.emoji === "🔥") counts["❤️"] += 1;
-    else if (r.emoji === "👍") counts["👍"] += 1;
-    else if (r.emoji === "❌") counts["❌"] += 1;
-  }
-  const total = counts["❤️"] + counts["👍"] + counts["❌"];
-  if (total === 0) return null;
-  const order = ["❤️", "👍", "❌"];
-  return (
-    <div style={{
-      display: "flex", flexWrap: "wrap", gap: 6,
-      padding: "6px 10px 8px",
-      alignItems: "center",
-    }}>
-      {order.filter(k => counts[k] > 0).map(k => (
-        <span key={k} style={{
-          display: "inline-flex", alignItems: "center", gap: 4,
-          padding: "2px 8px", borderRadius: 999,
-          border: "0.5px solid var(--border)",
-          background: "var(--surface)",
-          color: REACTION_COLOR[k],
-          fontSize: 11, fontWeight: 500,
-          fontVariantNumeric: "tabular-nums",
-          lineHeight: 1.4,
-        }}>
-          {REACTION_GLYPH[k](12)}
-          <span style={{ color: "var(--text2)" }}>{counts[k]}</span>
-        </span>
-      ))}
-    </div>
-  );
-}
-
-// 2026-05-14 Slice A: the old `ReactionStrip` (thumbs-up button +
-// chip picker rendered under each card) was retired. The rating
-// input moved into the Card's ⋯ menu (Card.js `onRate` / `myRating`
-// props), and the read-only count cluster lives in
-// `ReactionAggregateChips` above. Card.js inlines the two-emoji
-// picker (👍 / ❌) directly.
 
 // ── Drill-in filter helper (2026-05-09) ─────────────────────────
 //
@@ -2993,208 +2357,6 @@ function applyDrillInFilters(items, fv) {
   return out;
 }
 
-// ─────────────────────────────────────────────────────────────────
-// MyReactionsView — focused drill-in for the My-reactions synthetic
-// row inside Collections > Lists (PR_K, 2026-05-20).
-//
-// Renders every reaction the current user has placed across every
-// list they can access, grouped by sentiment (Positive / Negative —
-// neutral 🤔 is dropped as noise). Each card shows the item image
-// + title + source-list breadcrumb + the user's own emoji and a
-// "Remove my reaction" link.
-//
-// This is read-write surface — clicking remove fires the same
-// toggleReaction RPC that ListReviewMode uses, so the audit + clean-
-// up happens in-place. The parent component bumps a tick on success
-// to refetch, which removes the row from view.
-// ─────────────────────────────────────────────────────────────────
-
-const POSITIVE_EMOJIS = new Set(["❤️", "🔥", "👍"]);
-const NEGATIVE_EMOJIS = new Set(["❌"]);
-
-function MyReactionsView({ rows, loading, isWide, gridStyle, onBack, onRemoveReaction, onOpenList }) {
-  // Bucket the rows by sentiment. We hide rows whose emoji doesn't
-  // fall into positive or negative (e.g. legacy 🤔 from before the
-  // simplified reaction set in PR #242) — neutral noise isn't useful
-  // for a review surface.
-  const positive = rows.filter(r => POSITIVE_EMOJIS.has(r.emoji));
-  const negative = rows.filter(r => NEGATIVE_EMOJIS.has(r.emoji));
-
-  const headerStyle = {
-    fontSize: 12, fontWeight: 600, color: "var(--text2)",
-    textTransform: "uppercase", letterSpacing: "0.08em",
-    margin: "20px 0 10px",
-  };
-
-  return (
-    <div style={{ padding: isWide ? "0 24px 80px" : "0 14px 80px" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "14px 0 6px" }}>
-        <button
-          onClick={onBack}
-          style={{
-            background: "transparent", border: "none", padding: "4px 10px 4px 0",
-            color: "var(--text2)", cursor: "pointer", fontSize: 13, fontFamily: "inherit",
-          }}>← Lists</button>
-        <h1 style={{ fontSize: 18, fontWeight: 600, color: "var(--text1)", margin: 0 }}>
-          My reactions
-        </h1>
-        <span style={{ fontSize: 13, color: "var(--text3)" }}>· {rows.length}</span>
-      </div>
-
-      <div style={{ fontSize: 13, color: "var(--text2)", lineHeight: 1.5, marginBottom: 16 }}>
-        Every item you've reacted on across all lists. Tap the emoji chip on any card
-        to remove your reaction; tap the source list name to open that list and review
-        the item in context.
-      </div>
-
-      {loading && rows.length === 0 ? (
-        <div style={{ padding: 32, color: "var(--text3)", textAlign: "center" }}>Loading reactions…</div>
-      ) : rows.length === 0 ? (
-        <div style={{
-          padding: 32, color: "var(--text2)", textAlign: "center",
-          border: "0.5px dashed var(--border)", borderRadius: 8,
-        }}>
-          You haven't reacted on any items yet. Open a shared list or an auction catalog
-          and tap ❤️ / 👍 / ❌ on the cards.
-        </div>
-      ) : (
-        <>
-          {positive.length > 0 && (
-            <>
-              <div style={headerStyle}>❤️ / 👍 · {positive.length}</div>
-              <div style={gridStyle}>
-                {positive.map(row => (
-                  <ReactionCard key={row.reaction_id} row={row}
-                    onRemove={() => onRemoveReaction(row.collection_item_id, row.emoji)}
-                    onOpenList={() => onOpenList(row.collection_id)} />
-                ))}
-              </div>
-            </>
-          )}
-          {negative.length > 0 && (
-            <>
-              <div style={headerStyle}>❌ · {negative.length}</div>
-              <div style={gridStyle}>
-                {negative.map(row => (
-                  <ReactionCard key={row.reaction_id} row={row}
-                    onRemove={() => onRemoveReaction(row.collection_item_id, row.emoji)}
-                    onOpenList={() => onOpenList(row.collection_id)} />
-                ))}
-              </div>
-            </>
-          )}
-        </>
-      )}
-    </div>
-  );
-}
-
-function ReactionCard({ row, onRemove, onOpenList }) {
-  // Pull display fields from the right place — manual items have
-  // their own columns, listing-backed items hang their snapshot in
-  // listing_snapshot (jsonb). cached_img_url is the Vercel Blob copy
-  // when available, falls back to the snapshot's dealer image.
-  const snap = row.listing_snapshot || {};
-  const isManual = !!row.is_manual;
-  const title = isManual
-    ? [row.manual_brand, row.manual_model, row.manual_reference].filter(Boolean).join(" ")
-    : (snap.ref || snap.title || "(no title)");
-  const brand = isManual ? row.manual_brand : snap.brand;
-  const img = row.cached_img_url
-    || (isManual ? row.manual_image_url : snap.img)
-    || "";
-  const sourceUrl = isManual ? null : snap.url;
-  const price = isManual ? row.manual_price_paid : row.saved_price;
-  const currency = isManual ? row.manual_price_currency : row.saved_currency;
-  const priceStr = (price && currency) ? `${currency} ${Number(price).toLocaleString()}` : "";
-  const listName = row.collection_name || "(unnamed list)";
-
-  return (
-    <div style={{
-      background: "var(--surface)",
-      border: "0.5px solid var(--border)",
-      borderRadius: 8,
-      overflow: "hidden",
-      display: "flex", flexDirection: "column",
-      position: "relative",
-    }}>
-      {/* Emoji badge top-left */}
-      <button
-        onClick={onRemove}
-        title="Remove my reaction"
-        aria-label="Remove my reaction"
-        style={{
-          position: "absolute", top: 8, left: 8, zIndex: 2,
-          background: "var(--bg)",
-          border: "0.5px solid var(--border)",
-          borderRadius: 999,
-          padding: "4px 10px",
-          fontSize: 14,
-          cursor: "pointer",
-          fontFamily: "inherit",
-          display: "inline-flex", alignItems: "center", gap: 6,
-          boxShadow: "0 1px 2px rgba(0,0,0,0.08)",
-        }}>
-        <span>{row.emoji}</span>
-        <span style={{ fontSize: 10, color: "var(--text3)" }}>× remove</span>
-      </button>
-
-      {/* Image */}
-      <a
-        href={sourceUrl || "#"}
-        target={sourceUrl ? "_blank" : undefined}
-        rel={sourceUrl ? "noopener noreferrer" : undefined}
-        onClick={sourceUrl ? undefined : (e) => e.preventDefault()}
-        style={{
-          width: "100%", aspectRatio: "16 / 10",
-          background: "var(--bg)", display: "block",
-          textDecoration: "none",
-        }}>
-        {img ? (
-          <img src={img} alt="" loading="lazy"
-            style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-        ) : (
-          <div style={{
-            width: "100%", height: "100%",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            color: "var(--text3)", fontSize: 12,
-          }}>No image</div>
-        )}
-      </a>
-
-      {/* Body */}
-      <div style={{ padding: "10px 12px 12px", display: "flex", flexDirection: "column", gap: 4, flex: 1 }}>
-        <div style={{
-          fontSize: 11, color: "var(--text3)", textTransform: "uppercase",
-          letterSpacing: 0.4,
-        }}>
-          {brand || ""}
-        </div>
-        <div style={{
-          fontSize: 14, fontWeight: 600, lineHeight: 1.3, color: "var(--text1)",
-          display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical",
-          overflow: "hidden",
-        }}>
-          {title}
-        </div>
-        {priceStr && (
-          <div style={{ fontSize: 12, color: "var(--text2)" }}>{priceStr}</div>
-        )}
-        <button
-          onClick={onOpenList}
-          style={{
-            marginTop: 6,
-            background: "transparent", border: "none", padding: 0,
-            color: "var(--brand)", cursor: "pointer", fontFamily: "inherit",
-            fontSize: 12, textAlign: "left",
-            textDecoration: "underline", textUnderlineOffset: 2,
-          }}>
-          in {listName}
-        </button>
-      </div>
-    </div>
-  );
-}
 
 // ─────────────────────────────────────────────────────────────────
 // SavedArticlesView — drill-in for the Saved-articles synthetic row

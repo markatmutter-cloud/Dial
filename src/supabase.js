@@ -1531,77 +1531,10 @@ export function useCollections(user) {
     return { error: null, members: data || [] };
   }, [user]);
 
-  // ── Reactions (2026-05-10) ────────────────────────────────────
-  // Fetch every reaction for items in a collection. Returns rows
-  // with { id, collection_item_id, user_id, emoji, user_name }.
-  // Use the SECURITY DEFINER RPC which joins user_profiles +
-  // auth.users for the display name in one round-trip.
-  const fetchReactions = useCallback(async (collectionId) => {
-    if (!user || !supabase) return { error: 'not signed in', rows: [] };
-    if (!collectionId) return { error: 'collection required', rows: [] };
-    const { data, error } = await supabase.rpc('list_item_reactions', {
-      p_collection_id: collectionId,
-    });
-    if (error) return { error: error.message, rows: [] };
-    return { error: null, rows: data || [] };
-  }, [user]);
-
-  // Fetch every reaction the current user has placed, joined with
-  // the underlying item snapshot. Backs the "My reactions" synthetic
-  // row in Collections > Lists (Mark spec 2026-05-20: "the reactions
-  // to shared lists and auction catalogs are not easy to find and
-  // review — forgot that I had reviews most of those things and
-  // might not have got them right"). One round-trip via the
-  // SECURITY DEFINER RPC `my_reactions_with_items`.
-  const fetchMyReactions = useCallback(async () => {
-    if (!user || !supabase) return { error: 'not signed in', rows: [] };
-    const { data, error } = await supabase.rpc('my_reactions_with_items');
-    if (error) return { error: error.message, rows: [] };
-    return { error: null, rows: data || [] };
-  }, [user]);
-
-  // Per-collection count of reactions by someone other than the
-  // current user. Drives the small chip on list rows in the Lists
-  // view (Mark spec 2026-05-10: "how do I know Jackie reacted other
-  // than looking at the list?"). Single round-trip; backend filters
-  // and aggregates via the SECURITY DEFINER RPC.
-  const fetchReactionCounts = useCallback(async () => {
-    if (!user || !supabase) return { error: 'not signed in', counts: new Map() };
-    const { data, error } = await supabase.rpc('list_reaction_counts_for_user');
-    if (error) return { error: error.message, counts: new Map() };
-    const counts = new Map();
-    for (const row of (data || [])) {
-      counts.set(row.collection_id, row.others_reaction_count);
-    }
-    return { error: null, counts };
-  }, [user]);
-
-  // Add or remove the current user's reaction with this emoji on a
-  // specific item. The unique index (collection_item_id, user_id,
-  // emoji) means the toggle is "delete the row if it exists, else
-  // insert". RLS gates membership so a non-member's call fails
-  // even if they crafted the IDs.
-  const toggleReaction = useCallback(async (collectionItemId, emoji) => {
-    if (!user || !supabase) return { error: 'not signed in' };
-    if (!collectionItemId || !emoji) return { error: 'item + emoji required' };
-    // First check if the row exists for this user.
-    const { data: existing } = await supabase.from('collection_item_reactions')
-      .select('id')
-      .eq('collection_item_id', collectionItemId)
-      .eq('user_id', user.id)
-      .eq('emoji', emoji)
-      .maybeSingle();
-    if (existing?.id) {
-      const { error } = await supabase.from('collection_item_reactions')
-        .delete().eq('id', existing.id);
-      if (error) return { error: error.message };
-      return { error: null, removed: true };
-    }
-    const { error } = await supabase.from('collection_item_reactions')
-      .insert({ collection_item_id: collectionItemId, user_id: user.id, emoji });
-    if (error) return { error: error.message };
-    return { error: null, added: true };
-  }, [user]);
+  // Collaborative reactions (👍/❌/❤️ on shared-list items) retired
+  // 2026-05-26 with the screening collapse — the binary swipe saves
+  // to the watchlist instead. The collection_item_reactions table +
+  // its RPCs are dropped in the same epic's DB migration.
 
   // Bulk add — wraps addItemToCollection in a Promise.all. Used by
   // "Add to a list" on the auction calendar (single tap adds every
@@ -1660,11 +1593,6 @@ export function useCollections(user) {
     fetchComments,
     postComment,
     deleteComment,
-    // Reactions on shared list items (2026-05-10).
-    fetchReactions,
-    toggleReaction,
-    fetchReactionCounts,
-    fetchMyReactions,
   };
 }
 

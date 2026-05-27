@@ -81,7 +81,7 @@ export default function CardShell({
   // Actions
   quickAction,           // { label, icon, active, onClick } | null
   heart,                 // { wished, onToggle } | null
-  menu,                  // { rating, onShare, onAddToCollection, onHide, hideLabel, isHidden, extraMenuItems, shareFeedbackText } | null
+  menu,                  // { onShare, onAddToCollection, onHide, hideLabel, isHidden, extraMenuItems, shareFeedbackText } | null
   // Telemetry / layout
   innerRef,              // ref forwarded to the root (IntersectionObserver in Card)
   children,              // optional extra body content below L3
@@ -122,10 +122,6 @@ export default function CardShell({
     padding: "8px 12px", fontFamily: "inherit", fontSize: 13,
     color: "var(--text1)", whiteSpace: "nowrap", borderRadius: 6,
   };
-  const rating = menu && menu.rating;
-  // Match Card.js's original menu-render condition: rating alone does NOT
-  // open the menu — it only shows as a section when the menu is already
-  // present for share/add/hide/extra. (Behaviour-identical fold.)
   const hasMenu = !!menu && (menu.onShare || menu.onAddToCollection || menu.onHide
     || (menu.extraMenuItems && menu.extraMenuItems.length > 0));
   const actionSize = compact ? 26 : 36;
@@ -200,40 +196,6 @@ export default function CardShell({
                     // falls back to Times (Mark report 2026-05-11).
                     fontFamily: SANS_STACK,
                   }}>
-                  {rating && rating.onRate && (
-                    <>
-                      <div style={{ padding: "6px 10px 2px", fontSize: 10, fontWeight: 600, color: "var(--text3)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
-                        Give rating
-                      </div>
-                      <div style={{ display: "flex", gap: 4, padding: "2px 6px 6px" }}>
-                        {[
-                          { emoji: "👍", label: "Yes", color: "var(--brand)" },
-                          { emoji: "❌", label: "Pass", color: "var(--text3)" },
-                        ].map(({ emoji, label, color }) => {
-                          const active = rating.myRating === emoji;
-                          return (
-                            <button key={emoji} onClick={e => { e.preventDefault(); e.stopPropagation(); setMenuOpen(false); rating.onRate(emoji); }}
-                              style={{
-                                flex: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6,
-                                padding: "6px 8px",
-                                border: active ? `1px solid ${color}` : "0.5px solid var(--border)",
-                                borderRadius: 6, background: active ? "var(--brand-tint-12)" : "transparent",
-                                color: active ? color : "var(--text1)", cursor: "pointer",
-                                fontFamily: "inherit", fontSize: 12, fontWeight: 500,
-                              }}>
-                              {emoji === "👍" ? (
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
-                              ) : (
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
-                              )}
-                              <span>{label}</span>
-                            </button>
-                          );
-                        })}
-                      </div>
-                      <div style={{ height: 1, margin: "2px 6px 4px", background: "var(--border)" }} />
-                    </>
-                  )}
                   {menu.onShare && (
                     <button onClick={async e => {
                       e.preventDefault(); e.stopPropagation();
