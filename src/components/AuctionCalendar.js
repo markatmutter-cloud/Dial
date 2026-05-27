@@ -212,19 +212,9 @@ export function AuctionCalendar({
           background: "var(--bg)",
           borderBottom: "0.5px solid var(--border)",
         }}>
-          {/* Months scroll horizontally; Archive stays pinned on the
-              right (Mark 2026-05-26) so it's always reachable. */}
-          <div style={{
-            display: "flex", gap: 4, overflowX: "auto", flex: 1, minWidth: 0,
-            WebkitOverflowScrolling: "touch", scrollbarWidth: "none",
-          }}>
-            <button onClick={() => jumpToSection("auction-cal-top")} style={navChipStyle}>All</button>
-            {upcomingGroups.map(g => (
-              <button key={g.key} onClick={() => jumpToSection(`auction-month-${g.key}`)} style={navChipStyle}>
-                {monthChipLabel(g.key)}
-              </button>
-            ))}
-          </div>
+          {/* Closed (archive) pinned LEFT, ahead of the months (Mark
+              2026-05-27). Month chips scroll-to (they don't filter), so the
+              old "All" chip was removed — there's nothing to un-filter. */}
           {pastGroups.length > 0 && (
             <button
               onClick={() => { setArchiveOpen(true); setTimeout(() => jumpToSection("auction-archive"), 60); }}
@@ -238,6 +228,16 @@ export function AuctionCalendar({
               Closed
             </button>
           )}
+          <div style={{
+            display: "flex", gap: 4, overflowX: "auto", flex: 1, minWidth: 0,
+            WebkitOverflowScrolling: "touch", scrollbarWidth: "none",
+          }}>
+            {upcomingGroups.map(g => (
+              <button key={g.key} onClick={() => jumpToSection(`auction-month-${g.key}`)} style={navChipStyle}>
+                {monthChipLabel(g.key)}
+              </button>
+            ))}
+          </div>
         </div>
       )}
       {/* Filter chips — Hearted (saved sales) + per-house scope. Shows
