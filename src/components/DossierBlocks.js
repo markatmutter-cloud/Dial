@@ -13,7 +13,7 @@ import {
 // owns its data via useCollectionBlocks + reads the user's favourite searches via
 // useSearches, so CollectionsTab just mounts it with a collectionId.
 
-function matchListings(allListings, query, minP, maxP) {
+export function matchListings(allListings, query, minP, maxP) {
   const tokens = (query || "").toLowerCase().split(/\s+/).filter(Boolean);
   if (!tokens.length) return [];
   return (allListings || [])
