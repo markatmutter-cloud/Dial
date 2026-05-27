@@ -348,7 +348,7 @@ function MonthBlock({ group, firstBlock, archive = false, id, lotCounts = {}, he
           {group.items.length.toLocaleString()}
         </span>
       </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
         {group.items.map(a => (
           <AuctionRow key={a.id} a={a} archive={archive}
             lotCount={lotCounts[a.url] || 0}
@@ -459,19 +459,16 @@ function AuctionRow({ a, archive, lotCount = 0, heroImg = "", saved = false, onT
           <div style={{
             width: "100%", height: "100%",
             background: houseTint(a.house).bg, color: houseTint(a.house).fg,
-            display: "flex", flexDirection: "column", justifyContent: "center",
-            gap: 4, padding: "12px 14px", overflow: "hidden",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            padding: "12px 14px", overflow: "hidden", textAlign: "center",
           }}>
-            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.04em",
-                          textTransform: "uppercase", lineHeight: 1.2 }}>
+            {/* Cover stand-in (no scraped cover yet): just the house mark.
+                Title/date live in the text column so the card stays
+                uniform with image cards — no duplication. */}
+            <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.06em",
+                          textTransform: "uppercase", lineHeight: 1.25 }}>
               {a.house || "Auction"}
             </div>
-            <div style={{ fontSize: 12, fontWeight: 500, lineHeight: 1.25,
-                          display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
-                          overflow: "hidden" }}>
-              {a.title}
-            </div>
-            <div style={{ fontSize: 10, opacity: 0.75 }}>{fmtSaleDateRange(a)}</div>
           </div>
         )}
         {/* Heart the SALE (Phase 3). Overlay top-right of the hero,
@@ -505,13 +502,17 @@ function AuctionRow({ a, archive, lotCount = 0, heroImg = "", saved = false, onT
       <div style={{ display: "flex", minWidth: 0, flex: 1,
                   flexDirection: isMobile ? "column" : "row",
                   alignItems: isMobile ? "stretch" : "center" }}>
-        {hasImage && (
+        {(
           <div style={{ flex: 1, minWidth: 0, padding: "12px 14px",
                       display: "flex", flexDirection: "column", justifyContent: "center", gap: 4 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-              <span style={{ fontSize: 10, color: "var(--text3)", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}>
-                {a.house}
-              </span>
+              {/* House kicker only when there's an image — the colored
+                  placeholder already carries the house, so no dupe. */}
+              {hasImage && (
+                <span style={{ fontSize: 10, color: "var(--text3)", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}>
+                  {a.house}
+                </span>
+              )}
               {isLive && (
                 <span style={{ fontSize: 10, fontWeight: 600, color: "#fff", background: "#c43", borderRadius: 8, padding: "2px 8px", letterSpacing: "0.06em" }}>LIVE</span>
               )}
@@ -523,7 +524,7 @@ function AuctionRow({ a, archive, lotCount = 0, heroImg = "", saved = false, onT
               )}
               {lotActionsAvailable && (
                 <span style={{ fontSize: 10, color: "var(--text3)", fontVariantNumeric: "tabular-nums" }}>
-                  · {lotCount.toLocaleString()} lots
+                  {hasImage ? "· " : ""}{lotCount.toLocaleString()} lots
                 </span>
               )}
             </div>
@@ -541,6 +542,7 @@ function AuctionRow({ a, archive, lotCount = 0, heroImg = "", saved = false, onT
               {a.location ? ` · ${a.location}` : ""}
             </div>
           </div>
+        )}
         )}
         {actionCluster}
       </div>
