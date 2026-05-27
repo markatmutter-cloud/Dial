@@ -82,7 +82,10 @@ shared component** (cross-surface consistency), not per-tab band-aids.
 
 ## The AI spine (what Mark is most excited about)
 This is also a **builder / personal-development project** — the dual passion is the
-momentum engine. Turn **like/share/view signals** into help. Three roles:
+momentum engine. Turn **like/share/view signals + list/dossier contents** into help —
+the bots **engage with a list** to *offer*, never auto-insert ("looks like you're
+building 1960s dive-watch icons — want suggestions / this listing / this reference /
+learn the 5512?"). Three roles:
 1. **Grounded RAG Q&A** — answer from corpus excerpts only; cite every claim; "not
    covered" rather than guess; surface differing collector perspectives; voice =
    about the watch, not the collector's taste/status.
@@ -149,7 +152,11 @@ auction cover images added; **Bonhams folded in**. The FAST surface is largely i
 place.
 
 ### ▶ Phase 1 — Watchlists = the living dossier (THE BIG BUILD — START HERE)
-The keystone. Shippable steps:
+The keystone. **1a spec is locked → [docs/WATCHLISTS_DOSSIER_SPEC.md](WATCHLISTS_DOSSIER_SPEC.md)**
+— user-composed **free-order blocks** (saved-search live previews · saved items ·
+articles · reference guides · notes), arranged in any order. The app does **NOT** derive
+from the title or auto-compose; the AI layer *engages* with the list to suggest, never
+inserts. One new `collection_blocks` table; existing tables untouched. Shippable steps:
 - **1a — Spec + data model (design, little/no UI).** Define the dossier = a list
   of ordered, **typed sections**: reference guide · saved search (live) · live
   listings · sold comps · shortlist · articles · notes. Map each to existing
@@ -163,16 +170,27 @@ The keystone. Shippable steps:
   pinned anchor in Watchlists (out of the avatar menu).
 - **1d — Notes.** Free-text notes per list (the genuinely new storage).
 
+### ▶ Reference structure — Brand › Model line › Reference (PULLED FORWARD, Mark 2026-05-27)
+The navigable spine for Collecting's explore-watches side **and** the dossier's
+reference-guide section — so it's upstream of Phase 1's derived sections, not a detour.
+Today there's a single 5512/5513 leaf page with no tree to reach it. Build the tree +
+breadcrumbs: a references **dispatch/landing** ("what's a reference, start by brand /
+search") → **Brand** page (model lines) → **Model line** page (story + reference nodes)
+→ **Reference leaf** (the existing 5512/5513 page). Originally inside Phase 3; pulled
+forward because the dossier needs reference nodes to link to.
+
 ### Phase 2 — Dispatch layers + de-junk Collecting
 Shared dispatch/overview component on **every** tab (purpose + area cards + CTA);
 **de-junk Collecting** into its two sections (explore-watches / your-journey);
 retire **Screening-as-tab** → a mode on long catalogs + shared lists; **tools
 shelf** for Size/Links.
 
-### Phase 3 — AI spine + planning + reference drill-down
-RAG (grounded Q&A) · journey coach · missed-it/discovery; the two-door **planning**
-experience; the **Brand › Model › Reference** drill-down with breadcrumbs (the
-missing spine — 5512/5513 is the existing leaf).
+### Phase 3 — Planning + journey coach (reference drill-down pulled forward; AI bots split out)
+The two-door **planning** experience + the **journey coach**. The two big AI bots are
+each their **own dedicated session** (Mark, 2026-05-27 — each is a meaty build):
+- **Grounded RAG Q&A** over the reference corpus (its own session).
+- **Missed-it / discovery** from like/share/view signals (its own session).
+The **Brand › Model › Reference drill-down moved up** — see "Reference structure" above.
 
 **The next session starts at Phase 1a.** Handoff brief = this whole doc (design
 sketches + AI prompts + IA map + migration landmines).
