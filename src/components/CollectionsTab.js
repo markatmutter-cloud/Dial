@@ -13,7 +13,7 @@ import { WatchDetailSheet } from "./WatchDetailSheet";
 import { ListReviewMode } from "./ListReviewMode";
 import { articleAsListing } from "./EditorialView";
 import CardShell from "./CardShell";
-import { fmtUSD, matchesSearch } from "../utils";
+import { fmtUSD, matchesSearch, imgSrc } from "../utils";
 import { actionButton, signInButton } from "../styles";
 import { EmptyState } from "./EmptyState";
 import { Section } from "./Section";
@@ -53,6 +53,10 @@ const SAVED_COLLECTION_ID = "__saved__";
 // data stays in watchlist_items, the surface is just a UI projection.
 // No collection_items writes; this id is UI-only.
 const SAVED_ARTICLES_COLLECTION_ID = "__saved_articles__";
+// Saved-auctions virtual list (Auction Phase 3b, 2026-05-26). Hearted
+// SALES, surfaced as a synthetic row in Lists; the drill-in lists them
+// as image cards that deep-link to each sale's pre-filtered grid.
+const SAVED_AUCTIONS_COLLECTION_ID = "__saved_auctions__";
 
 export function CollectionsTab({
   user,
@@ -65,6 +69,11 @@ export function CollectionsTab({
   watchItems,
   hidden,
   allListings,
+  // Saved auctions (Phase 3b) — joined sale objects (saved-order),
+  // openSale → pre-filtered grid, toggle → unsave.
+  savedAuctions = [],
+  onOpenSale,
+  onToggleSaveAuction,
   primaryCurrency,
   handleShare,
   handleWish,
@@ -303,6 +312,9 @@ export function CollectionsTab({
         setDetailRowId={setDetailRowId}
         filterValues={filterValues}
         fetchListMembers={collectionsApi?.fetchListMembers}
+        savedAuctions={savedAuctions}
+        onOpenSale={onOpenSale}
+        onToggleSaveAuction={onToggleSaveAuction}
       />
     );
   } else if (subTab === "challenges") {
@@ -1157,6 +1169,10 @@ function ListsView({
   // (Slice 4) — fetch members for the active drill-in so the
   // who_added chip can resolve user_id → display_name.
   fetchListMembers,
+  // Saved auctions (Phase 3b).
+  savedAuctions = [],
+  onOpenSale,
+  onToggleSaveAuction,
 }) {
   // One-at-a-time recipient review mode (Mark spec 2026-05-11).
   // Triggered by the recipient banner's "Start review" CTA. Opens a
@@ -1308,11 +1324,22 @@ function ListsView({
     isSavedArticles: true,
   } : null;
 
+  // Saved-auctions synthetic row (Phase 3b). Hidden when empty, like
+  // the other synthetic rows.
+  const savedAuctionsCount = savedAuctions.length;
+  const savedAuctionsRow = (user && savedAuctionsCount > 0) ? {
+    id: SAVED_AUCTIONS_COLLECTION_ID,
+    name: "Saved auctions",
+    isSystem: true,
+    isSavedAuctions: true,
+  } : null;
+
   const selected = (() => {
     if (!selectedListId) return null;
     if (selectedListId === HIDDEN_COLLECTION_ID) return hiddenRow;
     if (selectedListId === SAVED_COLLECTION_ID) return savedRow;
     if (selectedListId === SAVED_ARTICLES_COLLECTION_ID) return savedArticlesRow;
+    if (selectedListId === SAVED_AUCTIONS_COLLECTION_ID) return savedAuctionsRow;
     return cols.find(c => c.id === selectedListId) || null;
   })();
 
@@ -1332,6 +1359,21 @@ function ListsView({
           handleWish={handleWish}
           openCollectionPicker={openCollectionPicker}
           handleShare={handleShare}
+          onBack={() => setSelectedListId(null)}
+        />
+      );
+    }
+
+    // Saved-auctions virtual list (Phase 3b). Hearted SALES as image
+    // cards; tapping one opens its pre-filtered grid (onOpenSale).
+    if (selected.id === SAVED_AUCTIONS_COLLECTION_ID) {
+      return (
+        <SavedAuctionsView
+          items={savedAuctions}
+          isWide={isWide}
+          gridStyle={gridStyle}
+          onOpenSale={onOpenSale}
+          onToggleSave={onToggleSaveAuction}
           onBack={() => setSelectedListId(null)}
         />
       );
@@ -1808,6 +1850,7 @@ function ListsView({
   const savedRows = [
     ...(savedRow ? [savedRow] : []),
     ...(savedArticlesRow ? [savedArticlesRow] : []),
+    ...(savedAuctionsRow ? [savedAuctionsRow] : []),
   ];
   const groups = [
     { key: "saved",    title: "Saved",            rows: savedRows,                  hideIfEmpty: true },
@@ -1824,16 +1867,20 @@ function ListsView({
     const isHiddenRowItem = c.id === HIDDEN_COLLECTION_ID;
     const isSavedRowItem  = c.id === SAVED_COLLECTION_ID;
     const isSavedArticlesRowItem = c.id === SAVED_ARTICLES_COLLECTION_ID;
+    const isSavedAuctionsRowItem = c.id === SAVED_AUCTIONS_COLLECTION_ID;
     const count = isSavedRowItem
       ? (watchItems || []).length
       : isHiddenRowItem
         ? hiddenItems.length
         : isSavedArticlesRowItem
           ? savedArticlesCount
-          : (itemsByColl[c.id] || []).length;
+          : isSavedAuctionsRowItem
+            ? savedAuctionsCount
+            : (itemsByColl[c.id] || []).length;
     const isShared = sharedListIds.has(c.id);
     const icon = isSavedRowItem ? heartIcon
                : isSavedArticlesRowItem ? bookmarkIcon
+               : isSavedAuctionsRowItem ? hammerIcon
                : isInbox        ? inboxIcon
                : isHiddenRowItem ? eyeOffIcon
                : isShared      ? usersIcon
@@ -1855,13 +1902,15 @@ function ListsView({
       ? `${count} hearted watch${count === 1 ? "" : "es"}`
       : isSavedArticlesRowItem
         ? `${count} hearted article${count === 1 ? "" : "s"}`
-        : isInbox
-          ? `${count} listing${count === 1 ? "" : "s"} shared with you`
-          : isHiddenRowItem
-            ? `${count} listing${count === 1 ? "" : "s"} hidden from feed`
-            : `${count} watch${count === 1 ? "" : "es"}${auctionMeta}${isShared ? " · shared" : ""}`;
+        : isSavedAuctionsRowItem
+          ? `${count} saved sale${count === 1 ? "" : "s"}`
+          : isInbox
+            ? `${count} listing${count === 1 ? "" : "s"} shared with you`
+            : isHiddenRowItem
+              ? `${count} listing${count === 1 ? "" : "s"} hidden from feed`
+              : `${count} watch${count === 1 ? "" : "es"}${auctionMeta}${isShared ? " · shared" : ""}`;
     const isOwner = !!(myUserId && c?.userId && myUserId === c.userId);
-    const isSyntheticOrInbox = isInbox || isHiddenRowItem || isSavedRowItem || isSavedArticlesRowItem;
+    const isSyntheticOrInbox = isInbox || isHiddenRowItem || isSavedRowItem || isSavedArticlesRowItem || isSavedAuctionsRowItem;
     const actions = [];
     if (!isSyntheticOrInbox && isOwner && setEditingCollection) {
       actions.push({
@@ -2243,6 +2292,17 @@ const folderIcon = (
   </svg>
 );
 
+// Gavel/hammer icon for the Saved-auctions synthetic row (Phase 3b).
+const hammerIcon = (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brand-olive)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="m14 13-7.5 7.5a2.12 2.12 0 0 1-3-3L11 10"/>
+    <path d="m16 16 6-6"/>
+    <path d="m8 8 6-6"/>
+    <path d="m9 7 8 8"/>
+    <path d="m21 11-8-8"/>
+  </svg>
+);
+
 // Two-people icon for lists shared with at least one accepted
 // collaborator. 2026-05-10 Mark spec.
 const usersIcon = (
@@ -2451,6 +2511,116 @@ function SavedArticlesView({ items, isWide, gridStyle, watchlist, handleWish, op
                   onShare: (handleShare && asListing) ? () => handleShare(asListing) : null,
                 }}
               />
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// SavedAuctionsView — drill-in for the Saved-auctions synthetic row
+// (Auction Phase 3b, 2026-05-26). Hearted SALES as image-forward cards;
+// tapping a card opens that sale's pre-filtered grid (onOpenSale routes
+// to Auctions if upcoming/live, Sold if past). The heart un-saves.
+function SavedAuctionsView({ items, isWide, gridStyle, onOpenSale, onToggleSave, onBack }) {
+  return (
+    <div style={{ padding: isWide ? "0 24px 80px" : "0 14px 80px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "14px 0 6px" }}>
+        <button
+          onClick={onBack}
+          style={{
+            background: "transparent", border: "none", padding: "4px 10px 4px 0",
+            color: "var(--text2)", cursor: "pointer", fontSize: 13, fontFamily: "inherit",
+          }}>← Lists</button>
+        <h1 style={{ fontSize: 18, fontWeight: 600, color: "var(--text1)", margin: 0 }}>
+          Saved auctions
+        </h1>
+        <span style={{ fontSize: 13, color: "var(--text3)" }}>· {items.length}</span>
+      </div>
+
+      <div style={{ fontSize: 13, color: "var(--text2)", lineHeight: 1.5, marginBottom: 16 }}>
+        Sales you've hearted on the Auctions calendar. Tap one to open its lots; tap the heart to remove it.
+      </div>
+
+      {items.length === 0 ? (
+        <div style={{
+          padding: 32, color: "var(--text2)", textAlign: "center",
+          border: "0.5px dashed var(--border)", borderRadius: 8,
+        }}>
+          You haven't saved any auctions yet. Open the Auctions calendar and tap the heart on a sale.
+        </div>
+      ) : (
+        <div style={gridStyle}>
+          {items.map(a => {
+            const isClosed = a.status === "past";
+            const isLive = a.status === "live";
+            const dateLabel = a.dateLabel || "";
+            return (
+              <div key={a.url}
+                onClick={() => onOpenSale && onOpenSale(a)}
+                role="button"
+                style={{
+                  display: "flex", flexDirection: "column",
+                  border: "0.5px solid var(--border)", borderRadius: 12, overflow: "hidden",
+                  background: "var(--card-bg)", cursor: onOpenSale ? "pointer" : "default",
+                }}>
+                <div style={{
+                  position: "relative", aspectRatio: "1 / 1",
+                  background: "var(--surface)", overflow: "hidden",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                }}>
+                  {a._heroImg ? (
+                    <img src={imgSrc(a._heroImg)} alt="" loading="lazy"
+                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                      onError={(e) => { e.currentTarget.style.visibility = "hidden"; }} />
+                  ) : (
+                    <span style={{ fontSize: 11, color: "var(--text3)", letterSpacing: "0.14em",
+                                   textTransform: "uppercase", fontWeight: 600, textAlign: "center", padding: 8 }}>
+                      {a.house || "Auction"}
+                    </span>
+                  )}
+                  {(isLive || isClosed) && (
+                    <span style={{
+                      position: "absolute", top: 8, left: 8,
+                      fontSize: 10, fontWeight: 600, color: "#fff",
+                      background: isLive ? "#c43" : "#666",
+                      borderRadius: 8, padding: "2px 8px", letterSpacing: "0.06em",
+                    }}>{isLive ? "LIVE" : "CLOSED"}</span>
+                  )}
+                  {onToggleSave && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); onToggleSave(a.url); }}
+                      aria-label="Remove this auction from saved"
+                      title="Saved — tap to remove"
+                      style={{
+                        position: "absolute", top: 8, right: 8,
+                        width: 30, height: 30, borderRadius: "50%",
+                        border: "none", padding: 0, cursor: "pointer",
+                        background: "rgba(217,38,38,0.92)", color: "#fff",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        backdropFilter: "blur(6px)",
+                      }}>
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="#fff" stroke="#fff"
+                        strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                      </svg>
+                    </button>
+                  )}
+                </div>
+                <div style={{ padding: "10px 12px 12px", display: "flex", flexDirection: "column", gap: 3 }}>
+                  <div style={{ fontSize: 10, color: "var(--text3)", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}>
+                    {a.house}
+                  </div>
+                  <div style={{ fontSize: 13, fontWeight: 500, color: "var(--text1)", lineHeight: 1.3,
+                                display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                    {a.title}
+                  </div>
+                  <div style={{ fontSize: 12, color: "var(--text2)" }}>
+                    {dateLabel}{a._lotCount ? `${dateLabel ? " · " : ""}${a._lotCount.toLocaleString()} lots` : ""}
+                  </div>
+                </div>
+              </div>
             );
           })}
         </div>
