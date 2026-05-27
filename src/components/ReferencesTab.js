@@ -3,8 +3,7 @@ import { SizeCompare } from "./SizeCompare";
 import { Links } from "./Links";
 import { EditorialView } from "./EditorialView";
 import { ChallengesView } from "./ChallengesView";
-import { ReferencePage } from "./ReferencePage";
-import { DEFAULT_REFERENCE_NODE } from "../data/referencePages";
+import { ReferenceBrowse } from "./ReferenceBrowse";
 
 // Collecting tab (internal `tab="references"`, UI label "Collecting").
 // Restructured 2026-05-18 (Mark spec) from a resource-button list
@@ -116,11 +115,12 @@ export function ReferencesTab({
       />
     );
   } else if (current === "references") {
-    // Reference pages (2026-05-24) — lands directly on the first anchor
-    // node (5512/5513). Browse index over multiple nodes is Phase 2.
+    // Reference browse surface (2026-05-27) — the navigable Brand › Model line
+    // › Reference tree with breadcrumbs, landing on the brand picker. Live nodes
+    // open the full ReferencePage; coming_soon stubs open a teaser. Self-contained
+    // nav (own URL params), so no hooks added here. See docs/REFERENCE_STRUCTURE_PLAN.md.
     body = (
-      <ReferencePage
-        node={DEFAULT_REFERENCE_NODE}
+      <ReferenceBrowse
         items={allListings || []}
         isMobile={isMobile}
         watchlist={watchlist}
