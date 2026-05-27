@@ -3553,31 +3553,6 @@ export default function Watchlist() {
   const listingsGridJSX = (
     <>
       {activeFiltersStripJSX}
-      {/* Calendar launcher (Phase 4 slice 2) — opens the auction
-          calendar as a modal over the grid. Shown on the auction
-          surfaces (upcoming + archive). Replaces the retired
-          "Auction calendar" sub-tab. */}
-      {(listingsSubTab === "auctions" || listingsSubTab === "sold") && (
-        <div style={{ display: "flex", justifyContent: "flex-end", padding: "0 0 10px" }}>
-          <button onClick={() => setCalendarModalOpen(true)}
-            title="Browse the auction calendar"
-            style={{
-              display: "inline-flex", alignItems: "center", gap: 6,
-              cursor: "pointer", fontFamily: "inherit",
-              fontSize: 12, fontWeight: 600, letterSpacing: "0.02em",
-              padding: "7px 14px", borderRadius: 999,
-              border: "0.5px solid var(--text2)", background: "transparent", color: "var(--text2)",
-            }}>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <rect x="3" y="4" width="18" height="18" rx="2"/>
-              <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
-              <line x1="3" y1="10" x2="21" y2="10"/>
-            </svg>
-            Calendar
-          </button>
-        </div>
-      )}
       {/* Sale-context header — shown only when the grid is pre-filtered
           to ONE sale (clicked from the calendar). Replaces the retired
           per-sale section dividers: house · title · date · lot count at
@@ -4572,6 +4547,9 @@ export default function Watchlist() {
     : (tab === "watchlist" ? watchItems.length : allFiltered.length);
 
   const shellProps = {
+    // Auction calendar launcher (Phase 4) — both shells render a
+    // "Calendar" pill on the filter row for the auction surfaces.
+    onOpenCalendar: () => setCalendarModalOpen(true),
     // Catalog / config
     BRANDS, BRANDS_SHOW, SOURCES, SOURCES_SHOW,
     MODELS, MODELS_SHOW,
