@@ -255,7 +255,30 @@ export function DesktopShell(props) {
           RIGHT — numeric range + sort + saved (Min-Max / Date / Price / Saved)
           plus the count + Clear-all tail. */}
 
-      {/* LEFT — Source / Brand / Sale / Model */}
+      {/* Auction calendar launcher (Phase 4) — far left, before the
+          noun filters (Mark 2026-05-26). Prominent brand-olive; opens
+          the calendar modal (the sale-picker). Auction surfaces only. */}
+      {tab === "listings" && (listingsSubTab === "auctions" || listingsSubTab === "sold") && onOpenCalendar && (
+        <button onClick={onOpenCalendar}
+          title="Browse the auction calendar"
+          style={{
+            display: "inline-flex", alignItems: "center", gap: 6, flexShrink: 0,
+            cursor: "pointer", fontFamily: "inherit",
+            fontSize: 13, fontWeight: 600, letterSpacing: "0.02em",
+            padding: "7px 14px", borderRadius: 999,
+            border: "none", background: "var(--brand-olive)", color: "#fff",
+            whiteSpace: "nowrap",
+          }}>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <rect x="3" y="4" width="18" height="18" rx="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          Calendar
+        </button>
+      )}
+      {/* LEFT — Source / Brand / Model */}
       <button onClick={() => setActiveFilterPop(p => p === "source" ? null : "source")}
         style={dtPill(filterSources.length > 0 || activeFilterPop === "source")}>
         Source{filterSources.length > 0 ? ` · ${filterSources.length}` : ""}
@@ -382,29 +405,6 @@ export function DesktopShell(props) {
             Saved
           </button>
         )}
-        {/* Auction calendar launcher (Phase 4) — prominent, on the same
-            line as the filter pills. Opens the calendar modal (the
-            sale-picker now). Auction surfaces only. */}
-        {tab === "listings" && (listingsSubTab === "auctions" || listingsSubTab === "sold") && onOpenCalendar && (
-          <button onClick={onOpenCalendar}
-            title="Browse the auction calendar"
-            style={{
-              display: "inline-flex", alignItems: "center", gap: 6, flexShrink: 0,
-              cursor: "pointer", fontFamily: "inherit",
-              fontSize: 13, fontWeight: 600, letterSpacing: "0.02em",
-              padding: "7px 14px", borderRadius: 999,
-              border: "none", background: "var(--brand-olive)", color: "#fff",
-              whiteSpace: "nowrap",
-            }}>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <rect x="3" y="4" width="18" height="18" rx="2"/>
-              <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
-              <line x1="3" y1="10" x2="21" y2="10"/>
-            </svg>
-            Calendar
-          </button>
-        )}
         {/* Count + Clear-all tail at the end of the right cluster. */}
         <span style={{
           flexShrink: 0,
@@ -444,23 +444,12 @@ export function DesktopShell(props) {
             </span>
           ) : (
             <>
-              {showDealerSources && visDealers.length > 0 && (
-                <span style={{
-                  flexBasis: "100%", fontSize: 10, fontWeight: 600,
-                  textTransform: "uppercase", letterSpacing: "0.08em",
-                  color: "var(--text3)", marginBottom: 2,
-                }}>Dealers</span>
-              )}
+              {/* Sub-headers (Dealers / Auction houses) removed 2026-05-26
+                  (Mark): they made the Source panel a different height than
+                  the headerless Brand panel. Chips only now. */}
               {showDealerSources && visDealers.map(s => (
                 <Chip key={s} label={s} active={filterSources.includes(s)} onClick={() => toggleSource(s)} />
               ))}
-              {showAuctionSources && visAuctions.length > 0 && (
-                <span style={{
-                  flexBasis: "100%", fontSize: 10, fontWeight: 600,
-                  textTransform: "uppercase", letterSpacing: "0.08em",
-                  color: "var(--text3)", marginTop: visDealers.length > 0 ? 8 : 0, marginBottom: 2,
-                }}>Auction houses</span>
-              )}
               {showAuctionSources && visAuctions.map(s => (
                 <Chip key={s} label={s} active={filterSources.includes(s)} onClick={() => toggleSource(s)} />
               ))}
