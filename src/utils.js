@@ -407,8 +407,10 @@ export function fmtShortDate(iso) {
 export function fmtSaleDateRange(a) {
   const start = fmtShortDate(a.dateStart);
   const end = fmtShortDate(a.dateEnd);
-  if (start && end && end !== start) return `${start} – ${end}`;
-  if (start) return start;
+  const yr = (a.dateEnd || a.dateStart || "").slice(0, 4);
+  const yrSuffix = /^\d{4}$/.test(yr) ? `, ${yr}` : "";
+  if (start && end && end !== start) return `${start} – ${end}${yrSuffix}`;
+  if (start) return `${start}${yrSuffix}`;
   return a.dateLabel || "Date TBD";
 }
 
