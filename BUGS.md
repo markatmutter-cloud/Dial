@@ -153,6 +153,18 @@ install/decision tails remaining.*
 - **Reported:** 2026-05-27 · **Type:** Auction redesign defect + polish · **Severity:** 2 · **Surface:** `AuctionCalendar` modal (month nav + house filter row) · **Status:** Open — queued.
 - **Detail:** (1) **Filtering:** tapping a month pill (MAY/JUN/…) does NOT filter to that month — all sales still render, it just **scrolls** to the month. Mark questions whether **"ALL"** should exist if months don't actually filter. Decide: make month pills *filter* (hide other months) OR keep scroll-to + drop "ALL". (2) **Layout:** the **"CLOSED"** pill sits far-right on the month row; Mark wants it on the **same line but left-aligned**, ahead of the months.
 
+### B-31 — Search results: Auctions strip cards misaligned
+- **Reported:** 2026-05-27 · **Severity:** 3 (visual) · **Surface:** `SearchResultsView` Auctions strip (`Strip`→`CardStrip`/`Card`) · **Status:** Open — queued (needs visual diagnosis; no local Node to verify).
+- **Detail:** In the Home "search all" results, the **Auctions** strip cards don't line up with the Listings strip above (Mark screenshot 2026-05-27). Likely the auction item renders at a different card height/aspect in the shared `CardStrip` (countdown badge / image aspect / price line). Compare auction-vs-listing `Card` rendering and align the card dimensions within the strip.
+
+### B-32 — Home: content strips (recently added · articles · sold · hearted · auctions ending soon)
+- **Reported:** 2026-05-27 · **Type:** Feature (Home landing) · **Severity:** 3 · **Surface:** `HomeTab` strips + editorial corpus · **Status:** Open — queued.
+- **Detail:** Mark wants the home/landing page to carry horizontal strips: **Recently added · Articles (recent) · Sold · Hearted · Auctions ending soon.** (Articles = the long-deferred editorial strip — load editorial meta lazily, sort by `published_at`.) Each a `CardStrip` deep-linking into the relevant surface. Mind first-paint weight — idle/lazy-load like the other deferred fetches.
+
+### B-33 — Horizontal strips don't signal they scroll sideways
+- **Reported:** 2026-05-27 · **Type:** UX affordance · **Severity:** 2 (discoverability) · **Surface:** `CardStrip` (shared — Home + search results + every strip) · **Status:** Open — queued.
+- **Detail:** Users (Mark + others) don't realise the horizontal card strips scroll sideways. Add a scroll affordance — "like Claude's scroll indicator but horizontal": a slim always-visible scrollbar track/thumb and/or a **right-edge fade gradient** hinting more content (fades out at the end). Global fix in the shared `CardStrip` so every strip benefits.
+
 ---
 
 ## Resolved
