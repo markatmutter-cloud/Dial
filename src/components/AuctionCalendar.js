@@ -235,7 +235,7 @@ export function AuctionCalendar({
                 border: "none", background: "var(--brand-olive)", color: "#fff",
                 whiteSpace: "nowrap", textTransform: "uppercase",
               }}>
-              Archive
+              Closed
             </button>
           )}
         </div>
@@ -309,7 +309,7 @@ export function AuctionCalendar({
               transition: "transform 120ms ease",
               flexShrink: 0,
             }}>▶</span>
-            <span style={{ fontSize: 14, fontWeight: 600, color: "var(--text1)" }}>Archive</span>
+            <span style={{ fontSize: 14, fontWeight: 600, color: "var(--text1)" }}>Closed</span>
             <span style={{ fontSize: 12, color: "var(--text3)", marginLeft: "auto" }}>
               {pastAuctions.length.toLocaleString()} past auctions
             </span>
