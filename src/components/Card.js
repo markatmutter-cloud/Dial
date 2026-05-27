@@ -58,13 +58,6 @@ export const Card = memo(function Card({
   // 2026-05-10 — Mark spec: replicate the pool's ↑ pattern on
   // owned cards so flagging for sale doesn't require the menu.
   quickAction,
-  // Optional rating wiring (Slice A, Mark spec 2026-05-14). When
-  // both supplied, the ⋯ menu gets a "Give rating" section with two
-  // inline chips (Yes / Pass) using the screening palette glyphs.
-  // myRating is the current user's reaction emoji on this card
-  // ("👍" / "❌" / "❤️" legacy / null); onRate(emoji) toggles.
-  myRating,
-  onRate,
   // Image-loading priority (PR 2026-05-21). When `priority` is truthy
   // we set fetchpriority="high" on the <img>, telling the browser to
   // queue this image ahead of the lazy backlog. Callers should set it
@@ -328,7 +321,6 @@ export const Card = memo(function Card({
       } : null}
       heart={{ wished, onToggle: () => onWish(item) }}
       menu={{
-        rating: onRate ? { myRating, onRate } : null,
         onShare: onShare ? () => onShare(item) : null,
         onAddToCollection: onAddToCollection ? () => onAddToCollection(item) : null,
         onHide: onHide ? () => onHide(item) : null,
