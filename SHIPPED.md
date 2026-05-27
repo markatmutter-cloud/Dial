@@ -117,6 +117,17 @@ within each section roughly last.
   row filters the calendar by house (#595); "View lots" / title click open the
   in-app grid pre-filtered to that sale — Auctions if live, Sold if past, with a
   subtle ↗ to the house page (#596).
+- **2026-05-27 — Auction redesign Phases 2–4 (#604–617).** Image-forward
+  calendar cards (top-lot/cover hero → branded colored placeholder); heart/save a
+  SALE → `saved_auctions` table + Hearted filter + a "Saved auctions" Watchlists
+  row; merged the Calendar sub-tab into a **modal** (sub-tabs 4→3) auto-opening on
+  first Auctions visit, launched by a far-left Calendar pill; flat grid with
+  **closing-time date headers** + a single sale header when filtered to one sale;
+  month-jump nav (Archive→"Closed", pinned right); removed the Sale-picker pill.
+- **2026-05-27 — Auction sale cover images: plumbing + Christie's (#619).**
+  `merge.py` carries an `image` field end-to-end to `auctions.json`; Christie's
+  maps its `__NEXT_DATA__` `ImageUrl`. Other 5 houses are a follow-up (per-house
+  extraction); frontend already renders `a.image`.
 
 ## Epic 3 — Watchlist
 
@@ -206,6 +217,13 @@ within each section roughly last.
   drill-ins, my-reactions virtual list.
 - **2026-05-20 — collector_profile_analyzer.py.** LLM collector-profile
   generation from hearts / lists / reactions (→ COLLECTOR_HANDOFF).
+- **2026-05-27 — Screening collapse → binary skip/heart (#598–603).** The swipe
+  screener reshaped to right=heart→watchlist / left=skip; Undo reverses a save.
+  Retired the whole emoji-reaction system — code AND data: dropped the
+  `collection_item_reactions` table + 3 RPCs + `get_or_create_auction_list`,
+  deleted 191 reactions + the auction auto-list collections (migration
+  `2026-05-26_drop_reaction_substrate.sql`); removed the buckets, per-card rating,
+  "My reactions" row, Screening sub-tab, and the auction Review/Add-to-list flow.
 
 ## Epic 8 — Site analytics (admin-only)
 

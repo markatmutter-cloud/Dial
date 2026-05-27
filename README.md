@@ -91,11 +91,11 @@ Plus:
                                             — saved_searches (with $ band)
                                             — collections + collection_items
                                             — collection_collaborators
-                                            — collection_item_reactions / _comments
+                                            — collection_comments
                                             — listing_events / _daily (telemetry)
                                             — user_profiles / user_settings / user_limits
                                             — admin_emails / admin_hidden_listings
-                                            — tracked_lots (eBay only)
+                                            — tracked_lots (eBay) / saved_auctions
                                             — Google OAuth provider
 ```
 
