@@ -1073,6 +1073,7 @@ def process_auctions():
             date_end   = r.get('date_end', '') or ''
             date_label = r.get('date_label', '')
             url        = r.get('url', '')
+            image      = (r.get('image') or '').strip()
 
             if not house or not title:
                 continue
@@ -1106,6 +1107,10 @@ def process_auctions():
             entry['lastUrl']    = url
             entry['lastTitle']  = title
             entry['hasCatalog'] = has_real_catalog
+            # Sale cover image (Phase 4 cover scraping). Preserve the
+            # last-known cover if a later scrape omits it (don't blank it).
+            if image:
+                entry['image'] = image
             # Preserve the BEST known catalog URL separately from
             # lastUrl. Per-house scrapers may revert their lastUrl to
             # a generic listings page once a sale ends (Antiquorum
@@ -1160,6 +1165,7 @@ def process_auctions():
             'catalogLiveAt': entry.get('catalogLiveAt'),
             'status':        status,
             'firstSeen':     entry.get('firstSeen'),
+            'image':         entry.get('image', ''),
         })
 
     # Sort: live first, then upcoming by start date, then past.

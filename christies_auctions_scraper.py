@@ -109,6 +109,11 @@ def scrape():
         date_label = (f"{date_start} – {date_end}"
                       if date_end != date_start else date_start)
 
+        # Sale cover image — Christie's __NEXT_DATA__ ships `ImageUrl` per
+        # auction (e.g. /img/saleimages/HGK-24476-…jpg?Width=600). Not
+        # hot-link-protected, so it renders directly (no proxy needed).
+        image = (a.get("ImageUrl") or "").strip()
+
         results.append({
             "house":       "Christie's",
             "title":       title,
@@ -119,6 +124,7 @@ def scrape():
             "url":         url,
             "has_catalog": "True" if has_catalog else "False",
             "source":      "Christie's",
+            "image":       image,
         })
 
     # Dedup by URL (or by date+title for online sales without URL).
@@ -144,7 +150,7 @@ def main():
     with open(out_file, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=[
             "house", "title", "location", "date_start", "date_end",
-            "date_label", "url", "has_catalog", "source",
+            "date_label", "url", "has_catalog", "source", "image",
         ])
         writer.writeheader()
         writer.writerows(auctions)
