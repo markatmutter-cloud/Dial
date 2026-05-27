@@ -127,10 +127,17 @@ export function AuctionCalendar({
       ? auctions
       : auctions.filter(a => a.house === houseFilter);
     if (heartedOnly) src = src.filter(a => savedUrls.has(a.url));
+    // Date-driven split (Mark 2026-05-26): a sale is "past" once its end
+    // date is before today, even if the scraped `status` still lags on
+    // "live"/"upcoming". Keeps ended months out of the upcoming nav and
+    // pushes them to Archive — only live/next sales stay visible.
+    const today = new Date().toISOString().slice(0, 10);
     const upcoming = [];
     const past = [];
     for (const a of src) {
-      (a.status === "past" ? past : upcoming).push(a);
+      const end = a.dateEnd || a.dateStart || "";
+      const isPast = a.status === "past" || (end && end < today);
+      (isPast ? past : upcoming).push(a);
     }
     upcoming.sort((a, b) => {
       const da = a.dateStart || "9999";
@@ -200,22 +207,34 @@ export function AuctionCalendar({
       {(upcomingGroups.length > 0 || pastGroups.length > 0) && (
         <div style={{
           position: "sticky", top: 0, zIndex: 6,
-          display: "flex", gap: 4, overflowX: "auto",
+          display: "flex", gap: 8, alignItems: "center",
           padding: "6px 0 8px", marginBottom: 4,
           background: "var(--bg)",
           borderBottom: "0.5px solid var(--border)",
-          WebkitOverflowScrolling: "touch", scrollbarWidth: "none",
         }}>
-          <button onClick={() => jumpToSection("auction-cal-top")} style={navChipStyle}>All</button>
-          {upcomingGroups.map(g => (
-            <button key={g.key} onClick={() => jumpToSection(`auction-month-${g.key}`)} style={navChipStyle}>
-              {monthChipLabel(g.key)}
-            </button>
-          ))}
+          {/* Months scroll horizontally; Archive stays pinned on the
+              right (Mark 2026-05-26) so it's always reachable. */}
+          <div style={{
+            display: "flex", gap: 4, overflowX: "auto", flex: 1, minWidth: 0,
+            WebkitOverflowScrolling: "touch", scrollbarWidth: "none",
+          }}>
+            <button onClick={() => jumpToSection("auction-cal-top")} style={navChipStyle}>All</button>
+            {upcomingGroups.map(g => (
+              <button key={g.key} onClick={() => jumpToSection(`auction-month-${g.key}`)} style={navChipStyle}>
+                {monthChipLabel(g.key)}
+              </button>
+            ))}
+          </div>
           {pastGroups.length > 0 && (
             <button
               onClick={() => { setArchiveOpen(true); setTimeout(() => jumpToSection("auction-archive"), 60); }}
-              style={navChipStyle}>
+              style={{
+                flexShrink: 0, cursor: "pointer", fontFamily: "inherit",
+                fontSize: 12, fontWeight: 700, letterSpacing: "0.04em",
+                padding: "6px 13px", borderRadius: 999,
+                border: "none", background: "var(--brand-olive)", color: "#fff",
+                whiteSpace: "nowrap", textTransform: "uppercase",
+              }}>
               Archive
             </button>
           )}
@@ -368,6 +387,11 @@ function AuctionRow({ a, archive, lotCount = 0, heroImg = "", saved = false, onT
   // from closed catalogs). Lot count is the only gate; closed
   // catalogs with 0 scraped lots show View catalog only.
   const lotActionsAvailable = lotCount > 0;
+  // When there's a real image, the card carries a separate text block.
+  // With only the colored placeholder (no cover/lots yet), the
+  // house·title·date already lives ON the square, so the text block is
+  // dropped to avoid duplication and keep the card compact (Mark 2026-05-26).
+  const hasImage = !!(a.image || heroImg);
 
   // Action cluster — re-used for both layouts. Mobile drops it onto
   // a second row below the title block (Mark report 2026-05-14: the
@@ -481,41 +505,43 @@ function AuctionRow({ a, archive, lotCount = 0, heroImg = "", saved = false, onT
       <div style={{ display: "flex", minWidth: 0, flex: 1,
                   flexDirection: isMobile ? "column" : "row",
                   alignItems: isMobile ? "stretch" : "center" }}>
-        <div style={{ flex: 1, minWidth: 0, padding: "12px 14px",
-                    display: "flex", flexDirection: "column", justifyContent: "center", gap: 4 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-            <span style={{ fontSize: 10, color: "var(--text3)", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}>
-              {a.house}
-            </span>
-            {isLive && (
-              <span style={{ fontSize: 10, fontWeight: 600, color: "#fff", background: "#c43", borderRadius: 8, padding: "2px 8px", letterSpacing: "0.06em" }}>LIVE</span>
-            )}
-            {isClosed && (
-              <span style={{ fontSize: 10, fontWeight: 600, color: "#fff", background: "#666", borderRadius: 8, padding: "2px 8px", letterSpacing: "0.06em" }}>CLOSED</span>
-            )}
-            {catalogJustOpened && (
-              <span style={{ fontSize: 10, fontWeight: 600, color: "#fff", background: "var(--brand)", borderRadius: 8, padding: "2px 8px", letterSpacing: "0.06em" }}>NEW CATALOG</span>
-            )}
-            {lotActionsAvailable && (
-              <span style={{ fontSize: 10, color: "var(--text3)", fontVariantNumeric: "tabular-nums" }}>
-                · {lotCount.toLocaleString()} lots
+        {hasImage && (
+          <div style={{ flex: 1, minWidth: 0, padding: "12px 14px",
+                      display: "flex", flexDirection: "column", justifyContent: "center", gap: 4 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+              <span style={{ fontSize: 10, color: "var(--text3)", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}>
+                {a.house}
               </span>
-            )}
+              {isLive && (
+                <span style={{ fontSize: 10, fontWeight: 600, color: "#fff", background: "#c43", borderRadius: 8, padding: "2px 8px", letterSpacing: "0.06em" }}>LIVE</span>
+              )}
+              {isClosed && (
+                <span style={{ fontSize: 10, fontWeight: 600, color: "#fff", background: "#666", borderRadius: 8, padding: "2px 8px", letterSpacing: "0.06em" }}>CLOSED</span>
+              )}
+              {catalogJustOpened && (
+                <span style={{ fontSize: 10, fontWeight: 600, color: "#fff", background: "var(--brand)", borderRadius: 8, padding: "2px 8px", letterSpacing: "0.06em" }}>NEW CATALOG</span>
+              )}
+              {lotActionsAvailable && (
+                <span style={{ fontSize: 10, color: "var(--text3)", fontVariantNumeric: "tabular-nums" }}>
+                  · {lotCount.toLocaleString()} lots
+                </span>
+              )}
+            </div>
+            <div
+              onClick={lotActionsAvailable && onOpenSale ? () => onOpenSale(a) : undefined}
+              title={lotActionsAvailable && onOpenSale ? "View this sale's lots" : undefined}
+              style={{ fontSize: 15, fontWeight: 600, color: "var(--text1)", lineHeight: 1.25,
+                        overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                        cursor: (lotActionsAvailable && onOpenSale) ? "pointer" : "default" }}>
+              {a.title}
+            </div>
+            <div style={{ fontSize: 12, color: "var(--text2)",
+                        overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {fmtSaleDateRange(a)}
+              {a.location ? ` · ${a.location}` : ""}
+            </div>
           </div>
-          <div
-            onClick={lotActionsAvailable && onOpenSale ? () => onOpenSale(a) : undefined}
-            title={lotActionsAvailable && onOpenSale ? "View this sale's lots" : undefined}
-            style={{ fontSize: 15, fontWeight: 600, color: "var(--text1)", lineHeight: 1.25,
-                      overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                      cursor: (lotActionsAvailable && onOpenSale) ? "pointer" : "default" }}>
-            {a.title}
-          </div>
-          <div style={{ fontSize: 12, color: "var(--text2)",
-                      overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-            {fmtSaleDateRange(a)}
-            {a.location ? ` · ${a.location}` : ""}
-          </div>
-        </div>
+        )}
         {actionCluster}
       </div>
     </div>

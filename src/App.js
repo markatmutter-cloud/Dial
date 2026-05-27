@@ -3830,9 +3830,9 @@ export default function Watchlist() {
         msOverflowStyle: "none",
       }}>
         {[
-          ["live", isMobile ? "Live" : "Live listings"],
-          ["auctions", isMobile ? "Auctions" : "Live auctions"],
-          ["sold", isMobile ? "Archive" : "Archive (Sold)"],
+          ["live", "Listings"],
+          ["auctions", "Auctions"],
+          ["sold", "Sold"],
         ].map(([key, label]) => {
           const active = listingsSubTab === key;
           return (
