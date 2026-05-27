@@ -583,6 +583,25 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
             context-aware via the same `search` state. Mobile already
             went through the Spotify overlay (PR_Z); desktop now
             mirrors that pattern with an expanding icon-then-input. */}
+        {/* Search input (restored 2026-05-27, Mark): a visible, consistent
+            search bar on the Articles page, bound to the shared `search` state
+            so it filters the article grid (title/author now, body once loaded).
+            The top-bar search row is skipped on tab=references, so this is the
+            single on-page search affordance for Articles. */}
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search articles…"
+          aria-label="Search articles"
+          style={{
+            flex: isMobile ? "1 1 100%" : "0 1 240px",
+            minWidth: 0, fontFamily: "inherit", fontSize: 13,
+            color: "var(--text1)", background: "transparent",
+            border: "0.5px solid var(--border)", borderRadius: 18,
+            padding: "6px 14px", outline: "none",
+          }}
+        />
         {/* Sort pill — cycles Date ↓ / Date ↑ when no query is typed,
             expands to Relevance / Date ↓ / Date ↑ when a query is active. */}
         <button
