@@ -543,7 +543,6 @@ function AuctionRow({ a, archive, lotCount = 0, heroImg = "", saved = false, onT
             </div>
           </div>
         )}
-        )}
         {actionCluster}
       </div>
     </div>
