@@ -305,11 +305,11 @@ export function SearchResultsView({
   // and editorial that I asked for?"). Empty strips show a slim
   // "No matches" body instead of the slider grid.
   const stripDefs = [
-    { key: "live", heading: "Live listings", kind: "listing", count: liveListings.length, items: liveListings, onViewAll: onViewAllLive },
-    { key: "auctions", heading: "Live auctions", kind: "listing", count: liveAuctions.length, items: liveAuctions, onViewAll: onViewAllAuctions },
+    { key: "live", heading: "Listings", kind: "listing", count: liveListings.length, items: liveListings, onViewAll: onViewAllLive },
+    { key: "auctions", heading: "Auctions", kind: "listing", count: liveAuctions.length, items: liveAuctions, onViewAll: onViewAllAuctions },
     { key: "articles", heading: "Articles", kind: "article", count: articleHits.length, items: articleHits, onViewAll: onViewAllArticles },
     { key: "references", heading: "Reference guides", kind: "reference", count: referenceHits.length, items: referenceHits },
-    { key: "sold", heading: "Archive (Sold)", kind: "listing", count: soldItems.length, items: soldItems, onViewAll: onViewAllSold },
+    { key: "sold", heading: "Sold", kind: "listing", count: soldItems.length, items: soldItems, onViewAll: onViewAllSold },
   ];
 
   return (
