@@ -3891,7 +3891,7 @@ export default function Watchlist() {
         msOverflowStyle: "none",
       }}>
         {[
-          ["editorial",  "Editorial"],
+          ["editorial",  "Articles"],
           ["references", "References"],
           ["challenges", "Challenges"],
           ["size",       "Size comparison"],
