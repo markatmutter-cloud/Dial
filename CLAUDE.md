@@ -244,8 +244,11 @@ Two suites, CI on every push + PR:
   Add a test for any new field `merge.py` emits or any change to enrichment /
   disappearance logic.
 - **jest** — render-without-crash for shells, tab bodies (CollectionsTab /
-  WatchlistTab), and App. Adding a `shellProps` field → mirror it in
-  `mockShellProps.js`. Adding a prop to a tab/App → update its `buildProps`.
+  WatchlistTab), and App (`.test.jsx` files). Adding a `shellProps` field →
+  mirror it in `mockShellProps.js`. Adding a prop to a tab/App → update its
+  `buildProps`. **Adding a `useX` supabase hook that App calls → add it to
+  `App.test.jsx`'s `jest.mock("./supabase")`** or the App render test throws
+  "useX is not a function" (the Vercel build stays green — only jest catches it).
 
 ## Things to never do
 
@@ -260,6 +263,15 @@ Cross-file / process rules (single-site rules live as comments in their files):
 - **Don't reintroduce retired surfaces** without a decision: Listings
   tri-state pill + blend sort, the EndingSoon strip, the Status segment, the
   colored identity band, the top-level Share tab, the `_isTrackedLot` heart guard.
+- **Don't rebuild the retired reaction/screening/auction-catalog systems**
+  (removed 2026-05-26, table dropped): the `collection_item_reactions` substrate
+  (emoji reactions, To-review/Loved/Liked/Passed buckets, per-card 👍/❌ rating,
+  "My reactions" row), the Collecting **Screening sub-tab** (`ScreeningView`), the
+  auction **auto-list workflow** (Review / Add-to-list / `getOrCreateAuctionList`),
+  and the Listings **Sale filter pill** (the calendar modal is the sale-picker).
+  The swipe screener is binary heart/skip; screening launches from a shared
+  list's "Screen" button. Collaborative who-hearted-what is a deliberate later
+  re-add, not a regression to undo.
 - **Don't introduce a new enum value** for a text column without auditing every
   CHECK constraint on the table first (`pg_constraint`).
 - **Don't reintroduce in-app messaging / reactions-as-chat / sender-identity /

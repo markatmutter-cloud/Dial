@@ -125,7 +125,8 @@ underlying data.
 ### NEXT (small, close open loops)
 4. Matrix scrape workflow → make it the cron (one-line flip).
 5. og:image asset (1200×630) + meta updates.
-6. Carried bugs/parity: mobile Sale-filter chip, Bonhams Vercel-proxy
+6. Carried bugs/parity: auction **cover-image scraping** for the remaining 5
+   houses (Christie's shipped; merge.py plumbing done), Bonhams Vercel-proxy
    experiment, Sotheby's bulk-archive sweep.
 7. Collector-mentality layer build-out — principle library + collector-arc
    inference feeding the AI collector-insight surface (#3). The analyzer
