@@ -2,6 +2,7 @@ import React, { useMemo, useState, useRef, useEffect } from "react";
 import { Card } from "./Card";
 import CardShell from "./CardShell";
 import CardStrip from "./CardStrip";
+import { REFERENCE_NODES } from "../data/referencePages";
 
 // Cross-tab search results — the "Search all" destination (PR_W v1,
 // 2026-05-22). When the user picks "Search all" from the Home
@@ -61,6 +62,21 @@ function matchesArticleQuery(article, q, bodies) {
     article.excerpt,
     body,
     article._source && article._source.label,
+  ].filter(Boolean).join(" ").toLowerCase();
+  return haystack.includes(q);
+}
+
+// Reference NODES (2026-05-27) — match across brand / model line / refs plus the
+// short definer + intro prose (the Brand>Model>Reference guide pages).
+function matchesReferenceQuery(node, q) {
+  if (!q) return true;
+  const haystack = [
+    node.brand,
+    node.modelLine,
+    (node.refs || []).join(" "),
+    node.group,
+    node.definer,
+    node.modelIntro,
   ].filter(Boolean).join(" ").toLowerCase();
   return haystack.includes(q);
 }
@@ -248,8 +264,15 @@ export function SearchResultsView({
     return articles.filter(a => matchesArticleQuery(a, q, articleBodies));
   }, [articles, q, articleBodies]);
 
+  // Reference guides matching the query (2026-05-27). REFERENCE_NODES is static
+  // (the curated registry), so no fetch — filter in place.
+  const referenceHits = useMemo(
+    () => REFERENCE_NODES.filter(n => matchesReferenceQuery(n, q)),
+    [q]
+  );
+
   const totalHits = liveListings.length + liveAuctions.length
-    + soldItems.length + articleHits.length;
+    + soldItems.length + articleHits.length + referenceHits.length;
 
   // PR_φ1 2026-05-22: inline-edit affordance for the query echo. Click
   // the "moonphase" header → swap to an editable input (same chrome
@@ -285,6 +308,7 @@ export function SearchResultsView({
     { key: "live", heading: "Live listings", kind: "listing", count: liveListings.length, items: liveListings, onViewAll: onViewAllLive },
     { key: "auctions", heading: "Live auctions", kind: "listing", count: liveAuctions.length, items: liveAuctions, onViewAll: onViewAllAuctions },
     { key: "articles", heading: "Articles", kind: "article", count: articleHits.length, items: articleHits, onViewAll: onViewAllArticles },
+    { key: "references", heading: "Reference guides", kind: "reference", count: referenceHits.length, items: referenceHits },
     { key: "sold", heading: "Archive (Sold)", kind: "listing", count: soldItems.length, items: soldItems, onViewAll: onViewAllSold },
   ];
 
@@ -482,7 +506,7 @@ export function SearchResultsView({
         </div>
       )}
 
-      {stripDefs.map(s => (
+      {stripDefs.filter(s => s.kind !== "reference" || s.count > 0).map(s => (
         s.kind === "article" ? (
           <ArticleStrip
             key={s.key}
@@ -490,6 +514,14 @@ export function SearchResultsView({
             count={s.count}
             items={s.items}
             onViewAll={s.onViewAll}
+            isMobile={isMobile}
+          />
+        ) : s.kind === "reference" ? (
+          <ReferenceStrip
+            key={s.key}
+            heading={s.heading}
+            count={s.count}
+            items={s.items}
             isMobile={isMobile}
           />
         ) : (
@@ -564,6 +596,42 @@ function ArticleStrip({ heading, count, items, onViewAll, isMobile }) {
           </div>}
           level1={<div style={{ fontSize: 12, fontWeight: 500, color: "var(--text1)", lineHeight: 1.3, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
             {a.title}
+          </div>}
+        />
+      )} />
+    </section>
+  );
+}
+
+// Reference-guides strip (2026-05-27) — reference NODES matching the query
+// (the Brand>Model>Reference pages). Tiles open the reference page; no
+// price/heart. Live nodes show their hero image; coming-soon stubs show a
+// "soon" hint and no image.
+function ReferenceStrip({ heading, count, items, isMobile }) {
+  const visible = items.slice(0, STRIP_MAX);
+  return (
+    <section style={{ padding: isMobile ? "16px 0" : "20px 0" }}>
+      <div style={{
+        display: "flex", alignItems: "baseline", gap: 10,
+        padding: isMobile ? "0 16px 10px" : "0 20px 12px",
+      }}>
+        <h2 style={{
+          margin: 0, fontSize: isMobile ? 16 : 18, fontWeight: 600,
+          color: "var(--text1)", fontFamily: "inherit",
+        }}>{heading}</h2>
+        <span style={{ fontSize: 12, color: "var(--text3)" }}>{count.toLocaleString()}</span>
+      </div>
+      <CardStrip items={visible} isMobile={isMobile} renderCard={n => (
+        <CardShell
+          href={`/?tab=learn&sub=references&ref=${encodeURIComponent(n.id)}`}
+          aspect="square"
+          bodyPadding="10px 12px 12px"
+          image={n.hero && n.hero.img ? { src: n.hero.img, alt: "" } : null}
+          level2={<div style={{ fontSize: 10, fontWeight: 600, color: "var(--text3)", textTransform: "uppercase", letterSpacing: 0.4, marginBottom: 4 }}>
+            {n.brand} {n.modelLine}
+          </div>}
+          level1={<div style={{ fontSize: 12, fontWeight: 500, color: "var(--text1)", lineHeight: 1.3 }}>
+            {n.group || (n.refs || []).join(" / ")}{n.status === "coming_soon" ? " · soon" : ""}
           </div>}
         />
       )} />
