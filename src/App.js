@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect, useLayoutEffect, useRef, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { useAuth, useWatchlist, useHidden, useAdminHidden, useSearches, useTrackedLots, useSavedAuctions, useCollections, useUserSettings, useUserProfile, isAuthConfigured } from "./supabase";
 import { useEventTelemetry } from "./hooks/useEventTelemetry";
 import { useUserLimit } from "./hooks/useUserLimit";
@@ -447,7 +448,7 @@ export default function Watchlist() {
   // the valid values depend on the active main tab. Persisted under
   // its own localStorage key so switching between Listings and
   // Watchlist doesn't reset the user's sub-tab choice on either side.
-  const LISTINGS_SUB_VALUES = ["live", "auctions", "sold", "calendar"];
+  const LISTINGS_SUB_VALUES = ["live", "auctions", "sold"];
   const [listingsSubTab, setListingsSubTab] = useState(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
@@ -849,6 +850,10 @@ export default function Watchlist() {
   // pattern — one-bit mirror; the ListReceiver component owns its
   // own intent state.
   const [listShareActive, setListShareActive] = useState(false);
+  // Auction calendar modal (Phase 4 slice 2). The calendar is no longer
+  // a sub-tab — it opens as an overlay over the auctions grid and filters
+  // it on sale pick.
+  const [calendarModalOpen, setCalendarModalOpen] = useState(false);
   // Feed-screening retired 2026-05-22 — the Home banner + per-strip
   // "Screen N new" pill that fed it were removed (PRs #283 / #507);
   // nothing renders openFeedScreener anymore. Audit confirmed the
@@ -3537,11 +3542,10 @@ export default function Watchlist() {
     return out;
   })();
 
-  // Auction calendar surface — surfaced inside the Listings tab's
-  // Auctions filter via the Lots/Calendar toggle. Same component the
-  // Watchlist > Calendar sub-tab used to render before the
-  // 2026-05-04 unification; it now lives at Listings > Auction calendar
-  // (its own sub-tab) after the listings sub-tabs restructure.
+  // Auction calendar component. Phase 4 slice 2 (2026-05-26): no longer
+  // its own sub-tab — it renders inside the calendar MODAL below,
+  // launched from the auctions grid; picking a sale filters the grid +
+  // closes the modal.
   const auctionCalendarJSX = (
     <div style={{ paddingTop: 4 }}>
       <AuctionCalendar
@@ -3550,7 +3554,7 @@ export default function Watchlist() {
         heroImgByUrl={auctionHeroByUrl}
         savedUrls={savedAuctionUrlSet}
         onToggleSave={user ? toggleSavedAuction : null}
-        onOpenSale={handleOpenSale}
+        onOpenSale={(a) => { handleOpenSale(a); setCalendarModalOpen(false); }}
         isMobile={isMobile}
       />
     </div>
@@ -3584,6 +3588,31 @@ export default function Watchlist() {
   const listingsGridJSX = (
     <>
       {activeFiltersStripJSX}
+      {/* Calendar launcher (Phase 4 slice 2) — opens the auction
+          calendar as a modal over the grid. Shown on the auction
+          surfaces (upcoming + archive). Replaces the retired
+          "Auction calendar" sub-tab. */}
+      {(listingsSubTab === "auctions" || listingsSubTab === "sold") && (
+        <div style={{ display: "flex", justifyContent: "flex-end", padding: "0 0 10px" }}>
+          <button onClick={() => setCalendarModalOpen(true)}
+            title="Browse the auction calendar"
+            style={{
+              display: "inline-flex", alignItems: "center", gap: 6,
+              cursor: "pointer", fontFamily: "inherit",
+              fontSize: 12, fontWeight: 600, letterSpacing: "0.02em",
+              padding: "7px 14px", borderRadius: 999,
+              border: "0.5px solid var(--text2)", background: "transparent", color: "var(--text2)",
+            }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <rect x="3" y="4" width="18" height="18" rx="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            Calendar
+          </button>
+        </div>
+      )}
       {/* Grid wrapper drops `overflow: hidden` + `borderRadius` (was
           there to clip the hairline-gap background to rounded corners)
           so the DateDivider inside can `position: sticky` against the
@@ -3627,12 +3656,63 @@ export default function Watchlist() {
     </>
   );
 
-  // What the Listings tab actually renders. Calendar sub-tab swaps
-  // in the auction calendar; every other sub-tab gets the card grid.
-  // Lifted here so both shells dispatch via a single prop.
-  const listingsTabContentJSX = listingsSubTab === "calendar"
-    ? auctionCalendarJSX
-    : listingsGridJSX;
+  // Auction calendar modal. Portals to body so it overlays correctly
+  // regardless of shell stacking contexts (CLAUDE.md overlay pattern);
+  // theme vars are mirrored to :root + font on body so it inherits.
+  const calendarModalJSX = (calendarModalOpen && typeof document !== "undefined")
+    ? createPortal(
+        <div
+          onClick={() => setCalendarModalOpen(false)}
+          style={{
+            position: "fixed", inset: 0, zIndex: 2000,
+            background: "rgba(0,0,0,0.45)",
+            display: "flex", flexDirection: "column",
+            padding: isMobile ? 0 : "5vh 24px",
+            alignItems: "center",
+          }}>
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: "var(--bg)", color: "var(--text1)",
+              width: "100%", maxWidth: isMobile ? "100%" : 880,
+              height: isMobile ? "100%" : "auto", maxHeight: isMobile ? "100%" : "90vh",
+              borderRadius: isMobile ? 0 : 14, overflow: "hidden",
+              display: "flex", flexDirection: "column",
+              boxShadow: "0 24px 60px rgba(0,0,0,0.30)",
+              fontFamily: "inherit",
+            }}>
+            <div style={{
+              display: "flex", alignItems: "center", justifyContent: "space-between",
+              gap: 12, padding: "14px 16px",
+              borderBottom: "0.5px solid var(--border)", flexShrink: 0,
+              paddingTop: isMobile ? "calc(14px + env(safe-area-inset-top))" : 14,
+            }}>
+              <span style={{ fontSize: 16, fontWeight: 600 }}>Auction calendar</span>
+              <button onClick={() => setCalendarModalOpen(false)}
+                aria-label="Close calendar"
+                style={{
+                  border: "none", background: "transparent", cursor: "pointer",
+                  color: "var(--text2)", fontSize: 22, lineHeight: 1, padding: "0 4px",
+                }}>×</button>
+            </div>
+            <div style={{ overflowY: "auto", padding: "8px 16px 24px", WebkitOverflowScrolling: "touch" }}>
+              {auctionCalendarJSX}
+            </div>
+          </div>
+        </div>,
+        document.body
+      )
+    : null;
+
+  // Listings tab content — the card grid plus the (portaled) calendar
+  // modal. The grid is the always-on base surface now; the calendar is
+  // the on-demand overlay launched from the auctions grid's header.
+  const listingsTabContentJSX = (
+    <>
+      {listingsGridJSX}
+      {calendarModalJSX}
+    </>
+  );
 
   // PR_W (2026-05-22): cross-tab "Search all" destination. Renders
   // three strips (Live listings / Live auctions / Archive sold)
@@ -3766,7 +3846,6 @@ export default function Watchlist() {
           ["live", isMobile ? "Live" : "Live listings"],
           ["auctions", isMobile ? "Auctions" : "Live auctions"],
           ["sold", isMobile ? "Archive" : "Archive (Sold)"],
-          ["calendar", isMobile ? "Calendar" : "Auction calendar"],
         ].map(([key, label]) => {
           const active = listingsSubTab === key;
           return (
