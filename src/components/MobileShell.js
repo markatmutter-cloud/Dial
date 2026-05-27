@@ -3,7 +3,6 @@ import { SearchIcon, FilterIcon } from "./icons";
 import { Chip } from "./Chip";
 import { AboutModal } from "./AboutModal";
 import { SignInPromptModal } from "./SignInPromptModal";
-import { ViewSettingsControls } from "./ViewSettingsControls";
 import { iconButton, pillBase, inputBase } from "../styles";
 
 // Mobile shell — receives everything the mobile branch needs from
@@ -52,13 +51,8 @@ export function MobileShell(props) {
     collectionEditModalJSX, collectionPickerModalJSX,
     favSearchModalJSX,
     adminTabJSX, homeTabJSX, listingsGridJSX, listingsTabContentJSX, primaryCurrency, sectionHeadingStyle,
-    // View-settings (2026-05-09): rendered inline in the filter
-    // drawer so currency / theme / columns are one tap from the
-    // current view rather than buried behind Settings.
-    setPrimaryCurrency,
-    dark, setDarkOverride,
-    mobileCols, setMobileCols,
-    desktopCols, setDesktopCols, desktopAutoCols,
+    // View settings (currency/theme/columns) moved to Display settings in the
+    // avatar menu (SettingsModal); removed from the filter tray — Mark 2026-05-27.
     settingsModalJSX, shareReceiverJSX,
     challengeReceiverJSX,
     listReceiverJSX,
@@ -716,28 +710,9 @@ export function MobileShell(props) {
                   </div>
                 </div>
 
-                {/* View settings inline in the filter drawer (2026-05-09).
-                    User feedback: currency / theme / columns were too
-                    buried behind the Settings modal. They live here so a
-                    quick comparison-shop currency swap is one tap from
-                    the current filter state. */}
-                <div style={{ height: "0.5px", background: "var(--border)", margin: "0 16px 0" }} />
-                <div style={{ padding: "8px 16px 8px" }}>
-                  <div style={sectionHeadingStyle}>View settings</div>
-                  <ViewSettingsControls
-                    primaryCurrency={primaryCurrency}
-                    setPrimaryCurrency={setPrimaryCurrency}
-                    isMobile={true}
-                    dark={dark}
-                    setDarkOverride={setDarkOverride}
-                    mobileCols={mobileCols}
-                    setMobileCols={setMobileCols}
-                    desktopCols={desktopCols}
-                    setDesktopCols={setDesktopCols}
-                    desktopAutoCols={desktopAutoCols}
-                    compact={true}
-                  />
-                </div>
+                {/* View settings removed from the filter tray (Mark 2026-05-27)
+                    — currency / theme / columns now live only in the avatar
+                    menu's Display settings (SettingsModal). */}
               </div>
 
               {/* Fixed bottom actions. Show-CTA bumped slightly
