@@ -39,6 +39,9 @@ the branch you'll create — branch before editing, never edit `main`.
   reports; findings → BUGS.md) · **CLAUDE.md** (durable rule only, within
   budget; strip PR/date tags).
 - Update **personal/LEARNING.md** (capability snapshot / concept log / growth edges).
+- **Clean-close rule.** A partial ship *closes* its backlog item and opens **one**
+  crisply-scoped follow-up — never a vague "phase 2 open" tail (they pile up as
+  cryptic IDs Mark can't parse). Group BUGS by epic, not as a flat list.
 - **CLAUDE.md budget: ~4,000 words, ceiling 6,000.** Adding a rule means
   cutting or compressing an equal amount.
 
@@ -211,7 +214,9 @@ diagram, data model, and folder layout.
   pointing at a missing shared component or single source of truth* — fix the
   root so every surface inherits correct behavior. Resist local band-aids; they
   re-drift (the date-divider gap took 4 attempts because the chrome isn't one
-  component). Mark flags this often — divergence is the bug, not the styling.
+  component). Mark flags this often — divergence is the bug, not the styling. The
+  planned per-tab **dispatch layer** (purpose + area cards + CTA) must be ONE shared
+  component, not per-tab variants (see [docs/IA_REDESIGN.md](docs/IA_REDESIGN.md)).
 - Visual tokens, components, and reach-for rules: **see DESIGN_SYSTEM.md**.
 
 ## Internal-vs-UI naming (deliberate — don't "fix" casually)

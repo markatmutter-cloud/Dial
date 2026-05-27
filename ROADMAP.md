@@ -99,6 +99,14 @@ eras are mature; the next era is **making the collecting + reference
 intelligence visible** — and trusting that what's built actually works. See
 Epics 0/5/7 for detail.
 
+**IA / UX redesign (2026-05-27) — now the organizing initiative.** That era is
+delivered through a navigation redesign: organize the three tabs by *tempo*
+(Listings = fast · Watchlists = medium · Collecting = slow), not data type. Full
+plan + phases + wireframes + AI prompts:
+[docs/IA_REDESIGN.md](docs/IA_REDESIGN.md) (Epic 9 below). Phase 0 (auction
+restructure) shipped; **the next build is Phase 1 — the Watchlists "living
+dossier" keystone** (Epic 3's composable Lists, now specced).
+
 ### NOW
 1. **"Does it work + is it surfaced right" audit.** The foundation everything
    else stands on: walk every user-facing feature on the live site, produce a
@@ -475,6 +483,38 @@ data:
 
 Out of scope for v1: filter-usage telemetry, time-on-listing, scroll depth,
 search-query analytics.
+
+## Epic 9: IA / UX redesign
+
+Cross-cutting navigation + surfacing redesign so users can tell why they'd visit
+each tab and where each function lives (root complaint: tabs organized by data
+type + history, not by user job). Full thinking + plan + wireframes + AI prompts:
+**[docs/IA_REDESIGN.md](docs/IA_REDESIGN.md)** — the build brief. Absorbs the
+design threads that were logged as bugs (BUGS Epic A: B-06, B-08, B-14) plus the
+chrome-unification + card-design-system memories.
+
+**The spine — three speeds, named by noun (never label tabs Fast/Medium/Slow):**
+- **Listings (fast)** — encounter the market: one dense grid, cut by
+  new/price/brand/house.
+- **Watchlists (medium)** — make meaning: the "living dossier" keystone (lists
+  mixing articles + a live saved search + listings + comps + shortlist + reference
+  + notes); Watchbox = the elevated anchor list. Mostly no-buy taste-saving, not a
+  shopping cart.
+- **Collecting (slow)** — grow: explore-watches + develop-as-a-collector, with an
+  AI spine (grounded RAG · journey coach · missed-it). A reference drill-down
+  (Brand › Model line › Reference) fills the missing spine above the 5512/5513 leaf.
+
+**Dispatch layer** on every tab (purpose + area cards + CTA, one shared component)
+is the clarity mechanism — not a nicety. **Planning = one experience, two doors**
+(Watchbox + Collecting). **Screening** stops being a tab — a mode on long catalogs
++ shared lists.
+
+**Build sequence** — capability before the dispatch layer that advertises it:
+- ✅ **Phase 0** — Listings/Auctions restructure (calendar modal + Bonhams) — shipped #612–621.
+- ▶ **Phase 1** — Watchlists living dossier (the keystone, the only genuinely new
+  build): 1a spec + data model · 1b dossier container UI · 1c Watchbox anchor · 1d notes.
+- **Phase 2** — dispatch layers + de-junk Collecting + tools shelf.
+- **Phase 3** — AI spine + two-door planning + reference drill-down.
 
 ## Explicitly NOT on the roadmap
 
