@@ -391,6 +391,27 @@ export function fmtUSD(p) {
   return "$" + Math.round(p).toLocaleString();
 }
 
+// Sale-date formatters — shared by the auction calendar AND the
+// sale-sectioned auctions grid (Phase 4). Format an ISO date
+// ("2026-04-29") as "Apr 29"; returns null for falsy.
+export function fmtShortDate(iso) {
+  if (!iso) return null;
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return iso;
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  return `${months[d.getUTCMonth()]} ${d.getUTCDate()}`;
+}
+
+// A sale's date range. Single-day → "Apr 29". Multi-day →
+// "Apr 29 – May 13". Falls back to raw dateLabel or "Date TBD".
+export function fmtSaleDateRange(a) {
+  const start = fmtShortDate(a.dateStart);
+  const end = fmtShortDate(a.dateEnd);
+  if (start && end && end !== start) return `${start} – ${end}`;
+  if (start) return start;
+  return a.dateLabel || "Date TBD";
+}
+
 export function daysAgo(dateStr) {
   if (!dateStr) return 9999;
   // Parse "YYYY-MM-DD" as local-tz midnight, not UTC midnight. With the

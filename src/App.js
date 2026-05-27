@@ -9,6 +9,7 @@ import {
   ageBucketFromDate, canonicalizeBrand, detectAuctionLotBrand,
   shortHash,
   matchesSearch,
+  fmtSaleDateRange,
   FORCE_OTHER_BRANDS, SUPPRESS_AT_SOLD_BRANDS,
 } from "./utils";
 import { useWidth, useSystemDark } from "./hooks";
@@ -3454,54 +3455,45 @@ export default function Watchlist() {
     const isDateSort = sort === "date" || sort === "date-asc";
     const useFreshBuckets    = isDateSort && tab === "listings" && listingsSubTab === "live";
     const useSoldBuckets     = isDateSort && tab === "listings" && listingsSubTab === "sold";
-    const useClosingBuckets  = tab === "listings" && listingsSubTab === "auctions";
-    if (!useFreshBuckets && !useSoldBuckets && !useClosingBuckets) {
+    const useSaleBuckets     = isDateSort && tab === "listings" && listingsSubTab === "auctions";
+    if (!useFreshBuckets && !useSoldBuckets && !useSaleBuckets) {
       return visible.map(it => ({ kind: "card", item: it }));
     }
-    // Closing-time bands for Live auctions (PR 2026-05-22, Mark spec).
-    // Replaces the sale-grouping shipped in PR #504 — the "Other
-    // auction lots" group bubbled to the top because un-grouped lots
-    // sorted first, and the structure didn't match how Mark triages
-    // urgency. New shape: bucket lots by how soon they close (today
-    // / this week / this month / later) + "Other auction lots" last
-    // for items without an end date. Sale-as-grouping is now exposed
-    // as a filter chip instead (planned PR B).
-    if (useClosingBuckets) {
-      const DAY = 86400000;
-      const now = Date.now();
-      const labelOf = (i) => {
-        const end = i.auction_end ? new Date(i.auction_end).getTime() : 0;
-        if (!end || !Number.isFinite(end)) return "Other auction lots";
-        const diff = end - now;
-        if (diff < 0) return "Ending now";
-        if (diff < DAY) return "Closing today";
-        if (diff < 7 * DAY) return "Closing this week";
-        if (diff < 30 * DAY) return "Closing this month";
-        return "Later";
-      };
-      // Bucket order — closing soonest first, then "Other" last.
-      const ORDER = [
-        "Ending now",
-        "Closing today",
-        "Closing this week",
-        "Closing this month",
-        "Later",
-        "Other auction lots",
-      ];
+    // Sale-section grouping for the auctions grid (Phase 4, 2026-05-26).
+    // A 500-lot Antiquorum Saturday sale used to bury a 55-lot Monaco
+    // Sunday sale when interleaved by closing time; sectioning by SALE
+    // gives every sale its own labelled, scannable block. `visible`
+    // arrives sorted by endingSoonComparator (a sale's lots contiguous,
+    // soonest-closing first, lot_number within), so bucketing by
+    // auction_url in first-appearance order yields sections soonest-first
+    // with catalog order inside — no re-sort. Lots whose sale isn't in
+    // the calendar feed fall under "Other auction lots", pinned LAST
+    // (the bug that reverted PR #504 was letting that group bubble to the
+    // top — here we only override that one fallback key). Gated to the
+    // Date sort like the fresh/sold buckets; a Price sort renders a flat
+    // ranked grid (grouping would shatter or override the price order).
+    if (useSaleBuckets) {
+      const FALLBACK = "__other__";
+      const order = [];
       const groups = new Map();
       for (const it of visible) {
-        const key = labelOf(it);
-        if (!groups.has(key)) groups.set(key, []);
+        const key = (it.auction_url && salesByUrl.has(it.auction_url)) ? it.auction_url : FALLBACK;
+        if (!groups.has(key)) { groups.set(key, []); order.push(key); }
         groups.get(key).push(it);
       }
+      const ordered = order.filter(k => k !== FALLBACK)
+        .concat(groups.has(FALLBACK) ? [FALLBACK] : []);
       const out = [];
-      for (const label of ORDER) {
-        const lots = groups.get(label);
-        if (!lots || lots.length === 0) continue;
-        // Count is per-band against the contiguous run in allFiltered
-        // (matches the date-bucket count semantic — what the user
-        // sees between this header and the next).
-        out.push({ kind: "divider", label, total: lots.length });
+      for (const key of ordered) {
+        const lots = groups.get(key);
+        if (key === FALLBACK) {
+          out.push({ kind: "divider", label: "Other auction lots", total: lots.length });
+        } else {
+          const sale = salesByUrl.get(key);
+          const meta = [sale.house, fmtSaleDateRange(sale), `${lots.length} lots`]
+            .filter(Boolean).join(" · ");
+          out.push({ kind: "divider", label: sale.title || sale.house || "Auction", meta });
+        }
         for (const it of lots) out.push({ kind: "card", item: it });
       }
       return out;

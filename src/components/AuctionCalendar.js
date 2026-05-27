@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { innerToggleButton } from "../styles";
-import { imgSrc } from "../utils";
+import { imgSrc, fmtSaleDateRange } from "../utils";
 
 // Auction calendar — month-banded list of every auction-house sale
 // in the emitted feed. Live + upcoming render in the top section;
@@ -19,24 +19,8 @@ function fmtMonthBand(key) {
   return `${months[idx]} ${y}`;
 }
 
-// Format an ISO date ("2026-04-29") as "Apr 29". Returns null for falsy.
-function fmtShortDate(iso) {
-  if (!iso) return null;
-  const d = new Date(iso);
-  if (isNaN(d.getTime())) return iso;
-  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-  return `${months[d.getUTCMonth()]} ${d.getUTCDate()}`;
-}
-
-// Format a sale's date range. Single-day → "Apr 29". Multi-day →
-// "Apr 29 – May 13". Falls back to raw dateLabel or "Date TBD".
-function fmtSaleDateRange(a) {
-  const start = fmtShortDate(a.dateStart);
-  const end = fmtShortDate(a.dateEnd);
-  if (start && end && end !== start) return `${start} – ${end}`;
-  if (start) return start;
-  return a.dateLabel || "Date TBD";
-}
+// fmtShortDate + fmtSaleDateRange moved to ../utils (Phase 4) so the
+// sale-sectioned auctions grid can share them. Imported above.
 
 export function AuctionCalendar({
   auctions = [],
