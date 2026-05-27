@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useLayoutEffect, useRef, useCallback } from "react";
-import { useAuth, useWatchlist, useHidden, useAdminHidden, useSearches, useTrackedLots, useCollections, useUserSettings, useUserProfile, isAuthConfigured } from "./supabase";
+import { useAuth, useWatchlist, useHidden, useAdminHidden, useSearches, useTrackedLots, useSavedAuctions, useCollections, useUserSettings, useUserProfile, isAuthConfigured } from "./supabase";
 import { useEventTelemetry } from "./hooks/useEventTelemetry";
 import { useUserLimit } from "./hooks/useUserLimit";
 import { UserLimitBanner } from "./components/UserLimitBanner";
@@ -1077,6 +1077,10 @@ export default function Watchlist() {
     );
   }, [search, minPriceText, maxPriceText, userSearches]);
   const { urls: trackedLotUrls, add: addTrackedLot, remove: removeTrackedLot, addedAt: trackedLotAddedAt } = useTrackedLots(user);
+  // Saved auctions (Phase 3) — hearted SALES (by auction_url). Drives
+  // the calendar heart + Hearted chip and the Watchlists section.
+  const { urls: savedAuctionUrls, toggle: toggleSavedAuction } = useSavedAuctions(user);
+  const savedAuctionUrlSet = useMemo(() => new Set(savedAuctionUrls), [savedAuctionUrls]);
 
   // Collections — user-created beyond the default Watchlist (which is
   // still backed by useWatchlist above). Approach A: this hook only
@@ -3539,6 +3543,8 @@ export default function Watchlist() {
         auctions={auctions || []}
         lotCounts={lotCountsByAuctionUrl}
         heroImgByUrl={auctionHeroByUrl}
+        savedUrls={savedAuctionUrlSet}
+        onToggleSave={user ? toggleSavedAuction : null}
         onOpenSale={handleOpenSale}
         isMobile={isMobile}
       />
