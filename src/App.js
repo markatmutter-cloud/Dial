@@ -3460,48 +3460,13 @@ export default function Watchlist() {
     const isDateSort = sort === "date" || sort === "date-asc";
     const useFreshBuckets    = isDateSort && tab === "listings" && listingsSubTab === "live";
     const useSoldBuckets     = isDateSort && tab === "listings" && listingsSubTab === "sold";
-    const useSaleBuckets     = isDateSort && tab === "listings" && listingsSubTab === "auctions";
-    if (!useFreshBuckets && !useSoldBuckets && !useSaleBuckets) {
+    // Auctions grid is FLAT (Mark 2026-05-26): the in-grid sale-section
+    // headers were hard to read + carried a wrong count on the unfiltered
+    // scroll. Sale context now lives in a single header at the top of the
+    // grid when you've drilled into one sale (filterSaleUrls, rendered in
+    // listingsGridJSX), not as repeated per-sale dividers.
+    if (!useFreshBuckets && !useSoldBuckets) {
       return visible.map(it => ({ kind: "card", item: it }));
-    }
-    // Sale-section grouping for the auctions grid (Phase 4, 2026-05-26).
-    // A 500-lot Antiquorum Saturday sale used to bury a 55-lot Monaco
-    // Sunday sale when interleaved by closing time; sectioning by SALE
-    // gives every sale its own labelled, scannable block. `visible`
-    // arrives sorted by endingSoonComparator (a sale's lots contiguous,
-    // soonest-closing first, lot_number within), so bucketing by
-    // auction_url in first-appearance order yields sections soonest-first
-    // with catalog order inside — no re-sort. Lots whose sale isn't in
-    // the calendar feed fall under "Other auction lots", pinned LAST
-    // (the bug that reverted PR #504 was letting that group bubble to the
-    // top — here we only override that one fallback key). Gated to the
-    // Date sort like the fresh/sold buckets; a Price sort renders a flat
-    // ranked grid (grouping would shatter or override the price order).
-    if (useSaleBuckets) {
-      const FALLBACK = "__other__";
-      const order = [];
-      const groups = new Map();
-      for (const it of visible) {
-        const key = (it.auction_url && salesByUrl.has(it.auction_url)) ? it.auction_url : FALLBACK;
-        if (!groups.has(key)) { groups.set(key, []); order.push(key); }
-        groups.get(key).push(it);
-      }
-      const ordered = order.filter(k => k !== FALLBACK)
-        .concat(groups.has(FALLBACK) ? [FALLBACK] : []);
-      const out = [];
-      for (const key of ordered) {
-        const lots = groups.get(key);
-        if (key === FALLBACK) {
-          out.push({ kind: "divider", label: "Other auction lots", total: lots.length });
-        } else {
-          const sale = salesByUrl.get(key);
-          const meta = [sale.house, fmtSaleDateRange(sale), `${lots.length} lots`]
-            .filter(Boolean).join(" · ");
-          out.push({ kind: "divider", label: sale.title || sale.house || "Auction", meta });
-        }
-        for (const it of lots) out.push({ kind: "card", item: it });
-      }
-      return out;
     }
     const baseLabelFn = useSoldBuckets ? soldBucketLabel : ageBucketLabel;
     // Mark's report 2026-05-06: backfilled items can produce a second
@@ -3613,6 +3578,28 @@ export default function Watchlist() {
           </button>
         </div>
       )}
+      {/* Sale-context header — shown only when the grid is pre-filtered
+          to ONE sale (clicked from the calendar). Replaces the retired
+          per-sale section dividers: house · title · date · lot count at
+          the top of that sale's filtered list (Mark spec 2026-05-26). */}
+      {(listingsSubTab === "auctions" || listingsSubTab === "sold")
+        && filterSaleUrls.length === 1
+        && salesByUrl.get(filterSaleUrls[0]) && (() => {
+        const sale = salesByUrl.get(filterSaleUrls[0]);
+        return (
+          <div style={{ padding: "2px 2px 14px" }}>
+            <div style={{ fontSize: 11, color: "var(--text3)", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}>
+              {sale.house}
+            </div>
+            <div style={{ fontSize: 19, fontWeight: 600, color: "var(--text1)", lineHeight: 1.2, marginTop: 2 }}>
+              {sale.title}
+            </div>
+            <div style={{ fontSize: 13, color: "var(--text2)", marginTop: 3 }}>
+              {fmtSaleDateRange(sale)}{sale.location ? ` · ${sale.location}` : ""} · {allFiltered.length} lots
+            </div>
+          </div>
+        );
+      })()}
       {/* Grid wrapper drops `overflow: hidden` + `borderRadius` (was
           there to clip the hairline-gap background to rounded corners)
           so the DateDivider inside can `position: sticky` against the
@@ -3684,7 +3671,7 @@ export default function Watchlist() {
             <div style={{
               display: "flex", alignItems: "center", justifyContent: "space-between",
               gap: 12, padding: "14px 16px",
-              borderBottom: "0.5px solid var(--border)", flexShrink: 0,
+              background: "var(--brand-olive)", color: "#fff", flexShrink: 0,
               paddingTop: isMobile ? "calc(14px + env(safe-area-inset-top))" : 14,
             }}>
               <span style={{ fontSize: 16, fontWeight: 600 }}>Auction calendar</span>
@@ -3692,7 +3679,7 @@ export default function Watchlist() {
                 aria-label="Close calendar"
                 style={{
                   border: "none", background: "transparent", cursor: "pointer",
-                  color: "var(--text2)", fontSize: 22, lineHeight: 1, padding: "0 4px",
+                  color: "#fff", fontSize: 22, lineHeight: 1, padding: "0 4px",
                 }}>×</button>
             </div>
             <div style={{ overflowY: "auto", padding: "8px 16px 24px", WebkitOverflowScrolling: "touch" }}>
