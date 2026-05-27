@@ -131,6 +131,10 @@ install/decision tails remaining.*
 - **Pluggable-fetcher abstraction:** the orchestration (schedule → URL → window → results → merge) is identical whether the fetcher is direct-`requests`, Playwright, or Browse AI. Build it **once**; the fetcher is a swap. For both Bonhams and TW, **direct fetch works → Browse AI is droppable.**
 - **Security:** needs git push creds on the box (Mark has git set up). If ever a self-hosted GitHub *runner* instead of `launchd`, lock it down — self-hosted runners on a public repo are a known risk.
 
+### B-28 — Editorial sources may be filtering out fresh (non-vintage) articles
+- **Reported:** 2026-05-27 · **Type:** Scrape/content completeness · **Severity:** 3 · **Surface:** editorial scrapers / corpus inclusion filter · **Status:** Open — **log only, not now** (Mark).
+- **Detail:** Mark saw new Fratello articles today that aren't on our site; believes the scrape IS running and working. Hypothesis: a **vintage-only inclusion filter** excludes fresh/non-vintage posts, so new general articles never enter the corpus. Verify whether the filter is intentional (we only want vintage-relevant) or too aggressive, and check the Fratello (+ peer source) scraper's inclusion predicate + recency window.
+
 ### ◆ One-off (no epic)
 *Small correctness fix.*
 
@@ -140,6 +144,14 @@ install/decision tails remaining.*
 - **What I found (triage):** the `/share/` item is **not** in static `public/listings.json` (none of the 9 Enicar items there have a `/share/` URL). So it's coming from **user data** — a Supabase row (collection/shared item) carrying a `listing_snapshot`, which is projected into the listings memo client-side (`src/supabase.js` `listing_snapshot` pattern; CLAUDE.md "Articles flow through the listing tables"). The snapshot's `brand` is `Enicar`, so it matches the Enicar brand filter, but its link resolves to the `/share/<id>` URL rather than a dealer URL.
 - **Hypothesis:** the listings projection / brand filter doesn't exclude share-kind (or non-dealer `listing_snapshot`) items — they should live only in their own surface, not the cross-source Listings grid. Likely fix near the listings memo in `src/App.js` (gate out share/`listing_snapshot`-only items) or wherever shared snapshots are folded into the grid. **Verify the privacy dimension:** confirm whether this leaks one user's shared item into *another* user's listings, or only the sharer's own session.
 - **Adjacent smell (maybe separate):** one static Enicar item is titled "Richard Mille RM 002-V2 Tourbillon…" but `brand: Enicar` (windvintage URL) — a brand-misclassification worth a look while in this code.
+
+### B-29 — Sold tab: "Calendar" button → "Auctions"; closed-auction click should open its lots
+- **Reported:** 2026-05-27 · **Type:** Auction-surface UX (Epic 9 / Phase 0 follow-up) · **Severity:** 2 · **Surface:** Listings ▸ Sold filter row + the auction calendar modal "Closed" path · **Status:** Open — queued.
+- **Detail (two parts):** (1) On the **Sold** sub-tab the **"Calendar"** filter-row button should read **"Auctions"** and take the user to / filter the **closed auctions** (the modal's Closed view). (2) Clicking a **closed (past) auction** should open the **closed listings for that sale** (its lots) — the same way a live sale opens its lots. Mark: "I want it to work like that." Likely the closed-sale card's onClick (`handleOpenSale`) doesn't filter the Sold grid by that sale's lots.
+
+### B-30 — Auction calendar modal: month pills don't filter (only scroll); "ALL" + CLOSED layout
+- **Reported:** 2026-05-27 · **Type:** Auction redesign defect + polish · **Severity:** 2 · **Surface:** `AuctionCalendar` modal (month nav + house filter row) · **Status:** Open — queued.
+- **Detail:** (1) **Filtering:** tapping a month pill (MAY/JUN/…) does NOT filter to that month — all sales still render, it just **scrolls** to the month. Mark questions whether **"ALL"** should exist if months don't actually filter. Decide: make month pills *filter* (hide other months) OR keep scroll-to + drop "ALL". (2) **Layout:** the **"CLOSED"** pill sits far-right on the month row; Mark wants it on the **same line but left-aligned**, ahead of the months.
 
 ---
 
