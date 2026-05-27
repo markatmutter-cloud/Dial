@@ -193,11 +193,27 @@ export function ListReviewMode({
 
   const isHearted = !!(watchlist && current && watchlist[current.id]);
 
+  // Ids saved during THIS screening pass — lets Undo reverse a save
+  // and keeps the heartedThisSession counter honest when the user
+  // toggles a card off mid-flow. Pre-existing hearts (saved before
+  // this session) aren't in here, so un-hearting one doesn't dip the
+  // counter below the work done this pass.
+  const savedThisSessionRef = useRef(new Set());
+
   // Heart toggle from the on-card button — saves/unsaves WITHOUT
   // advancing, so the user can correct a save and keep screening.
   const handleHeart = () => {
     if (!current || !handleWish) return;
     handleWish(current);
+    if (isHearted) {
+      // Un-saving. Only decrement if this was a save we made this pass.
+      if (savedThisSessionRef.current.delete(current.id)) {
+        setHeartedThisSession(n => Math.max(0, n - 1));
+      }
+    } else {
+      savedThisSessionRef.current.add(current.id);
+      setHeartedThisSession(n => n + 1);
+    }
   };
 
   // Swipe RIGHT / Save: ensure the card is in the watchlist (idempotent
@@ -206,6 +222,7 @@ export function ListReviewMode({
     haptic(15);
     if (current && handleWish && !isHearted) {
       handleWish(current);
+      savedThisSessionRef.current.add(current.id);
       setHeartedThisSession(n => n + 1);
     }
     advance();
@@ -217,8 +234,21 @@ export function ListReviewMode({
     advance();
   };
 
-  // Undo simply steps back a card — there's no verdict to unwind.
-  const handleUndo = () => goBack();
+  // Undo steps back a card AND reverses a save made this pass — so a
+  // mistaken swipe-right is one tap to take back. A skipped card has
+  // nothing to unwind, so Undo there is pure navigation.
+  const handleUndo = () => {
+    if (idx === 0) return;
+    const prev = initialQueue[idx - 1];
+    if (prev && handleWish
+        && savedThisSessionRef.current.has(prev.id)
+        && watchlist && watchlist[prev.id]) {
+      handleWish(prev);
+      savedThisSessionRef.current.delete(prev.id);
+      setHeartedThisSession(n => Math.max(0, n - 1));
+    }
+    goBack();
+  };
 
   // ⋯ menu state.
   const [menuOpen, setMenuOpen] = useState(false);
