@@ -3460,13 +3460,49 @@ export default function Watchlist() {
     const isDateSort = sort === "date" || sort === "date-asc";
     const useFreshBuckets    = isDateSort && tab === "listings" && listingsSubTab === "live";
     const useSoldBuckets     = isDateSort && tab === "listings" && listingsSubTab === "sold";
-    // Auctions grid is FLAT (Mark 2026-05-26): the in-grid sale-section
-    // headers were hard to read + carried a wrong count on the unfiltered
-    // scroll. Sale context now lives in a single header at the top of the
-    // grid when you've drilled into one sale (filterSaleUrls, rendered in
-    // listingsGridJSX), not as repeated per-sale dividers.
-    if (!useFreshBuckets && !useSoldBuckets) {
+    // Auctions grid groups by CLOSING TIME (Mark 2026-05-26): the
+    // per-SALE section headers were dropped (hard to read, wrong count),
+    // but date-group headers come back — "Closing today / tomorrow /
+    // this week / …" — for the same breathing-room + scan rhythm as the
+    // Live grid. Sale context still gets a single header at the top when
+    // you've drilled into one sale (filterSaleUrls, in listingsGridJSX).
+    const useClosingBuckets  = isDateSort && tab === "listings" && listingsSubTab === "auctions";
+    if (!useFreshBuckets && !useSoldBuckets && !useClosingBuckets) {
       return visible.map(it => ({ kind: "card", item: it }));
+    }
+    if (useClosingBuckets) {
+      const DAY = 86400000;
+      const now = Date.now();
+      const labelOf = (i) => {
+        const end = i.auction_end ? new Date(i.auction_end).getTime() : 0;
+        if (!end || !Number.isFinite(end)) return "Other auction lots";
+        const diff = end - now;
+        if (diff < 0) return "Ending now";
+        if (diff < DAY) return "Closing today";
+        if (diff < 2 * DAY) return "Closing tomorrow";
+        if (diff < 7 * DAY) return "Closing this week";
+        if (diff < 30 * DAY) return "Closing this month";
+        return "Later";
+      };
+      const ORDER = [
+        "Ending now", "Closing today", "Closing tomorrow",
+        "Closing this week", "Closing this month", "Later",
+        "Other auction lots",
+      ];
+      const groups = new Map();
+      for (const it of visible) {
+        const key = labelOf(it);
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key).push(it);
+      }
+      const out = [];
+      for (const label of ORDER) {
+        const lots = groups.get(label);
+        if (!lots || lots.length === 0) continue;
+        out.push({ kind: "divider", label, total: lots.length });
+        for (const it of lots) out.push({ kind: "card", item: it });
+      }
+      return out;
     }
     const baseLabelFn = useSoldBuckets ? soldBucketLabel : ageBucketLabel;
     // Mark's report 2026-05-06: backfilled items can produce a second
