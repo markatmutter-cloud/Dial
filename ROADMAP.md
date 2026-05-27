@@ -472,6 +472,11 @@ the AdminTab dashboard (per-source quality, auction-house quality, user limits,
 velocity, freshness). Remaining extensions are gated on Epic 0 model/reference
 data:
 
+- **List-usage mining** — how users use their lists, in **both senses** (a "watch list"
+  of references / learning vs a "watchlist" of buying candidates); a demand-side signal
+  that also feeds Epic 7's lists-as-semantic-signals + the AI that engages with lists. The
+  composable dossier (Epic 9) makes each list a far richer signal than a flat heart.
+  (Mark, 2026-05-27.)
 - **Sales by watch type per dealer** (brand × decade × type) — which dealers
   reliably surface a vertical; feeds dealer recommendations.
 - **Cross-source live inventory** for any model/reference.
@@ -515,7 +520,9 @@ is the clarity mechanism — not a nicety. **Planning = one experience, two door
   ([docs/WATCHLISTS_DOSSIER_SPEC.md](docs/WATCHLISTS_DOSSIER_SPEC.md)) · 1b container UI ·
   1c Watchbox anchor · 1d notes.
 - ▶ **Reference structure** (pulled forward 2026-05-27) — Brand › Model line › Reference
-  tree + breadcrumbs above the 5512/5513 leaf; underpins the dossier's reference-guide section.
+  tree + breadcrumbs above the 5512/5513 leaf; underpins the dossier's reference-guide
+  section. Scope: [docs/REFERENCE_STRUCTURE_PLAN.md](docs/REFERENCE_STRUCTURE_PLAN.md)
+  (authored-only leaves + 2 coming-soon stubs + a subscribe-to-unlock smoke test).
 - **Phase 2** — dispatch layers + de-junk Collecting + tools shelf.
 - **Phase 3** — two-door planning + journey coach. The **RAG Q&A bot** and the
   **missed-it / discovery bot** are each their own dedicated session.
