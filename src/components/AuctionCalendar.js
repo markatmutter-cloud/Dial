@@ -42,6 +42,35 @@ function houseTint(house) {
   return PLACEHOLDER_TINTS[h % PLACEHOLDER_TINTS.length];
 }
 
+// Short month label for the month-jump nav ("2026-06" → "Jun", or
+// "Jun '27" when not the current year).
+function monthChipLabel(key) {
+  if (key === "tbd") return "TBD";
+  const [y, m] = key.split("-");
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const idx = parseInt(m, 10) - 1;
+  const name = (idx >= 0 && idx < 12) ? months[idx] : key;
+  const curY = String(new Date().getUTCFullYear());
+  return (y && y !== curY) ? `${name} '${y.slice(2)}` : name;
+}
+
+// Smooth-scroll a month/archive section into view (used by the
+// month-jump nav). Section roots carry scroll-margin so the sticky nav
+// doesn't cover the header.
+function jumpToSection(id) {
+  if (typeof document === "undefined") return;
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+const navChipStyle = {
+  flexShrink: 0, cursor: "pointer", fontFamily: "inherit",
+  fontSize: 12, fontWeight: 600, letterSpacing: "0.04em",
+  padding: "5px 11px", borderRadius: 999,
+  border: "0.5px solid var(--border)", background: "var(--surface)", color: "var(--text2)",
+  whiteSpace: "nowrap", textTransform: "uppercase",
+};
+
 export function AuctionCalendar({
   auctions = [],
   // url → scraped lot count, for surfacing "N lots" on each row +
@@ -163,6 +192,35 @@ export function AuctionCalendar({
 
   return (
     <div>
+      <div id="auction-cal-top" />
+      {/* Month-jump nav (Mark spec 2026-05-26, mirroring the houses' own
+          calendars) — sticky chip row to skip to a month, or jump into
+          the closed-auction archive (rendered reverse-date). Sticks at
+          the top of the scroll container (the calendar modal body). */}
+      {(upcomingGroups.length > 0 || pastGroups.length > 0) && (
+        <div style={{
+          position: "sticky", top: 0, zIndex: 6,
+          display: "flex", gap: 4, overflowX: "auto",
+          padding: "6px 0 8px", marginBottom: 4,
+          background: "var(--bg)",
+          borderBottom: "0.5px solid var(--border)",
+          WebkitOverflowScrolling: "touch", scrollbarWidth: "none",
+        }}>
+          <button onClick={() => jumpToSection("auction-cal-top")} style={navChipStyle}>All</button>
+          {upcomingGroups.map(g => (
+            <button key={g.key} onClick={() => jumpToSection(`auction-month-${g.key}`)} style={navChipStyle}>
+              {monthChipLabel(g.key)}
+            </button>
+          ))}
+          {pastGroups.length > 0 && (
+            <button
+              onClick={() => { setArchiveOpen(true); setTimeout(() => jumpToSection("auction-archive"), 60); }}
+              style={navChipStyle}>
+              Archive
+            </button>
+          )}
+        </div>
+      )}
       {/* Filter chips — Hearted (saved sales) + per-house scope. Shows
           when there's something to narrow by (2+ houses or any saved
           sale). Horizontally scrollable on mobile so the chips don't
@@ -203,6 +261,7 @@ export function AuctionCalendar({
           separately — month groups make it visually obvious. */}
       {upcomingGroups.map((group, idx) => (
         <MonthBlock key={group.key} group={group} firstBlock={idx === 0}
+          id={`auction-month-${group.key}`}
           lotCounts={lotCounts}
           heroImgByUrl={heroImgByUrl}
           savedUrls={savedUrls}
@@ -214,7 +273,7 @@ export function AuctionCalendar({
       {/* Archive — past auctions, collapsed by default. The same
           auctions whose lots end up in the listings Sold archive. */}
       {pastAuctions.length > 0 && (
-        <div style={{ marginTop: 24 }}>
+        <div id="auction-archive" style={{ marginTop: 24, scrollMarginTop: 52 }}>
           <button onClick={() => setArchiveOpen(o => !o)}
             style={{
               all: "unset", display: "flex", alignItems: "center", gap: 10,
@@ -254,9 +313,9 @@ export function AuctionCalendar({
 // One month-banded section of the calendar. Lifted from the inline
 // map in 2026-05-10's calendar/Archive split — same render shape
 // reused for both upcoming and past sections.
-function MonthBlock({ group, firstBlock, archive = false, lotCounts = {}, heroImgByUrl = {}, savedUrls = new Set(), onToggleSave = null, onOpenSale, isMobile = false }) {
+function MonthBlock({ group, firstBlock, archive = false, id, lotCounts = {}, heroImgByUrl = {}, savedUrls = new Set(), onToggleSave = null, onOpenSale, isMobile = false }) {
   return (
-    <div style={{ marginBottom: 28 }}>
+    <div id={id} style={{ marginBottom: 28, scrollMarginTop: 52 }}>
       <div style={{
         display: "flex", alignItems: "baseline", gap: 12,
         padding: firstBlock ? "14px 14px 12px" : "28px 14px 12px",
