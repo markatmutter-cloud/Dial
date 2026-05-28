@@ -4,7 +4,7 @@ import { Chip } from "./Chip";
 import { AboutModal } from "./AboutModal";
 import { SignInPromptModal } from "./SignInPromptModal";
 import { FilterRow } from "./FilterRow";
-import { pillBase, tabPill } from "../styles";
+import { pillBase, tabPill, clearAllPill } from "../styles";
 
 // Desktop shell — receives everything the desktop branch needs from
 // App.js as a single props bag. Stage 2 of recommendation #1 (extracted
@@ -390,10 +390,9 @@ export function DesktopShell(props) {
             aria-pressed={!!filterHearted}
             title={filterHearted ? "Show all" : "Show only saved"}
             style={{
+              // Active state now comes straight from pillBase (olive
+              // tinted-fill) — no blue override. Heart svg stays red below.
               ...pillBase(!!filterHearted, { compact: true, surface: true }),
-              background: filterHearted ? "var(--brand)" : "var(--surface)",
-              color:      filterHearted ? "#fff"         : "var(--text2)",
-              fontWeight: filterHearted ? 600 : 500,
               display: "flex", alignItems: "center", gap: 5,
             }}>
             <svg width="11" height="11" viewBox="0 0 24 24"
@@ -414,13 +413,7 @@ export function DesktopShell(props) {
           {(displayedCount || 0).toLocaleString()} {displayedCount === 1 ? "watch" : "watches"}
         </span>
         {hasFilters && (
-          <button onClick={resetFilters} style={{
-            fontSize: 13, padding: "6px 12px", borderRadius: 20, cursor: "pointer",
-            fontFamily: "inherit", whiteSpace: "nowrap",
-            border: "none", outline: "none",
-            background: "transparent", color: "var(--brand)",
-            boxShadow: "inset 0 0 0 0.5px var(--brand)",
-          }}>× Clear all</button>
+          <button onClick={resetFilters} style={clearAllPill}>× Clear all</button>
         )}
       </div>
     </FilterRow>

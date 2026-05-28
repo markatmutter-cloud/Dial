@@ -1,4 +1,5 @@
 import React from "react";
+import { dismissChip, dismissChipX, clearAllPill } from "../styles";
 
 // Single horizontal strip of × chips representing every active
 // filter, plus a trailing "Clear all" pill (Mark feedback
@@ -17,38 +18,12 @@ import React from "react";
 // Listings + Saved. Editorial owns its own filter state and gets
 // the strip too, threaded through `editorialFilterStripProps`.
 
-const chipStyle = {
-  display: "inline-flex", alignItems: "center", gap: 4,
-  padding: "4px 8px 4px 10px",
-  borderRadius: 999,
-  background: "var(--brand-tint-12)",
-  color: "var(--text1)",
-  fontSize: 12, fontWeight: 500, letterSpacing: "0.01em",
-  border: "0.5px solid var(--brand-tint-25, transparent)",
-  cursor: "default",
-  whiteSpace: "nowrap",
-};
-
-const xButtonStyle = {
-  background: "transparent", border: "none", padding: 0,
-  marginLeft: 2,
-  color: "var(--text2)",
-  cursor: "pointer", fontSize: 14, lineHeight: 1,
-  display: "inline-flex", alignItems: "center", justifyContent: "center",
-  width: 16, height: 16, borderRadius: "50%",
-};
-
-const clearAllStyle = {
-  display: "inline-flex", alignItems: "center", gap: 4,
-  padding: "5px 10px",
-  borderRadius: 999,
-  background: "transparent",
-  border: "0.5px solid var(--text2)",
-  color: "var(--text2)",
-  fontSize: 12, fontWeight: 600, letterSpacing: "0.02em",
-  cursor: "pointer",
-  whiteSpace: "nowrap",
-};
+// 2026-05-28 design-library pass: these now reference the shared olive
+// helpers (was a blue-tint chip + grey clear-all, and a dead
+// --brand-tint-25 border ref). Single source of truth in styles.js.
+const chipStyle = dismissChip;
+const xButtonStyle = dismissChipX;
+const clearAllStyle = clearAllPill;
 
 function FilterChip({ label, onRemove }) {
   return (
