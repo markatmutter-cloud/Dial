@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { pillBase, inputBase } from "../styles";
+import { pillBase, inputBase, clearAllPill } from "../styles";
 import { Chip } from "./Chip";
 import { FilterRow } from "./FilterRow";
 import { shortHash } from "../utils";
@@ -648,15 +648,9 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
             : `${filtered.length.toLocaleString()} ${filtered.length === 1 ? "article" : "articles"}`}
         </span>
 
-        {/* × Clear all — same shape as Listings. */}
+        {/* × Clear all — shared olive clearAllPill (same as Listings). */}
         {hasFilters && (
-          <button onClick={clearAll} style={{
-            fontSize: 13, padding: "6px 12px", borderRadius: 20, cursor: "pointer",
-            fontFamily: "inherit", whiteSpace: "nowrap",
-            border: "none", outline: "none",
-            background: "transparent", color: "var(--brand)",
-            boxShadow: "inset 0 0 0 0.5px var(--brand)",
-          }}>× Clear all</button>
+          <button onClick={clearAll} style={clearAllPill}>× Clear all</button>
         )}
       </FilterRow>
 

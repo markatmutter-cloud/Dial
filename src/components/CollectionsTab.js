@@ -15,7 +15,7 @@ import { articleAsListing } from "./EditorialView";
 import CardShell from "./CardShell";
 import { DossierBlocks } from "./DossierBlocks";
 import { fmtUSD, matchesSearch, imgSrc } from "../utils";
-import { actionButton, signInButton } from "../styles";
+import { actionButton, signInButton, innerToggleButton } from "../styles";
 import { EmptyState } from "./EmptyState";
 import { Section } from "./Section";
 
@@ -2382,14 +2382,8 @@ function ListsView({
             {savedTypeOptions.map(o => {
               const on = o.key === activeSavedFilter;
               return (
-                <button key={o.key} onClick={() => setSavedTypeFilter(o.key)} style={{
-                  cursor: "pointer", fontFamily: "inherit", fontSize: 12,
-                  padding: "4px 10px", borderRadius: 999,
-                  border: "0.5px solid " + (on ? "var(--brand)" : "var(--border)"),
-                  background: on ? "var(--brand-tint-10, transparent)" : "transparent",
-                  color: on ? "var(--brand)" : "var(--text2)",
-                  fontWeight: on ? 600 : 500,
-                }}>{o.label}{o.n ? ` ${o.n}` : ""}</button>
+                <button key={o.key} onClick={() => setSavedTypeFilter(o.key)}
+                  style={innerToggleButton(on)}>{o.label}{o.n ? ` ${o.n}` : ""}</button>
               );
             })}
           </div>

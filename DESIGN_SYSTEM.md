@@ -39,7 +39,8 @@ spread into the root element's style. All descendants read them via
 | `--surface-on-dark` | `rgba(255,255,255,0.10)` | Subtle surface on inverted dark bg |
 | `--brand-olive` | `#3b4a36` / `#2a3527` (dark) | Brand chrome zone on non-Home tabs (the favicon hourglass colour) |
 | `--brand-olive-text` | `#3b4a36` (both modes) | Olive text on page bg (Home wordmark). Same in dark by design — lower contrast is intentional. **Don't use `--brand-olive` for text in dark mode** (`#2a3527` is unreadable on `#000`) |
-| `--brand-olive-tint-12` | `rgba(59,74,54,0.12)` / `rgba(168,179,160,0.18)` (dark) | Olive-tinted surfaces — icon-disc fills |
+| `--brand-olive-ink` | `#3b4a36` / `#a8b3a0` (dark) | **Readable** olive ink for small chrome — filter-pill text/borders, clear/dismiss controls. Theme-aware (lightens to sage in dark), unlike `--brand-olive-text`. Pairs with `--brand-olive-tint-12` as the `SELECTED_FILL` fill |
+| `--brand-olive-tint-12` | `rgba(59,74,54,0.12)` / `rgba(168,179,160,0.18)` (dark) | Olive-tinted surfaces — icon-disc fills + active-pill fill (`SELECTED_FILL`) |
 
 **Adding a new color:** add to BOTH the dark and light blocks in
 App.js. Never inline a hex literal — even one-off shades drift over
@@ -89,14 +90,27 @@ Each export is either a plain object (use directly:
 state, no behavior. Compose with overrides via spread:
 `style={{ ...iconButton(), background: ... }}`.
 
+**Selected = olive (one state language, 2026-05-28).** Every toggle/filter
+chip that can be "on" reads the same way via the shared `SELECTED_FILL`
+constant: **olive tint fill (`--brand-olive-tint-12`) + olive ink
+(`--brand-olive-ink`) + 0.5px olive hairline**. `pillBase`,
+`innerToggleButton`, and `iconButton` all spread it on active, so the
+selected look can't drift per surface. (Replaced the old split: pillBase
+bold-black-border ghost, innerToggle/icon solid-black fill, stray blue
+tints.) Blue `--brand` is retired from filter/toggle chrome — olive is the
+single chrome accent (links/text-accents may still use `--brand`).
+
 | Token | Use |
 |---|---|
-| `pillBase(active, { compact, surface })` | Sort / filter pills (Date ↓, Price). Mobile uses default size; desktop uses `{ compact: true, surface: true }` |
-| `innerToggleButton(active)` | Nested sub-toggles inside a tab (Listings/Auctions/Sold under Saved; Owned/Sold/All/Shortlist under My watches) |
-| `tabPill(active)` | Sub-tab strip, underline pattern |
-| `actionButton({ variant: "primary"\|"subtle"\|"danger" })` | Header / toolbar action buttons (Share / Manage / Delete / + From feed / Cancel / Save). ~32px tall |
+| `SELECTED_FILL` | The shared "selected/active" treatment (olive tint + ink + hairline). Spread into any toggle's active branch; don't hand-roll a selected look |
+| `pillBase(active, { compact, surface })` | Sort / filter pills (Date ↓, Price). Active = `SELECTED_FILL`. Mobile uses default size; desktop uses `{ compact: true, surface: true }` |
+| `innerToggleButton(active)` | Nested sub-toggles inside a tab (Listings/Auctions/Sold under Saved; Owned/Sold/All under My watches; Saved type filter). Active = `SELECTED_FILL` |
+| `clearAllPill` | Unified "× Clear all" / reset control — olive-ink **outline** pill (a reset action, not a selected state). Use everywhere filters are cleared |
+| `dismissChip` / `dismissChipX` | Removable active-filter chip ("× Brand") — olive tint fill + a trailing `dismissChipX` button that removes the filter |
+| `tabPill(active)` | Sub-tab strip, underline pattern (olive) |
+| `actionButton({ variant: "primary"\|"subtle"\|"danger" })` | Header / toolbar action buttons (Share / Manage / Delete / + From feed / Cancel / Save). ~32px tall. Primary = olive fill |
 | `signInButton` | Large primary CTA — sign-in buttons on signed-out gates and share-receive landings. One size class above actionButton |
-| `iconButton({ size, active })` | Round icon buttons (Filter, View, Clear in mobile top bar) |
+| `iconButton({ size, active })` | Round icon buttons (Filter, View, Clear in mobile top bar). Active = `SELECTED_FILL` |
 | `inputBase` | Form input style (text / number / select). Spread into `style={{ ...inputBase, ... }}` so callers can override fontSize / flex / marginBottom |
 | `modalBackdrop` / `modalShell` / `modalCloseButton` / `modalTitleRow` / `modalTitle` | Modal primitives. AboutModal is the only documented exception (uses absolute-positioned close button — see comment in AboutModal.js line ~122) |
 

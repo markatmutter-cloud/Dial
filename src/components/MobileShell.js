@@ -437,10 +437,9 @@ export function MobileShell(props) {
               aria-pressed={!!filterHearted}
               title={filterHearted ? "Show all" : "Show only saved"}
               style={{
+                // Active state now comes straight from pillBase (olive
+                // tinted-fill) — no blue override. Heart svg stays red below.
                 ...pillBase(!!filterHearted),
-                background: filterHearted ? "var(--brand)" : "transparent",
-                color:      filterHearted ? "#fff" : "var(--text2)",
-                boxShadow:  filterHearted ? "none" : "inset 0 0 0 0.5px var(--border)",
                 display: "flex", alignItems: "center", gap: 5, flexShrink: 0,
               }}>
               {/* Heart always renders red (--danger) to match the
@@ -490,8 +489,8 @@ export function MobileShell(props) {
                 width: 30, height: 30, borderRadius: "50%",
                 border: "none", outline: "none", cursor: "pointer",
                 fontFamily: "inherit", fontSize: 16, lineHeight: 1, padding: 0,
-                background: "transparent", color: "var(--brand)",
-                boxShadow: "inset 0 0 0 0.5px var(--brand)",
+                background: "transparent", color: "var(--brand-olive-ink)",
+                boxShadow: "inset 0 0 0 0.5px var(--brand-olive-ink)",
                 display: "flex", alignItems: "center", justifyContent: "center",
               }}>×</button>
           )}

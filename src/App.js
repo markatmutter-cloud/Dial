@@ -1481,6 +1481,12 @@ export default function Watchlist() {
     // olive in dark mode as light mode. Lower contrast on black
     // is intentional; reads as a subtle/muted editorial hero.
     "--brand-olive-text": "#3b4a36",
+    // Readable olive INK for small chrome (filter-pill text/borders,
+    // clear/dismiss controls). --brand-olive itself is dark in BOTH
+    // themes (hero-wordmark contrast), so it's invisible on #000 — dark
+    // mode needs the lighter sage here. Pairs with --brand-olive-tint-12
+    // as the active-pill fill.
+    "--brand-olive-ink": "#a8b3a0",
     // Disc-tint variant (translucent olive) for icon discs + chips
     // in the Watchlists family. Dark mode uses the lighter sage at
     // higher opacity so it reads against #000.
@@ -1523,6 +1529,9 @@ export default function Watchlist() {
     "--brand-olive": "#3b4a36",
     // Text-on-bg variant — light mode uses the full olive directly.
     "--brand-olive-text": "#3b4a36",
+    // Readable olive ink for small chrome — light mode uses the full
+    // olive (good contrast on the light tint / page). See dark block.
+    "--brand-olive-ink": "#3b4a36",
     // Disc-tint variant for olive icon discs + chips (Watchlists).
     "--brand-olive-tint-12": "rgba(59,74,54,0.12)",
     "--brand-tint-08": "rgba(24,95,165,0.08)",

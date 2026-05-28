@@ -20,22 +20,35 @@
 // filter row (`compact: true` — denser horizontal layout). Pass
 // `surface: true` for the desktop variant where inactive pills sit on a
 // `--surface` background instead of transparent.
+// ── The one "selected/active" treatment ──────────────────────────────
+// 2026-05-28 design-library pass (Mark): every toggle/filter chip that can
+// be "on" reads the SAME way — an olive TINT fill + readable olive INK +
+// a 0.5px olive hairline. Single source of truth: pillBase /
+// innerToggleButton / iconButton (and Chip) all spread this, so
+// "selected = olive" can't drift per surface. Replaces the old split
+// (pillBase bold-black-border ghost; innerToggle/icon solid-black fill;
+// stray blue tints). --brand-olive-ink is theme-aware (lightens to sage in
+// dark) so the ink stays readable on #000, where --brand-olive is too dark.
+export const SELECTED_FILL = {
+  background: "var(--brand-olive-tint-12)",
+  color: "var(--brand-olive-ink)",
+  boxShadow: "inset 0 0 0 0.5px var(--brand-olive-ink)",
+};
+
+// Default (unselected) chrome: transparent (or surface-tinted) + hairline.
+const UNSELECTED = (surface) => ({
+  background: surface ? "var(--surface)" : "transparent",
+  color: "var(--text2)",
+  boxShadow: "inset 0 0 0 0.5px var(--border)",
+});
+
 export const pillBase = (active, { compact = false, surface = false } = {}) => ({
-  // PR_γ 2026-05-22 (Mark spec): active state goes "ghost" instead
-  // of solid black-fill. Reads as editorial chrome rather than app
-  // chrome — same shape, lighter visual weight. Active now =
-  // transparent bg + bold text1 + thicker text1 border; inactive
-  // unchanged.
   fontSize: 13,
   padding: compact ? "6px 12px" : "9px 14px",
   borderRadius: 20, cursor: "pointer",
   fontFamily: "inherit", whiteSpace: "nowrap", border: "none", outline: "none",
-  background: surface ? "var(--surface)" : "transparent",
-  color: active ? "var(--text1)" : "var(--text2)",
   fontWeight: active ? 600 : 500,
-  boxShadow: active
-    ? "inset 0 0 0 1.25px var(--text1)"
-    : "inset 0 0 0 0.5px var(--border)",
+  ...(active ? SELECTED_FILL : UNSELECTED(surface)),
 });
 
 // Inner-toggle pill. Smaller, denser variant used for nested sub-toggles
@@ -46,12 +59,13 @@ export const pillBase = (active, { compact = false, surface = false } = {}) => (
 // App.js + CollectionsTab.js.
 export const innerToggleButton = (active) => ({
   padding: "4px 12px", borderRadius: 999,
-  border: "0.5px solid var(--border)",
-  background: active ? "var(--text1)" : "transparent",
-  color:      active ? "var(--bg)"    : "var(--text2)",
+  border: "none", outline: "none",
   cursor: "pointer", fontFamily: "inherit", fontSize: 12,
   fontWeight: active ? 600 : 500,
   flexShrink: 0,
+  // 2026-05-28: active now uses the shared olive SELECTED_FILL (was a
+  // solid black fill). Same "selected = olive" language as every pill.
+  ...(active ? SELECTED_FILL : UNSELECTED(false)),
 });
 
 // Sub-tab strip (Listings / Searches / Calendar). Underline pattern,
@@ -216,12 +230,47 @@ export const iconButton = ({ size = 40, active = false } = {}) => ({
   flexShrink: 0,
   width: size, height: size,
   borderRadius: "50%",
-  border: "0.5px solid var(--border)",
-  background: active ? "var(--text1)" : "var(--surface)",
-  color:      active ? "var(--bg)"    : "var(--text2)",
+  border: "none", outline: "none",
   cursor: "pointer",
   display: "flex", alignItems: "center", justifyContent: "center",
+  // 2026-05-28: active now uses the shared olive SELECTED_FILL (was a
+  // solid black fill); inactive keeps the surface chip look.
+  ...(active ? SELECTED_FILL : { background: "var(--surface)", color: "var(--text2)", boxShadow: "inset 0 0 0 0.5px var(--border)" }),
 });
+
+// ── CHIPS / CLEAR ─────────────────────────────────────────────────────
+// 2026-05-28 design-library pass. Two shared shapes that previously lived
+// as divergent inline copies (blue inset / grey border / blue tint).
+
+// Unified "Clear all" / reset control — olive-ink OUTLINE pill (no fill;
+// it's a reset action, not a selected state). Replaces the inline clear-
+// alls in the shells + EditorialView + ActiveFiltersStrip.
+export const clearAllPill = {
+  display: "inline-flex", alignItems: "center", gap: 4,
+  padding: "5px 12px", borderRadius: 999,
+  cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap",
+  fontSize: 12, fontWeight: 600, letterSpacing: "0.02em",
+  border: "none", outline: "none",
+  background: "transparent", color: "var(--brand-olive-ink)",
+  boxShadow: "inset 0 0 0 0.5px var(--brand-olive-ink)",
+};
+
+// Removable active-filter chip ("× Brand"). Olive TINT fill (the same
+// SELECTED_FILL identity) + a trailing × that removes the filter. The chip
+// surface is non-interactive; only the × is a button (use dismissChipX).
+export const dismissChip = {
+  display: "inline-flex", alignItems: "center", gap: 4,
+  padding: "4px 8px 4px 10px", borderRadius: 999,
+  ...SELECTED_FILL,
+  fontSize: 12, fontWeight: 500, letterSpacing: "0.01em",
+  whiteSpace: "nowrap", cursor: "default",
+};
+export const dismissChipX = {
+  background: "transparent", border: "none", padding: 0, marginLeft: 2,
+  color: "var(--brand-olive-ink)", cursor: "pointer", fontSize: 14, lineHeight: 1,
+  display: "inline-flex", alignItems: "center", justifyContent: "center",
+  width: 16, height: 16, borderRadius: "50%",
+};
 
 // ── MODALS ────────────────────────────────────────────────────────────
 
