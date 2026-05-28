@@ -4,7 +4,7 @@ import { Chip } from "./Chip";
 import { AboutModal } from "./AboutModal";
 import { SignInPromptModal } from "./SignInPromptModal";
 import { FilterRow } from "./FilterRow";
-import { pillBase, tabPill, clearAllPill } from "../styles";
+import { pillBase, tabPill } from "../styles";
 
 // Desktop shell — receives everything the desktop branch needs from
 // App.js as a single props bag. Stage 2 of recommendation #1 (extracted
@@ -404,7 +404,9 @@ export function DesktopShell(props) {
             Saved
           </button>
         )}
-        {/* Count + Clear-all tail at the end of the right cluster. */}
+        {/* Count tail at the end of the right cluster. The single
+            "Clear all" now lives in the active-filters strip next to the
+            chips (Mark 2026-05-28) — removed the redundant filter-bar copy. */}
         <span style={{
           flexShrink: 0,
           fontSize: 12, color: "var(--text3)", fontFamily: "inherit",
@@ -412,9 +414,6 @@ export function DesktopShell(props) {
         }}>
           {(displayedCount || 0).toLocaleString()} {displayedCount === 1 ? "watch" : "watches"}
         </span>
-        {hasFilters && (
-          <button onClick={resetFilters} style={clearAllPill}>× Clear all</button>
-        )}
       </div>
     </FilterRow>
     {expandedSource && (() => {

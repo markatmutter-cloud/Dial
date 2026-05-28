@@ -3,6 +3,7 @@ import { Card } from "./Card";
 import CardShell from "./CardShell";
 import CardStrip from "./CardStrip";
 import { REFERENCE_NODES } from "../data/referencePages";
+import { pillBase } from "../styles";
 
 // Cross-tab search results — the "Search all" destination (PR_W v1,
 // 2026-05-22). When the user picks "Search all" from the Home
@@ -424,19 +425,11 @@ export function SearchResultsView({
               return (
                 <button key={brand}
                   onClick={() => toggleBrand(brand)}
-                  style={{
-                    fontFamily: "inherit", fontSize: 12,
-                    padding: "5px 11px", borderRadius: 999, cursor: "pointer",
-                    background: active ? "var(--brand-olive-text)" : "transparent",
-                    color: active ? "#fff" : "var(--text2)",
-                    border: `0.5px solid ${active ? "var(--brand-olive-text)" : "var(--border)"}`,
-                    fontWeight: active ? 600 : 500,
-                    whiteSpace: "nowrap",
-                  }}>
+                  style={{ ...pillBase(active, { compact: true }), fontSize: 12, padding: "5px 11px" }}>
                   {brand}
                   <span style={{
                     marginLeft: 6,
-                    color: active ? "rgba(255,255,255,0.8)" : "var(--text3)",
+                    color: active ? "var(--brand-olive-ink)" : "var(--text3)",
                     fontVariantNumeric: "tabular-nums",
                   }}>
                     {count}

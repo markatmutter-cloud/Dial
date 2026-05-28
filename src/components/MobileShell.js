@@ -477,23 +477,9 @@ export function MobileShell(props) {
               Catalog
             </button>
           )}
-          {/* Compact "clear filters" — just a small × icon to keep the
-              row from wrapping when filters are set. The text version
-              ("× Clear") got cropped at narrow widths. Sized to match
-              pill height (2026-05-09) so the row doesn't grow taller
-              when filters become active. */}
-          {hasFilters && (
-            <button onClick={resetFilters} aria-label="Clear all filters" title="Clear all filters"
-              style={{
-                marginLeft: "auto", flexShrink: 0,
-                width: 30, height: 30, borderRadius: "50%",
-                border: "none", outline: "none", cursor: "pointer",
-                fontFamily: "inherit", fontSize: 16, lineHeight: 1, padding: 0,
-                background: "transparent", color: "var(--brand-olive-ink)",
-                boxShadow: "inset 0 0 0 0.5px var(--brand-olive-ink)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-              }}>×</button>
-          )}
+          {/* Filter-row "clear" removed 2026-05-28 — the single "Clear all"
+              now lives in the active-filters strip next to the chips (Mark),
+              not on the filter bar. */}
         </div>
         )}
         {/* watchHeartedToggleJSX is embedded inside the sort/filter
