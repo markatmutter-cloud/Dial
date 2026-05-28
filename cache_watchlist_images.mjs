@@ -89,7 +89,13 @@ async function fetchImage(url) {
     // Hot-link-protected hosts (Watchfid etc.) can't be fetched by wsrv (it
     // can't send their Referer), so those still cache direct at full size —
     // few items. Reused by the re-process pass below, which passes a blob URL.
-    const fetchTarget = REFERER_BY_HOST[host]
+    // Serve direct (no wsrv recompression) for: hot-link-protected hosts
+    // (Watchfid etc. — wsrv can't send their Referer) AND Tropical Watch's
+    // CloudFront, whose source images are already ~240px so resizing them only
+    // adds grain for no saving (Mark 2026-05-28).
+    const serveDirect = REFERER_BY_HOST[host]
+      || host === "d29ueykkv8fpnq.cloudfront.net";
+    const fetchTarget = serveDirect
       ? url
       : `https://images.weserv.nl/?url=${encodeURIComponent(
           url.replace(/^https:\/\//, "ssl:").replace(/^http:\/\//, "")

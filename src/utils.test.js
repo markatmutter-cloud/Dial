@@ -66,4 +66,14 @@ describe("imgSrc", () => {
     expect(imgSrc("")).toBe("");
     expect(imgSrc(null)).toBe(null);
   });
+
+  test("serves Tropical Watch (small-source CloudFront) direct, not via wsrv", () => {
+    const tw = "https://d29ueykkv8fpnq.cloudfront.net/22p7a0m1wai60m6l1j78c284xuwq";
+    expect(imgSrc(tw)).toBe(tw);
+  });
+
+  test("serves Bonhams (Cloudflare-blocked) direct, not via wsrv", () => {
+    const b = "https://images1.bonhams.com/image?src=Image123";
+    expect(imgSrc(b)).toBe(b);
+  });
 });
