@@ -27,6 +27,7 @@ export default function CardStrip({
   max,                   // cap visible tiles (STRIP_MAX / CARDS_PER_SECTION)
   background = "transparent",
   inset = true,          // false = bleed to edges (Home inverted band)
+  fadeColor = "var(--bg)", // right-edge fade target; pass var(--text1) on inverted bands
 }) {
   const slice = max != null ? items.slice(0, max) : items;
   const scrollRef = useRef(null);
@@ -55,21 +56,37 @@ export default function CardStrip({
 
   return (
     <div>
-      <div ref={scrollRef} onScroll={update} style={{
-        display: "flex", gap: 1, overflowX: "auto", overflowY: "hidden",
-        padding: inset ? (isMobile ? "0 16px 4px" : "0 20px 4px") : "0 0 4px",
-        scrollSnapType: "x mandatory",
-        WebkitOverflowScrolling: "touch",
-        scrollbarWidth: "none", msOverflowStyle: "none",
-        background,
-      }}>
-        {slice.map((item, i) => (
-          <div key={item.id || item.url || i} style={isMobile
-            ? { flex: "0 0 38%", maxWidth: 170, scrollSnapAlign: "start", background: "var(--card-bg)", position: "relative" }
-            : { flex: "0 0 210px", scrollSnapAlign: "start", background: "var(--card-bg)", position: "relative" }}>
-            {renderCard(item, i)}
-          </div>
-        ))}
+      {/* position:relative wrapper hosts the right-edge fade overlay so it
+          tracks the scroll area (not the indicator below). Fade is part of
+          CardStrip itself now (2026-05-28) — every strip that uses CardStrip
+          gets the same affordance, instead of each caller adding its own
+          (only SectionStrip had one, so the Articles strip read differently). */}
+      <div style={{ position: "relative" }}>
+        <div ref={scrollRef} onScroll={update} style={{
+          display: "flex", gap: 1, overflowX: "auto", overflowY: "hidden",
+          padding: inset ? (isMobile ? "0 16px 4px" : "0 20px 4px") : "0 0 4px",
+          scrollSnapType: "x mandatory",
+          WebkitOverflowScrolling: "touch",
+          scrollbarWidth: "none", msOverflowStyle: "none",
+          background,
+        }}>
+          {slice.map((item, i) => (
+            <div key={item.id || item.url || i} style={isMobile
+              ? { flex: "0 0 38%", maxWidth: 170, scrollSnapAlign: "start", background: "var(--card-bg)", position: "relative" }
+              : { flex: "0 0 210px", scrollSnapAlign: "start", background: "var(--card-bg)", position: "relative" }}>
+              {renderCard(item, i)}
+            </div>
+          ))}
+        </div>
+        {/* Right-edge fade — only when the strip overflows. pointerEvents
+            none so it never swallows taps/swipes. */}
+        {thumb.show && (
+          <div aria-hidden style={{
+            position: "absolute", top: 0, right: 0, bottom: 0,
+            width: isMobile ? 36 : 72, pointerEvents: "none",
+            background: `linear-gradient(to right, transparent 0%, ${fadeColor} 75%)`,
+          }} />
+        )}
       </div>
       {/* Slim scroll indicator — desktop only, only when the strip overflows. */}
       {!isMobile && thumb.show && (

@@ -3172,50 +3172,19 @@ export default function Watchlist() {
         const discBg     = onOliveBar ? "#ffffff" : "var(--brand-olive)";
         const discFg     = onOliveBar ? "var(--brand-olive)" : "#ffffff";
         const pillBorder = onOliveBar ? "rgba(255,255,255,0.3)" : "var(--border)";
-        const pillText   = onOliveBar ? "#ffffff" : "var(--text1)";
-        const pillOpenBg = onOliveBar ? "rgba(255,255,255,0.12)" : "var(--surface)";
-        return !isMobile ? (
+        // Just the initial disc (Mark 2026-05-28): dropped the "Watchbox"
+        // label pill — Watchbox is no longer the menu's primary destination
+        // (it lives in the Lists tab), so the bare "M" reads cleanly as the
+        // account / settings entry. Same disc on both viewports.
+        return (
         <button onClick={() => setShowUserMenu(o => !o)}
-          aria-label="Watchbox · Account menu"
-          title="Watchbox · Account menu"
+          aria-label="Account menu" title="Account menu"
           style={{
-            display: "flex", alignItems: "center", gap: 8,
-            height: 36, padding: "2px 14px 2px 4px",
-            borderRadius: 999,
+            width: isMobile ? 40 : 36, height: isMobile ? 40 : 36, borderRadius: "50%",
             border: `0.5px solid ${pillBorder}`,
-            background: showUserMenu ? pillOpenBg : "transparent",
-            color: pillText, cursor: "pointer", fontFamily: "inherit",
-            flexShrink: 0,
-            transition: "background 120ms ease",
-          }}>
-          <span style={{
-            width: 28, height: 28, borderRadius: "50%",
-            background: discBg, color: discFg,
-            display: "inline-flex", alignItems: "center", justifyContent: "center",
-            fontSize: 13, fontWeight: 600,
-            flexShrink: 0,
-          }}>
-            {userInitial.toUpperCase()}
-          </span>
-          <span style={{
-            fontSize: 13, fontWeight: 600, letterSpacing: "0.01em",
-            color: pillText,
-          }}>
-            Watchbox
-          </span>
-        </button>
-      ) : (
-        <button onClick={() => setShowUserMenu(o => !o)}
-          aria-label="Watchbox · Account menu"
-          title="Watchbox · Account menu"
-          style={{
-            width: 40, height: 40, borderRadius: "50%",
-            border: `0.5px solid ${pillBorder}`,
-            background: discBg,
-            color: discFg, cursor: "pointer", fontFamily: "inherit",
+            background: discBg, color: discFg, cursor: "pointer", fontFamily: "inherit",
             fontSize: 14, fontWeight: 600,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            flexShrink: 0,
+            display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
           }}>
           {userInitial.toUpperCase()}
         </button>
@@ -3242,52 +3211,17 @@ export default function Watchlist() {
             {userName}
           </div>
 
-          {/* Watchbox — primary destination, lifted out of the
-              Watchlists sub-tabs on 2026-05-14. Brand-tinted card +
-              chevron so it reads visually as THE main action of the
-              menu (Mark feedback 2026-05-14: "make watchbox more
-              clearly the main part of this menu stack"). About /
-              Settings / Admin sit visually below as utilities. */}
-          <button onClick={() => { setShowUserMenu(false); setTab("watchbox"); setPage(1); }}
-            style={{ display: "flex", alignItems: "center", gap: 12,
-                    width: "100%", textAlign: "left",
-                    padding: "10px 12px", border: "0.5px solid var(--border)",
-                    // PR_δ pattern 2026-05-22: drop the surface fill,
-                    // keep the border. CTA still reads as contained
-                    // primary action without the grey weight.
-                    background: "transparent",
-                    color: "var(--text1)", cursor: "pointer", fontFamily: "inherit",
-                    fontSize: 14, fontWeight: 600, borderRadius: 10 }}>
-            <span style={{
-              width: 30, height: 30, borderRadius: "50%",
-              // PR_ε5 2026-05-22: olive disc to match the avatar.
-              background: "var(--brand-olive)", color: "#ffffff",
-              display: "inline-flex", alignItems: "center", justifyContent: "center",
-              flexShrink: 0,
-            }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" strokeWidth="2"
-                strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <circle cx="12" cy="12" r="7"/>
-                <path d="M12 8v4l2 2"/>
-              </svg>
-            </span>
-            <span style={{ flex: 1 }}>Watchbox</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"
-              aria-hidden="true" style={{ flexShrink: 0, color: "var(--text3)" }}>
-              <path d="M9 18l6-6-6-6"/>
-            </svg>
-          </button>
-
-          {/* Utilities section — About + sign out, simple flat rows. */}
+          {/* Utilities — Sign out sits right under the name now that
+              Watchbox (moved to the Lists tab) + About (already in the
+              top nav on every page) were removed from this menu
+              (Mark 2026-05-28). Admin Site stats stays. */}
           <div style={{ marginTop: 8 }}>
-            <button onClick={() => { setShowUserMenu(false); setAboutModalOpen(true); }}
+            <button onClick={() => { setShowUserMenu(false); signOut(); }}
               style={{ display: "block", width: "100%", textAlign: "left",
                       padding: "8px 12px", border: "none", background: "transparent",
                       color: "var(--text1)", cursor: "pointer", fontFamily: "inherit",
                       fontSize: 13, borderRadius: 6 }}>
-              About Watchlist
+              Sign out
             </button>
             {isAdmin && (
               // Site Stats is admin-only — shown only to Mark.
@@ -3300,21 +3234,12 @@ export default function Watchlist() {
                 <span>Site stats</span>
                 <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.18em",
                               textTransform: "uppercase", color: "#ffffff",
-                              // PR_ε5 2026-05-22: olive Admin badge — same
-                              // brand-thread treatment as the avatar disc.
                               background: "var(--brand-olive)",
                               padding: "2px 6px", borderRadius: 4 }}>
                   Admin
                 </span>
               </button>
             )}
-            <button onClick={() => { setShowUserMenu(false); signOut(); }}
-              style={{ display: "block", width: "100%", textAlign: "left",
-                      padding: "8px 12px", border: "none", background: "transparent",
-                      color: "var(--text1)", cursor: "pointer", fontFamily: "inherit",
-                      fontSize: 13, borderRadius: 6 }}>
-              Sign out
-            </button>
           </div>
 
           {/* View settings — visually contained card (Mark spec
@@ -3335,7 +3260,7 @@ export default function Watchlist() {
               <div style={{ fontSize: 10, color: "var(--text3)",
                           letterSpacing: "0.12em", textTransform: "uppercase",
                           fontWeight: 600, marginBottom: 6 }}>
-                View settings
+                Settings
               </div>
               <ViewSettingsControls
                 primaryCurrency={primaryCurrency}
@@ -3720,14 +3645,14 @@ export default function Watchlist() {
                 user. Lives in the card (not the chrome), so it's reachable on
                 both shells; clears only the sale filter. */}
             <button onClick={() => setFilterSaleUrls([])}
-              title="Show all lots" aria-label="Exit catalog"
+              title="Show all lots" aria-label="Exit auction"
               style={{
                 display: "inline-flex", alignItems: "center", gap: 5, marginBottom: 9,
                 padding: 0, border: "none", outline: "none", background: "transparent",
                 cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap",
                 fontSize: 12.5, fontWeight: 600, letterSpacing: "0.01em", color: "var(--text2)",
               }}>
-              ← Exit catalog
+              ← Exit Auction
             </button>
             {/* Info hierarchy (Mark 2026-05-28): house · location · date
                 (eyebrow) → sale name (headline) → lot count. */}
@@ -3819,7 +3744,7 @@ export default function Watchlist() {
               background: "var(--brand-olive)", color: "#fff", flexShrink: 0,
               paddingTop: isMobile ? "calc(14px + env(safe-area-inset-top))" : 14,
             }}>
-              <span style={{ fontSize: 16, fontWeight: 600 }}>Auction calendar</span>
+              <span style={{ fontSize: 16, fontWeight: 600 }}>Auction Calendar</span>
               <button onClick={() => setCalendarModalOpen(false)}
                 aria-label="Close calendar"
                 style={{
