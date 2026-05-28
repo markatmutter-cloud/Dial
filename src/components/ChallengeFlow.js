@@ -242,7 +242,7 @@ export function CreateStage({ challenge, onSubmit, onCancel, onDelete }) {
         <button onClick={handleSubmit} disabled={count < 1 || budget <= 0}
           style={{
             padding: "8px 16px", borderRadius: 8, border: "none",
-            background: "var(--brand)", color: "#fff", cursor: "pointer",
+            background: "var(--brand-olive)", color: "#fff", cursor: "pointer",
             fontFamily: "inherit", fontSize: 13, fontWeight: 500,
             opacity: (count < 1 || budget <= 0) ? 0.5 : 1,
           }}>Start picking →</button>
@@ -469,7 +469,7 @@ function PickingStage({
             style={{
               width: "100%",
               padding: "10px 20px", borderRadius: 8, border: "none",
-              background: "var(--brand)", color: "#fff",
+              background: "var(--brand-olive)", color: "#fff",
               cursor: canComplete ? "pointer" : "not-allowed",
               fontFamily: "inherit", fontSize: 14, fontWeight: 500,
               opacity: canComplete ? 1 : 0.4,
@@ -592,7 +592,7 @@ function PickingStage({
               />
               <button onClick={handlePaste} style={{
                 padding: "8px 14px", borderRadius: 6, border: "none",
-                background: "var(--brand)", color: "#fff", cursor: "pointer",
+                background: "var(--brand-olive)", color: "#fff", cursor: "pointer",
                 fontFamily: "inherit", fontSize: 13, fontWeight: 500,
               }}>Add</button>
             </div>
@@ -871,7 +871,7 @@ function CompleteStage({ challenge, items, onShareSpec, onShareComplete, onBack,
             title="Send with your picks visible — recipient sees what you chose"
             style={{
               padding: "10px 16px", borderRadius: 8, border: "none",
-              background: "var(--brand)", color: "#fff", cursor: "pointer",
+              background: "var(--brand-olive)", color: "#fff", cursor: "pointer",
               fontFamily: "inherit", fontSize: 14, fontWeight: 500,
             }}>Share my collection →</button>
         )}

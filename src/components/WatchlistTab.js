@@ -284,7 +284,7 @@ export function WatchlistTab(props) {
       <div style={{ display: "flex", gap: 8 }}>
         <button onClick={runImport} style={{
           padding: "8px 14px", borderRadius: 8, border: "none",
-          background: "var(--brand)", color: "#fff", cursor: "pointer",
+          background: "var(--brand-olive)", color: "#fff", cursor: "pointer",
           fontFamily: "inherit", fontSize: 13, fontWeight: 500,
         }}>Import now</button>
         <button onClick={() => {

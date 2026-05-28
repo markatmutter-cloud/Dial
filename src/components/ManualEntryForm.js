@@ -275,7 +275,7 @@ export function ManualEntryForm({
             cursor: busy ? "not-allowed" : "pointer", fontFamily: "inherit", fontSize: 13,
           }}>Cancel</button>
           <button onClick={submit} disabled={!canSave} style={{
-            border: "none", background: "var(--brand)", color: "#fff",
+            border: "none", background: "var(--brand-olive)", color: "#fff",
             padding: "8px 14px", borderRadius: 8,
             cursor: canSave ? "pointer" : "not-allowed",
             fontFamily: "inherit", fontSize: 13, fontWeight: 500,

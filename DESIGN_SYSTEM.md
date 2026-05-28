@@ -25,7 +25,7 @@ spread into the root element's style. All descendants read them via
 | `--text1` | `#1d1d1f` / `#f5f5f7` | Primary text |
 | `--text2` | `#6e6e73` / `#98989d` | Secondary text (most body copy, button labels) |
 | `--text3` | `#aeaeb2` / `#48484a` | Tertiary text (timestamps, helper labels) |
-| `--brand` | `#185FA5` | Action blue: primary CTA, link color, hearted-pill, mobile-nav active dot |
+| `--brand` | `#185FA5` | Action blue — now **link color + text accents only**. Chrome (primary CTAs, filter pills, clear/dismiss, hearted-pill) moved to **olive** in the 2026-05-28 design-library pass; `signInButton` / `producedPill` / `actionButton(primary)` are olive |
 | `--danger` | `#c0392b` | Destructive: Delete button text, hard-cap banner border |
 | `--accent-positive` | `#1b8f3a` | Sold-green / price-drop ↓ indicator |
 | `--accent-warn` | `#c9a227` | Gold for status hints (over-budget, "earning its keep" admin chip) |

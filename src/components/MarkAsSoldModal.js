@@ -107,7 +107,7 @@ export function MarkAsSoldModal({
             cursor: busy ? "not-allowed" : "pointer", fontFamily: "inherit", fontSize: 13,
           }}>Cancel</button>
           <button onClick={submit} disabled={busy} style={{
-            border: "none", background: "var(--brand)", color: "#fff",
+            border: "none", background: "var(--brand-olive)", color: "#fff",
             padding: "8px 14px", borderRadius: 8,
             cursor: busy ? "not-allowed" : "pointer",
             fontFamily: "inherit", fontSize: 13, fontWeight: 500,

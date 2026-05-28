@@ -520,7 +520,7 @@ function AuctionRow({ a, archive, lotCount = 0, heroImg = "", saved = false, onT
                 <span style={{ fontSize: 10, fontWeight: 600, color: "#fff", background: "#666", borderRadius: 8, padding: "2px 8px", letterSpacing: "0.06em" }}>CLOSED</span>
               )}
               {catalogJustOpened && (
-                <span style={{ fontSize: 10, fontWeight: 600, color: "#fff", background: "var(--brand)", borderRadius: 8, padding: "2px 8px", letterSpacing: "0.06em" }}>NEW CATALOG</span>
+                <span style={{ fontSize: 10, fontWeight: 600, color: "#fff", background: "var(--brand-olive)", borderRadius: 8, padding: "2px 8px", letterSpacing: "0.06em" }}>NEW CATALOG</span>
               )}
               {lotActionsAvailable && (
                 <span style={{ fontSize: 10, color: "var(--text3)", fontVariantNumeric: "tabular-nums" }}>

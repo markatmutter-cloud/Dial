@@ -171,10 +171,11 @@ export const producedPill = ({ tone = "brand" } = {}) => {
     whiteSpace: "nowrap",
     flexShrink: 0,
   };
+  // 2026-05-28: olive accent (was brand-blue) — one chrome accent.
   if (tone === "solid") return {
     ...base,
-    border: "1px solid var(--brand)",
-    background: "var(--brand)",
+    border: "1px solid var(--brand-olive)",
+    background: "var(--brand-olive)",
     color: "#fff",
     boxShadow: "0 1px 2px rgba(0,0,0,0.08)",
   };
@@ -184,12 +185,12 @@ export const producedPill = ({ tone = "brand" } = {}) => {
     background: "transparent",
     color: "var(--text1)",
   };
-  // brand (default)
+  // brand (default) — olive outline
   return {
     ...base,
-    border: "1px solid var(--brand)",
+    border: "1px solid var(--brand-olive-ink)",
     background: "transparent",
-    color: "var(--brand)",
+    color: "var(--brand-olive-ink)",
   };
 };
 
@@ -201,7 +202,8 @@ export const producedPill = ({ tone = "brand" } = {}) => {
 // pattern repeated across ~5 files).
 export const signInButton = {
   padding: "10px 20px", borderRadius: 10,
-  border: "none", background: "var(--brand)", color: "#fff",
+  // 2026-05-28: olive (was brand-blue) — one chrome accent across the app.
+  border: "none", background: "var(--brand-olive)", color: "#fff",
   cursor: "pointer", fontFamily: "inherit",
   fontSize: 14, fontWeight: 500,
 };
