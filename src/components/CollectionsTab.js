@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { supabase } from "../supabase";
 import { Card } from "./Card";
+import CardStrip from "./CardStrip";
 import { ChallengesView } from "./ChallengesView";
 import { ManualEntryForm } from "./ManualEntryForm";
 import { ListingPickerModal } from "./ListingPickerModal";
@@ -318,36 +319,9 @@ function WLWatchboxLink({ counts, onOpen }) {
   );
 }
 
-// Horizontal image strip of saved items (watches/articles/auctions).
-function WLSavedStrip({ items, onClickItem }) {
-  if (!items.length) {
-    return <div style={{ fontSize: 12.5, color: "var(--text3)", padding: "4px 2px" }}>
-      Nothing here yet — heart a watch, article or sale to find it again.
-    </div>;
-  }
-  return (
-    <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 4, WebkitOverflowScrolling: "touch" }}>
-      {items.slice(0, 18).map((it, i) => {
-        const src = wlItemImg(it);
-        return (
-          <button key={it.id || it.url || i} onClick={() => onClickItem(it)} style={{
-            flexShrink: 0, width: 136, cursor: "pointer", fontFamily: "inherit",
-            border: "none", background: "transparent", padding: 0, textAlign: "left",
-          }}>
-            <WLImg src={src} style={{
-              width: 136, height: 136, borderRadius: 8,
-              border: "0.5px solid var(--border)",
-            }} />
-            <div style={{
-              fontSize: 11, color: "var(--text2)", marginTop: 4, lineHeight: 1.3,
-              display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
-            }}>{it.title || it.name || ""}</div>
-          </button>
-        );
-      })}
-    </div>
-  );
-}
+// (WLSavedStrip retired — the Saved band now renders through the shared
+// CardStrip + standard Card, so hearted cards are standard size and match
+// the Home strips, per Mark.)
 
 // A saved search rendered as a tap-to-run BAR (full-width row) → the
 // pre-filtered Listings. (Preview tiles reverted per Mark; a richer
@@ -2325,9 +2299,31 @@ function ListsView({
       activeSavedFilter === "articles" ? SAVED_ARTICLES_COLLECTION_ID
     : activeSavedFilter === "auctions" ? SAVED_AUCTIONS_COLLECTION_ID
     : SAVED_COLLECTION_ID;
-  const onClickSavedItem = (it) => {
-    if (savedAuctions.includes(it)) { if (onOpenSale) onOpenSale(it); return; }
-    if (onClickListing) onClickListing(it);
+  // Saved band renders through the shared CardStrip + standard Card
+  // (Mark: hearted cards should be standard size, like the Home strips)
+  // instead of a bespoke tile. Watches/articles are listing-shaped so
+  // Card renders them; saved auction sales get a small image tile.
+  const renderSavedCard = (item) => {
+    if (savedAuctions.includes(item)) {
+      return (
+        <button onClick={() => onOpenSale && onOpenSale(item)} aria-label="Open auction"
+          style={{ width: "100%", textAlign: "left", cursor: "pointer", fontFamily: "inherit",
+            border: "none", background: "transparent", padding: 0 }}>
+          <div style={{ aspectRatio: "1 / 1", overflow: "hidden", borderRadius: 8, border: "0.5px solid var(--border)" }}>
+            <WLImg src={wlItemImg(item)} style={{ width: "100%", height: "100%" }} />
+          </div>
+          <div style={{ fontSize: 12, color: "var(--text2)", marginTop: 6, lineHeight: 1.3,
+            display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+            {item.title || item.name || item.house || "Auction"}
+          </div>
+        </button>
+      );
+    }
+    return (
+      <Card item={item} wished={!!watchlist[item.id]} onWish={handleWish} compact={compact}
+        onAddToCollection={user ? openCollectionPicker : undefined}
+        primaryCurrency={primaryCurrency} onClickListing={onClickListing} observeCard={observeCard} />
+    );
   };
   const wlHeaderBtn = {
     flexShrink: 0, cursor: "pointer", fontFamily: "inherit",
@@ -2397,7 +2393,14 @@ function ListsView({
               );
             })}
           </div>
-          <WLSavedStrip items={savedFilteredItems} onClickItem={onClickSavedItem} />
+          {savedFilteredItems.length > 0 ? (
+            <CardStrip items={savedFilteredItems} isMobile={isMobile} max={18}
+              inset={false} renderCard={renderSavedCard} />
+          ) : (
+            <div style={{ fontSize: 12.5, color: "var(--text3)", padding: "4px 2px" }}>
+              Nothing here yet — heart a watch, article or sale to find it again.
+            </div>
+          )}
         </WLBand>
       )}
 
