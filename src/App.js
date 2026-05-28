@@ -880,6 +880,14 @@ export default function Watchlist() {
     } catch { return; }
     setCalendarModalOpen(true);
   }, [tab, listingsSubTab, filterSaleUrls, isMobile]);
+  // Esc closes the calendar modal (Mark 2026-05-28) — mirrors the
+  // backdrop click. Listener only mounts while the modal is open.
+  useEffect(() => {
+    if (!calendarModalOpen) return;
+    const onKey = (e) => { if (e.key === "Escape") setCalendarModalOpen(false); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [calendarModalOpen]);
   // Feed-screening retired 2026-05-22 — the Home banner + per-strip
   // "Screen N new" pill that fed it were removed (PRs #283 / #507);
   // nothing renders openFeedScreener anymore. Audit confirmed the
@@ -3665,16 +3673,43 @@ export default function Watchlist() {
         && filterSaleUrls.length === 1
         && salesByUrl.get(filterSaleUrls[0]) && (() => {
         const sale = salesByUrl.get(filterSaleUrls[0]);
+        // Catalog-context card (Mark 2026-05-28): an olive-tinted bleed
+        // behind the title block so it reads as a distinct "you're inside
+        // one catalog" view, not just the auction grid. Holds the exit +
+        // the sale's info hierarchy.
         return (
-          <div style={{ padding: "2px 2px 14px" }}>
-            <div style={{ fontSize: 11, color: "var(--text3)", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}>
-              {sale.house}
+          <div style={{
+            background: "var(--brand-olive-tint-12)", borderRadius: 14,
+            padding: "13px 16px 15px", marginBottom: 14,
+          }}>
+            {/* "Exit catalog" — the always-visible way out of a single-sale
+                view (2026-05-28). The only prior exit was the filter row's
+                "× Clear all", which on mobile sits at the end of an
+                overflow-scroll row and can scroll off-screen, stranding the
+                user. Lives in the card (not the chrome), so it's reachable on
+                both shells; clears only the sale filter. */}
+            <button onClick={() => setFilterSaleUrls([])}
+              title="Show all lots" aria-label="Exit catalog"
+              style={{
+                display: "inline-flex", alignItems: "center", gap: 5, marginBottom: 9,
+                padding: 0, border: "none", outline: "none", background: "transparent",
+                cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap",
+                fontSize: 12.5, fontWeight: 600, letterSpacing: "0.01em", color: "var(--text2)",
+              }}>
+              ← Exit catalog
+            </button>
+            {/* Info hierarchy (Mark 2026-05-28): house · location · date
+                (eyebrow) → sale name (headline) → lot count. */}
+            <div style={{ fontSize: 11.5, color: "var(--text3)", fontWeight: 600, letterSpacing: "0.04em" }}>
+              <span style={{ textTransform: "uppercase", letterSpacing: "0.08em" }}>{sale.house}</span>
+              {sale.location ? ` · ${sale.location}` : ""}
+              {fmtSaleDateRange(sale) ? ` · ${fmtSaleDateRange(sale)}` : ""}
             </div>
-            <div style={{ fontSize: 19, fontWeight: 600, color: "var(--text1)", lineHeight: 1.2, marginTop: 2 }}>
+            <div style={{ fontSize: 21, fontWeight: 700, color: "var(--text1)", lineHeight: 1.18, marginTop: 4, letterSpacing: "-0.01em" }}>
               {sale.title}
             </div>
-            <div style={{ fontSize: 13, color: "var(--text2)", marginTop: 3 }}>
-              {fmtSaleDateRange(sale)}{sale.location ? ` · ${sale.location}` : ""} · {allFiltered.length} lots
+            <div style={{ fontSize: 13, color: "var(--text2)", marginTop: 5 }}>
+              {allFiltered.length} lots
             </div>
           </div>
         );

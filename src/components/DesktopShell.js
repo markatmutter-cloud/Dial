@@ -256,17 +256,17 @@ export function DesktopShell(props) {
           plus the count + Clear-all tail. */}
 
       {/* Auction calendar launcher (Phase 4) — far left, before the
-          noun filters (Mark 2026-05-26). Prominent brand-olive; opens
-          the calendar modal (the sale-picker). Auction surfaces only. */}
+          noun filters (Mark 2026-05-26). Styled as a filter pill (was a
+          prominent brand-olive button; 2026-05-28 Mark wanted it sized
+          consistent with the filter-line pills). Opens the calendar modal
+          (the sale-picker); the active-sale state shows in the grid's
+          sale-context header, with its own Clear there. Auction surfaces only. */}
       {tab === "listings" && (listingsSubTab === "auctions" || listingsSubTab === "sold") && onOpenCalendar && (
         <button onClick={onOpenCalendar}
           title="Browse the auction calendar"
           style={{
+            ...dtPill(false),
             display: "inline-flex", alignItems: "center", gap: 6, flexShrink: 0,
-            cursor: "pointer", fontFamily: "inherit",
-            fontSize: 13, fontWeight: 600, letterSpacing: "0.02em",
-            padding: "7px 14px", borderRadius: 999,
-            border: "none", background: "var(--brand-olive)", color: "#fff",
             whiteSpace: "nowrap",
           }}>
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -275,7 +275,7 @@ export function DesktopShell(props) {
             <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
             <line x1="3" y1="10" x2="21" y2="10"/>
           </svg>
-          Calendar
+          Catalog
         </button>
       )}
       {/* LEFT — Source / Brand / Model */}
