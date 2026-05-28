@@ -728,12 +728,12 @@ function SectionStrip({ heading, descriptor, items, onViewAll, onScreen, screenC
           right-cut card is the only signal there's more to scroll;
           the gradient makes the affordance explicit. pointerEvents
           none so it doesn't swallow taps/swipes through the overlay. */}
-      <div style={{ position: "relative" }}>
       <CardStrip
         items={slice}
         isMobile={isMobile}
         background={inverted ? "var(--surface-on-dark)" : "var(--border)"}
         inset={!inverted}
+        fadeColor={inverted ? "var(--text1)" : "var(--bg)"}
         renderCard={(item, i) => (
           <>
             <Card item={item} wished={!!watchlist[item.id]} onWish={handleWish}
@@ -767,19 +767,6 @@ function SectionStrip({ heading, descriptor, items, onViewAll, onScreen, screenC
           </>
         )}
       />
-        {/* Right-edge fade — lives inside the position:relative wrapper
-            opened above the scroll div. Mark 2026-05-15 desktop audit:
-            "wanted the fade but didn't seem to come through" — bumped
-            from 36→72 on desktop (mobile stays 36, has less room) and
-            extended the gradient ramp (start fading at 30% in rather
-            than dead transparent) so the right-cut card reads as
-            clearly under a fade, not just as a thin lip. */}
-        <div aria-hidden style={{
-          position: "absolute", top: 0, right: 0, bottom: 0,
-          width: isMobile ? 36 : 72, pointerEvents: "none",
-          background: `linear-gradient(to right, transparent 0%, ${inverted ? "var(--text1)" : "var(--bg)"} 75%)`,
-        }} />
-      </div>
     </section>
   );
 }
@@ -971,6 +958,12 @@ export function HomeTab(props) {
       // jumps up and right" — perceived as motion because Watchbox
       // flipped from white-context to olive-context).
       paddingTop: isMobile ? "env(safe-area-inset-top, 0px)" : 0,
+      // Desktop: pull the hero up into the (transparent, borderless) minimal
+      // top bar so the centered moonphase sits roughly level with the
+      // right-aligned About/M pill — reclaims the white gap above it so more
+      // watch cards show (Mark 2026-05-28). Centered hero vs right pill =
+      // no collision. Tune the amount on the preview if needed.
+      marginTop: isMobile ? 0 : -28,
     }}>
       <EditorialHero isMobile={isMobile} dark={dark} />
       {/* Masthead nav block — PR 2026-05-22 (Mark γ). The persistent
@@ -1030,7 +1023,9 @@ export function HomeTab(props) {
                 style={{
                   background: "transparent", border: "none",
                   cursor: "pointer", fontFamily: "inherit",
-                  fontSize: isMobile ? 14 : 13,
+                  // Desktop bumped 13 → 15 (Mark 2026-05-28: home subtabs a
+                  // little larger). Mobile stays 14.
+                  fontSize: isMobile ? 14 : 15,
                   fontWeight: 500,
                   letterSpacing: "0.01em",
                   // B-07: white on the now-olive band (was --text2, which
