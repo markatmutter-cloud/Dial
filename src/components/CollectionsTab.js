@@ -12,7 +12,7 @@ import { WatchDetailSheet } from "./WatchDetailSheet";
 import { ListReviewMode } from "./ListReviewMode";
 import { articleAsListing } from "./EditorialView";
 import CardShell from "./CardShell";
-import { DossierBlocks, matchListings } from "./DossierBlocks";
+import { DossierBlocks } from "./DossierBlocks";
 import { fmtUSD, matchesSearch, imgSrc } from "../utils";
 import { actionButton, signInButton } from "../styles";
 import { EmptyState } from "./EmptyState";
@@ -148,6 +148,28 @@ function WLBand({ id, kicker, title, isMobile, action, children }) {
   );
 }
 
+// Image tile with a graceful fallback — failed/blocked image URLs (some
+// auction/Sotheby's shots genuinely don't load) degrade to a neutral
+// placeholder instead of the browser's broken-image "?" (B-38). Mirrors
+// the main Card's "image not available" behaviour at tile scale.
+function WLImg({ src, alt = "", style, fit = "cover" }) {
+  const [bad, setBad] = useState(!src);
+  if (bad) {
+    return (
+      <div aria-hidden style={{
+        ...style, background: "var(--surface, var(--bg))",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        color: "var(--text3)", fontSize: 16,
+      }}>⌚</div>
+    );
+  }
+  return (
+    <img src={imgSrc(src)} alt={alt} loading="lazy"
+      onError={() => setBad(true)}
+      style={{ ...style, objectFit: fit, display: "block" }} />
+  );
+}
+
 // Cover collage — 1 hero or a 2×2 grid of item images; placeholder if none.
 function WLCover({ images, height }) {
   const imgs = (images || []).slice(0, 4);
@@ -163,8 +185,7 @@ function WLCover({ images, height }) {
   }
   if (imgs.length === 1) {
     return <div style={base}>
-      <img src={imgSrc(imgs[0])} alt="" loading="lazy"
-        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+      <WLImg src={imgs[0]} style={{ width: "100%", height: "100%" }} />
     </div>;
   }
   return (
@@ -174,8 +195,7 @@ function WLCover({ images, height }) {
       background: "var(--border)",
     }}>
       {imgs.map((src, i) => (
-        <img key={i} src={imgSrc(src)} alt="" loading="lazy"
-          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+        <WLImg key={i} src={src} style={{ width: "100%", height: "100%" }} />
       ))}
     </div>
   );
@@ -190,10 +210,10 @@ function WLListCard({ name, images, chips, shared, isMobile, onOpen }) {
       background: "var(--bg)", padding: 0, overflow: "hidden",
       display: "flex", flexDirection: "column",
     }}>
-      <WLCover images={images} height={isMobile ? 116 : 144} />
-      <div style={{ padding: "10px 12px 12px" }}>
+      <WLCover images={images} height={isMobile ? 100 : 120} />
+      <div style={{ padding: "9px 11px 11px" }}>
         <div style={{
-          fontSize: 15, fontWeight: 600, color: "var(--text1)",
+          fontSize: 14, fontWeight: 600, color: "var(--text1)",
           lineHeight: 1.25, overflow: "hidden", textOverflow: "ellipsis",
           whiteSpace: "nowrap",
         }}>{name}</div>
@@ -233,17 +253,17 @@ function WLCardGrid({ isMobile, children }) {
   return (
     <div style={{
       display: "grid",
-      gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(auto-fill, minmax(190px, 1fr))",
-      gap: isMobile ? 12 : 16,
+      gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(auto-fill, minmax(168px, 1fr))",
+      gap: isMobile ? 12 : 14,
     }}>{children}</div>
   );
 }
 
-// Watchbox anchor — the bold focal element of the page. A wide band
-// with an edge-to-edge image strip of owned watches, serif title,
-// small-caps stats, and an explicit "Open the box →" cue. No star.
+// Watchbox card — the bold anchor in the top row. Bold SANS title (serif
+// is reserved for editorial reading surfaces), watch images CONTAINED on
+// the tint so they aren't beheaded, stats + an explicit "Open the box →".
 function WLWatchboxHero({ counts, covers, isMobile, onOpen }) {
-  const imgs = (covers || []).map(wlItemImg).filter(Boolean).slice(0, isMobile ? 5 : 9);
+  const imgs = (covers || []).map(wlItemImg).filter(Boolean).slice(0, isMobile ? 4 : 5);
   const stats = [
     { n: counts.owned, label: "owned" },
     { n: counts.wishlist, label: "wishlist" },
@@ -251,35 +271,30 @@ function WLWatchboxHero({ counts, covers, isMobile, onOpen }) {
   ].filter((s) => s.n);
   return (
     <button onClick={onOpen} aria-label="Open my Watchbox" style={{
-      width: "100%", textAlign: "left", cursor: "pointer", fontFamily: "inherit",
+      width: "100%", height: "100%", textAlign: "left", cursor: "pointer", fontFamily: "inherit",
       border: "0.5px solid var(--border)", borderRadius: 16,
       background: "var(--brand-olive-tint-12, var(--bg))",
-      padding: 0, overflow: "hidden", display: "block",
-      marginTop: isMobile ? 16 : 22,
+      padding: 0, overflow: "hidden", display: "flex", flexDirection: "column",
     }}>
       {imgs.length > 0 && (
-        <div style={{ display: "flex", height: isMobile ? 96 : 140 }}>
+        <div style={{ display: "flex", height: isMobile ? 92 : 116, gap: 1 }}>
           {imgs.map((src, i) => (
-            <div key={i} style={{
-              flex: 1, minWidth: 0,
-              borderRight: i < imgs.length - 1 ? "1px solid var(--bg)" : "none",
-            }}>
-              <img src={imgSrc(src)} alt="" loading="lazy"
-                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+            <div key={i} style={{ flex: 1, minWidth: 0, padding: isMobile ? 8 : 10 }}>
+              <WLImg src={src} fit="contain" style={{ width: "100%", height: "100%" }} />
             </div>
           ))}
         </div>
       )}
       <div style={{
-        display: "flex", alignItems: "center", gap: 14,
-        padding: isMobile ? "14px 16px" : "18px 22px",
+        display: "flex", alignItems: "center", gap: 14, flex: 1,
+        padding: isMobile ? "14px 16px" : "16px 20px",
       }}>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{
-            fontFamily: WL_SERIF, fontSize: isMobile ? 21 : 26, fontWeight: 600,
-            color: "var(--text1)", lineHeight: 1.05, letterSpacing: "-0.01em",
+            fontSize: isMobile ? 19 : 22, fontWeight: 800,
+            color: "var(--text1)", lineHeight: 1.1, letterSpacing: "-0.01em",
           }}>My Watchbox</div>
-          <div style={{ display: "flex", gap: 16, marginTop: 9, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: 14, marginTop: 8, flexWrap: "wrap" }}>
             {stats.length ? stats.map((s, i) => (
               <span key={i}>
                 <strong style={{ fontSize: isMobile ? 15 : 16, fontWeight: 700, color: "var(--text1)" }}>{s.n}</strong>
@@ -297,7 +312,7 @@ function WLWatchboxHero({ counts, covers, isMobile, onOpen }) {
           flexShrink: 0, fontSize: 12.5, fontWeight: 600, whiteSpace: "nowrap",
           color: "var(--brand-olive-text)", border: "0.5px solid var(--brand-olive-text)",
           borderRadius: 999, padding: "8px 15px",
-        }}>Open the box →</span>
+        }}>View your collection →</span>
       </div>
     </button>
   );
@@ -319,17 +334,10 @@ function WLSavedStrip({ items, onClickItem }) {
             flexShrink: 0, width: 104, cursor: "pointer", fontFamily: "inherit",
             border: "none", background: "transparent", padding: 0, textAlign: "left",
           }}>
-            {src ? (
-              <img src={imgSrc(src)} alt="" loading="lazy" style={{
-                width: 104, height: 104, objectFit: "cover", borderRadius: 8,
-                border: "0.5px solid var(--border)", display: "block",
-              }} />
-            ) : (
-              <div style={{
-                width: 104, height: 104, borderRadius: 8, border: "0.5px solid var(--border)",
-                background: "var(--bg)",
-              }} />
-            )}
+            <WLImg src={src} style={{
+              width: 104, height: 104, borderRadius: 8,
+              border: "0.5px solid var(--border)",
+            }} />
             <div style={{
               fontSize: 11, color: "var(--text2)", marginTop: 4, lineHeight: 1.3,
               display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
@@ -341,10 +349,10 @@ function WLSavedStrip({ items, onClickItem }) {
   );
 }
 
-// A saved search rendered as a tap-to-run card. Previews the first
-// few live results (real watch images) instead of a generic icon, so
-// a search reads like what it returns.
-function WLSearchCard({ search, previews = [], isMobile, onRun, onEdit, onRemove }) {
+// A saved search rendered as a tap-to-run BAR (full-width row) → the
+// pre-filtered Listings. (Preview tiles reverted per Mark; a richer
+// search UI is a later idea.)
+function WLSearchCard({ search, onRun, onEdit, onRemove }) {
   const priceBits = [];
   if (search.minPrice != null) priceBits.push(`$${Number(search.minPrice).toLocaleString()}`);
   if (search.maxPrice != null) priceBits.push(`$${Number(search.maxPrice).toLocaleString()}`);
@@ -352,38 +360,21 @@ function WLSearchCard({ search, previews = [], isMobile, onRun, onEdit, onRemove
     priceBits.length ? priceBits.join("–") : null,
     search.count != null ? `${search.count.toLocaleString()} for sale` : null,
   ].filter(Boolean).join(" · ");
-  const thumbs = previews.slice(0, 3);
   return (
     <div style={{
-      display: "flex", alignItems: "center", gap: 12,
-      border: "0.5px solid var(--border)", borderRadius: 12,
-      padding: 8, background: "var(--bg)",
+      display: "flex", alignItems: "center", gap: 10,
+      border: "0.5px solid var(--border)", borderRadius: 10,
+      padding: "11px 14px", background: "var(--bg)",
     }}>
       <button onClick={onRun} style={{
         flex: 1, minWidth: 0, textAlign: "left", cursor: "pointer",
         fontFamily: "inherit", border: "none", background: "transparent", padding: 0,
-        display: "flex", alignItems: "center", gap: 12,
       }}>
-        <div style={{ display: "flex", gap: 3, flexShrink: 0 }}>
-          {thumbs.length ? thumbs.map((src, i) => (
-            <img key={i} src={imgSrc(src)} alt="" loading="lazy" style={{
-              width: 44, height: 44, objectFit: "cover", borderRadius: 7,
-              border: "0.5px solid var(--border)", display: "block",
-            }} />
-          )) : (
-            <div style={{
-              width: 44, height: 44, borderRadius: 7, border: "0.5px solid var(--border)",
-              background: "var(--bg)", display: "flex", alignItems: "center",
-              justifyContent: "center", color: "var(--text3)", fontSize: 16,
-            }}>⌕</div>
-          )}
-        </div>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text1)" }}>{search.label}</div>
-          {meta && <div style={{ fontSize: 12, color: "var(--text3)", marginTop: 2,
-            overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{meta}</div>}
-        </div>
+        <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text1)" }}>{search.label}</div>
+        {meta && <div style={{ fontSize: 12, color: "var(--text3)", marginTop: 2,
+          overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{meta}</div>}
       </button>
+      <span style={{ fontSize: 12.5, color: "var(--brand-olive-text)", fontWeight: 600, flexShrink: 0 }}>View →</span>
       {onEdit && <button onClick={onEdit} aria-label="Edit search" style={wlIconBtn}>✎</button>}
       {onRemove && <button onClick={onRemove} aria-label="Delete search" style={wlIconBtn}>🗑</button>}
     </div>
@@ -410,8 +401,7 @@ function WLSectionNav({ sections, active, onJump }) {
             <button key={s.id} onClick={() => onJump(s.id)} style={{
               flexShrink: 0, cursor: "pointer", fontFamily: "inherit",
               border: "none", background: "transparent", padding: "2px 0",
-              fontSize: 11.5, fontWeight: 600, letterSpacing: "0.08em",
-              textTransform: "uppercase",
+              fontSize: 14, fontWeight: 600,
               color: on ? "var(--text1)" : "var(--text3)",
               borderBottom: on ? "1.5px solid var(--brand-olive-text)" : "1.5px solid transparent",
             }}>{s.label}</button>
@@ -422,31 +412,6 @@ function WLSectionNav({ sections, active, onJump }) {
   );
 }
 
-// "This week in your watchlists" pulse — a compact line of real
-// signals mixed from across the app (no AI yet). Each chip jumps to /
-// opens the relevant surface.
-function WLPulse({ items }) {
-  if (!items.length) return null;
-  return (
-    <div style={{
-      display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center",
-      marginTop: 12,
-    }}>
-      <span aria-hidden style={{
-        width: 7, height: 7, borderRadius: 999, background: "var(--brand-olive-text)",
-        flexShrink: 0,
-      }} />
-      {items.map((it, i) => (
-        <button key={i} onClick={it.onClick} style={{
-          cursor: "pointer", fontFamily: "inherit", fontSize: 12.5,
-          border: "0.5px solid var(--border)", borderRadius: 999,
-          background: "var(--bg)", color: "var(--text2)", padding: "4px 11px",
-          whiteSpace: "nowrap",
-        }}>{it.text}</button>
-      ))}
-    </div>
-  );
-}
 const wlIconBtn = {
   flexShrink: 0, cursor: "pointer", fontFamily: "inherit", fontSize: 13,
   border: "0.5px solid var(--border)", borderRadius: 8, background: "transparent",
@@ -2362,28 +2327,13 @@ function ListsView({
     sharedRows.length > 0 ? { id: "shared", label: "Shared" } : null,
   ].filter(Boolean);
   const goToSection = (id) => {
+    // Highlight immediately — the last section can't always scroll under
+    // the sticky bar far enough to trigger the IntersectionObserver.
+    setActiveSection(id);
     if (typeof document === "undefined") return;
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
-
-  // v1 "this week" pulse — real signals mixed from existing data (no
-  // AI). The conversational missed-it/coach bot is the Phase 3 build.
-  const savedSearchTotal = (savedSearchStats || []).reduce((s, x) => s + (x.count || 0), 0);
-  const wlPulse = [
-    savedSearchTotal > 0 ? {
-      text: `${savedSearchTotal.toLocaleString()} match your saved searches`,
-      onClick: () => goToSection("searches"),
-    } : null,
-    soldWatchItems.length > 0 ? {
-      text: `${soldWatchItems.length} saved watch${soldWatchItems.length === 1 ? "" : "es"} sold`,
-      onClick: () => { setSavedTypeFilter("sold"); goToSection("saved"); },
-    } : null,
-    savedAuctions.length > 0 ? {
-      text: `${savedAuctions.length} saved auction${savedAuctions.length === 1 ? "" : "s"}`,
-      onClick: () => { setSavedTypeFilter("auctions"); goToSection("saved"); },
-    } : null,
-  ].filter(Boolean);
 
   // (renderListRow + the ListRow row family retired in B-08 — the
   // landing now renders cover-image cards, not icon+text rows. Rename/
@@ -2391,27 +2341,26 @@ function ListsView({
   // savedRow/articles/auctions still drive the `selected` drill-in.)
 
   return (
-    <div style={{ paddingTop: 4 }}>
-      {/* Refined descriptor (NOT a masthead — Mark) + pulse = a designed
-          header strip, not a lone Word-doc line. */}
+    <div style={{ paddingTop: 0, paddingBottom: isMobile ? 220 : 160 }}>
+      {/* Sticky sub-tab-style nav at the TOP (where sub-tabs sit) —
+          jump-to + where-am-i, NOT content-swapping sub-tabs (Mark). */}
+      <WLSectionNav sections={wlNavSections} active={activeSection} onJump={goToSection} />
+
+      {/* Compact descriptor — one subtle line, not a masthead. */}
       <p style={{
-        fontSize: isMobile ? 13.5 : 14.5, lineHeight: 1.55,
-        color: "var(--text2)", margin: 0, maxWidth: 600, letterSpacing: "0.01em",
+        fontSize: 13, lineHeight: 1.5, color: "var(--text3)",
+        margin: isMobile ? "12px 0 0" : "14px 0 0", maxWidth: 620,
       }}>
-        Your watch notebook — consolidate saved watches, articles, searches, auctions, prices &amp; notes for anything you're into.
+        Your watch notebook — saved watches, articles, searches, auctions, prices &amp; notes for anything you're into.
       </p>
 
-      {/* "This week" pulse — real signals mixed from across the app (no AI yet). */}
-      <WLPulse items={wlPulse} />
-
-      {/* Watchbox anchor — the bold focal element (no star). */}
+      {/* Watchbox — the bold anchor (full width). */}
       {user && goToWatchbox && (
-        <WLWatchboxHero counts={watchboxCounts} covers={watchboxCovers}
-          isMobile={isMobile} onOpen={goToWatchbox} />
+        <div style={{ marginTop: isMobile ? 14 : 18 }}>
+          <WLWatchboxHero counts={watchboxCounts} covers={watchboxCovers}
+            isMobile={isMobile} onOpen={goToWatchbox} />
+        </div>
       )}
-
-      {/* Sticky scroll-spy section nav — jump-to, NOT sub-tabs. */}
-      <WLSectionNav sections={wlNavSections} active={activeSection} onJump={goToSection} />
 
       {/* SAVED — moved ABOVE Lists (Mark: hearted higher, still visible).
           Unified + type-filterable (fixes "where did my heart go"). */}
@@ -2465,8 +2414,7 @@ function ListsView({
         {savedSearchStats && savedSearchStats.length > 0 ? (
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {savedSearchStats.map(s => (
-              <WLSearchCard key={s.id} search={s} isMobile={isMobile}
-                previews={matchListings(allListings, s.query, s.minPrice, s.maxPrice).map(wlItemImg).filter(Boolean)}
+              <WLSearchCard key={s.id} search={s}
                 onRun={() => runSearch && runSearch(s)}
                 onEdit={startEditSearch ? () => startEditSearch(s) : null}
                 onRemove={removeSearch ? async () => {
