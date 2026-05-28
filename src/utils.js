@@ -465,7 +465,7 @@ export function ageBucketFromDate(dateStr) {
   return "Older";
 }
 
-export function imgSrc(url) {
+export function imgSrc(url, width = 720) {
   if (!url) return url;
   try {
     const u = new URL(url);
@@ -499,7 +499,27 @@ export function imgSrc(url) {
     if (u.hostname === "assets.phillips.com" && !u.pathname.startsWith("/image/upload/")) {
       return `https://assets.phillips.com/image/upload/c_limit,w_800,f_auto,q_auto${u.pathname}${u.search}`;
     }
-  } catch { /* malformed URL — fall through to the raw value */ }
+    // Don't double-wrap an already-proxied URL (idempotent across re-renders).
+    if (u.hostname === "images.weserv.nl") return url;
+    // Our own storage (Vercel Blob image cache + Supabase Storage) is left as-is
+    // — Blob is size-controlled at cache time; Supabase holds user photo uploads.
+    if (u.hostname.endsWith("blob.vercel-storage.com") || u.hostname.endsWith(".supabase.co")) {
+      return url;
+    }
+    // Only fetchable http(s) remotes can be proxied — skips data:/blob: object
+    // URLs and relative paths, which have no host wsrv could fetch.
+    if (!u.hostname || (u.protocol !== "http:" && u.protocol !== "https:")) return url;
+    // Every other host serves full-resolution images (Loupe This ~5MB each,
+    // Shopify, Squarespace, Cloudfront, Hairspring, Christie's …) with no
+    // URL-param resize of their own — ~97% of images users load and the
+    // dominant page-weight + slowness lever. Route them through wsrv.nl, a free
+    // resize CDN that fetches the origin itself, so it adds ZERO bandwidth or
+    // compute on our side (unlike a self-hosted resize function). Hot-link-
+    // protected hosts are excluded above (wsrv can't send their required
+    // Referer). `ssl:` is wsrv's https-origin prefix; `we` = no up-scaling.
+    const noScheme = url.replace(/^https:\/\//, "ssl:").replace(/^http:\/\//, "");
+    return `https://images.weserv.nl/?url=${encodeURIComponent(noScheme)}&w=${width}&output=webp&q=72&we`;
+  } catch { /* malformed / relative URL — fall through to the raw value */ }
   return url;
 }
 
