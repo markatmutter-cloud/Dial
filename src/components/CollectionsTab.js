@@ -186,32 +186,83 @@ function WLCover({ images }) {
 // A list rendered like the EDITORIAL article cards (Mark's reference):
 // borderless, floats on the page, 16/10 cover on top, uppercase kicker
 // (the flavour), serif title. No box/border.
-function WLListCard({ name, images, chips, shared, isMobile, onOpen }) {
-  const kicker = [...(chips || []), shared ? "shared" : null].filter(Boolean).join(" · ");
+// Compact ⋯ menu for list management (rename / delete) — overlaid on a
+// list card and inline in the drill-in header. Closes on click-outside +
+// Escape; stopPropagation so it doesn't trigger the card's open handler.
+const wlMenuItem = {
+  display: "block", width: "100%", textAlign: "left", padding: "9px 13px",
+  fontSize: 13, fontFamily: "inherit", border: "none", background: "transparent",
+  color: "var(--text1)", cursor: "pointer", whiteSpace: "nowrap",
+};
+function WLCardMenu({ onRename, onDelete }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  useEffect(() => {
+    if (!open) return undefined;
+    const onDown = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    const onKey = (e) => { if (e.key === "Escape") setOpen(false); };
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => { document.removeEventListener("mousedown", onDown); document.removeEventListener("keydown", onKey); };
+  }, [open]);
+  const pick = (fn) => (e) => { e.stopPropagation(); e.preventDefault(); setOpen(false); if (fn) fn(); };
   return (
-    <button onClick={onOpen} style={{
-      display: "flex", flexDirection: "column", textAlign: "left",
-      cursor: "pointer", fontFamily: "inherit", border: "none",
-      background: "transparent", padding: 0, height: "100%",
-    }}>
-      <div style={{
-        width: "100%", aspectRatio: "16 / 10", background: "var(--surface)",
-        overflow: "hidden", borderRadius: 4, marginBottom: 10,
-      }}>
-        <WLCover images={images} />
-      </div>
-      {kicker && (
+    <div ref={ref} style={{ position: "relative" }}>
+      <button aria-label="List options"
+        onClick={(e) => { e.stopPropagation(); e.preventDefault(); setOpen(o => !o); }}
+        style={{
+          width: 28, height: 28, borderRadius: 999, cursor: "pointer",
+          background: "var(--bg)", border: "0.5px solid var(--border)",
+          color: "var(--text1)", fontSize: 15, lineHeight: 1, fontFamily: "inherit",
+          display: "flex", alignItems: "center", justifyContent: "center",
+        }}>⋯</button>
+      {open && (
         <div style={{
-          fontSize: 10, fontWeight: 600, letterSpacing: "0.14em",
-          textTransform: "uppercase", color: "var(--text3)", marginBottom: 5,
-        }}>{kicker}</div>
+          position: "absolute", top: 32, right: 0, minWidth: 132, zIndex: 30,
+          background: "var(--bg)", border: "0.5px solid var(--border)",
+          borderRadius: 8, boxShadow: "0 6px 20px rgba(0,0,0,0.14)", overflow: "hidden",
+        }}>
+          {onRename && <button onClick={pick(onRename)} style={wlMenuItem}>Rename</button>}
+          {onDelete && <button onClick={pick(onDelete)} style={{ ...wlMenuItem, color: "#c0453d" }}>Delete</button>}
+        </div>
       )}
-      <div style={{
-        fontFamily: WL_SERIF, fontSize: isMobile ? 18 : 17, fontWeight: 500,
-        lineHeight: 1.2, color: "var(--text1)",
-        display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
-      }}>{name}</div>
-    </button>
+    </div>
+  );
+}
+
+function WLListCard({ name, images, chips, shared, isMobile, onOpen, onRename, onDelete }) {
+  const kicker = [...(chips || []), shared ? "shared" : null].filter(Boolean).join(" · ");
+  const onKey = (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(); } };
+  return (
+    <div style={{ position: "relative", height: "100%" }}>
+      <div role="button" tabIndex={0} onClick={onOpen} onKeyDown={onKey} style={{
+        display: "flex", flexDirection: "column", textAlign: "left",
+        cursor: "pointer", fontFamily: "inherit", height: "100%",
+      }}>
+        <div style={{
+          width: "100%", aspectRatio: "16 / 10", background: "var(--surface)",
+          overflow: "hidden", borderRadius: 4, marginBottom: 10,
+        }}>
+          <WLCover images={images} />
+        </div>
+        {kicker && (
+          <div style={{
+            fontSize: 10, fontWeight: 600, letterSpacing: "0.14em",
+            textTransform: "uppercase", color: "var(--text3)", marginBottom: 5,
+          }}>{kicker}</div>
+        )}
+        <div style={{
+          fontFamily: WL_SERIF, fontSize: isMobile ? 18 : 17, fontWeight: 500,
+          lineHeight: 1.2, color: "var(--text1)",
+          display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
+        }}>{name}</div>
+      </div>
+      {(onRename || onDelete) && (
+        <div style={{ position: "absolute", top: 8, right: 8 }}>
+          <WLCardMenu onRename={onRename} onDelete={onDelete} />
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -488,6 +539,14 @@ export function CollectionsTab({
     const newUrl = window.location.pathname + (qs ? `?${qs}` : "") + window.location.hash;
     const currentUrl = window.location.pathname + window.location.search + window.location.hash;
     if (newUrl === currentUrl) {
+      // Back-nav bug fix (Mark, 2026-05-28): the early-return on
+      // mount-with-no-col left `isFirstColSync` true, so the very
+      // first user drill-in did replaceState instead of pushState —
+      // collapsing the Watchlists-landing entry, so swipe-back from
+      // a list went all the way out to the previous tab (Listings).
+      // Mark this run as "consumed" so the next real user change
+      // pushes a fresh history entry.
+      isFirstColSync.current = false;
       prevColRef.current = selectedListId;
       return;
     }
@@ -1497,6 +1556,8 @@ function ListsView({
   handleShare, handleWish,
   openCollectionPicker, observeCard, onClickListing,
   startCreateCollection,
+  setEditingCollection,
+  deleteCollection,
   removeItemFromCollection,
   selectedListId, setSelectedListId,
   setManageListOpen,
@@ -1889,42 +1950,10 @@ function ListsView({
                 {rawItems.length} {rawItems.length === 1 ? "item" : "items"}
               </div>
             </div>
-            {/* Hearted-only toggle pill (PR 2026-05-22 task #9). Most
-                useful on auction-catalog lists (300+ lots → user's
-                saved subset). Hidden when there's nothing to filter
-                — Saved is all-hearted; Hidden would empty. */}
-            {!isSavedColl && !isHiddenColl && heartedCount > 0 && (
-              <button
-                onClick={() => setHeartedOnly(v => !v)}
-                title={heartedOnly
-                  ? `Show all (${rawItems.length})`
-                  : `Show only your hearted items (${heartedCount})`}
-                style={{
-                  display: "inline-flex", alignItems: "center", gap: 6,
-                  flexShrink: 0,
-                  padding: "5px 11px", borderRadius: 999,
-                  cursor: "pointer", fontFamily: "inherit",
-                  fontSize: 12, fontWeight: heartedOnly ? 600 : 500,
-                  background: heartedOnly ? "var(--brand-olive-text)" : "transparent",
-                  color: heartedOnly ? "#fff" : "var(--text2)",
-                  border: `0.5px solid ${heartedOnly ? "var(--brand-olive-text)" : "var(--border)"}`,
-                }}>
-                <svg width="11" height="11" viewBox="0 0 24 24"
-                  fill={heartedOnly ? "currentColor" : "none"}
-                  stroke="currentColor" strokeWidth="2"
-                  strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                </svg>
-                {heartedOnly ? "Hearted" : "Hearted only"}
-                <span style={{
-                  fontSize: 11, fontWeight: 500,
-                  color: heartedOnly ? "rgba(255,255,255,0.85)" : "var(--text3)",
-                  fontVariantNumeric: "tabular-nums",
-                }}>
-                  {heartedCount}
-                </span>
-              </button>
-            )}
+            {/* Hearted-only toggle relocated (Mark, 2026-05-28): it
+                used to live here in the header as a verbose pill — moved
+                to a `♡ Saved` chip at the top of the listgrid, matching
+                the standard filter-row heuristics on other tabs. */}
             {/* Screen — launches the binary skip/heart swipe over the
                 list's items (shared lists only). Sits next to the list
                 name; Share is on the right edge. */}
@@ -1985,6 +2014,20 @@ function ListsView({
                 style={{ ...actionButton({ variant: "primary" }), flexShrink: 0 }}>
                 Share
               </button>
+            )}
+            {/* Rename / delete the list, in-list (owners only) — same ⋯
+                affordance as on the landing cards (Mark). */}
+            {isOwner && !selected.isSharedInbox && setEditingCollection && (
+              <WLCardMenu
+                onRename={() => setEditingCollection({ id: selected.id, name: selected.name })}
+                onDelete={deleteCollection ? async () => {
+                  if (await confirm({
+                    title: "Delete list?",
+                    message: `"${selected.name}" will be removed. Items inside aren't deleted from your watchlist — they're just unbundled from this list.`,
+                    confirmLabel: "Delete", tone: "danger",
+                  })) { await deleteCollection(selected.id); setSelectedListId(null); }
+                } : undefined}
+              />
             )}
           </div>
         )}
@@ -2190,6 +2233,30 @@ function ListsView({
                     onClickListing={onClickListing}
                   />
                 )}
+                {/* Hearted filter — at the top of the listgrid, in the
+                    standard `♡ Saved` filter-chip style (Mark 2026-05-28). */}
+                {!isSavedColl && !isHiddenColl && heartedCount > 0 && (
+                  <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12 }}>
+                    <button
+                      onClick={() => setHeartedOnly(v => !v)}
+                      aria-pressed={heartedOnly}
+                      title={heartedOnly ? `Show all (${rawItems.length})` : `Show only your hearted items (${heartedCount})`}
+                      style={{
+                        display: "inline-flex", alignItems: "center", gap: 7,
+                        padding: "6px 14px", borderRadius: 999, cursor: "pointer",
+                        fontFamily: "inherit", fontSize: 13, fontWeight: 500,
+                        background: "transparent", color: "var(--text1)",
+                        border: `0.5px solid ${heartedOnly ? "var(--text1)" : "var(--border)"}`,
+                      }}>
+                      <svg width="14" height="14" viewBox="0 0 24 24"
+                        fill={heartedOnly ? "#e0564f" : "none"} stroke="#e0564f"
+                        strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                      </svg>
+                      Saved
+                    </button>
+                  </div>
+                )}
                 <div style={{ ...gridStyle, borderRadius: 10, overflow: "hidden" }}>
                   {listingItems.map(renderItemCard)}
                 </div>
@@ -2344,7 +2411,15 @@ function ListsView({
               chips={listFlavour(itemsByColl[c.id])}
               shared={sharedListIds.has(c.id)}
               isMobile={isMobile}
-              onOpen={() => setSelectedListId(c.id)} />
+              onOpen={() => setSelectedListId(c.id)}
+              onRename={setEditingCollection ? () => setEditingCollection({ id: c.id, name: c.name }) : undefined}
+              onDelete={deleteCollection ? async () => {
+                if (await confirm({
+                  title: "Delete list?",
+                  message: `"${c.name}" will be removed. Items inside aren't deleted from your watchlist — they're just unbundled from this list.`,
+                  confirmLabel: "Delete", tone: "danger",
+                })) await deleteCollection(c.id);
+              } : undefined} />
           ))}
           <WLStartCard isMobile={isMobile} onClick={startCreateCollection} />
         </WLCardGrid>
