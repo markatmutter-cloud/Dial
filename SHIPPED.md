@@ -316,3 +316,18 @@ within each section roughly last.
   fetch+parse on mobile (#577).
 - **2026-05-26 — Code-split AdminTab (B-22 phase 1).** `React.lazy` + Suspense
   so admin-only code leaves every public visitor's initial bundle (#579).
+- **2026-05-28 — Image resize via wsrv.nl (#646).** All dealer/auction images
+  served through the free wsrv resize CDN at display width as WebP (5 MB Loupe
+  This photos → ~40 KB); first-load payload ~198→~13 MB, desktop LCP 19→6 s.
+- **2026-05-28 — Home first-paint diet (#647).** Below-the-fold strips render
+  on scroll (`DeferUntilVisible`); first LCP image eager; `listings_desc` idle-
+  loaded; Bonhams served direct.
+- **2026-05-28 — Blob images → thumbnails (#648).** `cache_watchlist_images.mjs`
+  stores ~600 px WebP via wsrv (not full-res); one-time re-process shrank 382
+  existing blobs (storage ~242→~20 MB). Transfer, not storage, was the capped meter.
+- **2026-05-28 — Code-split AuctionCalendar + Search-all (#649, B-22 phase 2).**
+  `React.lazy` + Suspense — each its own chunk, fetched only when opened.
+- **2026-05-28 — Mobile: no auto auction-calendar popup (#650).** Desktop keeps
+  the calendar-first popup; mobile drops straight into the grid (button still opens it).
+- **2026-05-28 — Tropical Watch images served direct (#651).** TW's ~240 px
+  CloudFront source got grainy through the resizer; serve it (and Bonhams) direct.
