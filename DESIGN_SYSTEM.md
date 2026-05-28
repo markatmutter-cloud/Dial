@@ -134,6 +134,8 @@ single chrome accent (links/text-accents may still use `--brand`).
 ## Reach-for-this rules
 
 - **New button somewhere?** `actionButton` for header/toolbar; `pillBase` for filter row; `signInButton` for sign-in CTAs; `innerToggleButton` for nested sub-toggles. Don't hand-roll padding / borderRadius / colors.
+- **Selected / "on" state?** Spread `SELECTED_FILL` (olive tint + ink + hairline) — never invent a per-surface selected look. It's already baked into `pillBase` / `innerToggleButton` / `iconButton` active.
+- **Clearing filters?** ONE pattern (2026-05-28): a single `clearAllPill` (lives in the active-filters chips strip, right-aligned — NOT on the filter bar) clears everything; the per-value `dismissChipX` on each chip removes one value. **Don't add per-dimension "Clear" buttons** (the Source/Brand/Model pickers had them; removed as duplication).
 - **New modal?** `modalBackdrop` + `modalShell` + `modalTitleRow` + `modalTitle` + `modalCloseButton`. Inside the modal, use `inputBase` for form inputs.
 - **New empty / signed-out / "nothing here yet" surface?** `<EmptyState />` from `./EmptyState`. Pick the size: `compact` for in-tab emptiness, `default` for general, `tall` for top-level signed-out gates.
 - **New color?** Add a CSS var to App.js's `c` block in BOTH light and dark modes. Never inline hex.
