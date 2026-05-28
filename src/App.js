@@ -2019,6 +2019,22 @@ export default function Watchlist() {
     return m;
   }, [auctions]);
 
+  // The catalog/sale filter only applies where the sale's lots actually
+  // live: a LIVE/upcoming catalog's lots sit on the Auctions sub-tab, a
+  // CLOSED one's sold lots on Sold. On Sold a not-yet-closed catalog has
+  // zero lots, so applying the filter there just empties the grid — which
+  // makes no sense (Mark 2026-05-28). Drop the filter on Sold for any sale
+  // that isn't closed; everything downstream (grid filter, sale-context
+  // card, divider suppression) keys off this so they stay consistent.
+  const effectiveSaleUrls = useMemo(() => {
+    if (!filterSaleUrls.length) return filterSaleUrls;
+    if (listingsSubTab === "sold") {
+      const s = salesByUrl.get(filterSaleUrls[0]);
+      if (s && s.status !== "past") return [];
+    }
+    return filterSaleUrls;
+  }, [filterSaleUrls, listingsSubTab, salesByUrl]);
+
   // Saved auctions joined to their calendar entry + hero/lot-count, in
   // saved-order (added_at desc). Backs the Watchlists "Saved auctions"
   // synthetic row (Phase 3b). Sales no longer in the feed drop out.
@@ -2492,8 +2508,8 @@ export default function Watchlist() {
     // (only auction lots carry auction_url), but applying
     // unconditionally is safe — non-lot items have no auction_url
     // and would get filtered out, which matches the intent.
-    if (filterSaleUrls.length > 0) {
-      its = its.filter(i => i.auction_url && filterSaleUrls.includes(i.auction_url));
+    if (effectiveSaleUrls.length > 0) {
+      its = its.filter(i => i.auction_url && effectiveSaleUrls.includes(i.auction_url));
     }
     if (search.trim()) {
       its = its.filter(i => matchesSearch(i, search));
@@ -2561,7 +2577,7 @@ export default function Watchlist() {
       });
     }
     return its;
-  }, [mainFeedItems, filterSources, filterBrands, filterModels, filterRefs, hidden, watchlist, search, sort, minPrice, maxPrice, newDays, listingsSubTab, filterHearted]);
+  }, [mainFeedItems, filterSources, filterBrands, filterModels, filterRefs, hidden, watchlist, search, sort, minPrice, maxPrice, newDays, listingsSubTab, filterHearted, effectiveSaleUrls]);
 
   const visible = useMemo(() => allFiltered.slice(0, page * PAGE_SIZE), [allFiltered, page]);
   const hasMore = visible.length < allFiltered.length;
@@ -3550,7 +3566,12 @@ export default function Watchlist() {
     // Live grid. Sale context still gets a single header at the top when
     // you've drilled into one sale (filterSaleUrls, in listingsGridJSX).
     const useClosingBuckets  = isDateSort && tab === "listings" && listingsSubTab === "auctions";
-    if (!useFreshBuckets && !useSoldBuckets && !useClosingBuckets) {
+    // Single-catalog view: the sale-context card at the top already carries
+    // house · date · lot count, so the "Closing this month/week" (or sold-
+    // date) dividers are redundant — one sale closes on one date, and the
+    // card's count is the accurate one (Mark 2026-05-28). Render flat.
+    const singleCatalog = effectiveSaleUrls.length === 1;
+    if (singleCatalog || (!useFreshBuckets && !useSoldBuckets && !useClosingBuckets)) {
       return visible.map(it => ({ kind: "card", item: it }));
     }
     if (useClosingBuckets) {
@@ -3679,17 +3700,18 @@ export default function Watchlist() {
           per-sale section dividers: house · title · date · lot count at
           the top of that sale's filtered list (Mark spec 2026-05-26). */}
       {(listingsSubTab === "auctions" || listingsSubTab === "sold")
-        && filterSaleUrls.length === 1
-        && salesByUrl.get(filterSaleUrls[0]) && (() => {
-        const sale = salesByUrl.get(filterSaleUrls[0]);
+        && effectiveSaleUrls.length === 1
+        && salesByUrl.get(effectiveSaleUrls[0]) && (() => {
+        const sale = salesByUrl.get(effectiveSaleUrls[0]);
         // Catalog-context card (Mark 2026-05-28): an olive-tinted bleed
         // behind the title block so it reads as a distinct "you're inside
         // one catalog" view, not just the auction grid. Holds the exit +
-        // the sale's info hierarchy.
+        // the sale's info hierarchy. marginTop keeps it off the sticky
+        // filter bar (the grid sits flush otherwise — Mark).
         return (
           <div style={{
             background: "var(--brand-olive-tint-12)", borderRadius: 14,
-            padding: "13px 16px 15px", marginBottom: 14,
+            padding: "13px 16px 15px", marginTop: 12, marginBottom: 14,
           }}>
             {/* "Exit catalog" — the always-visible way out of a single-sale
                 view (2026-05-28). The only prior exit was the filter row's
