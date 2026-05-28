@@ -3666,16 +3666,35 @@ export default function Watchlist() {
         && salesByUrl.get(filterSaleUrls[0]) && (() => {
         const sale = salesByUrl.get(filterSaleUrls[0]);
         return (
-          <div style={{ padding: "2px 2px 14px" }}>
-            <div style={{ fontSize: 11, color: "var(--text3)", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}>
-              {sale.house}
+          <div style={{ padding: "2px 2px 14px", display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+            <div style={{ minWidth: 0 }}>
+              <div style={{ fontSize: 11, color: "var(--text3)", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}>
+                {sale.house}
+              </div>
+              <div style={{ fontSize: 19, fontWeight: 600, color: "var(--text1)", lineHeight: 1.2, marginTop: 2 }}>
+                {sale.title}
+              </div>
+              <div style={{ fontSize: 13, color: "var(--text2)", marginTop: 3 }}>
+                {fmtSaleDateRange(sale)}{sale.location ? ` · ${sale.location}` : ""} · {allFiltered.length} lots
+              </div>
             </div>
-            <div style={{ fontSize: 19, fontWeight: 600, color: "var(--text1)", lineHeight: 1.2, marginTop: 2 }}>
-              {sale.title}
-            </div>
-            <div style={{ fontSize: 13, color: "var(--text2)", marginTop: 3 }}>
-              {fmtSaleDateRange(sale)}{sale.location ? ` · ${sale.location}` : ""} · {allFiltered.length} lots
-            </div>
+            {/* Always-visible exit from a single-sale view (2026-05-28). The
+                only prior way out was the filter row's "× Clear all", which on
+                mobile sits at the end of an overflow-scroll row and can scroll
+                off-screen — leaving the user stuck filtered into a sale. This
+                clears just the sale (not every filter) and is reachable on both
+                shells since it lives in the grid header, not the chrome. */}
+            <button onClick={() => setFilterSaleUrls([])}
+              title="Show all lots" aria-label="Clear sale filter"
+              style={{
+                flexShrink: 0, display: "inline-flex", alignItems: "center", gap: 5,
+                cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap",
+                fontSize: 13, fontWeight: 600, padding: "6px 12px", borderRadius: 999,
+                border: "none", outline: "none", background: "transparent",
+                color: "var(--brand)", boxShadow: "inset 0 0 0 0.5px var(--brand)",
+              }}>
+              ✕ Clear
+            </button>
           </div>
         );
       })()}

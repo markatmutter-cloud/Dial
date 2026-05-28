@@ -456,17 +456,17 @@ export function MobileShell(props) {
               Saved
             </button>
           )}
-          {/* Auction calendar launcher (Phase 4) — on the filter row,
-              brand-olive prominent. Opens the calendar modal (the
-              sale-picker). Auction surfaces only. */}
+          {/* Auction calendar launcher (Phase 4) — on the filter row.
+              Styled as a filter pill (was prominent brand-olive; 2026-05-28
+              Mark wanted it consistent with the filter-line pills). Opens the
+              calendar modal (the sale-picker); the active sale shows in the
+              grid's sale-context header, with its own Clear there. Auction
+              surfaces only. */}
           {tab === "listings" && (listingsSubTab === "auctions" || listingsSubTab === "sold") && onOpenCalendar && (
             <button onClick={onOpenCalendar} title="Browse the auction calendar"
               style={{
+                ...pillBase(false),
                 display: "inline-flex", alignItems: "center", gap: 5, flexShrink: 0,
-                cursor: "pointer", fontFamily: "inherit",
-                fontSize: 13, fontWeight: 600, letterSpacing: "0.02em",
-                padding: "7px 13px", borderRadius: 999,
-                border: "none", background: "var(--brand-olive)", color: "#fff",
                 whiteSpace: "nowrap",
               }}>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -475,7 +475,7 @@ export function MobileShell(props) {
                 <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
                 <line x1="3" y1="10" x2="21" y2="10"/>
               </svg>
-              Calendar
+              Auctions
             </button>
           )}
           {/* Compact "clear filters" — just a small × icon to keep the
