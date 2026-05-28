@@ -202,7 +202,7 @@ export function MobileShell(props) {
             msOverflowStyle: "none",
             flex: 1, minWidth: 0,
           }}>
-            {[["listings", "Listings"], ["watchlist", "Watchlists"], ["references", "Collecting"]].map(([key, label]) => {
+            {[["listings", "Watches"], ["watchlist", "Lists"], ["references", "Collecting"]].map(([key, label]) => {
               const active = tab === key;
               // Always on olive here (the sticky chrome only renders when
               // tab !== "home"), so active = white, inactive = faded white.

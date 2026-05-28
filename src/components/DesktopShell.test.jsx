@@ -15,13 +15,14 @@ describe("DesktopShell", () => {
     expect(watchlistButtons.length).toBeGreaterThanOrEqual(1);
   });
 
-  test("renders the three main tabs (Listings / Watchlists / Collecting)", () => {
+  test("renders the three main tabs (Watches / Lists / Collecting)", () => {
     render(<DesktopShell {...buildMockShellProps()} />);
-    expect(screen.getByText("Listings")).toBeInTheDocument();
+    expect(screen.getAllByText("Watches").length).toBeGreaterThanOrEqual(1);
     // 2026-05-14 IA pass: Share tab retired, Learn renamed to
-    // "Collecting" (verb framing). Three pills: Listings /
-    // Watchlists / Collecting.
-    expect(screen.getByText("Watchlists")).toBeInTheDocument();
+    // "Collecting" (verb framing). 2026-05-28: top-tab labels renamed
+    // Listings→Watches, Watchlists→Lists (labels only; internal keys
+    // unchanged). Three pills: Watches / Lists / Collecting.
+    expect(screen.getAllByText("Lists").length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText("Collecting")).toBeInTheDocument();
     // Collections is no longer a top-level tab pill.
     expect(screen.queryByText("Collections")).not.toBeInTheDocument();
