@@ -491,7 +491,7 @@ export function DesktopShell(props) {
   })();
 
   return (
-    <div style={{ ...baseStyle, display: "flex", flexDirection: "column", height: "100vh", overflow: "hidden" }}>
+    <div style={{ ...baseStyle, position: "relative", display: "flex", flexDirection: "column", height: "100vh", overflow: "hidden" }}>
       {/* Full-width top bar — PR_ε2 2026-05-22: olive chrome on every
           non-Home tab. Mirrors the mobile chrome zone (PRs #445/#446)
           and threads the brand color through the desktop nav band. On
@@ -528,15 +528,22 @@ export function DesktopShell(props) {
         const minimalTopBar = tab === "home" && !anyShareActive && !searchAllActive;
         return (
         <div style={{ display: "flex", alignItems: "center", gap: 10,
-                      // Tighter vertical padding on the minimal Home bar so
-                      // the moonphase/hero below sits closer to the top
-                      // (Mark 2026-05-28: too much white above the moonphase).
                       padding: minimalTopBar ? "6px 20px" : "10px 20px",
                       // No border on Home — keeps the top of the
                       // page clean (no visible bar above the hero).
                       borderBottom: onOlive ? "none" : (minimalTopBar ? "none" : "0.5px solid var(--border)"),
                       background: onOlive ? "var(--brand-olive)" : "transparent",
-                      flexShrink: 0 }}>
+                      // Home: float the bar (just About + M, top-right) as an
+                      // absolute OVERLAY so it doesn't consume vertical space —
+                      // the content pane + moonphase then start at the very top
+                      // and the moon is no longer clipped behind the bar
+                      // (Mark 2026-05-28). Centered hero vs right-aligned pill
+                      // = no collision. z above the hero so the pill stays
+                      // clickable over the white hero area.
+                      ...(minimalTopBar
+                        ? { position: "absolute", top: 0, right: 0, zIndex: 40 }
+                        : { flexShrink: 0 }),
+                    }}>
         {/* Top wordmark hidden on Home (editorial hero in body is the
             brand mark there) AND on the minimal Home top bar. */}
         {onOlive && !minimalTopBar && (

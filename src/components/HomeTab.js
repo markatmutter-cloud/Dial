@@ -958,12 +958,10 @@ export function HomeTab(props) {
       // jumps up and right" — perceived as motion because Watchbox
       // flipped from white-context to olive-context).
       paddingTop: isMobile ? "env(safe-area-inset-top, 0px)" : 0,
-      // Desktop: pull the hero up into the (transparent, borderless) minimal
-      // top bar so the centered moonphase sits roughly level with the
-      // right-aligned About/M pill — reclaims the white gap above it so more
-      // watch cards show (Mark 2026-05-28). Centered hero vs right pill =
-      // no collision. Tune the amount on the preview if needed.
-      marginTop: isMobile ? 0 : -28,
+      // Hero sits at the very top now: the minimal Home top bar (About/M)
+      // is an absolute overlay (DesktopShell), so it no longer pushes the
+      // moonphase down. (The earlier -28 marginTop clipped the moonphase
+      // against the scroll pane's top edge — Mark 2026-05-28.)
     }}>
       <EditorialHero isMobile={isMobile} dark={dark} />
       {/* Masthead nav block — PR 2026-05-22 (Mark γ). The persistent
