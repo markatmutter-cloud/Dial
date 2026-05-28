@@ -12,6 +12,11 @@ on:
     # morning without hammering the houses' sites.
     - cron: '0 6 * * *'
   workflow_dispatch:
+    inputs:
+      reprocess_thumbnails:
+        description: "One-time: shrink existing cached blob images to ~600px WebP thumbnails"
+        type: boolean
+        default: false
 
 jobs:
   scrape:
@@ -98,6 +103,9 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+          # One-time backfill flag (workflow_dispatch input). Scheduled runs
+          # leave it empty, so the re-process only runs when manually triggered.
+          REPROCESS_THUMBNAILS: ${{ github.event.inputs.reprocess_thumbnails }}
         run: node cache_watchlist_images.mjs
 
       - name: Move CSVs to data folder
