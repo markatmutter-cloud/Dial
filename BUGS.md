@@ -43,9 +43,13 @@ BUGS as memories: chrome-unification, card-design-system.*
 **⭐ IA Redesign — phase status (the BIG plan; full detail [docs/IA_REDESIGN.md](docs/IA_REDESIGN.md)).
 Kept here, above the small B-xx items, so the headline work never gets lost in the noise:**
 - ✅ **Phase 0** — Listings/Auctions restructure (calendar modal + Bonhams) — shipped.
-- 🟡 **Phase 1 — Watchlists "living dossier"** (the keystone) — composable blocks +
-  data model + notes SHIPPED (#628). **Needs visual polish ("looks crappy").** Watchbox-as-
-  anchor (1c) not done.
+- 🟢 **Phase 1 — Watchlists "living dossier"** (the keystone) — unified single-scroll tab
+  SHIPPED + polished (**B-08**, #638–#644): Watchbox anchor · unified Saved (type filter) ·
+  article-style cover cards on the shared CardStrip · Saved searches · rename/delete (cards +
+  in-list) · back-nav fix · favicon image fallback. Composable blocks shipped #628.
+  **Remaining (crisp follow-ups):** share-modal refresh · empty-list onboarding (+Listings/
+  +Articles blocks · title-seeded `+`) · note save-state · promote-hero cover (1 migration) ·
+  signed-out 5512/13 starter · **B-37** (heart from articles/refs) · Watchbox-page echoes the landing.
 - 🟡 **Reference browsing** (Brand › Model line › Reference, pulled forward) — structure
   SHIPPED (#627). **Needs visual polish.**
 - 🔴 **Phase 2** — dispatch layers on every tab + de-junk Collecting + tools shelf — NOT
@@ -65,7 +69,7 @@ in-app since Claude can't run the app here.*
 - **What remains (the only open slice):** collaborative per-person visibility on shared lists when the team re-adds it. Not a current defect — a future feature. Connects to [[feedback-screening-mode-surfaces]] and [[project_auction_tab_redesign]] (Phase 3 heart-an-auction / Phase 4 integrated tab).
 
 ### B-08 — Unify the Watchlists tab into one sectioned screen (design thread → plan-mode)
-- **Reported:** 2026-05-24 · **Type:** Design/product thread, **not** a defect · **Severity:** — (needs plan) · **Surface:** Watchlists tab (UI "Watchlists"/"Saved") · **Status:** Open — flagged for plan-mode
+- **Reported:** 2026-05-24 · **Type:** Design/product thread, **not** a defect · **Surface:** Watchlists tab (UI "Watchlists"/"Saved") · **Status:** ✅ **SHIPPED #638–#644** — unified single-scroll tab (Watchbox anchor · unified Saved w/ type filter · article-style cover cards · Saved searches · rename/delete · shared CardStrip) + live polish. Remaining crisp follow-ups tracked in the **phase tracker above** (share-modal · empty-list onboarding · note save-state · promote-hero cover · signed-out starter · B-37 · Watchbox-page).
 - **Detail:** The Watchlists tab currently has **two sub-tabs** (Lists +
   Searches). Mark's idea: **integrate them into one screen** with **sections**
   rather than a plain list — **cards on mobile**, and **make more of the width
@@ -81,9 +85,6 @@ in-app since Claude can't run the app here.*
 
 ### B-14 — BRAND.md review (Plan thread)
 - **Reported:** 2026-05-24 (`Plan:`) · **Type:** Plan-mode thread, not a bug · **Status:** Queued for a coming session. Mark wants a review of `BRAND.md` (voice/brand). Pairs naturally with the card design system's "breathing-space & brand impact" dial — brand voice + visual brand expression. Surface at a replanning step.
-
-### B-36 — Hearted items are scattered across Listings/Auctions/Sold (can't find "what I saved")
-- **Reported:** 2026-05-27 (Mark's wife, real user test) · **Type:** Usability / save-tangle · **Severity:** 2 (discoverability) · **Surface:** Watchlists tab · **Status:** Being addressed by **B-08** (the unified Watchlists landing). A user hearted an item and couldn't find it again — hearts live in three separate buckets (Saved listings / Saved auctions / Saved sold), with no single "everything I saved" view. The B-08 build folds them into **one unified "Saved" view with an All · Watches · Articles · Sold type filter**. Close when B-08 ships; verify the wife's flow (heart → find it) lands.
 
 ### B-37 — Can't heart / add-to-list from article or reference pages (dossier input side)
 - **Reported:** 2026-05-27 (Mark's wife, real user test + Mark) · **Type:** Feature gap / save-tangle · **Severity:** 2 · **Surface:** article page (`EditorialView`/article detail) + `ReferencePage` · **Status:** Open — **immediate fast-follow PR after B-08** (Mark wants it). Today only listings can be hearted; articles and reference guides have no heart / "add to list" affordance from where you encounter them. But the dossier (Phase 1) is meant to hold articles + reference guides + watches, so you must be able to **save them at the point of reading**. Add a heart / add-to-list control on the article detail + reference node pages, routing through the existing collection-picker (`openCollectionPicker`) + the `listing_snapshot.kind = 'article'` / reference-node patterns. Different files from B-08 → its own branch.
@@ -194,6 +195,18 @@ install/decision tails remaining.*
 ---
 
 ## Resolved
+
+### B-36 — Hearted items scattered across Listings/Auctions/Sold · Fixed #638
+- A real-user test (Mark's wife) hearted an item and couldn't find it — hearts lived in
+  three separate buckets with no "everything I saved" view. B-08's unified Watchlists
+  landing folds them into one **Saved** band with an All · Watches · Articles · Sold ·
+  Auctions type filter (later rebuilt on the shared CardStrip, #644).
+
+### B-38 — Watchlists image tiles showed the browser's broken-image "?" · Fixed #641/#644
+- The bespoke landing tiles used bare `<img>` with no fallback, so failed/blocked photos
+  rendered the raw "?". Fixed by routing tiles through the app's `imgSrc` + `/favicon-192.png`
+  fallback (matching `CardShell.CardImage`); the Saved band then moved to the shared
+  `CardStrip`/`Card` so it inherits that handling for free.
 
 ### B-21 — Service-worker JSON regex out of sync with post-split feed filenames · Fixed #580
 - The SW's `isJsonData()` matched only the pre-split filenames, so the live/sold

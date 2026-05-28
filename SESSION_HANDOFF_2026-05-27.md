@@ -1,72 +1,66 @@
-# Watchlist — Session Handoff (2026-05-27, IA redesign plan graduated)
+# Watchlist — Session Handoff (2026-05-27, Phase 1 / B-08 build + polish marathon)
 
 Conventions: [CLAUDE.md](CLAUDE.md). Direction: [ROADMAP.md](ROADMAP.md).
-History: [SHIPPED.md](SHIPPED.md). Backlog: [BUGS.md](BUGS.md). **IA build brief:
-[docs/IA_REDESIGN.md](docs/IA_REDESIGN.md).** Prior handoff (screening collapse +
-auction redesign) archived to
-`archive/SESSION_HANDOFF_2026-05-27-screening-auction.md`.
+History: [SHIPPED.md](SHIPPED.md). Backlog: [BUGS.md](BUGS.md). IA brief:
+[docs/IA_REDESIGN.md](docs/IA_REDESIGN.md); dossier spec:
+[docs/WATCHLISTS_DOSSIER_SPEC.md](docs/WATCHLISTS_DOSSIER_SPEC.md). Prior
+(IA-build-marathon) handoff superseded — recoverable via git (commit 86b072c).
 
-## TL;DR — the IA/UX redesign plan is now filed + official
-A plan-mode thinking session designed the site's IA/UX redesign, but a terminal
-crash lost the plan-mode buffer before it could be filed. Mark re-pasted the plan
-+ transcript; this session **graduated it into the doc system** (Deliverable 3 of
-the plan). Branch `ia-redesign-plan-graduation` (docs-only, off `main`) — **no app
-code touched**.
+## TL;DR — Phase 1 keystone shipped + a long live-polish iteration
+Built **B-08 — the unified Watchlists tab** (the *real* Phase 1: Lists + Searches
+collapsed into one rich single-scroll landing), then iterated hard on look-and-feel
+with Mark live-testing. **7 PRs merged (#638–#644), all in `main`, CI green, no open PRs.**
 
-## What landed this session (all docs)
-- **`docs/IA_REDESIGN.md`** — the canonical plan, saved verbatim (three-speeds
-  model, dossier keystone, Watchbox/planning resolution, dispatch layer, reference
-  drill-down, wireframes, AI prompts, phases, migration landmines). This is the
-  build brief for the next sessions.
-- **BUGS.md** — flat `B-NN` list restructured into **Epic A (IA/UX: B-06, B-08,
-  B-14) · Epic B (Platform Health: B-16, B-18, B-19, B-20, B-22, B-27) · Epic C
-  (Auctions & Scraping: B-23, B-24, B-25) · One-off (B-26)**, + the **clean-close
-  rule** at the top.
-- **ROADMAP.md** — added **Epic 9: IA / UX redesign** + a priority-intro paragraph
-  anchoring it to the doc.
-- **CLAUDE.md** — added the **clean-close rule** (Close protocol) + a
-  dispatch-layer clause on the existing cross-surface-consistency rule. (2438 →
-  still well under budget.)
-- **Memory** — 4 new files: `project_ia_redesign`, `project_watchlists_dossier_keystone`,
-  `project_watchbox_planning`, `feedback_tempo_not_label` (+ MEMORY.md index).
+## What shipped (all merged to main)
+- **#638 — B-08 unified Watchlists landing.** One scroll, no sub-tabs: Watchbox
+  anchor · unified Saved (All/Watches/Articles/Sold/Auctions filter) · cover-image
+  list cards · Saved searches section · Shared. Pills retired; legacy `?sub=` coerced
+  to the landing; `useSearches` already in App (no #310 risk). `WatchlistTab` kept as a
+  (now-unused) rollback hatch.
+- **#639–#644 — landing polish:** magazine look-and-feel · article-style list cards
+  (borderless, 16/10 cover, kicker, serif title) · favicon image fallback (**B-38**) ·
+  Watchbox demoted to a **slim link** with hearted/Saved leading · bigger tiles ·
+  distinct in-list header (tinted banner + breadcrumb + count) · **drill-in back-nav
+  fix** (was replaceState-not-pushState on first drill-in) · list **rename/delete**
+  (⋯ on cards + in-list) · hearted **"♡ Saved" filter chip** at top of listgrid ·
+  Saved band rebuilt on the **shared `CardStrip` + `Card`** (standard size, like Home).
+- **Docs recovery:** the prior session's SHIPPED entries (Epic 9 / IA redesign) were
+  stranded in unmerged commit 86b072c — recovered into `main`'s SHIPPED this close.
 
-## The model (one screen)
-Organize the 3 tabs by **tempo, not data type** (tempo = rationale, never a UI
-label — tabs stay nouns):
-- **Listings (fast)** — encounter the market: one dense grid, cut by new/price/brand/house.
-- **Watchlists (medium)** — the "living dossier" keystone (lists mixing ref guide +
-  live saved search + listings + comps + shortlist + articles + notes); Watchbox =
-  elevated anchor list. Learning tool, not a shopping cart.
-- **Collecting (slow)** — explore-watches + develop-as-a-collector, AI spine (RAG ·
-  coach · missed-it); Brand › Model › Reference drill-down above the 5512/5513 leaf.
-- **Dispatch layer** (one shared component) on every tab = the clarity mechanism.
-  **Planning** = one experience, two doors. **Screening** = a mode, not a tab.
+## ⭐ NEXT PICKUP — remaining Watchlists work (Mark's priority order)
+**List mgmt:** 1) **share-modal refresh** (→ brand green, easier flow — Mark flagged it
+dated/blue) · 2) **empty-list onboarding** (+Listings/+Articles block kinds · title-seeded
+`+` suggestions) · 3) **note save-state** affordance (clear "saved" signal on dossier notes).
+**Other Watchlists/dossier:** Watchbox **page echoes the landing** (slow-speed surface) ·
+**promote-a-hero cover** (user picks a list's cover — needs one small additive `collections`
+migration) · **exciting signed-out state + deletable 5512/13 starter** · **B-37: heart from
+article + reference pages** (the dossier's input side; explored, branch not built).
+**Parked (later):** conversational **concierge AI** (Mark's DB4/RailMaster pulse → Phase 3,
+voice in memory [[watchlists-pulse]]) · **dossier collaboration** (attribution/edit — Mark:
+fine for now) · better saved-search UI · revolving recently-hearted hero.
 
-## ⭐ NEXT PICKUP — Phase 1: Watchlists living dossier (the keystone)
-Phase 0 (Listings/auctions restructure + Bonhams) shipped #612–621. The next build
-is **Phase 1**, the only genuinely-new capability:
-- **1a — spec + data model** (start here): the dossier = ordered typed sections
-  (reference guide · live saved search · live listings · sold comps · shortlist ·
-  articles · notes). Map each to existing storage (`watchlist_items`,
-  `collection_items`, `saved_searches`, editorial) + the ONE new type (free-text
-  notes → new column/table). Decide the live-saved-search re-run mechanism.
-- **1b** dossier container UI · **1c** Watchbox anchor · **1d** notes.
-Sequencing principle: build the capability before the dispatch layer that advertises
-it. See docs/IA_REDESIGN.md for wireframes + the full phase plan.
+## Bigger picture (ROADMAP/BUGS, untouched today)
+Phase 2 (dispatch layers · de-junk Collecting · tools shelf) · Phase 3 (AI spine: RAG /
+coach / missed-it · two-door planning · recommender) · reference-browse polish · Epic B
+platform-health (B-16/18/19/20/22/27/34) · Epic C auctions (B-23/24/25/28) · one-offs
+(B-26 grid leak · B-29 Sold→Auctions · B-31 strip alignment).
 
-## Knock-off-before-the-build (from the plan's priority)
-Cheap correctness/hygiene wins, independent + low-risk: **B-18** FX drift · **B-26**
-grid leak · **B-20** scraper rename. Defer **B-22** code-split (don't optimize App.js
-you're about to rewrite) + **B-16** JS lockfile (needs a Node env) to after.
-
-## Open state
-- This branch is **docs-only, not yet pushed/merged.** Per the plan, push/merge is
-  the last Deliverable-3 step — confirm with Mark before pushing.
-- Auction cover-image scraping for the remaining 5 houses is still open (Christie's
-  shipped #619; merge.py plumbing done) — see ROADMAP NEXT #6.
-- Other carried threads unchanged: B-25 launchd install, Heritage API, Phillips essays.
+## Process notes / loose ends
+- **Branch discipline (lesson):** I orphaned pass-3 by pushing follow-ups onto an
+  already-merged PR branch (recovered as #641 via re-branch off `main` + cherry-pick).
+  Rule reinforced: **branch fresh off `main` per pass; never push onto a branch whose PR
+  may already be merged.** Mark merges fast — sequence: build → push ready → he merges → re-branch.
+- **`FB:` prefix (new, in memory):** Mark's design-review burst marker = **hold, don't
+  react/repivot until he says go**; stronger than `FYI`. Saved to [[feedback_message_prefixes]].
+- **Serif vs sans rule:** serif = editorial *reading* (articles, reference pages); sans =
+  functional/UI (Listings, Watchlists, filters). Recorded in DESIGN_SYSTEM.
+- **Stranded local branches to delete** (all merged or dead): `watchlists-navfeel` (#642),
+  `lists-rename-delete` (#643), `saved-band-cardstrip` (#644), `session-close-2026-05-27-ia-build`
+  (holds the recovered-from 86b072c), `session-close-2026-05-27`, `session-handoff-next`.
+  Pre-existing non-session: `bk-bonhams-curlcffi-*`, `fix-screening-auction-copy-b02`.
 
 ## Bottom line
-The IA/UX redesign is no longer trapped in a lost plan-mode buffer — it's a
-canonical doc, a ROADMAP epic, an organized backlog, and memory. Next real work:
-Phase 1a (the Watchlists dossier data model). Push the docs branch when Mark's ready.
+Phase 1's keystone (the unified, polished Watchlists tab) is live and CI-green. Visual
+polish is the recurring gap — best done with Mark live (the tab is auth-gated, so he
+merges-to-see; the preview loop is slow). Next: the list-mgmt trio, then the dossier
+input side (B-37) and the AI spine.
