@@ -107,16 +107,6 @@ function listLastActivity(c, items) {
 
 const wlIsSold = (it) => !!(it && (it.sold || it.soldDate || it.soldPrice != null));
 
-// A small neutral chip (editorial, quiet — not colored noise).
-function WLChip({ children }) {
-  return (
-    <span style={{
-      fontSize: 11, color: "var(--text2)", lineHeight: 1.4,
-      border: "0.5px solid var(--border)", borderRadius: 999,
-      padding: "1px 8px", whiteSpace: "nowrap",
-    }}>{children}</span>
-  );
-}
 
 // Section band — kicker eyebrow + optional serif title + top rule +
 // generous gap, mirroring ReferencePage's Section chrome.
@@ -157,10 +147,12 @@ function WLImg({ src, alt = "", style, fit = "cover" }) {
   if (bad) {
     return (
       <div aria-hidden style={{
-        ...style, background: "var(--surface, var(--bg))",
+        ...style, background: "var(--surface)",
         display: "flex", alignItems: "center", justifyContent: "center",
-        color: "var(--text3)", fontSize: 16,
-      }}>⌚</div>
+      }}>
+        <img src="/favicon-192.png" alt="" aria-hidden="true"
+          style={{ width: "40%", maxWidth: 56, opacity: 0.5 }} />
+      </div>
     );
   }
   return (
@@ -170,29 +162,19 @@ function WLImg({ src, alt = "", style, fit = "cover" }) {
   );
 }
 
-// Cover collage — 1 hero or a 2×2 grid of item images; placeholder if none.
-function WLCover({ images, height }) {
+// Cover collage that FILLS its parent box (parent owns the aspect ratio).
+// 0-1 image fills; 2-4 form a tight grid. Empty → favicon placeholder.
+function WLCover({ images }) {
   const imgs = (images || []).slice(0, 4);
-  const base = {
-    height, borderRadius: 10, overflow: "hidden",
-    border: "0.5px solid var(--border)",
-  };
-  if (imgs.length === 0) {
-    return <div style={{
-      ...base, display: "flex", alignItems: "center", justifyContent: "center",
-      background: "var(--bg)", color: "var(--text3)", fontSize: 22,
-    }}>📂</div>;
-  }
-  if (imgs.length === 1) {
-    return <div style={base}>
-      <WLImg src={imgs[0]} style={{ width: "100%", height: "100%" }} />
-    </div>;
+  if (imgs.length <= 1) {
+    return <WLImg src={imgs[0]} style={{ width: "100%", height: "100%" }} />;
   }
   return (
     <div style={{
-      ...base, display: "grid", gridTemplateColumns: "1fr 1fr",
+      width: "100%", height: "100%", display: "grid",
+      gridTemplateColumns: "1fr 1fr",
       gridTemplateRows: imgs.length > 2 ? "1fr 1fr" : "1fr", gap: 1,
-      background: "var(--border)",
+      background: "var(--surface)",
     }}>
       {imgs.map((src, i) => (
         <WLImg key={i} src={src} style={{ width: "100%", height: "100%" }} />
@@ -201,29 +183,34 @@ function WLCover({ images, height }) {
   );
 }
 
-// A list rendered as a cover-image card (the visual hero of the screen).
+// A list rendered like the EDITORIAL article cards (Mark's reference):
+// borderless, floats on the page, 16/10 cover on top, uppercase kicker
+// (the flavour), serif title. No box/border.
 function WLListCard({ name, images, chips, shared, isMobile, onOpen }) {
+  const kicker = [...(chips || []), shared ? "shared" : null].filter(Boolean).join(" · ");
   return (
     <button onClick={onOpen} style={{
-      textAlign: "left", cursor: "pointer", fontFamily: "inherit",
-      border: "0.5px solid var(--border)", borderRadius: 12,
-      background: "var(--bg)", padding: 0, overflow: "hidden",
-      display: "flex", flexDirection: "column",
+      display: "flex", flexDirection: "column", textAlign: "left",
+      cursor: "pointer", fontFamily: "inherit", border: "none",
+      background: "transparent", padding: 0, height: "100%",
     }}>
-      <WLCover images={images} height={isMobile ? 100 : 120} />
-      <div style={{ padding: "9px 11px 11px" }}>
-        <div style={{
-          fontSize: 14, fontWeight: 600, color: "var(--text1)",
-          lineHeight: 1.25, overflow: "hidden", textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        }}>{name}</div>
-        {(chips && chips.length) || shared ? (
-          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 7 }}>
-            {(chips || []).map((c, i) => <WLChip key={i}>{c}</WLChip>)}
-            {shared ? <WLChip>shared</WLChip> : null}
-          </div>
-        ) : null}
+      <div style={{
+        width: "100%", aspectRatio: "16 / 10", background: "var(--surface)",
+        overflow: "hidden", borderRadius: 4, marginBottom: 10,
+      }}>
+        <WLCover images={images} />
       </div>
+      {kicker && (
+        <div style={{
+          fontSize: 10, fontWeight: 600, letterSpacing: "0.14em",
+          textTransform: "uppercase", color: "var(--text3)", marginBottom: 5,
+        }}>{kicker}</div>
+      )}
+      <div style={{
+        fontFamily: WL_SERIF, fontSize: isMobile ? 18 : 17, fontWeight: 500,
+        lineHeight: 1.2, color: "var(--text1)",
+        display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
+      }}>{name}</div>
     </button>
   );
 }
@@ -259,61 +246,23 @@ function WLCardGrid({ isMobile, children }) {
   );
 }
 
-// Watchbox card — the bold anchor in the top row. Bold SANS title (serif
-// is reserved for editorial reading surfaces), watch images CONTAINED on
-// the tint so they aren't beheaded, stats + an explicit "Open the box →".
-function WLWatchboxHero({ counts, covers, isMobile, onOpen }) {
-  const imgs = (covers || []).map(wlItemImg).filter(Boolean).slice(0, isMobile ? 4 : 5);
+// Watchbox = a slim LINK, not a main card. It's the slow-speed surface
+// (rarely opened); Mark wants the medium-speed hearted content to lead,
+// so the Watchbox is demoted to a quiet one-line link to its full page.
+function WLWatchboxLink({ counts, onOpen }) {
   const stats = [
-    { n: counts.owned, label: "owned" },
-    { n: counts.wishlist, label: "wishlist" },
-    { n: counts.sold, label: "sold" },
-  ].filter((s) => s.n);
+    counts.owned ? `${counts.owned} owned` : null,
+    counts.wishlist ? `${counts.wishlist} wishlist` : null,
+    counts.sold ? `${counts.sold} sold` : null,
+  ].filter(Boolean).join(" · ");
   return (
     <button onClick={onOpen} aria-label="Open my Watchbox" style={{
-      width: "100%", height: "100%", textAlign: "left", cursor: "pointer", fontFamily: "inherit",
-      border: "0.5px solid var(--border)", borderRadius: 16,
-      background: "var(--brand-olive-tint-12, var(--bg))",
-      padding: 0, overflow: "hidden", display: "flex", flexDirection: "column",
+      display: "inline-flex", alignItems: "baseline", gap: 9, cursor: "pointer",
+      fontFamily: "inherit", border: "none", background: "transparent", padding: 0,
     }}>
-      {imgs.length > 0 && (
-        <div style={{ display: "flex", height: isMobile ? 92 : 116, gap: 1 }}>
-          {imgs.map((src, i) => (
-            <div key={i} style={{ flex: 1, minWidth: 0, padding: isMobile ? 8 : 10 }}>
-              <WLImg src={src} fit="contain" style={{ width: "100%", height: "100%" }} />
-            </div>
-          ))}
-        </div>
-      )}
-      <div style={{
-        display: "flex", alignItems: "center", gap: 14, flex: 1,
-        padding: isMobile ? "14px 16px" : "16px 20px",
-      }}>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{
-            fontSize: isMobile ? 19 : 22, fontWeight: 800,
-            color: "var(--text1)", lineHeight: 1.1, letterSpacing: "-0.01em",
-          }}>My Watchbox</div>
-          <div style={{ display: "flex", gap: 14, marginTop: 8, flexWrap: "wrap" }}>
-            {stats.length ? stats.map((s, i) => (
-              <span key={i}>
-                <strong style={{ fontSize: isMobile ? 15 : 16, fontWeight: 700, color: "var(--text1)" }}>{s.n}</strong>
-                <span style={{
-                  marginLeft: 5, fontSize: 10.5, fontWeight: 600, textTransform: "uppercase",
-                  letterSpacing: "0.08em", color: "var(--text3)",
-                }}>{s.label}</span>
-              </span>
-            )) : (
-              <span style={{ fontSize: 13, color: "var(--text2)" }}>Your owned, wishlist &amp; sold watches</span>
-            )}
-          </div>
-        </div>
-        <span style={{
-          flexShrink: 0, fontSize: 12.5, fontWeight: 600, whiteSpace: "nowrap",
-          color: "var(--brand-olive-text)", border: "0.5px solid var(--brand-olive-text)",
-          borderRadius: 999, padding: "8px 15px",
-        }}>View your collection →</span>
-      </div>
+      <span style={{ fontSize: 14, fontWeight: 700, color: "var(--text1)" }}>My Watchbox</span>
+      {stats && <span style={{ fontSize: 12.5, color: "var(--text3)" }}>{stats}</span>}
+      <span style={{ fontSize: 12.5, fontWeight: 600, color: "var(--brand-olive-text)" }}>View →</span>
     </button>
   );
 }
@@ -697,7 +646,6 @@ export function CollectionsTab({
           wishlist: hardWishlist ? (itemsByColl[hardWishlist.id] || []).length : 0,
           sold: hardSold ? (itemsByColl[hardSold.id] || []).length : 0,
         }}
-        watchboxCovers={hardOwned ? (itemsByColl[hardOwned.id] || []) : []}
         savedSearchStats={savedSearchStats}
         searchEditor={searchEditor}
         setSearchEditor={setSearchEditor}
@@ -1571,7 +1519,6 @@ function ListsView({
   isMobile,
   goToWatchbox,
   watchboxCounts = { owned: 0, wishlist: 0, sold: 0 },
-  watchboxCovers = [],
   savedSearchStats = [],
   startAddSearch,
   startEditSearch,
@@ -2346,19 +2293,12 @@ function ListsView({
           jump-to + where-am-i, NOT content-swapping sub-tabs (Mark). */}
       <WLSectionNav sections={wlNavSections} active={activeSection} onJump={goToSection} />
 
-      {/* Compact descriptor — one subtle line, not a masthead. */}
-      <p style={{
-        fontSize: 13, lineHeight: 1.5, color: "var(--text3)",
-        margin: isMobile ? "12px 0 0" : "14px 0 0", maxWidth: 620,
-      }}>
-        Your watch notebook — saved watches, articles, searches, auctions, prices &amp; notes for anything you're into.
-      </p>
-
-      {/* Watchbox — the bold anchor (full width). */}
+      {/* Watchbox demoted to a slim LINK (slow-speed). No intro text
+          (Mark: "looks worse for having it"). The medium-speed hearted
+          content leads as the hero below. */}
       {user && goToWatchbox && (
-        <div style={{ marginTop: isMobile ? 14 : 18 }}>
-          <WLWatchboxHero counts={watchboxCounts} covers={watchboxCovers}
-            isMobile={isMobile} onOpen={goToWatchbox} />
+        <div style={{ margin: isMobile ? "12px 0 0" : "14px 0 0" }}>
+          <WLWatchboxLink counts={watchboxCounts} onOpen={goToWatchbox} />
         </div>
       )}
 
