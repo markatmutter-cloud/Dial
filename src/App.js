@@ -4125,8 +4125,8 @@ export default function Watchlist() {
       // band; top bar is suppressed on Home in both shells. About
       // trigger reuses openAbout above.
       homeMastheadTabs={[
-        ["listings", "Listings"],
-        ["watchlist", "Watchlists"],
+        ["listings", "Watches"],
+        ["watchlist", "Lists"],
         ["references", "Collecting"],
       ]}
       homeGoToTab={(key) => { setTab(key); setPage(1); }}

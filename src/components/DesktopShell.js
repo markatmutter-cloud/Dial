@@ -579,7 +579,7 @@ export function DesktopShell(props) {
             in the masthead band under the hero on Home). */}
         {!minimalTopBar && (
         <div style={{ display: "flex", gap: 18, alignItems: "center", flexShrink: 0, marginLeft: 8 }}>
-          {[["listings", "Listings"], ["watchlist", "Watchlists"], ["references", "Collecting"]].map(([key, label]) => {
+          {[["listings", "Watches"], ["watchlist", "Lists"], ["references", "Collecting"]].map(([key, label]) => {
             const active = tab === key;
             return (
               <button key={key} onClick={() => setTab(key)} style={{
