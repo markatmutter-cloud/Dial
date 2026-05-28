@@ -310,6 +310,10 @@ within each section roughly last.
   BUGS.md durable backlog + `Bug:`/`Plan:` prefixes (nothing lost between
   sessions); CLAUDE.md cross-surface consistency rule (divergence is a smell →
   fix the shared root, not per-surface band-aids).
+- **2026-05-28 — Doc-only close lands straight on main (#653).** Fixed the
+  recurring strand: `/wrap` step 5 + CLAUDE.md now commit the doc-only close
+  directly to main (no PR/side-branch), so SHIPPED can't silently fall behind
+  what shipped (root cause of the 2026-05-28 SHIPPED gap, recovered via #652).
 - **2026-05-26 — Defer ~15 MB of non-critical JSON off first paint (B-17).**
   Auction/editorial-archive fetches moved to `requestIdleCallback` after first
   paint, so the default Listings>Live no longer competes with ~15 MB of

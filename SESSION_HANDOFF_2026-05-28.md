@@ -63,3 +63,32 @@ The "site is broken/slow" complaint is fixed (payload −93 %, desktop LCP −70
 and the Blob cost is structurally solved (thumbnails + transfer via wsrv). Real
 proof pending one mobile PageSpeed re-run. Remaining is polish (ReferencesTab
 split) + hygiene (code review / orphaned-code scan).
+
+---
+
+## ADDENDUM — `/tidy` hygiene pass (2026-05-28, later)
+Ran the repo/code hygiene sweep + B-27 inert-code scan. The "Loose ends" /
+stranded-branches list above is now **resolved**.
+
+- **Root-caused the recurring orphan pattern.** Session-close branches normally
+  *do* merge (squash); the mess was two things: (1) squash-merge leaves the
+  local branch looking "1 ahead" forever → residue that hides real strands, and
+  (2) the 2026-05-28 close **genuinely never merged** — its SHIPPED #646–651 +
+  handoff were stranded (recovered via **#652**).
+- **Structural fix (#653, merged):** doc-only closes now commit **straight to
+  `main`, no PR** (`/wrap` step 5 + CLAUDE.md, in lockstep). This is *why* the
+  close can't strand again — and it answers Mark's ask: nothing left uncommitted
+  when the terminal closes. Branch-before-editing stays the rule for **code**.
+- **Branches:** deleted 17 dead remotes (merged/closed) + 9 local residue +
+  `wrap-close-direct-to-main` after merge. Now just `main` + the open scraper PR.
+- **Worktrees:** primary `/Documents/watchlist` was parked on the dead
+  `session-close-2026-05-28` → moved back to `main`; removed 2 empty leftover
+  worktrees (`ui-consistency`, `watchlist-v2`).
+- **B-27 scan:** removed orphaned `phillips_known_auctions_scraper.py` (**PR #654,
+  open — merge it**); **kept** `windvintage_guides_scraper.py` (corpus, Mark's
+  call). No other inert code. Full findings in BUGS B-27.
+- **Issue #569** (Tropical Watch scrape-fail) closed — fixed by #651.
+
+### ⭐ NEXT PICKUP (unchanged + one add)
+Still: mobile PageSpeed re-baseline, lazy-load ReferencesTab subtree (B-34
+follow-up). **Add:** merge **PR #654** (phillips scraper removal).
