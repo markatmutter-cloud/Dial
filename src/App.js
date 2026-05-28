@@ -1360,14 +1360,10 @@ export default function Watchlist() {
             });
           })
           .catch(() => {});
-        // Sidecar lazy-fetch — fires AFTER first paint resolves, so
-        // it never blocks card grid render. Silently no-ops on
-        // failure (older snapshots or pre-#437 deploys may not have
-        // the file). See handleWish for the consumer.
-        fetch(LISTINGS_DESC_URL, fetchOpts)
-          .then(r => r.ok ? r.json() : {})
-          .then(map => { if (map && typeof map === "object") setListingsDesc(map); })
-          .catch(() => {});
+        // listings_desc.json (descriptions, ~0.9 MB) moved to the deferred
+        // idle block below — it only feeds the hearted-item detail sheet
+        // (see handleWish), never first paint, so it shouldn't ride along
+        // with the critical listings fetch on every load.
       })
       .catch(() => { setLoadError(true); setLoading(false); });
     // Auctions load in parallel. Failing silently is fine — the Auctions tab
@@ -1392,6 +1388,13 @@ export default function Watchlist() {
     // above; every consumer starts from an empty {} and re-renders on arrival.
     // (B-17 / audit finding C1: ~19 MB was loading eagerly on every app open.)
     const loadDeferredArchives = () => {
+      // Descriptions sidecar — only consumed by the hearted-item detail
+      // sheet (handleWish), so it loads here at idle rather than competing
+      // with the critical listings fetch on every page open.
+      fetch(LISTINGS_DESC_URL, fetchOpts)
+        .then(r => r.ok ? r.json() : {})
+        .then(map => { if (map && typeof map === "object") setListingsDesc(map); })
+        .catch(() => {});
       // Comprehensive auction-lot scrape — same shape as tracked_lots.json,
       // populated by a separate scraper that walks every active sale.
       fetch(AUCTION_LOTS_URL, fetchOpts)

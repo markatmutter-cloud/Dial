@@ -506,6 +506,10 @@ export function imgSrc(url, width = 720) {
     if (u.hostname.endsWith("blob.vercel-storage.com") || u.hostname.endsWith(".supabase.co")) {
       return url;
     }
+    // Bonhams is Cloudflare-protected and blocks datacenter IPs (the same
+    // reason its scraping runs on a residential host) — wsrv's fetcher gets a
+    // 404, so serve Bonhams direct. Real visitors' browsers load it fine.
+    if (u.hostname.endsWith("bonhams.com")) return url;
     // Only fetchable http(s) remotes can be proxied — skips data:/blob: object
     // URLs and relative paths, which have no host wsrv could fetch.
     if (!u.hostname || (u.protocol !== "http:" && u.protocol !== "https:")) return url;
