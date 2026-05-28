@@ -36,7 +36,6 @@ export function DesktopShell(props) {
     // Setters / handlers
     handleWish, openFavPrompt, resetFilters,
     setAboutModalOpen, setActiveFilterPop, setBrandsExpanded,
-    setFilterBrands, setFilterSources, setFilterModels,
     setMaxPriceText, setMinPriceText,
     setFilterHearted, setPage, setSearch, setSignInPromptOpen, setSort,
     setTab,
@@ -460,13 +459,6 @@ export function DesktopShell(props) {
                   blue
                 />
               )}
-              {filterSources.length > 0 && (
-                <button onClick={() => setFilterSources([])} style={{
-                  marginLeft: "auto", fontSize: 12, padding: "4px 10px", borderRadius: 6,
-                  border: "0.5px solid var(--border)", background: "transparent",
-                  color: "var(--text2)", cursor: "pointer", fontFamily: "inherit",
-                }}>Clear</button>
-              )}
             </>
           )}
         </div>
@@ -481,13 +473,6 @@ export function DesktopShell(props) {
           <Chip label={brandsExpanded ? "Less ↑" : `+${effectiveBrandsCount - BRANDS_SHOW} more`}
             active={false} onClick={() => setBrandsExpanded(!brandsExpanded)} blue />
         )}
-        {filterBrands.length > 0 && (
-          <button onClick={() => setFilterBrands([])} style={{
-            marginLeft: "auto", fontSize: 12, padding: "4px 10px", borderRadius: 6,
-            border: "0.5px solid var(--border)", background: "transparent",
-            color: "var(--text2)", cursor: "pointer", fontFamily: "inherit",
-          }}>Clear</button>
-        )}
       </div>
     )}
     {expandedModel && (
@@ -498,13 +483,6 @@ export function DesktopShell(props) {
         {effectiveModelsCount > (MODELS_SHOW || 0) && (
           <Chip label={modelsExpanded ? "Less ↑" : `+${effectiveModelsCount - MODELS_SHOW} more`}
             active={false} onClick={() => setModelsExpanded && setModelsExpanded(!modelsExpanded)} blue />
-        )}
-        {(filterModels?.length || 0) > 0 && (
-          <button onClick={() => setFilterModels && setFilterModels([])} style={{
-            marginLeft: "auto", fontSize: 12, padding: "4px 10px", borderRadius: 6,
-            border: "0.5px solid var(--border)", background: "transparent",
-            color: "var(--text2)", cursor: "pointer", fontFamily: "inherit",
-          }}>Clear</button>
         )}
       </div>
     )}
