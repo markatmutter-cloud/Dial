@@ -38,7 +38,12 @@ import { ViewSettingsControls } from "./components/ViewSettingsControls";
 import { ShareReceiver } from "./components/ShareReceiver";
 import { ChallengeReceiver } from "./components/ChallengeReceiver";
 import { ListReceiver } from "./components/ListReceiver";
-import { AuctionCalendar } from "./components/AuctionCalendar";
+// Code-split (B-22): the auction calendar renders only inside the modal when
+// opened (calendarModalOpen) — React.lazy splits it into its own chunk so it
+// never loads on first paint. Named export → unwrap to default.
+const AuctionCalendar = React.lazy(() =>
+  import("./components/AuctionCalendar").then(m => ({ default: m.AuctionCalendar }))
+);
 import { LotMigrationBanner } from "./components/LotMigrationBanner";
 import { WatchlistTab } from "./components/WatchlistTab";
 import { EmptyState } from "./components/EmptyState";
@@ -57,7 +62,11 @@ import { ConfirmHost } from "./components/ConfirmModal";
 // IdentityBand import retired 2026-05-22 — component file still in
 // the repo for git history, no current call site.
 // import { IdentityBand } from "./components/IdentityBand";
-import { SearchResultsView } from "./components/SearchResultsView";
+// Code-split (B-22): Search-all results render only when the user runs a
+// cross-surface search (searchAllActive) — React.lazy → its own chunk.
+const SearchResultsView = React.lazy(() =>
+  import("./components/SearchResultsView").then(m => ({ default: m.SearchResultsView }))
+);
 import DateDivider from "./components/DateDivider";
 import { tabPill, innerToggleButton, actionButton } from "./styles";
 
@@ -3603,15 +3612,17 @@ export default function Watchlist() {
   // closes the modal.
   const auctionCalendarJSX = (
     <div style={{ paddingTop: 4 }}>
-      <AuctionCalendar
-        auctions={auctions || []}
-        lotCounts={lotCountsByAuctionUrl}
-        heroImgByUrl={auctionHeroByUrl}
-        savedUrls={savedAuctionUrlSet}
-        onToggleSave={user ? toggleSavedAuction : null}
-        onOpenSale={(a) => { handleOpenSale(a); setCalendarModalOpen(false); }}
-        isMobile={isMobile}
-      />
+      <React.Suspense fallback={null}>
+        <AuctionCalendar
+          auctions={auctions || []}
+          lotCounts={lotCountsByAuctionUrl}
+          heroImgByUrl={auctionHeroByUrl}
+          savedUrls={savedAuctionUrlSet}
+          onToggleSave={user ? toggleSavedAuction : null}
+          onOpenSale={(a) => { handleOpenSale(a); setCalendarModalOpen(false); }}
+          isMobile={isMobile}
+        />
+      </React.Suspense>
     </div>
   );
 
@@ -3773,6 +3784,7 @@ export default function Watchlist() {
   // Editorial strip deferred to v2 (corpus loaded lazily in
   // EditorialView; lifting that up is its own change).
   const searchAllResultsJSX = (
+    <React.Suspense fallback={null}>
     <SearchResultsView
       search={search}
       setSearch={setSearch}
@@ -3813,6 +3825,7 @@ export default function Watchlist() {
         setTab("home"); setPage(1);
       }}
     />
+    </React.Suspense>
   );
 
   // Identity band — RETIRED 2026-05-22 (Mark spec). PR_β extended
