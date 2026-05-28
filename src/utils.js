@@ -510,6 +510,11 @@ export function imgSrc(url, width = 720) {
     // reason its scraping runs on a residential host) — wsrv's fetcher gets a
     // 404, so serve Bonhams direct. Real visitors' browsers load it fine.
     if (u.hostname.endsWith("bonhams.com")) return url;
+    // Tropical Watch's CloudFront images are already small at source (~240px),
+    // so the resizer only recompresses them (visible grain) for no size win —
+    // serve direct. (Mark 2026-05-28: TW is a most-browsed dealer; thumbnailing
+    // made it noticeably grainy where larger-source dealers stayed crisp.)
+    if (u.hostname === "d29ueykkv8fpnq.cloudfront.net") return url;
     // Only fetchable http(s) remotes can be proxied — skips data:/blob: object
     // URLs and relative paths, which have no host wsrv could fetch.
     if (!u.hostname || (u.protocol !== "http:" && u.protocol !== "https:")) return url;
