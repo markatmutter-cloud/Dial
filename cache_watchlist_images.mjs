@@ -82,9 +82,21 @@ async function fetchImage(url) {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT_MS);
   try {
+    // Thumbnail-on-store: fetch the wsrv-resized (~600px WebP) version so we
+    // store ~40KB instead of the full-res original — keeps the saved-item-
+    // survives-dealer-takedown promise at ~10x less storage (Mark's call: he
+    // downloads keepers manually rather than archive full-res for everyone).
+    // Hot-link-protected hosts (Watchfid etc.) can't be fetched by wsrv (it
+    // can't send their Referer), so those still cache direct at full size —
+    // few items. Reused by the re-process pass below, which passes a blob URL.
+    const fetchTarget = REFERER_BY_HOST[host]
+      ? url
+      : `https://images.weserv.nl/?url=${encodeURIComponent(
+          url.replace(/^https:\/\//, "ssl:").replace(/^http:\/\//, "")
+        )}&w=600&output=webp&q=72&we`;
     let resp;
     try {
-      resp = await fetch(url, { headers, redirect: "follow", signal: ctrl.signal });
+      resp = await fetch(fetchTarget, { headers, redirect: "follow", signal: ctrl.signal });
     } catch (err) {
       return { error: err.name === "AbortError" ? `timeout after ${FETCH_TIMEOUT_MS}ms` : `fetch threw: ${err.message}` };
     }
@@ -403,7 +415,61 @@ async function reapTrackedOrphans() {
   console.log(`Tracked reap pass: ${allBlobs.length} blob(s) found, ${deleted} orphan(s) deleted`);
 }
 
+// One-time migration (REPROCESS_THUMBNAILS=true): shrink already-cached
+// full-res blobs to ~600px WebP. Sources each thumbnail from the EXISTING
+// blob via wsrv (the originals' dealer URLs may be dead — the blob is the
+// only surviving copy), then overwrites the SAME pathname in place, so the
+// URL is unchanged (no DB writes, no orphans). A non-2xx / empty / implausibly
+// sized response SKIPS that blob, leaving the full-res original intact — so a
+// hiccup can never corrupt or lose an image. Run via the scrape-auctions
+// workflow_dispatch input; the scheduled runs never set the flag.
+async function reprocessExistingThumbnails() {
+  const seen = new Set();
+  const urls = [];
+  for (const table of ["watchlist_items", "collection_items"]) {
+    const { data, error } = await supabase
+      .from(table)
+      .select("cached_img_url")
+      .like("cached_img_url", "%public.blob.vercel-storage.com/%");
+    if (error) { console.error(`reprocess select ${table}:`, error.message); continue; }
+    for (const r of (data || [])) {
+      const u = r.cached_img_url;
+      if (u && !seen.has(u)) { seen.add(u); urls.push(u); }
+    }
+  }
+  console.log(`Reprocess: ${urls.length} distinct blob(s) to shrink to thumbnails`);
+  let shrunk = 0, skipped = 0;
+  for (const u of urls) {
+    let pathname;
+    try { pathname = new URL(u).pathname.replace(/^\//, ""); } catch { skipped++; continue; }
+    const fetched = await fetchImage(u); // blob URL → wsrv → ~600px WebP
+    if (!fetched || fetched.error || !fetched.buf) {
+      console.log(`  skip ${pathname}: ${fetched?.error || "no body"}`); skipped++; continue;
+    }
+    // Plausibility guard: a real 600px WebP is ~10-200KB. Anything outside a
+    // generous band is treated as a wsrv error/placeholder and skipped.
+    if (fetched.buf.length < 2000 || fetched.buf.length > 800000) {
+      console.log(`  skip ${pathname}: implausible size ${fetched.buf.length}`); skipped++; continue;
+    }
+    try {
+      await put(pathname, fetched.buf, {
+        access: "public",
+        contentType: fetched.mime || "image/webp",
+        addRandomSuffix: false,
+        cacheControlMaxAge: 31536000,
+        token: BLOB_TOKEN,
+      });
+      shrunk++;
+      if (shrunk % 50 === 0) console.log(`  …${shrunk} shrunk`);
+    } catch (err) { console.error(`  put failed ${pathname}:`, err.message); skipped++; }
+  }
+  console.log(`Reprocess done: ${shrunk} shrunk, ${skipped} skipped`);
+}
+
 async function main() {
+  if (process.env.REPROCESS_THUMBNAILS === "true") {
+    await reprocessExistingThumbnails();
+  }
   await cacheUncached();
   await cacheUncachedCollectionItems();
   await reapOrphans();
