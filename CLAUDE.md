@@ -142,8 +142,11 @@ diagram, data model, and folder layout.
 - **Image-proxy = THREE-place lockstep** when adding a hot-link-protected
   host: `utils.js` `PROXIED_IMG_HOSTS` + `api/img.js` (`ALLOWED_HOSTS` +
   referer) + `api/share.js` `PROXIED_IMG_HOSTS` (OG bots). Miss one and share
-  cards break. CDN size-rewrites (Phillips Cloudinary, Monaco Uploadcare) live
-  in `imgSrc()`; Sotheby's brightspot is hash-signed — don't retry URL rewrites.- **`is_excluded_title`** filters only pocket watches / clocks / loose dials;
+  cards break. In `imgSrc()`: Phillips/Monaco use their own CDN size-rewrites;
+  every other dealer image routes through **wsrv.nl** resize (~720px WebP).
+  Direct-serve exceptions (skip wsrv): Bonhams (Cloudflare blocks wsrv's
+  datacenter fetcher) + Tropical Watch `d29…cloudfront` (240px source — resize
+  only adds grain). Sotheby's brightspot is hash-signed — don't retry URL rewrites.- **`is_excluded_title`** filters only pocket watches / clocks / loose dials;
   keep all other accessories. Strip `o'clock` before the `\bclock\b` regex
   (it dropped real lots). Apply the same predicate in any new auction scraper.
 - **Phillips: never fetch lot detail from CI** (WAF 403s after ~7 requests).
@@ -265,7 +268,9 @@ Cross-file / process rules (single-site rules live as comments in their files):
   Vercel bundle serves (JS changes).
 - **Don't push follow-up commits to an already-open PR** — squash-merge can
   orphan them. New change → new branch.
-- **Don't extend the Vercel Blob image cache** beyond hearted items.
+- **Vercel Blob caches thumbnails, never full-res** (`cache_watchlist_images.mjs`
+  resizes via wsrv; hearted/tracked items only). Blob **transfer/egress** is the
+  capped meter — full-res paused us once; storage (~1 GB free) is cheap.
 - **Don't widen the `+Track` URL validator past eBay** (auction houses come in
   via the comprehensive scrape).
 - **Don't reintroduce retired surfaces** without a decision: Listings
