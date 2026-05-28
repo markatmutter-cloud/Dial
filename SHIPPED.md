@@ -240,8 +240,32 @@ within each section roughly last.
 - **2026-05-24 — AdminTab freshness signal (PR #535).** `updated_at`
   render + "STALE — last run Nh ago" above 12h.
 
+## Epic 9 — IA / UX redesign
+
+- **2026-05-27 — IA/UX redesign plan filed (#623).** docs/IA_REDESIGN.md canonical
+  (three-speeds tab model · dossier keystone); BUGS → Epics A/B/C + phase tracker; ROADMAP Epic 9.
+- **2026-05-27 — Reference browsing tree (#625/#627).** Brand › Model line › Reference +
+  breadcrumbs (ReferenceBrowse); 5512/5513 live + 2 Omega "coming soon" stubs + subscribe teaser.
+- **2026-05-27 — Watchlists dossier, Phase 1b (#628).** `collection_blocks` table + DossierBlocks
+  (note/reference/saved-search free-order blocks) in list drill-ins. Plumbing only; B-08 tab-unify pending.
+- **2026-05-27 — Editorial → "Articles" (#626).** Sub-tab + saved-articles copy renamed.
+- **2026-05-27 — Search: Articles bar + reference guides in results (#630/#631).** In-Articles search
+  restored; reference-guides strip in global search; results use current tab names.
+- **2026-05-27 — Watchlists unified into one rich scroll · Phase 1 / B-08 (#638).** Lists + Searches
+  sub-tabs collapsed into a single landing — Watchbox anchor · unified Saved (type filter) · cover-image
+  list cards · Saved searches · Shared; pills retired, legacy `?sub=` coerced to the landing.
+- **2026-05-27 — Watchlists landing polish (#639–#644).** Magazine look-and-feel (serif = editorial,
+  sans = UI), article-style list cards, favicon image fallback (B-38), Watchbox → slim link with
+  hearted/Saved leading, bigger tiles, distinct in-list header, drill-in back-nav fix, list rename/delete
+  (cards + in-list), hearted "♡ Saved" filter chip, Saved band on the shared CardStrip.
+
 ## UI & chrome (cross-cutting)
 
+- **2026-05-27 — Home "Articles" strip + reorder (#636).** Idle-loaded recent editorial; Home strips
+  reordered added·articles·sold·hearted·ending.
+- **2026-05-27 — CardStrip scroll indicator (#635).** Slim desktop-only horizontal scroll indicator on every shared strip.
+- **2026-05-27 — Auction calendar nav (#632).** Removed the no-op "ALL"; "CLOSED" moved left of the month chips.
+- **2026-05-27 — Settings green + mobile view-settings (#634).** Selected buttons use brand green; view settings off the mobile filter tray → Display settings.
 - **2026-05-15 — Maintenance session (PRs #296–#307).** Test hardening,
   dead-code deletion, 8 new design tokens, `confirm()`/ConfirmHost
   replacing every `window.confirm`.

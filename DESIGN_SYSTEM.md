@@ -53,6 +53,16 @@ scale value (9 → 10, 15 → 14, 17 → 18, 20 → 18, 24 → 22, 26 → 22).
 If you find yourself needing 15px for a tighter fit, ask whether 14
 or 16 actually works first.
 
+**Serif vs sans — type roles (Mark, 2026-05-27).** Serif (`Iowan Old
+Style`/`Hoefler Text`/Georgia) = the **editorial voice**: long-form
+*reading* surfaces — article titles, reference-page headlines + prose.
+It signals "sit and read." Sans = **the interface**: everything
+functional — navigation, tab/section labels, list names, counts,
+filters, buttons. It signals "scan and act." So serif on the Watchlists
+*landing* (a management surface) was wrong and got reverted to bold sans;
+serif on `ReferencePage`/articles is correct. Keep serif meaningful, not
+decorative.
+
 **borderRadius scale (post-2026-05-15 snap, PR #305):** **0, 4, 6,
 8, 10, 12, 20, 999**. Outliers snapped (1/2 → 0, 3 → 4, 14 → 12,
 18 → 20). 8 is the dominant card / button radius; 10 is the

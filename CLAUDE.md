@@ -59,7 +59,10 @@ the branch you'll create — branch before editing, never edit `main`.
 - **Be his live scribe.** Mark loses review thoughts unless caught as he
   has them; a notes-doc-for-later doesn't work. When he thinks out loud —
   even in fragments — capture it immediately into the right home.
-- **Message prefixes.** `FYI` / `Note` = ack and keep going on the current
+- **Message prefixes.** `FB:` = design-review feedback fired as he reads —
+  **hold: don't react/repivot/build until he says go** (stronger than `FYI`;
+  the burst often spans several messages — ack minimally, let it all land).
+  `FYI` / `Note` = ack and keep going on the current
   item (queue, don't repivot). `QQ` = quick answer up front, then resume.
   `Plan:` / `Save for plan` = a bigger thread for plan-mode later. `Bug:` =
   triage + log to **BUGS.md** (break-now → fix immediately, else enriched
