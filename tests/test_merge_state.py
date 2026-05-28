@@ -557,3 +557,24 @@ def test_intermittent_scrape_never_marks_sold(at_date):
         merge.update_state([item] if present else [], state)
         assert state[item["id"]]["active"] is True, f"{day}: must stay live through a flap"
     assert "soldAt" not in state[item["id"]] or state[item["id"]]["soldAt"] is None
+
+
+# ── Catalog-level exclusion (non-watch sales dropped from the calendar) ──────
+
+def test_is_excluded_catalog_blocks_nonwatch_sales():
+    """Blocklisted non-watch catalogs are excluded; real watch sales pass.
+    The short Sotheby's title must also catch the long '…Including Jewels…'
+    variant of the same sale (substring, case-insensitive)."""
+    assert merge.is_excluded_catalog("Noble & Private Collections") is True
+    assert merge.is_excluded_catalog(
+        "Noble & Private Collections Including Jewels from the Collection "
+        "of Stanley J. Seeger & Christopher Cone") is True
+    assert merge.is_excluded_catalog("Espionage: Fact & Fiction") is True
+    # Case-insensitivity.
+    assert merge.is_excluded_catalog("espionage: FACT & fiction") is True
+    # Real watch sales are untouched.
+    assert merge.is_excluded_catalog("Important Watches") is False
+    assert merge.is_excluded_catalog("The Geneva Watch Auction: XX") is False
+    # Empty / missing title is not excluded.
+    assert merge.is_excluded_catalog("") is False
+    assert merge.is_excluded_catalog(None) is False
