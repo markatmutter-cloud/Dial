@@ -1,14 +1,14 @@
 {
   "date": "2026-05-28",
-  "updated_at": "2026-05-28T10:17:53+00:00",
+  "updated_at": "2026-05-28T12:17:04+00:00",
   "alerts": [],
   "counts": {
     "Antiquorum": 384,
-    "Christie's": 408,
+    "Christie's": 138,
     "Monaco Legend": 153,
     "Phillips": 426,
-    "Sotheby's": 162
+    "Sotheby's": 406
   },
-  "total_live_lots": 1533,
+  "total_live_lots": 1507,
   "houses_tracked": 5
 }
