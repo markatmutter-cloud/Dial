@@ -240,8 +240,8 @@ function WLCardGrid({ isMobile, children }) {
   return (
     <div style={{
       display: "grid",
-      gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(auto-fill, minmax(168px, 1fr))",
-      gap: isMobile ? 12 : 14,
+      gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(auto-fill, minmax(212px, 1fr))",
+      gap: isMobile ? 12 : 16,
     }}>{children}</div>
   );
 }
@@ -280,11 +280,11 @@ function WLSavedStrip({ items, onClickItem }) {
         const src = wlItemImg(it);
         return (
           <button key={it.id || it.url || i} onClick={() => onClickItem(it)} style={{
-            flexShrink: 0, width: 104, cursor: "pointer", fontFamily: "inherit",
+            flexShrink: 0, width: 136, cursor: "pointer", fontFamily: "inherit",
             border: "none", background: "transparent", padding: 0, textAlign: "left",
           }}>
             <WLImg src={src} style={{
-              width: 104, height: 104, borderRadius: 8,
+              width: 136, height: 136, borderRadius: 8,
               border: "0.5px solid var(--border)",
             }} />
             <div style={{
@@ -1866,25 +1866,29 @@ function ListsView({
         {!inlineScreeningActive && (
           <div style={{
             display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap",
-            padding: "14px 14px 12px",
-            borderBottom: "0.5px solid var(--border)",
-            marginBottom: 12,
+            padding: "12px 14px",
+            background: "var(--surface)",
+            border: "0.5px solid var(--border)", borderRadius: 12,
+            marginBottom: 14,
           }}>
-            <button onClick={() => setSelectedListId(null)} style={{
-              border: "none", background: "transparent", cursor: "pointer",
-              color: "var(--brand)", fontFamily: "inherit", fontSize: 13, padding: 0,
-              flexShrink: 0,
-            }}>← All lists</button>
-            <span style={{
-              fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif",
-              fontSize: 18, fontWeight: 600,
-              color: "var(--text1)",
-              letterSpacing: "-0.01em",
-              overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-              minWidth: 0,
-            }}>
-              {selected.name}
-            </span>
+            {/* Distinct list header (Mark): a tinted banner with a
+                breadcrumb back + prominent name + item count, so you
+                clearly know you're INSIDE a list, not on a grid tab. */}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <button onClick={() => setSelectedListId(null)} style={{
+                border: "none", background: "transparent", cursor: "pointer",
+                color: "var(--brand)", fontFamily: "inherit", fontSize: 12.5,
+                padding: 0, letterSpacing: "0.02em",
+              }}>‹ All lists</button>
+              <div style={{
+                fontSize: 22, fontWeight: 700, color: "var(--text1)",
+                letterSpacing: "-0.01em", lineHeight: 1.15, marginTop: 3,
+                overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+              }}>{selected.name}</div>
+              <div style={{ fontSize: 12, color: "var(--text3)", marginTop: 2, fontVariantNumeric: "tabular-nums" }}>
+                {rawItems.length} {rawItems.length === 1 ? "item" : "items"}
+              </div>
+            </div>
             {/* Hearted-only toggle pill (PR 2026-05-22 task #9). Most
                 useful on auction-catalog lists (300+ lots → user's
                 saved subset). Hidden when there's nothing to filter
