@@ -864,19 +864,22 @@ export default function Watchlist() {
   // a sub-tab — it opens as an overlay over the auctions grid and filters
   // it on sale pick.
   const [calendarModalOpen, setCalendarModalOpen] = useState(false);
-  // "Calendar first" (Mark spec): the calendar pops up the first time
-  // you land on the Auctions sub-tab each session — the visual entry —
+  // "Calendar first" (Mark spec): on DESKTOP the calendar pops up the first
+  // time you land on the Auctions sub-tab each session — the visual entry —
   // then you drop into the grid. Once per session (sessionStorage), and
   // skipped when a sale filter is already pinned (deep-linked to a sale).
+  // Mobile (Mark 2026-05-28): no auto-popup — it felt intrusive on a small
+  // screen; mobile users open the calendar via the filter-row button instead.
   useEffect(() => {
     if (tab !== "listings" || listingsSubTab !== "auctions") return;
+    if (isMobile) return;
     if ((filterSaleUrls || []).length > 0) return;
     try {
       if (sessionStorage.getItem("auctions_calendar_autoopened_v1")) return;
       sessionStorage.setItem("auctions_calendar_autoopened_v1", "1");
     } catch { return; }
     setCalendarModalOpen(true);
-  }, [tab, listingsSubTab, filterSaleUrls]);
+  }, [tab, listingsSubTab, filterSaleUrls, isMobile]);
   // Feed-screening retired 2026-05-22 — the Home banner + per-strip
   // "Screen N new" pill that fed it were removed (PRs #283 / #507);
   // nothing renders openFeedScreener anymore. Audit confirmed the
