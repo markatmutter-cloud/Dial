@@ -23,6 +23,14 @@ the docs.
    private to Mark, not part of the shared repo.)
 4. **Report** which docs you changed and why, in one short list, so the
    discipline is visible.
-5. **Commit** the changes on the working branch (don't push unless asked).
-   Confirm the working tree is clean and no branch got stranded — flag any open
-   PR left behind so it doesn't become an orphan.
+5. **Land the close — straight to `main`, no PR.** The close pass is
+   *doc-only* (SHIPPED / ROADMAP / README / DESIGN_SYSTEM / CLAUDE / handoff):
+   no CI to pass, nothing to review, it's the project's own changelog. Commit
+   it **directly to `main` and push** — do NOT park it on a side branch or
+   wait to be asked, that's how closes strand (the SHIPPED log silently falls
+   behind what actually shipped — see the 2026-05-28 strand). The
+   branch-before-editing rule is for *code*; it does not apply to a doc-only
+   close. If the close somehow touched code, that part goes through its own
+   PR — but the docs still land on main.
+6. **Confirm clean.** Working tree clean, `main` in sync with origin, no branch
+   stranded — flag any open PR left behind so it doesn't become an orphan.

@@ -39,6 +39,11 @@ the branch you'll create — branch before editing, never edit `main`.
   reports; findings → BUGS.md) · **CLAUDE.md** (durable rule only, within
   budget; strip PR/date tags).
 - Update **personal/LEARNING.md** (capability snapshot / concept log / growth edges).
+- **Land the close on `main`, no PR.** The close is doc-only (SHIPPED /
+  handoff / etc.) — no CI, no review. Commit it **straight to `main` and push**;
+  never park it on a side branch "to merge later" (that's how SHIPPED silently
+  falls behind what shipped — see the 2026-05-28 strand). Branch-before-editing
+  is a *code* rule; it doesn't apply to a doc-only close.
 - **Clean-close rule.** A partial ship *closes* its backlog item and opens **one**
   crisply-scoped follow-up — never a vague "phase 2 open" tail (they pile up as
   cryptic IDs Mark can't parse). Group BUGS by epic, not as a flat list.
