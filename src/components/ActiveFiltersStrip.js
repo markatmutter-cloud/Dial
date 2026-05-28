@@ -134,7 +134,10 @@ export function ActiveFiltersStrip({
           onRemove={() => setFilterHearted && setFilterHearted(false)}
         />
       )}
-      <button type="button" onClick={resetFilters} style={clearAllStyle}>
+      {/* Single "Clear all" — pushed to the right of the chips row
+          (Mark 2026-05-28). The filter-bar copies in both shells were
+          removed; this is now the only clear-all. */}
+      <button type="button" onClick={resetFilters} style={{ ...clearAllStyle, marginLeft: "auto" }}>
         Clear all
       </button>
     </div>

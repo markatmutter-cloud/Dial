@@ -19,6 +19,7 @@ import React, { useState, useEffect } from "react";
 import CardStrip from "./CardStrip";
 import { Card } from "./Card";
 import { imgSrc } from "../utils";
+import { innerToggleButton } from "../styles";
 
 const SERIF = "'Iowan Old Style', Georgia, 'Times New Roman', serif";
 const MAXW = 1080;
@@ -186,11 +187,8 @@ export function ReferencePage({
             {NAV.map((s) => {
               const on = active === s.id;
               return (
-                <button key={s.id} onClick={() => goTo(s.id)} style={{
-                  border: "none", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap",
-                  fontSize: 12, fontWeight: 600, letterSpacing: "0.02em", padding: "5px 11px", borderRadius: 999,
-                  background: on ? "var(--brand-olive)" : "transparent", color: on ? "#fff" : "var(--text2)",
-                }}>{s.label}</button>
+                <button key={s.id} onClick={() => goTo(s.id)}
+                  style={{ ...innerToggleButton(on), letterSpacing: "0.02em", padding: "5px 11px", whiteSpace: "nowrap" }}>{s.label}</button>
               );
             })}
           </div>
@@ -302,7 +300,8 @@ export function ReferencePage({
                 {[{ k: "live", label: "Available" }, { k: "auctions", label: "At auction" }, { k: "sold", label: "Sold" }].map(({ k, label }) => {
                   const on = seg === k;
                   return (
-                    <button key={k} onClick={() => setSegment(k)} style={{ border: "none", cursor: "pointer", fontFamily: "inherit", fontSize: 13, fontWeight: 600, padding: "6px 12px", borderRadius: 999, background: on ? "var(--brand-olive)" : "var(--card-bg)", color: on ? "#fff" : "var(--text2)" }}>
+                    <button key={k} onClick={() => setSegment(k)}
+                      style={{ ...innerToggleButton(on), fontSize: 13, padding: "6px 12px" }}>
                       {label} <span style={{ opacity: 0.7, fontWeight: 500 }}>{market[k].length}</span>
                     </button>
                   );
