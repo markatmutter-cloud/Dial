@@ -300,7 +300,7 @@ export function AboutModal({ open, onClose, primaryCurrency }) {
                 style={{ color: "var(--text2)", textDecoration: "none" }}>Terms</a>
             </div>
             <button onClick={onClose} style={{
-              border: "none", background: "var(--brand)", color: "#fff",
+              border: "none", background: "var(--brand-olive)", color: "#fff",
               padding: "10px 20px", borderRadius: 10,
               fontFamily: "inherit", fontSize: 14, fontWeight: 500,
               cursor: "pointer",

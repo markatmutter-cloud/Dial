@@ -65,7 +65,7 @@ export function TrackNewItemModal({
             cursor: "pointer", fontFamily: "inherit", fontSize: 13,
           }}>Cancel</button>
           <button onClick={submitTrack} disabled={trackBusy || !trackUrl.trim()} style={{
-            border: "none", background: "var(--brand)", color: "#fff",
+            border: "none", background: "var(--brand-olive)", color: "#fff",
             padding: "8px 16px", borderRadius: 8, cursor: "pointer",
             fontFamily: "inherit", fontSize: 13, fontWeight: 500,
             opacity: (trackBusy || !trackUrl.trim()) ? 0.5 : 1,

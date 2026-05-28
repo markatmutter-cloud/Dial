@@ -196,7 +196,7 @@ export function ManageListSheet({
             display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
             width: "100%",
             border: "none",
-            background: "var(--brand)", color: "#fff",
+            background: "var(--brand-olive)", color: "#fff",
             padding: "12px 16px", borderRadius: 8,
             cursor: busy ? "wait" : "pointer",
             fontFamily: "inherit", fontSize: 14, fontWeight: 600,

@@ -52,7 +52,7 @@ export function FavSearchModal({
             fontFamily: "inherit", fontSize: 13,
           }}>Cancel</button>
           <button onClick={submit} disabled={!label.trim()} style={{
-            border: "none", background: "var(--brand)", color: "#fff",
+            border: "none", background: "var(--brand-olive)", color: "#fff",
             padding: "8px 14px", borderRadius: 8, cursor: "pointer",
             fontFamily: "inherit", fontSize: 13, fontWeight: 500,
             opacity: label.trim() ? 1 : 0.5,

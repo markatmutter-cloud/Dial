@@ -158,7 +158,7 @@ export function ListingPickerModal({
                 }} />
               <button onClick={handlePaste} disabled={busy || !pasteUrl.trim()}
                 style={{
-                  border: "none", background: "var(--brand)", color: "#fff",
+                  border: "none", background: "var(--brand-olive)", color: "#fff",
                   padding: "8px 14px", borderRadius: 8,
                   cursor: pasteUrl.trim() ? "pointer" : "not-allowed",
                   fontFamily: "inherit", fontSize: 13, fontWeight: 500,

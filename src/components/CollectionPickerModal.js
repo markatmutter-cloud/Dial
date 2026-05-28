@@ -174,7 +174,7 @@ export function CollectionPickerModal({
                 fontFamily: "inherit", fontSize: 13,
               }}>Cancel</button>
               <button onClick={submitNew} disabled={busy || !newName.trim()} style={{
-                border: "none", background: "var(--brand)", color: "#fff",
+                border: "none", background: "var(--brand-olive)", color: "#fff",
                 padding: "6px 12px", borderRadius: 6, cursor: "pointer",
                 fontFamily: "inherit", fontSize: 13, fontWeight: 500,
                 opacity: (!newName.trim() || busy) ? 0.5 : 1,
@@ -201,7 +201,7 @@ export function CollectionPickerModal({
           borderTop: "0.5px solid var(--border)",
         }}>
           <button onClick={close} disabled={busy} style={{
-            border: "none", background: "var(--brand)", color: "#fff",
+            border: "none", background: "var(--brand-olive)", color: "#fff",
             padding: "10px 20px", borderRadius: 10, cursor: "pointer",
             fontFamily: "inherit", fontSize: 14, fontWeight: 500,
           }}>Done</button>
