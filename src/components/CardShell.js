@@ -39,7 +39,7 @@ function CardImage({ image, priority }) {
         <img src={image.src} alt={image.alt || ""}
           onError={() => setFailed(true)}
           style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
-          loading="lazy" decoding="async" fetchpriority={priority ? "high" : "auto"} />
+          loading={priority ? "eager" : "lazy"} decoding="async" fetchpriority={priority ? "high" : "auto"} />
       ) : (
         <div style={{
           position: "absolute", inset: 0, background: "var(--surface)",

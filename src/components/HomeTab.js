@@ -606,7 +606,32 @@ function HomeSearchBar({ onSubmit, onLiveQuery, isMobile, dealerSources, onJumpT
 // duplicated the heading text below ("ON THE FEED" + "Recently
 // added"). Heading + descriptor carry the editorial signal on
 // their own.
-function SectionStrip({ heading, descriptor, items, onViewAll, onScreen, screenCount, isMobile, watchlist, hidden, handleWish, toggleHide, toggleHomeHide, primaryCurrency, onShare, onView, onClickListing, openCollectionPicker, isAdmin, user, compact, inverted, shellPad }) {
+// Render-gate for below-the-fold home strips. First paint then only builds
+// the above-the-fold strip (~14 cards) instead of all ~50; the rest mount
+// just before they scroll into view (rootMargin pre-warms them so it feels
+// instant). The parent's memos stay eager — only the JSX render is deferred,
+// so this can't trip React #310. No-IntersectionObserver / SSR → render now.
+function DeferUntilVisible({ children, minHeight = 320, rootMargin = "600px" }) {
+  const [visible, setVisible] = useState(
+    typeof IntersectionObserver === "undefined"
+  );
+  const ref = useRef(null);
+  useEffect(() => {
+    if (visible || !ref.current) return undefined;
+    const obs = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) {
+        setVisible(true);
+        obs.disconnect();
+      }
+    }, { rootMargin });
+    obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, [visible, rootMargin]);
+  if (visible) return children;
+  return <div ref={ref} aria-hidden style={{ minHeight }} />;
+}
+
+function SectionStrip({ heading, descriptor, items, onViewAll, onScreen, screenCount, isMobile, watchlist, hidden, handleWish, toggleHide, toggleHomeHide, primaryCurrency, onShare, onView, onClickListing, openCollectionPicker, isAdmin, user, compact, inverted, shellPad, priorityFirst }) {
   if (!items || items.length === 0) return null;
   const slice = items.slice(0, isMobile ? CARDS_PER_SECTION_MOBILE : CARDS_PER_SECTION_DESKTOP);
   // Inverted bleed (phase 4c, 2026-05-11): one section gets a dark
@@ -709,9 +734,10 @@ function SectionStrip({ heading, descriptor, items, onViewAll, onScreen, screenC
         isMobile={isMobile}
         background={inverted ? "var(--surface-on-dark)" : "var(--border)"}
         inset={!inverted}
-        renderCard={item => (
+        renderCard={(item, i) => (
           <>
             <Card item={item} wished={!!watchlist[item.id]} onWish={handleWish}
+              priority={priorityFirst && i === 0}
               compact={compact}
               onHide={isAdmin ? toggleHide : undefined}
               hideLabel="Hide everywhere"
@@ -1038,6 +1064,7 @@ export function HomeTab(props) {
       <SectionStrip
         heading="Recently added"
         items={homeRecentAdded}
+        priorityFirst
         onViewAll={goToRecentAdded}
         onScreen={openFeedScreener}
         screenCount={feedScreenerItemsCount}
@@ -1070,43 +1097,55 @@ export function HomeTab(props) {
           )} />
         </section>
       )}
-      <SectionStrip
-        heading="Recently sold"
-        items={homeRecentSold}
-        onViewAll={goToRecentSold}
-        isMobile={isMobile} shellPad={shellPad}
-        watchlist={watchlist} hidden={hidden} handleWish={handleWish}
-        toggleHide={toggleHide} toggleHomeHide={toggleHomeHide} primaryCurrency={primaryCurrency}
-        onShare={onShare} onView={onView} onClickListing={onClickListing}
-        openCollectionPicker={openCollectionPicker} isAdmin={isAdmin}
-        user={user} compact={compact}
-      />
+      {homeRecentSold?.length > 0 && (
+        <DeferUntilVisible>
+          <SectionStrip
+            heading="Recently sold"
+            items={homeRecentSold}
+            onViewAll={goToRecentSold}
+            isMobile={isMobile} shellPad={shellPad}
+            watchlist={watchlist} hidden={hidden} handleWish={handleWish}
+            toggleHide={toggleHide} toggleHomeHide={toggleHomeHide} primaryCurrency={primaryCurrency}
+            onShare={onShare} onView={onView} onClickListing={onClickListing}
+            openCollectionPicker={openCollectionPicker} isAdmin={isAdmin}
+            user={user} compact={compact}
+          />
+        </DeferUntilVisible>
+      )}
       {/* Signed-in user's most-recently hearted strip (moved below Sold per
           Mark's Home order 2026-05-27: added · articles · sold · hearted ·
           ending). SectionStrip returns null on empty so signed-out users get
           no row. */}
-      <SectionStrip
-        heading="Recently hearted"
-        items={homeRecentlyHearted}
-        onViewAll={goToSavedHearts}
-        isMobile={isMobile} shellPad={shellPad}
-        watchlist={watchlist} hidden={hidden} handleWish={handleWish}
-        toggleHide={toggleHide} toggleHomeHide={toggleHomeHide} primaryCurrency={primaryCurrency}
-        onShare={onShare} onView={onView} onClickListing={onClickListing}
-        openCollectionPicker={openCollectionPicker} isAdmin={isAdmin}
-        user={user} compact={compact}
-      />
-      <SectionStrip
-        heading="Ending next at auction"
-        items={homeEndingNext}
-        onViewAll={goToEndingNext}
-        isMobile={isMobile} shellPad={shellPad}
-        watchlist={watchlist} hidden={hidden} handleWish={handleWish}
-        toggleHide={toggleHide} toggleHomeHide={toggleHomeHide} primaryCurrency={primaryCurrency}
-        onShare={onShare} onView={onView} onClickListing={onClickListing}
-        openCollectionPicker={openCollectionPicker} isAdmin={isAdmin}
-        user={user} compact={compact}
-      />
+      {homeRecentlyHearted?.length > 0 && (
+        <DeferUntilVisible>
+          <SectionStrip
+            heading="Recently hearted"
+            items={homeRecentlyHearted}
+            onViewAll={goToSavedHearts}
+            isMobile={isMobile} shellPad={shellPad}
+            watchlist={watchlist} hidden={hidden} handleWish={handleWish}
+            toggleHide={toggleHide} toggleHomeHide={toggleHomeHide} primaryCurrency={primaryCurrency}
+            onShare={onShare} onView={onView} onClickListing={onClickListing}
+            openCollectionPicker={openCollectionPicker} isAdmin={isAdmin}
+            user={user} compact={compact}
+          />
+        </DeferUntilVisible>
+      )}
+      {homeEndingNext?.length > 0 && (
+        <DeferUntilVisible>
+          <SectionStrip
+            heading="Ending next at auction"
+            items={homeEndingNext}
+            onViewAll={goToEndingNext}
+            isMobile={isMobile} shellPad={shellPad}
+            watchlist={watchlist} hidden={hidden} handleWish={handleWish}
+            toggleHide={toggleHide} toggleHomeHide={toggleHomeHide} primaryCurrency={primaryCurrency}
+            onShare={onShare} onView={onView} onClickListing={onClickListing}
+            openCollectionPicker={openCollectionPicker} isAdmin={isAdmin}
+            user={user} compact={compact}
+          />
+        </DeferUntilVisible>
+      )}
       <ManageCallout
         goToSavedLists={goToSavedLists}
         goToMyWatches={goToMyWatches}

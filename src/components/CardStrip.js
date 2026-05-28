@@ -67,7 +67,7 @@ export default function CardStrip({
           <div key={item.id || item.url || i} style={isMobile
             ? { flex: "0 0 38%", maxWidth: 170, scrollSnapAlign: "start", background: "var(--card-bg)", position: "relative" }
             : { flex: "0 0 210px", scrollSnapAlign: "start", background: "var(--card-bg)", position: "relative" }}>
-            {renderCard(item)}
+            {renderCard(item, i)}
           </div>
         ))}
       </div>
