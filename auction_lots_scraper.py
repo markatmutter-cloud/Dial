@@ -209,6 +209,30 @@ def is_excluded_title(title):
     return False
 
 
+# Catalog-level exclusions (2026-05-28): skip ENTIRE sales by title.
+# is_excluded_title() works per-lot, but some auction catalogs are
+# fundamentally non-watch (jewels / art / mixed-collectables sales that
+# carry a handful of watch lots) and shouldn't appear on a watch site at
+# all — the per-lot filter still lets the watch lots through. Match is a
+# case-insensitive substring so the short Sotheby's title also catches the
+# long "…Including Jewels from the Collection of…" variant of the same sale.
+# LOCKSTEP: merge.py has its own copy of this list (it owns the auction
+# CALENDAR; it can't import this module — the pytest env has no `requests`).
+# Keep the two in sync — same convention as BRAND_ALIASES.
+EXCLUDE_CATALOG_TITLES = [
+    "Noble & Private Collections",   # Sotheby's L26035 — jewels/art, 245 lots
+    "Espionage: Fact & Fiction",     # Bonhams 32384 — spy memorabilia
+]
+
+
+def is_excluded_catalog(title):
+    """True iff the SALE/catalog title is a blocklisted non-watch sale."""
+    if not title:
+        return False
+    t = title.lower()
+    return any(x.lower() in t for x in EXCLUDE_CATALOG_TITLES)
+
+
 # ── Date window helper ───────────────────────────────────────────────────
 def in_active_window(sale, today=None):
     """Should this sale be scraped now?
@@ -987,6 +1011,12 @@ def enumerate_sothebys(sale_url, sale=None):
         return []
     auction_currency = auction_obj.get("currency") or auction_obj.get("currencyV2") or "USD"
     auction_title = auction_obj.get("title")
+    # Catalog-level exclusion: a non-watch sale (jewels/art) shouldn't be
+    # enumerated at all, even though a few watch lots would survive the
+    # per-lot is_excluded_title filter below. See EXCLUDE_CATALOG_TITLES.
+    if is_excluded_catalog(auction_title):
+        print(f"  [Sotheby's] skipping blocklisted catalog: {auction_title!r}")
+        return []
     auction_year = (auction_obj.get("slug") or {}).get("year") if isinstance(auction_obj.get("slug"), dict) else None
     auction_name = (auction_obj.get("slug") or {}).get("name") if isinstance(auction_obj.get("slug"), dict) else None
     # Hoist a sale-level "approximately when this sale ends" date.

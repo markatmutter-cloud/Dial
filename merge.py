@@ -992,6 +992,28 @@ def load_json(path, default):
         return default
 
 
+# Catalog-level exclusions: drop ENTIRE non-watch sales (jewels / art /
+# spy memorabilia that carry a few watch lots) from the auction calendar.
+# Applied in process_auctions() both when upserting CSV rows into the
+# registry and when emitting auctions.json, so a blocklisted sale never
+# surfaces and any stale registry entry stops being emitted.
+# LOCKSTEP: auction_lots_scraper.py holds the same list for the LOT
+# scrapers (it can't be imported here — it pulls `requests`, absent from
+# the pytest env). Keep the two in sync — same convention as BRAND_ALIASES.
+EXCLUDE_CATALOG_TITLES = [
+    "Noble & Private Collections",   # Sotheby's L26035 — jewels/art, 245 lots
+    "Espionage: Fact & Fiction",     # Bonhams 32384 — spy memorabilia
+]
+
+
+def is_excluded_catalog(title):
+    """True iff the SALE/catalog title is a blocklisted non-watch sale."""
+    if not title:
+        return False
+    t = title.lower()
+    return any(x.lower() in t for x in EXCLUDE_CATALOG_TITLES)
+
+
 def auction_id(house, date_start, title):
     """Stable hash so the same auction keeps the same key across runs."""
     key = f"{house}|{date_start}|{title}".lower()
@@ -1077,6 +1099,10 @@ def process_auctions():
 
             if not house or not title:
                 continue
+            # Catalog-level exclusion: never let a blocklisted non-watch
+            # sale into the registry (so it stops being refreshed/re-added).
+            if is_excluded_catalog(title):
+                continue
 
             aid = auction_id(house, date_start or title, title)
             entry = state.get(aid) or {}
@@ -1134,6 +1160,10 @@ def process_auctions():
             # Pre-registry-expansion entries (only had firstSeen +
             # lastSeen + lastUrl/lastTitle) get backfilled the next
             # time their CSV row appears. Skip until then.
+            continue
+        # Catalog-level exclusion: don't emit a blocklisted non-watch sale
+        # even if a stale registry entry persists from before the blocklist.
+        if is_excluded_catalog(title):
             continue
         date_start = entry.get('dateStart') or ''
         date_end   = entry.get('dateEnd') or date_start

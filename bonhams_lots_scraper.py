@@ -35,6 +35,7 @@ from datetime import date, datetime, timezone
 from auction_lots_scraper import (
     enumerate_bonhams,
     in_active_window,
+    is_excluded_catalog,
     is_excluded_title,
 )
 
@@ -146,6 +147,11 @@ def main():
     for sale in targets:
         sale_url = sale["url"]
         label = sale.get("dateLabel") or sale.get("dateStart") or ""
+        # Catalog-level exclusion: skip non-watch sales (e.g. "Espionage:
+        # Fact & Fiction") entirely. See EXCLUDE_CATALOG_TITLES.
+        if is_excluded_catalog(sale.get("title")):
+            print(f"[Bonhams] skipping blocklisted catalog: {sale.get('title')!r}")
+            continue
         print(f"[Bonhams] {label}: {sale_url}")
         try:
             lots = enumerate_bonhams(sale_url, sale)
