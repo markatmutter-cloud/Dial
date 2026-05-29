@@ -68,7 +68,8 @@ const SearchResultsView = React.lazy(() =>
   import("./components/SearchResultsView").then(m => ({ default: m.SearchResultsView }))
 );
 import DateDivider from "./components/DateDivider";
-import { tabPill, innerToggleButton, actionButton } from "./styles";
+import SubTabBar from "./components/SubTabBar";
+import { innerToggleButton, actionButton } from "./styles";
 
 // Same-origin paths — Vercel serves everything in /public at the
 // site root, so these resolve against the user's current host
@@ -3879,43 +3880,23 @@ export default function Watchlist() {
   // Listings tab now uses sub-tabs. listingsSubTabsJSX below replaces
   // both controls.)
 
-  // Listings tab sub-tab strip — mirrors the Watchlist sub-tab strip
-  // pattern (tabPill underline buttons, horizontally scrollable).
-  // Live listings | Live auctions | All sold | Auction calendar.
+  // Listings tab sub-tab strip — the shared SubTabBar (underline tabPill
+  // buttons, horizontally scrollable). Mobile picks up the olive bg to extend
+  // the colored chrome zone from brand+tabs down through the sub-tabs
+  // (PR_β-A 2026-05-22); desktop is neutral + a hairline divider.
   const listingsSubTabsJSX = tab !== "listings" ? null : (
-    <>
-      <div style={{
-        // Tighter gap + side padding on mobile (Mark feedback
-        // 2026-05-11). Saved's 4 longer labels were the tight case;
-        // listings strip benefits too. Desktop spacing unchanged.
-        // PR_β-A 2026-05-22: mobile picks up olive bg to extend the
-        // colored chrome zone from brand+tabs down through sub-tabs.
-        display: "flex", gap: isMobile ? 14 : 20, alignItems: "center",
-        padding: isMobile ? "0 14px" : "0 20px",
+    <SubTabBar
+      ariaLabel="Listings views"
+      tabs={[["live", "Listings"], ["auctions", "Auctions"], ["sold", "Sold"]]}
+      activeKey={listingsSubTab}
+      onSelect={(key) => { setListingsSubTab(key); setDrawerOpen(false); setPage(1); }}
+      isMobile={isMobile}
+      onOlive={isMobile}
+      containerStyle={{
         background: isMobile ? "var(--brand-olive)" : "var(--bg)",
         borderBottom: isMobile ? "none" : "0.5px solid var(--border)",
-        flexShrink: 0,
-        overflowX: "auto",
-        overflowY: "hidden",
-        WebkitOverflowScrolling: "touch",
-        scrollbarWidth: "none",
-        msOverflowStyle: "none",
-      }}>
-        {[
-          ["live", "Listings"],
-          ["auctions", "Auctions"],
-          ["sold", "Sold"],
-        ].map(([key, label]) => {
-          const active = listingsSubTab === key;
-          return (
-            <button key={key} onClick={() => { setListingsSubTab(key); setDrawerOpen(false); setPage(1); }}
-              style={{ ...tabPill(active, { onOlive: isMobile }), flexShrink: 0 }}>
-              {label}
-            </button>
-          );
-        })}
-      </div>
-    </>
+      }}
+    />
   );
 
   // References (Collecting) sub-tab strip — lifted from inside
@@ -3925,36 +3906,24 @@ export default function Watchlist() {
   // sub-tabs because they lived inside the tab content component
   // — fix was to lift them up so every tab's chrome stack matches.
   const referencesSubTabsJSX = tab !== "references" ? null : (
-    <>
-      <div style={{
-        display: "flex", gap: isMobile ? 14 : 20, alignItems: "center",
-        padding: isMobile ? "0 14px" : "0 20px",
+    <SubTabBar
+      ariaLabel="Collecting views"
+      tabs={[
+        ["editorial",  "Articles"],
+        ["references", "References"],
+        ["challenges", "Challenges"],
+        ["size",       "Size comparison"],
+        ["links",      "Links"],
+      ]}
+      activeKey={referencesSubTab}
+      onSelect={(key) => setReferencesSubTab(key)}
+      isMobile={isMobile}
+      onOlive={isMobile}
+      containerStyle={{
         background: isMobile ? "var(--brand-olive)" : "var(--bg)",
         borderBottom: isMobile ? "none" : "0.5px solid var(--border)",
-        flexShrink: 0,
-        overflowX: "auto",
-        overflowY: "hidden",
-        WebkitOverflowScrolling: "touch",
-        scrollbarWidth: "none",
-        msOverflowStyle: "none",
-      }}>
-        {[
-          ["editorial",  "Articles"],
-          ["references", "References"],
-          ["challenges", "Challenges"],
-          ["size",       "Size comparison"],
-          ["links",      "Links"],
-        ].map(([key, label]) => {
-          const active = referencesSubTab === key;
-          return (
-            <button key={key} onClick={() => setReferencesSubTab(key)}
-              style={{ ...tabPill(active, { onOlive: isMobile }), flexShrink: 0 }}>
-              {label}
-            </button>
-          );
-        })}
-      </div>
-    </>
+      }}
+    />
   );
 
   // (Retired 2026-04-30) AuctionsTab JSX was built here. Tracked lots

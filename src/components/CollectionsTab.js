@@ -13,6 +13,7 @@ import { WatchDetailSheet } from "./WatchDetailSheet";
 import { ListReviewMode } from "./ListReviewMode";
 import { articleAsListing } from "./EditorialView";
 import CardShell from "./CardShell";
+import SubTabBar from "./SubTabBar";
 import { DossierBlocks } from "./DossierBlocks";
 import { fmtUSD, matchesSearch, imgSrc } from "../utils";
 import { actionButton, signInButton, innerToggleButton, FONT_SERIF } from "../styles";
@@ -356,33 +357,27 @@ function WLSearchCard({ search, onRun, onEdit, onRemove }) {
 }
 
 // Sticky scroll-spy section nav — jump to a band + show where you are.
-// NOT sub-tabs (it scrolls, doesn't swap content). Mirrors the
-// ReferencePage chip-bar pattern (position:sticky; top:0).
-function WLSectionNav({ sections, active, onJump }) {
+// It scrolls rather than swapping content, but it shares the app's one
+// sub-tab look via SubTabBar (was hand-rolled at 14px/600/1.5px, which read
+// as a different font/weight next to the Watches sub-tabs — Mark's call).
+// Only the surface chrome (sticky + edge bleed) differs, passed via
+// containerStyle; the side padding stays tight (0 2px) so labels sit flush
+// with the Lists column content, not indented like the full-bleed chrome rows.
+function WLSectionNav({ sections, active, onJump, isMobile }) {
   if (sections.length < 2) return null;
   return (
-    <nav style={{
-      position: "sticky", top: 0, zIndex: 12, background: "var(--bg)",
-      borderBottom: "0.5px solid var(--border)", margin: "0 -2px",
-    }}>
-      <div style={{
-        display: "flex", gap: 18, padding: "10px 2px", overflowX: "auto",
-        scrollbarWidth: "none", msOverflowStyle: "none", WebkitOverflowScrolling: "touch",
-      }}>
-        {sections.map((s) => {
-          const on = s.id === active;
-          return (
-            <button key={s.id} onClick={() => onJump(s.id)} style={{
-              flexShrink: 0, cursor: "pointer", fontFamily: "inherit",
-              border: "none", background: "transparent", padding: "2px 0",
-              fontSize: 14, fontWeight: 600,
-              color: on ? "var(--text1)" : "var(--text3)",
-              borderBottom: on ? "1.5px solid var(--brand-olive-text)" : "1.5px solid transparent",
-            }}>{s.label}</button>
-          );
-        })}
-      </div>
-    </nav>
+    <SubTabBar
+      ariaLabel="Jump to section"
+      tabs={sections.map((s) => ({ key: s.id, label: s.label }))}
+      activeKey={active}
+      onSelect={onJump}
+      isMobile={isMobile}
+      containerStyle={{
+        position: "sticky", top: 0, zIndex: 12,
+        background: "var(--bg)", borderBottom: "0.5px solid var(--border)",
+        margin: "0 -2px", padding: "0 2px",
+      }}
+    />
   );
 }
 
@@ -2358,7 +2353,7 @@ function ListsView({
     <div style={{ paddingTop: 0, paddingBottom: isMobile ? 220 : 160 }}>
       {/* Sticky sub-tab-style nav at the TOP (where sub-tabs sit) —
           jump-to + where-am-i, NOT content-swapping sub-tabs (Mark). */}
-      <WLSectionNav sections={wlNavSections} active={activeSection} onJump={goToSection} />
+      <WLSectionNav sections={wlNavSections} active={activeSection} onJump={goToSection} isMobile={isMobile} />
 
       {/* Watchbox demoted to a slim LINK (slow-speed). No intro text
           (Mark: "looks worse for having it"). The medium-speed hearted
