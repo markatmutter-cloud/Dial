@@ -4,64 +4,55 @@ import { supabase, useAuth } from "../supabase";
 import { dispatchAction } from "./ActionBus";
 import { LumeIcon } from "./LumeIcon";
 
-// Lumé — the watch-expert concierge bubble (Epic 9 "AI spine", Phase A).
+// Lumé — the watch-expert concierge bubble (Epic 9 "AI spine").
 //
 // Mounts ONCE at the top of the app next to <ConfirmHost/> (App.js), as a
-// sibling of the shells — so all of its state lives here and App.js gains
-// no new hooks (no React #310 early-return risk) and no shellProps change.
-// Theme is inherited for free via :root CSS vars (portal → document.body).
+// sibling of the shells — all its state lives here, App.js gains no new hooks
+// (no React #310 risk) and no shellProps. Theme inherits via :root CSS vars
+// (portal → document.body).
 //
-// Signed-in only for v1: renders nothing when there's no user. Talks to
-// the grounded /api/chat endpoint with the user's Supabase JWT; the cold-
-// open VOICE + grounding rules live server-side in SYSTEM_PROMPT, so this
-// file stays a thin shell. The opening teaser below is display-only (the
-// real, context-aware cold open arrives on the first user turn).
+// Signed-OUT users see the launcher too (B-43) — tapping it prompts sign-in.
+// Signed-in: the grounded chat. The cold-open VOICE + grounding live server-side
+// in SYSTEM_PROMPT (api/chat.js); this stays a thin shell.
 //
-// NB: surfaces painted with the SOLID olive (--brand-olive) use #fff text,
-// NOT --brand-olive-ink — that ink is the DARK sage meant for light olive
-// *tints* (chips), so on the solid dark olive it renders invisible (B-39).
+// NB: solid-olive surfaces use #fff text, NOT --brand-olive-ink (that ink is the
+// DARK sage for light olive *tints* — invisible on solid olive). (B-39)
 
 const Z = 1400; // below confirm/overlay modals, above page content
 const NAME = "Lumé";
+const OPENED_KEY = "lume_opened_v1";
 
-// Display-only opener — sets Lumé's voice and hands off; the substantive,
-// get_user_context-grounded cold open comes from the model on the first turn.
+// Device-native dictation engine (Web Speech API uses the OS/browser engine).
+// null where unsupported → the mic button is hidden.
+const SpeechRec =
+  typeof window !== "undefined" ? (window.SpeechRecognition || window.webkitSpeechRecognition) : null;
+
+// Display-only opener — sets Lumé's voice + teaches the pronunciation; the
+// substantive get_user_context-grounded cold open comes from the model.
 const GREETING =
-  "Hey — I'm Lumé, your watch guide here. I can dig through live listings and auctions, pull up reference guides and articles, and save things to your lists. Tell me what you're after — a brand, a reference, or just a vibe — or tap a nudge to start.";
+  "Hey — I'm Lumé (loo-may), your watch guide here. I can dig through live listings and auctions, pull up reference guides and articles, and save things to your lists. Tell me what you're after — a brand, a reference, or just a vibe — or tap a nudge to start.";
 
-const SUGGESTIONS = [
-  "What should I look at?",
-  "I'm into dive watches",
-  "Surprise me",
-];
+const SUGGESTIONS = ["What should I look at?", "I'm into dive watches", "Surprise me"];
 
 const LINK_STYLE = { color: "var(--brand)", textDecoration: "underline" };
-const ANIM_CSS =
-  "@keyframes lumeBlink{0%,80%,100%{opacity:.25}40%{opacity:1}}";
+const ANIM_CSS = "@keyframes lumeBlink{0%,80%,100%{opacity:.25}40%{opacity:1}}";
 
 // Minimal rich-text renderer for assistant replies: **bold**, [md](links),
-// bare URLs (→ clickable, new tab), and line breaks. No markdown dependency,
-// builds React nodes (no dangerouslySetInnerHTML).
+// bare URLs (→ clickable, new tab), line breaks. No markdown dep; React nodes.
 const RICH = /\*\*([^*]+)\*\*|\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)|(https?:\/\/[^\s)]+)/g;
 
 function renderInline(text, kp) {
   const out = [];
-  let last = 0;
-  let i = 0;
-  let m;
+  let last = 0, i = 0, m;
   RICH.lastIndex = 0;
   while ((m = RICH.exec(text)) !== null) {
     if (m.index > last) out.push(text.slice(last, m.index));
     if (m[1] !== undefined) {
       out.push(<strong key={`${kp}-${i}`}>{m[1]}</strong>);
     } else if (m[2] !== undefined) {
-      out.push(
-        <a key={`${kp}-${i}`} href={m[3]} target="_blank" rel="noopener noreferrer" style={LINK_STYLE}>{m[2]}</a>
-      );
+      out.push(<a key={`${kp}-${i}`} href={m[3]} target="_blank" rel="noopener noreferrer" style={LINK_STYLE}>{m[2]}</a>);
     } else if (m[4] !== undefined) {
-      out.push(
-        <a key={`${kp}-${i}`} href={m[4]} target="_blank" rel="noopener noreferrer" style={LINK_STYLE}>{m[4]}</a>
-      );
+      out.push(<a key={`${kp}-${i}`} href={m[4]} target="_blank" rel="noopener noreferrer" style={LINK_STYLE}>{m[4]}</a>);
     }
     i += 1;
     last = RICH.lastIndex;
@@ -72,45 +63,77 @@ function renderInline(text, kp) {
 
 function renderRich(text) {
   return String(text || "").split("\n").map((line, i) => (
-    <React.Fragment key={i}>
-      {i > 0 && <br />}
-      {renderInline(line, `l${i}`)}
-    </React.Fragment>
+    <React.Fragment key={i}>{i > 0 && <br />}{renderInline(line, `l${i}`)}</React.Fragment>
   ));
 }
 
+const MicIcon = ({ size = 18 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <rect x="9" y="2" width="6" height="12" rx="3" />
+    <path d="M5 10a7 7 0 0 0 14 0" />
+    <line x1="12" y1="19" x2="12" y2="22" />
+  </svg>
+);
+
 export function ChatBubbleHost() {
-  const { user } = useAuth();
+  const { user, signInWithGoogle } = useAuth();
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState([]); // real turns only: {role, content}
+  const [messages, setMessages] = useState([]);
   const [draft, setDraft] = useState("");
   const [loading, setLoading] = useState(false);
   const [capped, setCapped] = useState(false);
   const [error, setError] = useState("");
-  const [actionState, setActionState] = useState({}); // "<msgIdx>-<actIdx>" -> {status, message}
+  const [actionState, setActionState] = useState({});
+  const [listening, setListening] = useState(false);
+  const [hasOpened, setHasOpened] = useState(() => {
+    try { return typeof localStorage !== "undefined" && localStorage.getItem(OPENED_KEY) === "1"; }
+    catch { return false; }
+  });
   const scrollRef = useRef(null);
   const inputRef = useRef(null);
+  const recognitionRef = useRef(null);
+
+  const openChat = useCallback(() => {
+    setOpen(true);
+    setHasOpened(true);
+    try { localStorage.setItem(OPENED_KEY, "1"); } catch {}
+  }, []);
 
   const runAction = useCallback(async (action, key) => {
     setActionState((s) => ({ ...s, [key]: { status: "running" } }));
     const res = await dispatchAction(action);
-    setActionState((s) => ({
-      ...s,
-      [key]: { status: res.ok ? "done" : "failed", message: res.message },
-    }));
-    // On success, minimise so the user sees the result behind (filtered grid,
-    // opened watch, the list picker). The conversation persists; reopen via the
-    // launcher. Keep open on failure so they see the error. (Mark feedback.)
-    if (res.ok) setOpen(false);
+    setActionState((s) => ({ ...s, [key]: { status: res.ok ? "done" : "failed", message: res.message } }));
+    if (res.ok) setOpen(false); // minimise so the result behind is visible (Mark)
   }, []);
+
+  // Device-native dictation: append speech into the draft. (B-43)
+  const toggleMic = useCallback(() => {
+    if (!SpeechRec) return;
+    if (listening) { try { recognitionRef.current && recognitionRef.current.stop(); } catch {} return; }
+    let rec;
+    try { rec = new SpeechRec(); } catch { return; }
+    rec.lang = "en-US"; rec.interimResults = true; rec.continuous = false;
+    const base = draft;
+    rec.onresult = (e) => {
+      let t = "";
+      for (let k = 0; k < e.results.length; k++) t += e.results[k][0].transcript;
+      setDraft((base ? base.replace(/\s*$/, "") + " " : "") + t);
+    };
+    rec.onend = () => setListening(false);
+    rec.onerror = () => setListening(false);
+    recognitionRef.current = rec;
+    setListening(true);
+    try { rec.start(); } catch { setListening(false); }
+  }, [listening, draft]);
+
+  useEffect(() => () => { try { recognitionRef.current && recognitionRef.current.stop(); } catch {} }, []);
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages, loading, open]);
 
-  // Auto-grow the composer with the draft so a longer prompt stays visible
-  // (B-41), up to ~5 lines then it scrolls. Also shrinks back when the draft
-  // is cleared after send.
+  // Auto-grow the composer with the draft (B-41), to ~5 lines then scroll.
   useEffect(() => {
     const el = inputRef.current;
     if (!el) return;
@@ -130,29 +153,14 @@ export function ChatBubbleHost() {
       try {
         const { data } = await supabase.auth.getSession();
         const token = data?.session?.access_token;
-        if (!token) {
-          setError("Please sign in again.");
-          setLoading(false);
-          return;
-        }
+        if (!token) { setError("Please sign in again."); setLoading(false); return; }
         const res = await fetch("/api/chat", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
           body: JSON.stringify({ messages: next }),
         });
-        if (res.status === 429) {
-          setCapped(true);
-          setLoading(false);
-          return;
-        }
-        if (!res.ok) {
-          setError("Something went wrong — try again in a moment.");
-          setLoading(false);
-          return;
-        }
+        if (res.status === 429) { setCapped(true); setLoading(false); return; }
+        if (!res.ok) { setError("Something went wrong — try again in a moment."); setLoading(false); return; }
         const body = await res.json();
         setMessages([...next, {
           role: "assistant",
@@ -168,311 +176,220 @@ export function ChatBubbleHost() {
     [messages, loading]
   );
 
-  // Signed-in only (v1). Also bail on SSR / pre-mount.
-  if (typeof document === "undefined" || !user) return null;
+  if (typeof document === "undefined") return null;
 
-  const display = [{ role: "assistant", content: GREETING }, ...messages];
+  const FIXED = {
+    position: "fixed",
+    right: "max(16px, env(safe-area-inset-right))",
+    bottom: "max(16px, env(safe-area-inset-bottom))",
+    zIndex: Z,
+  };
+  // Speech-bubble launcher: a rounded square with one squared corner (tail) so
+  // it reads as a chat icon, not a plain circle. (B-43)
+  const launcherStyle = {
+    width: 52, height: 52,
+    borderRadius: "22px 22px 22px 6px",
+    border: "none", padding: 0,
+    background: "var(--brand-olive)",
+    boxShadow: "0 6px 20px rgba(0,0,0,0.22)",
+    cursor: "pointer",
+    display: "flex", alignItems: "center", justifyContent: "center",
+  };
+  const panelFrame = {
+    ...FIXED,
+    width: "min(380px, calc(100vw - 24px))",
+    display: "flex", flexDirection: "column",
+    background: "var(--bg)",
+    border: "1px solid rgba(255,255,255,0.22)",
+    borderRadius: 16,
+    boxShadow: "0 0 0 1px rgba(0,0,0,0.18), 0 16px 48px rgba(0,0,0,0.5)",
+    overflow: "hidden",
+  };
+  const header = (
+    <div style={{
+      display: "flex", alignItems: "center", justifyContent: "space-between",
+      padding: "12px 14px", background: "var(--brand-olive)", color: "#fff", flexShrink: 0,
+    }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <LumeIcon size={18} style={{ display: "block" }} />
+        <span style={{ fontSize: 15, fontWeight: 600, letterSpacing: "-0.01em" }}>{NAME}</span>
+        <span style={{ fontSize: 13, fontWeight: 400, opacity: 0.85 }}>· Watch chat</span>
+      </div>
+      <button onClick={() => setOpen(false)} aria-label="Close" style={{
+        border: "none", background: "rgba(255,255,255,0.16)", color: "#fff",
+        width: 26, height: 26, borderRadius: "50%", fontSize: 17, lineHeight: "26px",
+        textAlign: "center", cursor: "pointer", padding: 0,
+      }}>×</button>
+    </div>
+  );
 
-  const node = open ? (
-    <div
-      style={{
-        position: "fixed",
-        right: "max(16px, env(safe-area-inset-right))",
-        bottom: "max(16px, env(safe-area-inset-bottom))",
-        zIndex: Z,
-        width: "min(380px, calc(100vw - 24px))",
-        height: "min(560px, calc(100vh - 120px))",
-        display: "flex",
-        flexDirection: "column",
-        background: "var(--bg)",
-        // The olive header otherwise blends into the app's olive chrome on
-        // mobile (Mark). Lift the whole panel off the background: a light
-        // hairline ring + a deeper shadow make the window edge read clearly on
-        // any backdrop, in both themes.
-        border: "1px solid rgba(255,255,255,0.22)",
-        borderRadius: 16,
-        boxShadow: "0 0 0 1px rgba(0,0,0,0.18), 0 16px 48px rgba(0,0,0,0.5)",
-        overflow: "hidden",
-      }}
-      role="dialog"
-      aria-label={NAME}
-    >
-      <style>{ANIM_CSS}</style>
-      {/* header */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "12px 14px",
-          background: "var(--brand-olive)",
-          color: "#fff",
-          flexShrink: 0,
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <LumeIcon size={18} style={{ display: "block" }} />
-          <span style={{ fontSize: 15, fontWeight: 600, letterSpacing: "-0.01em" }}>{NAME}</span>
-          <span style={{ fontSize: 13, fontWeight: 400, opacity: 0.85 }}>· Watch chat</span>
-        </div>
-        <button
-          onClick={() => setOpen(false)}
-          aria-label="Close"
-          style={{
+  let node;
+
+  if (!open) {
+    // Closed: the "Ask me" callout (until first open) + the speech-bubble launcher.
+    node = (
+      <div style={{ ...FIXED, display: "flex", alignItems: "center", gap: 10 }}>
+        {!hasOpened && (
+          <button onClick={openChat} style={{
             border: "none",
-            background: "rgba(255,255,255,0.16)",
-            color: "#fff",
-            width: 26,
-            height: 26,
-            borderRadius: "50%",
-            fontSize: 17,
-            lineHeight: "26px",
-            textAlign: "center",
-            cursor: "pointer",
-            padding: 0,
-          }}
-        >
-          ×
+            background: "rgba(20,24,18,0.72)",
+            WebkitBackdropFilter: "blur(6px)", backdropFilter: "blur(6px)",
+            color: "#fff", borderRadius: 999, padding: "8px 12px",
+            fontSize: 13, fontWeight: 500, cursor: "pointer", whiteSpace: "nowrap",
+            boxShadow: "0 4px 14px rgba(0,0,0,0.25)",
+          }}>Ask me</button>
+        )}
+        <button onClick={openChat} aria-label={`Open ${NAME}`} style={launcherStyle}>
+          <LumeIcon size={44} style={{ display: "block" }} />
         </button>
       </div>
-
-      {/* messages */}
-      <div
-        ref={scrollRef}
-        style={{
-          flex: 1,
-          overflowY: "auto",
-          padding: "14px",
-          display: "flex",
-          flexDirection: "column",
-          gap: 10,
-        }}
-      >
-        {display.map((m, i) => {
-          const isUser = m.role === "user";
-          const acts = !isUser && Array.isArray(m.actions) ? m.actions : [];
-          return (
-            <div
-              key={i}
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: isUser ? "flex-end" : "flex-start",
-                gap: 6,
-              }}
-            >
-              <div
-                style={{
-                  maxWidth: "85%",
-                  padding: "8px 12px",
-                  borderRadius: 12,
-                  fontSize: 14,
-                  lineHeight: 1.45,
+    );
+  } else if (!user) {
+    // Signed-out: prompt to sign in. (B-43)
+    node = (
+      <div style={panelFrame} role="dialog" aria-label={NAME}>
+        {header}
+        <div style={{ padding: 18, display: "flex", flexDirection: "column", gap: 14 }}>
+          <div style={{ fontSize: 14, lineHeight: 1.5, color: "var(--text1)" }}>
+            Sign in to chat with <strong>Lumé</strong> — your watch guide. It digs through live
+            listings and auctions, pulls up reference guides, and saves things to your lists.
+          </div>
+          <button onClick={() => { try { signInWithGoogle && signInWithGoogle(); } catch {} }} style={{
+            border: "none", background: "var(--brand-olive)", color: "#fff",
+            borderRadius: 10, padding: "11px 16px", fontSize: 14, fontWeight: 600,
+            cursor: "pointer", fontFamily: "inherit",
+          }}>Sign in to chat</button>
+        </div>
+      </div>
+    );
+  } else {
+    // Signed-in: the full chat.
+    const display = [{ role: "assistant", content: GREETING }, ...messages];
+    node = (
+      <div style={{ ...panelFrame, height: "min(560px, calc(100vh - 120px))" }} role="dialog" aria-label={NAME}>
+        <style>{ANIM_CSS}</style>
+        {header}
+        <div ref={scrollRef} style={{
+          flex: 1, overflowY: "auto", padding: "14px",
+          display: "flex", flexDirection: "column", gap: 10,
+        }}>
+          {display.map((m, i) => {
+            const isUser = m.role === "user";
+            const acts = !isUser && Array.isArray(m.actions) ? m.actions : [];
+            return (
+              <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: isUser ? "flex-end" : "flex-start", gap: 6 }}>
+                <div style={{
+                  maxWidth: "85%", padding: "8px 12px", borderRadius: 12, fontSize: 14, lineHeight: 1.45,
                   background: isUser ? "var(--brand-olive)" : "var(--card-bg, var(--surface))",
                   color: isUser ? "#fff" : "var(--text1)",
                   border: isUser ? "none" : "0.5px solid var(--border)",
-                }}
-              >
-                {isUser ? m.content : renderRich(m.content)}
-              </div>
-              {acts.length > 0 && (
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 6, maxWidth: "90%" }}>
-                  {acts.map((a, ai) => {
-                    const key = `${i}-${ai}`;
-                    const st = actionState[key];
-                    const failed = st && st.status === "failed";
-                    const done = st && st.status === "done";
-                    const running = st && st.status === "running";
-                    return (
-                      <button
-                        key={ai}
-                        onClick={() => runAction(a, key)}
-                        disabled={running || done}
-                        title={failed ? st.message : undefined}
-                        style={{
-                          border: "none",
-                          borderRadius: 999,
-                          padding: "6px 12px",
-                          fontSize: 13,
-                          fontFamily: "inherit",
-                          cursor: running || done ? "default" : "pointer",
-                          background: failed ? "var(--danger)" : "var(--brand-olive)",
-                          color: "#fff",
-                          opacity: running ? 0.6 : 1,
-                        }}
-                      >
-                        {done ? "✓ " : ""}{a.label}
-                      </button>
-                    );
-                  })}
+                }}>
+                  {isUser ? m.content : renderRich(m.content)}
                 </div>
-              )}
+                {acts.length > 0 && (
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6, maxWidth: "90%" }}>
+                    {acts.map((a, ai) => {
+                      const key = `${i}-${ai}`;
+                      const st = actionState[key];
+                      const failed = st && st.status === "failed";
+                      const done = st && st.status === "done";
+                      const running = st && st.status === "running";
+                      return (
+                        <button key={ai} onClick={() => runAction(a, key)} disabled={running || done}
+                          title={failed ? st.message : undefined}
+                          style={{
+                            border: "none", borderRadius: 999, padding: "6px 12px", fontSize: 13,
+                            fontFamily: "inherit", cursor: running || done ? "default" : "pointer",
+                            background: failed ? "var(--danger)" : "var(--brand-olive)", color: "#fff",
+                            opacity: running ? 0.6 : 1,
+                          }}>
+                          {done ? "✓ " : ""}{a.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+
+          {messages.length === 0 && !loading && (
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 2 }}>
+              {SUGGESTIONS.map((s) => (
+                <button key={s} onClick={() => send(s)} style={{
+                  border: "0.5px solid var(--border)", background: "transparent", color: "var(--text1)",
+                  borderRadius: 999, padding: "6px 12px", fontSize: 13, cursor: "pointer", fontFamily: "inherit",
+                }}>{s}</button>
+              ))}
             </div>
-          );
-        })}
+          )}
 
-        {/* one-tap nudges, only before the first real turn */}
-        {messages.length === 0 && !loading && (
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 2 }}>
-            {SUGGESTIONS.map((s) => (
-              <button
-                key={s}
-                onClick={() => send(s)}
-                style={{
-                  border: "0.5px solid var(--border)",
-                  background: "transparent",
-                  color: "var(--text1)",
-                  borderRadius: 999,
-                  padding: "6px 12px",
-                  fontSize: 13,
-                  cursor: "pointer",
-                  fontFamily: "inherit",
-                }}
-              >
-                {s}
-              </button>
-            ))}
-          </div>
-        )}
-
-        {loading && (
-          <div
-            aria-label={`${NAME} is thinking`}
-            style={{
-              alignSelf: "flex-start",
-              display: "flex",
-              gap: 4,
-              alignItems: "center",
-              padding: "10px 12px",
-              borderRadius: 12,
-              background: "var(--card-bg, var(--surface))",
+          {loading && (
+            <div aria-label={`${NAME} is thinking`} style={{
+              alignSelf: "flex-start", display: "flex", gap: 4, alignItems: "center",
+              padding: "10px 12px", borderRadius: 12, background: "var(--card-bg, var(--surface))",
               border: "0.5px solid var(--border)",
-            }}
-          >
-            {[0, 1, 2].map((d) => (
-              <span
-                key={d}
+            }}>
+              {[0, 1, 2].map((d) => (
+                <span key={d} style={{
+                  width: 6, height: 6, borderRadius: "50%", background: "var(--text2)", display: "inline-block",
+                  animation: "lumeBlink 1.2s infinite", animationDelay: `${d * 0.15}s`,
+                }} />
+              ))}
+            </div>
+          )}
+          {error && <div style={{ fontSize: 13, color: "var(--danger)", padding: "2px" }}>{error}</div>}
+          {capped && (
+            <div style={{ fontSize: 13, color: "var(--text2)", padding: "2px" }}>
+              You've used today's messages with {NAME} — back tomorrow.
+            </div>
+          )}
+        </div>
+
+        {!capped && (
+          <form onSubmit={(e) => { e.preventDefault(); send(draft); }} style={{
+            display: "flex", alignItems: "flex-end", gap: 8, padding: "10px 12px",
+            borderTop: "0.5px solid var(--border)", flexShrink: 0,
+          }}>
+            {SpeechRec && (
+              <button type="button" onClick={toggleMic}
+                aria-label={listening ? "Stop dictation" : "Dictate"} title="Dictate"
                 style={{
-                  width: 6,
-                  height: 6,
-                  borderRadius: "50%",
-                  background: "var(--text2)",
-                  display: "inline-block",
-                  animation: "lumeBlink 1.2s infinite",
-                  animationDelay: `${d * 0.15}s`,
-                }}
-              />
-            ))}
-          </div>
-        )}
-        {error && (
-          <div style={{ fontSize: 13, color: "var(--danger)", padding: "2px" }}>{error}</div>
-        )}
-        {capped && (
-          <div style={{ fontSize: 13, color: "var(--text2)", padding: "2px" }}>
-            You've used today's messages with {NAME} — back tomorrow.
-          </div>
+                  border: "0.5px solid var(--border)", borderRadius: 10, height: 38, width: 38,
+                  flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center",
+                  cursor: "pointer", fontFamily: "inherit",
+                  background: listening ? "var(--brand-olive)" : "transparent",
+                  color: listening ? "#fff" : "var(--text2)",
+                }}>
+                <MicIcon />
+              </button>
+            )}
+            <textarea
+              ref={inputRef}
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(draft); } }}
+              placeholder="Ask about a watch…"
+              disabled={loading}
+              rows={1}
+              style={{
+                flex: 1, border: "0.5px solid var(--border)", borderRadius: 10, padding: "9px 12px",
+                fontSize: 14, fontFamily: "inherit", lineHeight: 1.4, background: "var(--bg)",
+                color: "var(--text1)", WebkitTextFillColor: "var(--text1)", caretColor: "var(--text1)",
+                outline: "none", resize: "none", maxHeight: 120, overflowY: "auto",
+              }}
+            />
+            <button type="submit" disabled={loading || !draft.trim()} style={{
+              border: "none", background: "var(--brand-olive)", color: "#fff", borderRadius: 10,
+              padding: "0 14px", height: 38, flexShrink: 0, fontSize: 14, fontWeight: 600,
+              cursor: loading || !draft.trim() ? "default" : "pointer",
+              opacity: loading || !draft.trim() ? 0.5 : 1, fontFamily: "inherit",
+            }}>Send</button>
+          </form>
         )}
       </div>
-
-      {/* composer */}
-      {!capped && (
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            send(draft);
-          }}
-          style={{
-            display: "flex",
-            alignItems: "flex-end",
-            gap: 8,
-            padding: "10px 12px",
-            borderTop: "0.5px solid var(--border)",
-            flexShrink: 0,
-          }}
-        >
-          <textarea
-            ref={inputRef}
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            onKeyDown={(e) => {
-              // Enter sends; Shift+Enter inserts a newline.
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                send(draft);
-              }
-            }}
-            placeholder="Ask about a watch…"
-            disabled={loading}
-            rows={1}
-            style={{
-              flex: 1,
-              border: "0.5px solid var(--border)",
-              borderRadius: 10,
-              padding: "9px 12px",
-              fontSize: 14,
-              fontFamily: "inherit",
-              lineHeight: 1.4,
-              background: "var(--bg)",
-              // Explicit text colour + webkit fill + caret so the typed text
-              // is always visible regardless of inherited colour (B-39).
-              color: "var(--text1)",
-              WebkitTextFillColor: "var(--text1)",
-              caretColor: "var(--text1)",
-              outline: "none",
-              resize: "none",
-              maxHeight: 120,
-              overflowY: "auto",
-            }}
-          />
-          <button
-            type="submit"
-            disabled={loading || !draft.trim()}
-            style={{
-              border: "none",
-              background: "var(--brand-olive)",
-              color: "#fff",
-              borderRadius: 10,
-              padding: "0 14px",
-              height: 38,
-              flexShrink: 0,
-              fontSize: 14,
-              fontWeight: 600,
-              cursor: loading || !draft.trim() ? "default" : "pointer",
-              opacity: loading || !draft.trim() ? 0.5 : 1,
-              fontFamily: "inherit",
-            }}
-          >
-            Send
-          </button>
-        </form>
-      )}
-    </div>
-  ) : (
-    <button
-      onClick={() => setOpen(true)}
-      aria-label={`Open ${NAME}`}
-      style={{
-        position: "fixed",
-        right: "max(16px, env(safe-area-inset-right))",
-        bottom: "max(16px, env(safe-area-inset-bottom))",
-        zIndex: Z,
-        width: 52,
-        height: 52,
-        borderRadius: "50%",
-        border: "none",
-        padding: 0,
-        background: "var(--brand-olive)",
-        boxShadow: "0 6px 20px rgba(0,0,0,0.22)",
-        cursor: "pointer",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <LumeIcon size={44} style={{ display: "block" }} />
-    </button>
-  );
+    );
+  }
 
   return createPortal(node, document.body);
 }
