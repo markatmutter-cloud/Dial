@@ -13,13 +13,11 @@ import { buildMockShellProps } from "./__fixtures__/mockShellProps";
 describe("MobileShell", () => {
   test("renders without crashing on a default empty session", () => {
     render(<MobileShell {...buildMockShellProps()} />);
-    // Bundle 2A.1 (2026-05-07) renamed the bottom-nav tab
-    // "Watchlist" → "Saved", then 2026-05-09 IA pass renamed
-    // "Saved" → "Watchlists". The brand title at the top still
-    // says "Watchlist" (singular). So "Watchlist" appears at least
-    // twice on the default mock (brand button + bottom-nav matches
-    // /watchlist/i).
-    expect(screen.getAllByRole("button", { name: /watchlist/i }).length).toBeGreaterThanOrEqual(1);
+    // The brand wordmark button (top-left) is the home button — its
+    // accessible name is "Home" (2026-05-28: added a home icon + aria-label
+    // "Home" so a real user could find it; was previously named by its
+    // "Watchlist" text). Assert that home button renders.
+    expect(screen.getAllByRole("button", { name: /home/i }).length).toBeGreaterThanOrEqual(1);
   });
 
   test("renders the Filters icon button on a filterable tab", () => {
