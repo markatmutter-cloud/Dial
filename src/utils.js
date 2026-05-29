@@ -262,6 +262,9 @@ const FRONTEND_BRANDS = [
   // because the brand wasn't on the substring list. Nivada Grenchen
   // (covers the Croton variant via canonicalizeBrand).
   "Gerald Genta", "Nivada Grenchen",
+  // Added 2026-05-28 (B-26) — mirror merge.py BRANDS so projected
+  // Richard Mille titles detect here too instead of falling to Other.
+  "Richard Mille",
 ];
 export function detectBrandFromTitle(title) {
   if (!title) return "Other";
