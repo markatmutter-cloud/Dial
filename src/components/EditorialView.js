@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { pillBase, inputBase, clearAllPill, FONT_SERIF } from "../styles";
+import { pillBase, inputBase, clearAllPill, editorialTitle } from "../styles";
 import { Chip } from "./Chip";
 import { FilterRow } from "./FilterRow";
 import { shortHash } from "../utils";
@@ -942,7 +942,6 @@ export function ArticleCard({ article, isMobile, compact, cols, watchlist, handl
   // retired alongside the multi-col grid; the parent grids now
   // cap at 3 cols on desktop / 1 on mobile so a single card size
   // works everywhere.
-  const SERIF_TITLE = FONT_SERIF;
 
   return (
     <div style={{ position: "relative", height: "100%" }}>
@@ -995,10 +994,7 @@ export function ArticleCard({ article, isMobile, compact, cols, watchlist, handl
             feel chunky. lineClamp 3 lines so longer titles wrap
             without ballooning the card height. */}
         <div style={{
-          fontFamily: SERIF_TITLE,
-          fontSize: isMobile ? 22 : 20,
-          fontWeight: 400,
-          lineHeight: 1.22,
+          ...editorialTitle({ isMobile }),
           color: "var(--text1)",
           display: "-webkit-box",
           WebkitLineClamp: 3,

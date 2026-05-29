@@ -27,6 +27,36 @@ export const FONT_SANS = "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Hel
 export const FONT_SERIF = "'Hoefler Text', 'Iowan Old Style', Georgia, 'Times New Roman', serif";          // body + titles
 export const FONT_SERIF_DISPLAY = "'Hoefler Text', 'Iowan Old Style', Georgia, 'Times New Roman', serif";  // hero/display (same face; separate name documents the role)
 
+// ── EDITORIAL TYPE RAMP ───────────────────────────────────────────────
+// The "sit and read" register, as reusable recipes (2026-05-28). Each
+// returns a style object — spread it and override per-site (color, margin,
+// clamp) like the other tokens: style={{ ...editorialTitle({ isMobile }),
+// color: "var(--text1)" }}. These bundle the FULL editorial recipe — serif
+// face + tight leading + negative tracking — so a surface opts into the
+// whole language, not just the font. Reach for these on READING surfaces
+// only (article/reference titles + prose, reference teasers). NEVER on
+// scan-and-act chrome — nav, filters, buttons, inputs, list/section names,
+// empty states. Serif reads as premium because it's restricted; leaking it
+// onto the interface is the bug. See DESIGN_SYSTEM.md "Serif vs sans".
+//
+// Weight note: serif renders heavier than sans at the same weight — titles
+// sit at 400 (past 500 feels chunky); display/headings at 600.
+export const editorialDisplay = ({ isMobile } = {}) => ({
+  fontFamily: FONT_SERIF_DISPLAY, fontWeight: 600,
+  fontSize: isMobile ? 44 : 72, lineHeight: 0.98, letterSpacing: "-0.01em",
+});
+export const editorialHeading = ({ isMobile } = {}) => ({
+  fontFamily: FONT_SERIF, fontWeight: 600,
+  fontSize: isMobile ? 25 : 30, lineHeight: 1.08, letterSpacing: "-0.01em",
+});
+export const editorialTitle = ({ isMobile } = {}) => ({
+  fontFamily: FONT_SERIF, fontWeight: 400,
+  fontSize: isMobile ? 22 : 20, lineHeight: 1.22,
+});
+export const editorialProse = ({ isMobile } = {}) => ({
+  fontFamily: FONT_SERIF, fontSize: isMobile ? 16 : 17, lineHeight: 1.6,
+});
+
 // ── PILLS ─────────────────────────────────────────────────────────────
 
 // Sort/filter pills in the sticky/filter rows. Inactive = transparent
