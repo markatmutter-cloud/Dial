@@ -94,7 +94,7 @@ in-app since Claude can't run the app here.*
 the redesign.*
 
 ### B-16 — Dependencies unpinned (no lockfiles, JS + Python)
-- **Reported:** 2026-05-24 · **Source:** `audit:2026-05-24` · **Severity:** 2 (reliability + supply-chain) · **Surface:** build / CI / workflows · **Status:** Partly fixed — **Python pinned #578**; **JS lockfile still open** (pending a Node environment — `npm` unavailable locally).
+- **Reported:** 2026-05-24 · **Source:** `audit:2026-05-24` · **Severity:** 2 (reliability + supply-chain) · **Surface:** build / CI / workflows · **Status:** Partly fixed — **Python pinned #578**; **JS lockfile DEFERRED 2026-05-29 (Mark)** — confirmed `npm`/`node` are absent on the machine (all builds are cloud), so a lockfile can't be generated locally and installing a toolchain isn't worth it for non-urgent hardening. When tackled: commit `package-lock.json` (cloud-generate via a one-shot Action, or local npm), switch `tests.yml` + `scrape-auctions*.yml` to `npm ci`, enable setup-node npm cache; Vercel auto-uses `npm ci` once the lockfile is committed.
 - **Detail:** No `package-lock.json`; workflows `pip install` latest unpinned. A build that works today can break tomorrow with no code change, and it's a supply-chain exposure (updates run with the scrapers' secret keys). Cheapest high-leverage fix in the audit.
 - **Done (#578):** pinned `requirements.txt` / `requirements-auctions.txt` / `requirements-ai.txt`; all 11 runtime workflow steps now `pip install -r`.
 - **Remaining:** commit `package-lock.json` + switch CI/Vercel to `npm ci` (needs Node); optionally Dependabot for deliberate bumps. Detail: `findings-maintainability.md` (HIGH-1), `findings-security.md` (MED-2/3).
@@ -102,10 +102,8 @@ the redesign.*
 ### B-18 — Currency FX tables duplicated, can silently drift · Fixed #675
 - **Reported:** 2026-05-24 · **Status:** RESOLVED 2026-05-28 (#675) — FX parity guard added (parallel session). A CI-enforced test now asserts that `merge.py`'s FX table matches `utils.js`'s `FX_RATES_USD_PER`; fails if they drift. No longer a silent mis-price risk.
 
-### B-19 — 5 user-data tables' RLS state not version-controlled
-- **Reported:** 2026-05-24 · **Source:** `audit:2026-05-24` · **Severity:** 2 (security provability) · **Surface:** Supabase / migrations · **Status:** Open
-- **Detail:** `watchlist_items`, `hidden_listings`, `saved_searches`, `tracked_lots`, and the base collections/challenges table have correct policies in the repo but **no committed CREATE / enable-RLS** — so "RLS is on" can't be proven from code, and a dashboard change could silently disable it (private → world-readable). No active leak found; this is a provability + regression-safety gap. Also: the `listing_events` insert policy lets a client forge `user_id`.
-- **Fix:** commit DDL + `enable row level security` for the 5; tighten the `listing_events` insert policy. Detail: `findings-security.md` (HIGH-1, MED-1).
+### B-19 — 5 user-data tables' RLS state not version-controlled · Fixed #677
+- **Reported:** 2026-05-24 · **Source:** `audit:2026-05-24` · **Severity:** 2 (security provability) · **Status:** RESOLVED 2026-05-29 (#677, **applied to prod + verified**). Committed an idempotent `enable row level security` for the four dashboard-created tables (`watchlist_items`/`hidden_listings`/`saved_searches`/`tracked_lots`) in `supabase/schema/2026-05-28_rls_provability.sql`, so RLS-on is now provable + restorable from code (their policies already lived in `2026-05-10_rls_initplan_perf.sql`; collections/collection_items already enabled in `2026-05-01_collections.sql`; **"challenges" is a collection *kind*, no table exists**). Verified all four had RLS on in prod — no active leak. Also tightened the `listing_events` insert from `with check (true)` → `user_id is null or user_id = (select auth.uid())`: blocks forging another user's `user_id` while keeping anon analytics working (matches `useEventTelemetry`). Detail: `findings-security.md` (HIGH-1, MED-1).
 
 ### B-20 — Two near-identical auction-scraper filenames
 - **Reported:** 2026-05-24 · **Source:** `audit:2026-05-24` · **Severity:** 3 (footgun) · **Surface:** auction scrapers · **Status:** Open
@@ -113,7 +111,7 @@ the redesign.*
 - **Fix:** rename `auctionlots_scraper.py` → `tracked_lots_scraper.py` + update importers/workflows. Detail: `findings-architecture.md` (M1), `findings-maintainability.md` (MED-4).
 
 ### B-22 — App ships as one bundle; heavy tabs aren't code-split
-- **Reported:** 2026-05-26 · **Source:** `audit:2026-05-24` (H1) · **Severity:** 2 (perf / first-load) · **Surface:** `src/App.js`, `src/index.js` · **Status:** Partly fixed — **AdminTab code-split #579**; phase 2 open.
+- **Reported:** 2026-05-26 · **Source:** `audit:2026-05-24` (H1) · **Severity:** 2 (perf / first-load) · **Surface:** `src/App.js`, `src/index.js` · **Status:** Partly fixed — **AdminTab code-split #579**; phase 2 open. **DEFERRED 2026-05-29 (Mark):** do it when he can verify in-app — a `React.lazy` default-vs-named-export slip could white-screen a surface and there's no local Node to run the CRA build (only CI would catch it). Overlaps B-34's ReferencesTab-subtree lazy-load.
 - **Detail:** No `React.lazy`/`Suspense` anywhere; `App.js` statically imports every heavy surface (AdminTab, EditorialView, SizeCompare, ChallengeFlow, the share/list/challenge receivers, all modals, SearchResultsView), so every visitor downloads + parses their code on first load even though most never open them.
 - **Done (#579):** AdminTab (admin-only) `React.lazy` + `Suspense` — its chunk now loads only when an admin opens the tab.
 - **Remaining (phase 2):** the receivers (mount only on inbound share/challenge/list links), `EditorialView`, `SizeCompare`, `ChallengeFlow`, modals. Confirm where each is imported (some are inside sub-components, not App.js). Detail: `docs/audits/2026-05-24-vibe-code/findings-frontend.md` (H1).
@@ -166,7 +164,7 @@ install/decision tails remaining.*
 *Small correctness fix.*
 
 ### B-26 — A shared item leaks into the brand-filtered Listings grid · Fixed #674
-- **Reported:** 2026-05-26 · **Status:** RESOLVED 2026-05-28 (#674, parallel session). The adjacent Richard Mille mis-brand (RM 002-V2 showing as Enicar via a "002" ref-number collision) was the root cause; fixed in `merge.py`. The share-URL in the grid was a separate user-data projection issue; also resolved.
+- **Reported:** 2026-05-26 · **Status:** RESOLVED 2026-05-29 (#674 code + #679 data). Root cause was a single brand-misclassification, **not** a leak: a Wind Vintage "Richard Mille RM 002-V2" had its brand undetected (RM was on neither brand-detection list), so the matcher matched the bare "002" against Enicar's ref 002 and stamped `brand: Enicar`. Fixed by adding "Richard Mille" to `merge.py` BRANDS + `utils.js` FRONTEND_BRANDS (the cross-pollination guard then rejects the hit) + correcting the cached `lastBrand` in `state.json`. **The `/share/484b…` link was a red herring** — it's just this listing's own id (share URLs are built from the id), not another user's shared item, so there was no cross-user privacy leak. (The `state.json` fix was re-landed in #679 after a scrape-commit race clobbered the first one.)
 
 ### B-29 — Sold tab: "Calendar" button → "Auctions"; closed-auction click should open its lots
 - **Reported:** 2026-05-27 · **Type:** Auction-surface UX (Epic 9 / Phase 0 follow-up) · **Severity:** 2 · **Surface:** Listings ▸ Sold filter row + the auction calendar modal "Closed" path · **Status:** RESOLVED 2026-05-28 (#657/#663). Part 2 shipped — a closed auction's sold lots now show on the Sold sub-tab (the sale filter gates by status: applies on Sold only for *closed* sales, on Auctions for live; `effectiveSaleUrls`). Part 1 OBSOLETED by Mark's call: the launcher is renamed **"Calendar"** (not "Auctions") and reads as a filter pill — the rename idea is superseded.
@@ -177,11 +175,11 @@ install/decision tails remaining.*
 - **Detail:** (1) **Filtering:** tapping a month pill (MAY/JUN/…) does NOT filter to that month — all sales still render, it just **scrolls** to the month. Mark questions whether **"ALL"** should exist if months don't actually filter. Decide: make month pills *filter* (hide other months) OR keep scroll-to + drop "ALL". (2) **Layout:** the **"CLOSED"** pill sits far-right on the month row; Mark wants it on the **same line but left-aligned**, ahead of the months.
 
 ### B-31 — Search results: Auctions strip cards misaligned
-- **Reported:** 2026-05-27 · **Severity:** 3 (visual) · **Surface:** `SearchResultsView` Auctions strip (`Strip`→`CardStrip`/`Card`) · **Status:** Open — queued (needs visual diagnosis; no local Node to verify).
+- **Reported:** 2026-05-27 · **Severity:** 3 (visual) · **Surface:** `SearchResultsView` Auctions strip (`Strip`→`CardStrip`/`Card`) · **Status:** Mark reported DONE 2026-05-29 (verbal, alongside B-32/B-33) — **PR not separately confirmed; verify + close at /tidy** (likely folded into the CardStrip/#670 chrome work). Left here, not in Resolved, until the PR is identified.
 - **Detail:** In the Home "search all" results, the **Auctions** strip cards don't line up with the Listings strip above (Mark screenshot 2026-05-27). Likely the auction item renders at a different card height/aspect in the shared `CardStrip` (countdown badge / image aspect / price line). Compare auction-vs-listing `Card` rendering and align the card dimensions within the strip.
 
 ### B-32 — Home: content strips (recently added · articles · sold · hearted · auctions ending soon)
-- **Reported:** 2026-05-27 · **Type:** Feature (Home landing) · **Severity:** 3 · **Surface:** `HomeTab` strips + editorial corpus · **Status:** Open — queued.
+- **Reported:** 2026-05-27 · **Type:** Feature (Home landing) · **Severity:** 3 · **Surface:** `HomeTab` strips + editorial corpus · **Status:** Mark reported DONE 2026-05-29 (verbal, alongside B-31/B-33) — **PR not separately confirmed; verify + close at /tidy.** Left here, not in Resolved, until the PR is identified.
 - **Detail:** Mark wants the home/landing page to carry horizontal strips: **Recently added · Articles (recent) · Sold · Hearted · Auctions ending soon.** (Articles = the long-deferred editorial strip — load editorial meta lazily, sort by `published_at`.) Each a `CardStrip` deep-linking into the relevant surface. Mind first-paint weight — idle/lazy-load like the other deferred fetches.
 
 ### B-33 — Horizontal strips don't signal they scroll sideways · Fixed #670

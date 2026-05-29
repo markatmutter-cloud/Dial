@@ -86,3 +86,51 @@ build, a parallel session handled typography. **7 PRs total merged**
 The chrome is now coherent: one sub-tab component, no laggy scroll thumb,
 search bar stable, account menu aligned. Three small naming decisions still
 parked for Mark. About modal is the one sizeable open thread — plan-mode when ready.
+
+---
+
+## ADDENDUM — platform-health batch (2026-05-29, later)
+
+Ran B-16/18/19/22/26/27 (Epic B audit-remediation). **4 PRs merged
+(#675, #677, #678, #679); 2 deferred.** CI green, tree clean, no open PRs.
+
+### Shipped (all merged — detail in SHIPPED.md / BUGS.md)
+- **B-26 (#674 code + #679 data).** Richard Mille "RM 002-V2" was undetected
+  as a brand → matcher matched bare "002" to Enicar ref 002 → `brand: Enicar`.
+  Added "Richard Mille" to `merge.py` BRANDS + `utils.js` FRONTEND_BRANDS (the
+  cross-pollination guard then rejects it) + fixed cached `lastBrand`. **The
+  `/share/…` link was a red herring (the listing's own id) — no privacy leak.**
+- **B-18 (#675).** FX parity pytest — fails if `merge.py` FX ↔ `utils.js`
+  FX_RATES_USD_PER drift.
+- **B-19 (#677, APPLIED TO PROD + verified).** Idempotent enable-RLS for the 4
+  dashboard-made user tables (provability) + tightened `listing_events` insert
+  to `user_id is null or = auth.uid()` (was `true` — forge hole). Migration
+  applied live via MCP; verified the old "Anyone insert" policy is gone.
+- **B-27 pass 2 (#678).** Deleted orphaned `SubTabIntro.js`; marked
+  `useLastVisit.js` DORMANT (planned pulse consumer). An automated dead-code
+  finder mis-called 3 of 6 (Eyebrow = forward prep, windvintage = settled keep,
+  ListReviewMode = live) — filtered against plan-context before acting.
+
+### Deferred (Mark's call this session)
+- **B-22 (code-split phase 2)** — hold until Mark can verify in-app; a
+  `React.lazy` export slip could white-screen and there's no local Node/CI-only.
+- **B-16 (JS lockfile)** — confirmed `npm`/`node` absent on the machine (builds
+  are all cloud); not worth a toolchain install for non-urgent hardening.
+
+### Notes / mental model
+- **`merge.py` FX (line ~339) and `utils.js` FX_RATES_USD_PER are now drift-
+  guarded** — change a rate in BOTH or the test fails.
+- **`listing_events` insert is now own-or-anonymous** in prod — don't re-widen
+  to `with check (true)`.
+- **B-31/B-32**: Mark said "B-31/32/33 all done" verbally; B-33 = #670 confirmed,
+  B-31/B-32 PRs not identified — flagged in BUGS to verify + close at /tidy.
+- **Process lesson:** working a platform-health batch *concurrently* with the UI
+  session in the **same checkout** caused branch thrash (a commit landed on the
+  wrong branch; a scrape commit clobbered a data fix). Moved all my work into
+  **isolated git worktrees** after that — clean from then on. (See LEARNING.)
+
+### Loose ends
+- **No open PRs.** All 4 platform PRs merged.
+- **Temp worktrees removed** (b18/b19/b27/b26b). `watchlist-tidy`
+  (`rm-phillips-known-auctions`) remains — pre-existing, for /tidy.
+- **Merged local branches** from this batch cleaned at close (see git).

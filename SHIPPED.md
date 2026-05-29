@@ -57,6 +57,23 @@ within each section roughly last.
   failure-notifier uses the pre-installed `gh` CLI (no action download at setup)
   so a GitHub-CDN blip can't crash it into a misleading "all jobs failed" email
   (#582).
+- **2026-05-29 — Richard Mille mis-branded as Enicar fixed (B-26).** "RM 002-V2"
+  matched Enicar's ref 002 because Richard Mille wasn't on the brand-detection
+  lists; added it (merge.py + utils.js) so the cross-pollination guard rejects
+  the hit, + corrected the cached `lastBrand` (#674, #679). No share-URL leak —
+  the `/share/` link was just the listing's own id.
+- **2026-05-29 — FX parity guard (B-18).** pytest fails if `merge.py` FX and
+  `utils.js` FX_RATES_USD_PER drift (currency sets + rates), so a one-sided edit
+  can't go "8× off" silently (#675).
+- **2026-05-29 — RLS provability + listing_events forge fix (B-19).** Committed
+  idempotent enable-RLS for the 4 dashboard-made user tables (was unprovable
+  from code); tightened the `listing_events` insert from `with check (true)` to
+  own-or-anonymous so a client can't forge another user's `user_id` — applied to
+  prod + committed (#677).
+- **2026-05-29 — Inert-code sweep pass 2 (B-27).** Deleted orphaned
+  `SubTabIntro.js`; marked `useLastVisit.js` DORMANT (planned pulse consumer);
+  kept Eyebrow/windvintage/ListReviewMode (finder mis-called them). Thread stays
+  open as a recurring sweep (#678).
 
 ## Epic 1 — Sources
 
