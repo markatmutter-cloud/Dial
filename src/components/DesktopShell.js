@@ -260,23 +260,35 @@ export function DesktopShell(props) {
           consistent with the filter-line pills). Opens the calendar modal
           (the sale-picker); the active-sale state shows in the grid's
           sale-context header, with its own Clear there. Auction surfaces only. */}
-      {tab === "listings" && (listingsSubTab === "auctions" || listingsSubTab === "sold") && onOpenCalendar && (
-        <button onClick={onOpenCalendar}
-          title="Browse the auction calendar"
-          style={{
-            ...dtPill(false),
-            display: "inline-flex", alignItems: "center", gap: 6, flexShrink: 0,
-            whiteSpace: "nowrap",
-          }}>
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <rect x="3" y="4" width="18" height="18" rx="2"/>
-            <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
-            <line x1="3" y1="10" x2="21" y2="10"/>
-          </svg>
-          Calendar
-        </button>
-      )}
+      {/* The Calendar pill is interactive only on Auctions/Sold, but we
+          render it on ALL listings sub-tabs so the left cluster keeps a
+          CONSTANT width — otherwise the pill's appearance on Auctions/Sold
+          widened the left side and shoved the centered search bar right,
+          so search visibly jumped position when switching sub-tabs (Mark
+          2026-05-28). On Live it's a hidden, inert placeholder that only
+          reserves space (visibility:hidden, removed from a11y + tab order). */}
+      {tab === "listings" && (() => {
+        const showCal = (listingsSubTab === "auctions" || listingsSubTab === "sold") && !!onOpenCalendar;
+        return (
+          <button onClick={showCal ? onOpenCalendar : undefined}
+            aria-hidden={!showCal} tabIndex={showCal ? 0 : -1}
+            title={showCal ? "Browse the auction calendar" : undefined}
+            style={{
+              ...dtPill(false),
+              display: "inline-flex", alignItems: "center", gap: 6, flexShrink: 0,
+              whiteSpace: "nowrap",
+              ...(showCal ? null : { visibility: "hidden", pointerEvents: "none" }),
+            }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <rect x="3" y="4" width="18" height="18" rx="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            Calendar
+          </button>
+        );
+      })()}
       {/* LEFT — Source / Brand / Model */}
       <button onClick={() => setActiveFilterPop(p => p === "source" ? null : "source")}
         style={dtPill(filterSources.length > 0 || activeFilterPop === "source")}>
