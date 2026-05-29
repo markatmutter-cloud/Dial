@@ -139,7 +139,7 @@ single chrome accent (links/text-accents may still use `--brand`).
 | `innerToggleButton(active)` | Nested sub-toggles inside a tab (Listings/Auctions/Sold under Saved; Owned/Sold/All under My watches; Saved type filter). Active = `SELECTED_FILL` |
 | `clearAllPill` | Unified "× Clear all" / reset control — olive-ink **outline** pill (a reset action, not a selected state). Use everywhere filters are cleared |
 | `dismissChip` / `dismissChipX` | Removable active-filter chip ("× Brand") — olive tint fill + a trailing `dismissChipX` button that removes the filter |
-| `tabPill(active)` | Sub-tab strip, underline pattern (olive) |
+| `tabPill(active)` | Underline sub-tab button (olive). Reach for the `SubTabBar` component for a whole row — don't spread raw `tabPill` |
 | `actionButton({ variant: "primary"\|"subtle"\|"danger" })` | Header / toolbar action buttons (Share / Manage / Delete / + From feed / Cancel / Save). ~32px tall. Primary = olive fill |
 | `signInButton` | Large primary CTA — sign-in buttons on signed-out gates and share-receive landings. One size class above actionButton |
 | `iconButton({ size, active })` | Round icon buttons (Filter, View, Clear in mobile top bar). Active = `SELECTED_FILL` |
@@ -151,7 +151,8 @@ single chrome accent (links/text-accents may still use `--brand`).
 | Component | Use |
 |---|---|
 | `CardShell.js` | **Shared card frame** — square/editorial image + placeholder, L1/L2/L3 text slots, action stack (heart / ⋯ / quickAction), the single portal menu. Every card renders through it. |
-| `CardStrip.js` | **Shared horizontal card row** — scroll container + per-tile wrapper (38%/170 mobile · 210 desktop). Caller passes a `renderCard` fn. Used by Home + Search-all strips. |
+| `CardStrip.js` | **Shared horizontal card row** — scroll container + per-tile wrapper (38%/170 mobile · 210 desktop). Caller passes a `renderCard` fn. Scroll affordance = right-edge fade (hides at the end) + the peeking next tile; **no custom scrollbar/thumb** (the JS thumb was removed 2026-05-28 — it drove setState every scroll frame + eased, so it trailed the scroll). Snap is `proximity`. Used by Home, Search-all, ReferencePage, Collections strips. |
+| `SubTabBar.js` | **Shared sub-tab row** — the one underline sub-tab strip (`tabPill` buttons, scrollable). Used by the Watches + Collecting sub-tabs AND the Lists-page section-nav. Works for real tab-switchers and jump-to-section nav alike (only `onSelect` differs); surface chrome (olive-on-mobile bg, sticky, edge bleed) passed via `containerStyle`. |
 | `Card.js` | Feed card (priced listings / auctions / sold). Renders **into** `CardShell`; keeps all the price/FX/auction/sold logic |
 | `Chip.js` | Filter chips (brands / sources / refs row) |
 | `ListRow.js` | Collection list row (in Lists drill-in) |
@@ -173,6 +174,7 @@ single chrome accent (links/text-accents may still use `--brand`).
 - **New color?** Add a CSS var to App.js's `c` block in BOTH light and dark modes. Never inline hex.
 - **Sub-section grouping inside a tab?** `<Section />` from `./Section`. Page-level tab headers (back-arrow + title + actions row) are intentionally a denser inline shape; don't try to consolidate them into Section.
 - **Need a confirm dialog?** `import { confirm } from "./ConfirmModal"`, then `await confirm({ title, message, confirmLabel, tone: "danger" })`. Never `window.confirm` — it breaks dark mode and reads as jarring against the rest of the UI.
+- **A sub-tab row (underline tabs)?** `<SubTabBar tabs activeKey onSelect>` — don't hand-roll the row or spread raw `tabPill`. Same component for real tab-switchers and jump-to-section nav; pass per-surface chrome (olive bg, sticky) via `containerStyle`. (The Reference page's pill chip-bar is a deliberately different look, not this.)
 - **New card, anywhere?** Render through `CardShell` (image + L1/L2/L3 slots + actions) — don't hand-roll a card frame or a second portal menu. Priced items go via `Card.js` (it keeps the price logic and fills the slots); articles fill the slots directly. **A horizontal row of cards?** `<CardStrip renderCard={…}>`. The editorial magazine `ArticleCard` is the one deliberate exception (its own floating/serif layout) — pending the design-uplift pass.
 
 ## Intentional drift (don't "fix")

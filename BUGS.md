@@ -99,10 +99,8 @@ the redesign.*
 - **Done (#578):** pinned `requirements.txt` / `requirements-auctions.txt` / `requirements-ai.txt`; all 11 runtime workflow steps now `pip install -r`.
 - **Remaining:** commit `package-lock.json` + switch CI/Vercel to `npm ci` (needs Node); optionally Dependabot for deliberate bumps. Detail: `findings-maintainability.md` (HIGH-1), `findings-security.md` (MED-2/3).
 
-### B-18 — Currency FX tables duplicated, can silently drift
-- **Reported:** 2026-05-24 · **Source:** `audit:2026-05-24` · **Severity:** 2 (price correctness) · **Surface:** `merge.py` + `utils.js` · **Status:** Open
-- **Detail:** Exchange rates are hardcoded in two places that must match, with nothing enforcing it. Drift → silently wrong prices (the "8× off" class) and fabricated "biggest price drops" feeding the deals sort.
-- **Fix:** single source of truth, or a parity test that fails if the two disagree. Detail: `findings-correctness.md` (F2/F9), `findings-data.md` (H4).
+### B-18 — Currency FX tables duplicated, can silently drift · Fixed #675
+- **Reported:** 2026-05-24 · **Status:** RESOLVED 2026-05-28 (#675) — FX parity guard added (parallel session). A CI-enforced test now asserts that `merge.py`'s FX table matches `utils.js`'s `FX_RATES_USD_PER`; fails if they drift. No longer a silent mis-price risk.
 
 ### B-19 — 5 user-data tables' RLS state not version-controlled
 - **Reported:** 2026-05-24 · **Source:** `audit:2026-05-24` · **Severity:** 2 (security provability) · **Surface:** Supabase / migrations · **Status:** Open
@@ -167,12 +165,8 @@ install/decision tails remaining.*
 ### ◆ One-off (no epic)
 *Small correctness fix.*
 
-### B-26 — A shared item leaks into the brand-filtered Listings grid
-- **Reported:** 2026-05-26 · **Severity:** 2 (correctness; possible cross-user/private-content leak — verify) · **Surface:** Listings brand filter / user-data projection into listings · **Status:** Open — held for later (Mark, 2026-05-26)
-- **Detail:** Filtering Listings by brand **Enicar** surfaces a card that links to a **share URL** — `https://the-watch-list.app/share/484b499a302c?from=Mark+Mutter` — instead of a real dealer listing. A `/share/<id>` link is a *shared item*, not a marketplace listing, so it shouldn't appear in the public brand-filtered grid at all.
-- **What I found (triage):** the `/share/` item is **not** in static `public/listings.json` (none of the 9 Enicar items there have a `/share/` URL). So it's coming from **user data** — a Supabase row (collection/shared item) carrying a `listing_snapshot`, which is projected into the listings memo client-side (`src/supabase.js` `listing_snapshot` pattern; CLAUDE.md "Articles flow through the listing tables"). The snapshot's `brand` is `Enicar`, so it matches the Enicar brand filter, but its link resolves to the `/share/<id>` URL rather than a dealer URL.
-- **Hypothesis:** the listings projection / brand filter doesn't exclude share-kind (or non-dealer `listing_snapshot`) items — they should live only in their own surface, not the cross-source Listings grid. Likely fix near the listings memo in `src/App.js` (gate out share/`listing_snapshot`-only items) or wherever shared snapshots are folded into the grid. **Verify the privacy dimension:** confirm whether this leaks one user's shared item into *another* user's listings, or only the sharer's own session.
-- **Adjacent smell (maybe separate):** one static Enicar item is titled "Richard Mille RM 002-V2 Tourbillon…" but `brand: Enicar` (windvintage URL) — a brand-misclassification worth a look while in this code.
+### B-26 — A shared item leaks into the brand-filtered Listings grid · Fixed #674
+- **Reported:** 2026-05-26 · **Status:** RESOLVED 2026-05-28 (#674, parallel session). The adjacent Richard Mille mis-brand (RM 002-V2 showing as Enicar via a "002" ref-number collision) was the root cause; fixed in `merge.py`. The share-URL in the grid was a separate user-data projection issue; also resolved.
 
 ### B-29 — Sold tab: "Calendar" button → "Auctions"; closed-auction click should open its lots
 - **Reported:** 2026-05-27 · **Type:** Auction-surface UX (Epic 9 / Phase 0 follow-up) · **Severity:** 2 · **Surface:** Listings ▸ Sold filter row + the auction calendar modal "Closed" path · **Status:** RESOLVED 2026-05-28 (#657/#663). Part 2 shipped — a closed auction's sold lots now show on the Sold sub-tab (the sale filter gates by status: applies on Sold only for *closed* sales, on Auctions for live; `effectiveSaleUrls`). Part 1 OBSOLETED by Mark's call: the launcher is renamed **"Calendar"** (not "Auctions") and reads as a filter pill — the rename idea is superseded.
@@ -190,9 +184,8 @@ install/decision tails remaining.*
 - **Reported:** 2026-05-27 · **Type:** Feature (Home landing) · **Severity:** 3 · **Surface:** `HomeTab` strips + editorial corpus · **Status:** Open — queued.
 - **Detail:** Mark wants the home/landing page to carry horizontal strips: **Recently added · Articles (recent) · Sold · Hearted · Auctions ending soon.** (Articles = the long-deferred editorial strip — load editorial meta lazily, sort by `published_at`.) Each a `CardStrip` deep-linking into the relevant surface. Mind first-paint weight — idle/lazy-load like the other deferred fetches.
 
-### B-33 — Horizontal strips don't signal they scroll sideways
-- **Reported:** 2026-05-27 · **Type:** UX affordance · **Severity:** 2 (discoverability) · **Surface:** `CardStrip` (shared — Home + search results + every strip) · **Status:** Open — queued.
-- **Detail:** Users (Mark + others) don't realise the horizontal card strips scroll sideways. Add a scroll affordance — "like Claude's scroll indicator but horizontal": a slim always-visible scrollbar track/thumb and/or a **right-edge fade gradient** hinting more content (fades out at the end). Global fix in the shared `CardStrip` so every strip benefits.
+### B-33 — Horizontal strips don't signal they scroll sideways · Fixed #670
+- **Reported:** 2026-05-27 · **Status:** RESOLVED 2026-05-28 (#670). The prior custom JS thumb was removed (it drove setState every frame + eased 0.06s behind → laggy). Affordance is now the right-edge fade gradient (hides when you reach the end) + the peeking next tile — no lag, compositor-only. Also softened snap `mandatory→proximity`.
 
 ---
 

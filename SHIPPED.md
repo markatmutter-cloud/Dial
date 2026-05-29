@@ -363,6 +363,20 @@ within each section roughly last.
   edge fade moved INTO the shared CardStrip (all strips match); minimal Home top
   bar made an absolute overlay so the moonphase isn't clipped + small top spacing;
   home icon added to the wordmark home-button (a user couldn't tell it was "home").
+- **2026-05-28 — CardStrip scroll: drop the laggy thumb (#670).** The custom JS
+  thumb drove setState every scroll frame + eased 0.06s behind the scroll; replaced
+  with a right-edge fade (hides at end) + snap `mandatory→proximity`. Zero scroll jank.
+- **2026-05-28 — Shared SubTabBar component (#671).** All underline sub-tab rows
+  (Watches/Collecting sub-tabs + the Lists-page section-nav) now share one component.
+  The Lists row was hand-rolled at a different font size/weight/underline — unified.
+- **2026-05-28 — Articles: date pill left of search bar (#672).** Sort/Date pill
+  reordered ahead of the search input in the Editorial filter row.
+- **2026-05-28 — Listings: search bar stable across sub-tabs (#673).** Desktop
+  search bar jumped right when switching Listings→Auctions (Calendar pill conditionally
+  widened the left cluster). Ghost-pill reserves constant width; search stays put.
+- **2026-05-28 — Account menu: unified left edge, drop "Settings" label (#676).**
+  Sign-out / Site-stats / settings block all now share one 8 px left inset. Removed the
+  redundant "Settings" umbrella label (it duplicated + clashed with Currency/Theme/Columns).
 - **2026-05-28 — Typography system: serif/sans codified (#668, #669).** Font
   stacks consolidated into `FONT_SANS`/`FONT_SERIF`/`FONT_SERIF_DISPLAY` tokens
   (the 4 duplicated serif consts + the two colliding `SANS_STACK` removed; editorial
