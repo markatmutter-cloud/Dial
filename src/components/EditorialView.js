@@ -588,6 +588,15 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
             so it filters the article grid (title/author now, body once loaded).
             The top-bar search row is skipped on tab=references, so this is the
             single on-page search affordance for Articles. */}
+        {/* Sort pill — sits to the LEFT of the search bar (Mark 2026-05-28).
+            Cycles Date ↓ / Date ↑ when no query is typed, expands to
+            Relevance / Date ↓ / Date ↑ when a query is active. */}
+        <button
+          onClick={cycleSort}
+          style={{
+            ...pillBase(true, { compact: true }),
+            fontWeight: 600,
+          }}>{sortLabel}</button>
         <input
           type="text"
           value={search}
@@ -602,14 +611,6 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
             padding: "6px 14px", outline: "none",
           }}
         />
-        {/* Sort pill — cycles Date ↓ / Date ↑ when no query is typed,
-            expands to Relevance / Date ↓ / Date ↑ when a query is active. */}
-        <button
-          onClick={cycleSort}
-          style={{
-            ...pillBase(true, { compact: true }),
-            fontWeight: 600,
-          }}>{sortLabel}</button>
 
         {/* Source inline-expand pill */}
         <button
