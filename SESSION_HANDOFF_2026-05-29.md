@@ -1,136 +1,104 @@
-# Watchlist — Session Handoff (2026-05-29, UI tidy + polish batch)
+# Watchlist — Session Handoff (2026-05-29, **Lumé AI concierge** build)
 
 Conventions: [CLAUDE.md](CLAUDE.md). Direction: [ROADMAP.md](ROADMAP.md).
-History: [SHIPPED.md](SHIPPED.md). Backlog: [BUGS.md](BUGS.md). Prior
-handoff (2026-05-28) superseded — recoverable via git.
+History: [SHIPPED.md](SHIPPED.md). Backlog: [BUGS.md](BUGS.md). The earlier 05-29
+handoff (UI-tidy/polish batch, #670–#676) is superseded by this one — recoverable
+via git.
+
+> **This is the in-session compaction anchor.** Everything below is **built and
+> merged to `main`** (real code, not aspirational). If context compacts, this doc
+> + the memory files named at the bottom hold the full state. The next phase is at
+> the end.
 
 ## TL;DR
-A listening/batching session: Mark fired reactions while testing the live
-build, a parallel session handled typography. **7 PRs total merged**
-(#670–#676), CI green, working tree clean, no open PRs.
+Built the **Lumé watch-expert concierge end-to-end** (ROADMAP Epic 9, "AI
+spine") — grounded chat that only answers from our corpus + cites, a floating
+bubble, the **offer→do action set**, and a **watch lexicon (phase 1)**. ~18 PRs,
+all CI-green, **all merged to `main`**. `ANTHROPIC_API_KEY` is live in Vercel
+(Production+Preview) + GitHub. **Next phase:** deepen Lumé's knowledge of the
+user's *saved* watches by mining the corpus for per-reference insights (it
+currently trips on watch/reference detail), plus **prompt-behaviour tuning**.
 
-## What shipped (this session)
+## What's built + merged (the Lumé system) — file map
+- **Endpoint `api/chat.js`** (the brain). Verifies the Supabase JWT (user_id from
+  the token, never the body) → `consume_chat_quota` RPC (20/day cap, P0001→429)
+  **before** any spend → manual tool-use loop. **Haiku default, Opus routed** on
+  compare/why/recommend turns. Prompt-caches the system prefix.
+  - **Grounding tools (cite-or-don't):** `get_user_context` (RLS reads of the
+    caller's hearts/searches/owned/tracked/sold-this-week), `search_listings`
+    (returns each item's `id`), `get_auction_state`, `get_reference` (curated
+    index + the Submariner/Speedmaster syntheses).
+  - **`SYSTEM_PROMPT`** = **Lumé's entire voice + behaviour** — THIS is where "how
+    Lumé reacts to prompts" is tuned (one versioned constant). Cold-open rapport,
+    accuracy-over-colour, never-dead-end, intrinsic/no-hierarchy house style,
+    OFFER-ACTIONS spec.
+  - **Structured actions:** model appends `<actions>[…]</actions>`; endpoint
+    extracts/validates vs `ACTION_TYPES` allow-list (only wired types)/clamps ≤3/
+    strips → returns `{reply, actions, model}`.
+  - **Lexicon glossary** injected as a cached system block (`buildLexiconGlossary`)
+    so Lumé expands shorthand (speedie/panda/QP/DON) before grounding.
+- **Actions bus:** `src/components/ActionBus.js` (module-level dispatch/register,
+  ConfirmModal pattern) + the registration `useEffect` in `App.js` (after
+  `liveStateById`). **Six actions:** `show_listings`, `open_watch` (→ ShareReceiver
+  external `openTick`/`openListingId` trigger), `read_more`, `add_to_list` /
+  `create_list` (→ `openCollectionPicker`), `save_note` (→ `NotePickerModal` +
+  `addNoteToCollection` in supabase.js).
+- **Bubble `src/components/ChatBubbleHost.js`** — mounted next to `<ConfirmHost/>`
+  (decoupled, no shellProps). Header "**Lumé · Watch chat**", auto-expanding
+  textarea, markdown + clickable links, thinking dots, action buttons that
+  **minimise the bubble on success** (see result behind), 429 banner, signed-in
+  only, panel ring+shadow to lift off the olive chrome.
+- **Mark `src/components/LumeIcon.js`** — white inverted triangle (~1:1.5) on a
+  brand-olive circle (a 20%-smaller + soft lume-glow tweak is in flight, PR #694).
+- **DB:** `supabase/schema/2026-05-29_ai_chat_usage.sql` — `ai_chat_usage` +
+  `consume_chat_quota`/`log_chat_tokens`/`set_chat_cap_by_email` (default 20/day;
+  per-user override via `user_limits.chat_cap`). **Applied to the live DB.**
+- **Reference index:** `build_references_index.py` → `public/watch_references_index.json`
+  (26 brands / 1849 refs; reuses `reference_index_match.parse_index`).
+- **Lexicon:** `public/watch_lexicon.json` (88-term ChatGPT seed = **phase 1, live**),
+  `docs/watch_lexicon_seed.json`; **phase-2 tooling** `scripts/mine_lexicon.py`
+  + `.github/workflows/mine-lexicon.yml` (Claude over the corpus in CI, cost-capped
+  via `max_chunks`; full corpus ≈ 16.8k chunks / 15M tokens → keep scoped). NOT run yet.
 
-- **CardStrip scroll smooth (#670).** Dropped the laggy React-state custom
-  thumb (drove setState every scroll frame + eased 0.06s → trailed the
-  scroll). Affordance is now right-edge fade + peeking next tile. Snap
-  `mandatory → proximity`. Zero scroll jank.
-- **Shared SubTabBar component (#671).** All underline sub-tab rows now share
-  one component (`src/components/SubTabBar.js`). The Lists-page section-nav
-  was hand-rolled at a different font size/weight/underline — unified. Works
-  for real tab-switchers and jump-to-section nav alike; surface chrome
-  (`containerStyle`) varies per caller.
-- **Articles: date pill left of search (#672).** Sort/Date pill reordered
-  ahead of the search input in the Editorial filter row.
-- **Listings: search bar stable across sub-tabs (#673).** On desktop the
-  Calendar pill only appeared on Auctions/Sold, widening the left cluster and
-  shoving the centered search bar right. Ghost-pill reserves constant width on
-  all three sub-tabs; search stays put.
-- **Account menu: unified left edge, drop "Settings" label (#676).** Sign-out /
-  Site-stats / settings block all now share one 8 px left inset. Removed the
-  redundant "Settings" umbrella that duplicated + clashed with
-  Currency/Theme/Columns.
-- **B-26 fixed (#674, parallel session).** Richard Mille mis-branded as Enicar
-  via "002" ref collision fixed in `merge.py`; share-URL leak in Listings grid
-  also resolved.
-- **B-18 fixed (#675, parallel session).** FX parity guard — CI-enforced test
-  asserts `merge.py` FX table matches `utils.js` FX_RATES_USD_PER.
+## Ops / config
+- `ANTHROPIC_API_KEY`: **Vercel Production+Preview** and GitHub Actions; server-only
+  (api/chat.js). Endpoint live; smoke-tested (401 unauth / 405 GET).
+- Models `claude-haiku-4-5` default, `claude-opus-4-8` for hard turns. 20 msgs/day/user.
+- Lexicon phase 2: Actions → "Mine watch lexicon (phase 2)" → Run workflow → pick `max_chunks`.
 
-## Mental model — so it's not relitigated
+## Queued follow-ups (tree clean — buildable now). Detail: memory project_lume_followups
+- **B-42:** **reference-search bug** (real defect — `show_listings` AND-ed two refs
+  in the filter → 0 results; fix = a SINGLE ref in the SEARCH box, App.js) + a
+  friendlier server cold-open (SYSTEM_PROMPT).
+- **B-43 launcher/onboarding** (ChatBubbleHost): "**Ask me**" translucent callout;
+  **speech-bubble** launcher shape; "**Lumé (loo-may)**" pronunciation; **signed-out →
+  sign-in prompt** (show launcher, tap → signInWithGoogle); **device-native dictation**
+  mic in the composer.
+- In flight: **#694** (triangle 20% smaller + lume glow).
 
-- **One sub-tab component** (`SubTabBar.js`) for all underline rows. The
-  Reference page chip-bar (`innerToggleButton`) is a deliberately different
-  look — not SubTabBar.
-- **CardStrip scroll affordance = fade + peek, no thumb.** Don't re-add a
-  custom scrollbar; the fade is intentional.
-- **Account-menu left edge = 8 px** (all rows). "Settings" umbrella label
-  deliberately removed — the hairline divider marks the section break.
-- **Calendar pill ghost** (invisible `visibility:hidden` placeholder on
-  Listings/Live) is load-bearing — it keeps the search centered. Don't remove
-  it without re-solving the centering.
+## ⭐ NEXT PHASE (after compaction — the focus)
+**1. Deepen Lumé's saved-watch knowledge (priority).** Watch/reference details trip
+Lumé up because grounding for arbitrary refs is thin (only 2 deep-dive syntheses +
+the index + raw editorial search). Plan: **mine the corpus for detailed,
+source-cited insights about the references/models the user has SAVED**
+(hearts/lists/owned) and store them so `get_reference` returns real depth —
+extend the existing **reference-synthesis** pattern (`reference_synthesis.py` →
+`public/reference_synthesis_<node>.json`, like Submariner/Speedmaster) to the
+user's saved nodes. Decide first: which nodes to synthesise (driven by saved
+data?), storage shape, retrieval wiring into `get_reference`, cost/triggering
+(CI, scoped). See memory reference_synthesis_outputs, project_direction_collecting_intelligence.
 
-## ⭐ PARKED DECISIONS (from last session, unchanged)
-1. **"Collecting" → "Explore"?** Keep Collecting or go Explore — NOT "Reference(s)".
-2. **"Lists" collision.** Both the `watchlist` tab and the `collections` sub-section
-   are labelled "Lists". Rename one if confusing in-app.
-3. **Home-icon colour** on non-olive surfaces (currently white-only).
+**2. Prompt-behaviour tuning ("how Lumé reacts" — where it's saved).** Lives in
+**`SYSTEM_PROMPT` in `api/chat.js`** today (one constant). As it grows, decide
+whether to **externalise it** (e.g. `docs/lume_system_prompt.md` loaded at runtime)
+for easier iteration/versioning. This is the lever for the prompt-reaction issues
+Mark hits.
 
-## Open backlog highlights (BUGS.md)
+(Also open: lexicon **phase 2** run; the fluid **profile/memory store** —
+recommender substrate, memory project_ai_profile_memory; **content** = About/Nexus
+3 sections, memory project_about_page_sections.)
 
-- **B-37** — can't heart/add-to-list from article or reference pages (fast-follow).
-- **B-22** — code-split phase 2 (receivers, EditorialView, SizeCompare, ChallengeFlow).
-- **B-34** — re-run PageSpeed mobile + lazy-load ReferencesTab subtree.
-- **B-16** — JS lockfile (needs Node).
-- **B-19** — RLS DDL not version-controlled.
-- **B-20** — two near-identical scraper filenames.
-- **B-23/24/25** — residential scrape install still pending with Mark on the laptop.
-- **B-31** — Auctions strip cards misaligned in search results.
-- **B-32** — Home content strips (recently added · articles · sold · hearted · auctions).
-- **About modal overhaul** — plan-mode thread, pairs B-14 (BRAND.md review). Not
-  batched here — needs content + design pass together.
-
-## Loose ends
-
-- **No open PRs.** All 7 merged; CI green.
-- **Local branches to clean** (all squash-merged, safe to delete):
-  `articles-datepill-left`, `listings-search-stable`, `settings-menu-tidy`,
-  `subtabs-shared-component`, `b26-richard-mille-brand`, `fix-share-leak-brand-grid`
-  — run `/tidy` next session.
-- **Two worktrees** from the parallel session still alive:
-  `watchlist-b18` (`b18-fx-parity`) + `watchlist-tidy` (`rm-phillips-known-auctions`).
-  Neither is this session's — leave for `/tidy`.
-- **B-28** (editorial vintage filter) — log-only, unchanged.
-
-## Bottom line
-
-The chrome is now coherent: one sub-tab component, no laggy scroll thumb,
-search bar stable, account menu aligned. Three small naming decisions still
-parked for Mark. About modal is the one sizeable open thread — plan-mode when ready.
-
----
-
-## ADDENDUM — platform-health batch (2026-05-29, later)
-
-Ran B-16/18/19/22/26/27 (Epic B audit-remediation). **4 PRs merged
-(#675, #677, #678, #679); 2 deferred.** CI green, tree clean, no open PRs.
-
-### Shipped (all merged — detail in SHIPPED.md / BUGS.md)
-- **B-26 (#674 code + #679 data).** Richard Mille "RM 002-V2" was undetected
-  as a brand → matcher matched bare "002" to Enicar ref 002 → `brand: Enicar`.
-  Added "Richard Mille" to `merge.py` BRANDS + `utils.js` FRONTEND_BRANDS (the
-  cross-pollination guard then rejects it) + fixed cached `lastBrand`. **The
-  `/share/…` link was a red herring (the listing's own id) — no privacy leak.**
-- **B-18 (#675).** FX parity pytest — fails if `merge.py` FX ↔ `utils.js`
-  FX_RATES_USD_PER drift.
-- **B-19 (#677, APPLIED TO PROD + verified).** Idempotent enable-RLS for the 4
-  dashboard-made user tables (provability) + tightened `listing_events` insert
-  to `user_id is null or = auth.uid()` (was `true` — forge hole). Migration
-  applied live via MCP; verified the old "Anyone insert" policy is gone.
-- **B-27 pass 2 (#678).** Deleted orphaned `SubTabIntro.js`; marked
-  `useLastVisit.js` DORMANT (planned pulse consumer). An automated dead-code
-  finder mis-called 3 of 6 (Eyebrow = forward prep, windvintage = settled keep,
-  ListReviewMode = live) — filtered against plan-context before acting.
-
-### Deferred (Mark's call this session)
-- **B-22 (code-split phase 2)** — hold until Mark can verify in-app; a
-  `React.lazy` export slip could white-screen and there's no local Node/CI-only.
-- **B-16 (JS lockfile)** — confirmed `npm`/`node` absent on the machine (builds
-  are all cloud); not worth a toolchain install for non-urgent hardening.
-
-### Notes / mental model
-- **`merge.py` FX (line ~339) and `utils.js` FX_RATES_USD_PER are now drift-
-  guarded** — change a rate in BOTH or the test fails.
-- **`listing_events` insert is now own-or-anonymous** in prod — don't re-widen
-  to `with check (true)`.
-- **B-31/B-32**: Mark said "B-31/32/33 all done" verbally; B-33 = #670 confirmed,
-  B-31/B-32 PRs not identified — flagged in BUGS to verify + close at /tidy.
-- **Process lesson:** working a platform-health batch *concurrently* with the UI
-  session in the **same checkout** caused branch thrash (a commit landed on the
-  wrong branch; a scrape commit clobbered a data fix). Moved all my work into
-  **isolated git worktrees** after that — clean from then on. (See LEARNING.)
-
-### Loose ends
-- **No open PRs.** All 4 platform PRs merged.
-- **Temp worktrees removed** (b18/b19/b27/b26b). `watchlist-tidy`
-  (`rm-phillips-known-auctions`) remains — pre-existing, for /tidy.
-- **Merged local branches** from this batch cleaned at close (see git).
+## Memory anchors (durable detail; survives compaction)
+project_ai_concierge_bot · project_ai_profile_memory · project_lume_followups ·
+project_bot_language_currency · project_about_page_sections ·
+feedback_reference_voice_intrinsic · feedback_recommender_trust · anthropic_api_config.
