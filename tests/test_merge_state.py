@@ -578,3 +578,29 @@ def test_is_excluded_catalog_blocks_nonwatch_sales():
     # Empty / missing title is not excluded.
     assert merge.is_excluded_catalog("") is False
     assert merge.is_excluded_catalog(None) is False
+
+
+# ── Brand-detection / reference cross-pollination (B-26) ─────────────────────
+
+def test_richard_mille_detects_and_resists_enicar_002_cross_match():
+    """B-26: a Wind Vintage "Richard Mille RM 002-V2" listing used to land
+    in Other (brand undetected), so the reference matcher matched the bare
+    "002" token against Enicar Sherpa Graph ref 002 and planted brand=Enicar
+    + that model_line on a Richard Mille. With Richard Mille on the BRANDS
+    list, detect_brand trips the cross-pollination guard and the bogus hit
+    is rejected."""
+    title = ("Richard Mille RM 002-V2 Tourbillon in 18K Rose Gold "
+             "w/ Certificate of Authenticity & Box")
+    # The brand is now detectable from the title.
+    assert merge.detect_brand(title) == "Richard Mille"
+    # And enrichment must not overwrite it with Enicar's Sherpa Graph.
+    item = {
+        "brand": merge.detect_brand(title), "ref": title,
+        "reference_no": "", "reference_id": "",
+        "model": "", "model_line": "", "sub_model": "",
+    }
+    merge.enrich_with_reference_match(item)
+    assert item["brand"] == "Richard Mille"
+    assert not item.get("model_line"), (
+        f"Enicar model_line leaked onto a Richard Mille: {item.get('model_line')!r}"
+    )

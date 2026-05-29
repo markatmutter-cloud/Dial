@@ -164,6 +164,13 @@ BRANDS = [
     # FORCE_OTHER_BRANDS list (kept on the data side, pooled into the
     # Other chip in the UI per Mark's brand-cleanup pass).
     'Gerald Genta', 'Bulgari', 'Nivada Grenchen',
+    # Added 2026-05-28 (B-26): a Wind Vintage "Richard Mille RM 002-V2"
+    # listing landed in Other (brand undetected), so the reference
+    # matcher matched the bare "002" token against Enicar Sherpa Graph
+    # ref 002 and planted brand=Enicar + that model_line on a Richard
+    # Mille. Detecting the brand here trips the cross-pollination guard
+    # in enrich_with_reference_match and rejects the bogus hit.
+    'Richard Mille',
 ]
 
 # Brand-name variants we want to collapse onto a single canonical chip.
