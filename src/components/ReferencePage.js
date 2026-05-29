@@ -19,7 +19,7 @@ import React, { useState, useEffect } from "react";
 import CardStrip from "./CardStrip";
 import { Card } from "./Card";
 import { imgSrc } from "../utils";
-import { innerToggleButton, FONT_SERIF } from "../styles";
+import { innerToggleButton, FONT_SERIF, editorialDisplay, editorialHeading } from "../styles";
 
 const SERIF = FONT_SERIF;
 const MAXW = 1080;
@@ -123,7 +123,7 @@ export function ReferencePage({
       {shell(
         <div style={{ borderTop: "0.5px solid var(--border)", paddingTop: isMobile ? 22 : 30, marginBottom: isMobile ? 16 : 22 }}>
           <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--brand-olive-text)", marginBottom: 8 }}>{kicker}</div>
-          <h2 style={{ fontFamily: SERIF, fontWeight: 600, fontSize: isMobile ? 25 : 30, lineHeight: 1.08, letterSpacing: "-0.01em", color: "var(--text1)", margin: 0 }}>{title}</h2>
+          <h2 style={{ ...editorialHeading({ isMobile }), color: "var(--text1)", margin: 0 }}>{title}</h2>
           {intro && <p style={{ fontSize: isMobile ? 15 : 16, lineHeight: 1.5, color: "var(--text2)", marginTop: 10, marginBottom: 0, maxWidth: 640 }}>{intro}</p>}
         </div>
       )}
@@ -171,7 +171,7 @@ export function ReferencePage({
         <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, padding: isMobile ? "0 16px 20px" : "0 20px 34px" }}>
           <div style={{ maxWidth: MAXW, margin: "0 auto" }}>
             <div style={{ fontSize: isMobile ? 15 : 20, fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.86)", marginBottom: isMobile ? 8 : 10 }}>{node.brand} · {node.modelLine}</div>
-            <h1 style={{ fontFamily: SERIF, fontWeight: 600, color: "#fff", margin: 0, fontSize: isMobile ? 44 : 72, lineHeight: 0.98, letterSpacing: "-0.01em" }}>{node.group}</h1>
+            <h1 style={{ ...editorialDisplay({ isMobile }), color: "#fff", margin: 0 }}>{node.group}</h1>
             <div style={{ color: "rgba(255,255,255,0.82)", fontSize: isMobile ? 13 : 14, marginTop: 10 }}>{node.definer}</div>
           </div>
         </div>
@@ -207,7 +207,7 @@ export function ReferencePage({
             )}
             <div>
               <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--brand-olive-text)", marginBottom: 8 }}>Start here</div>
-              <h2 style={{ fontFamily: SERIF, fontWeight: 600, fontSize: isMobile ? 25 : 30, lineHeight: 1.08, letterSpacing: "-0.01em", color: "var(--text1)", margin: "0 0 12px" }}>The {node.group}</h2>
+              <h2 style={{ ...editorialHeading({ isMobile }), color: "var(--text1)", margin: "0 0 12px" }}>The {node.group}</h2>
               <p style={{ fontFamily: SERIF, fontSize: isMobile ? 17 : 19, lineHeight: 1.6, color: "var(--text1)", margin: 0 }}>
                 {firstPara && <span style={{ fontFamily: SERIF, float: "left", fontSize: isMobile ? 48 : 60, lineHeight: 0.8, fontWeight: 600, color: "var(--text1)", paddingRight: 9, marginTop: 5 }}>{firstPara.charAt(0)}</span>}
                 {firstPara.slice(1)}
@@ -279,7 +279,7 @@ export function ReferencePage({
         {shell(
           <div style={{ borderTop: "0.5px solid var(--border)", paddingTop: isMobile ? 22 : 30, marginBottom: isMobile ? 16 : 22 }}>
             <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--brand-olive-text)", marginBottom: 8 }}>See real ones</div>
-            <h2 style={{ fontFamily: SERIF, fontWeight: 600, fontSize: isMobile ? 25 : 30, lineHeight: 1.08, color: "var(--text1)", margin: 0 }}>Look at real examples</h2>
+            <h2 style={{ ...editorialHeading({ isMobile }), color: "var(--text1)", margin: 0 }}>Look at real examples</h2>
           </div>
         )}
         {shell(

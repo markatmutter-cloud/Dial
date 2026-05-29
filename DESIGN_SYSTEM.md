@@ -54,15 +54,47 @@ scale value (9 → 10, 15 → 14, 17 → 18, 20 → 18, 24 → 22, 26 → 22).
 If you find yourself needing 15px for a tighter fit, ask whether 14
 or 16 actually works first.
 
-**Serif vs sans — type roles (Mark, 2026-05-27).** Serif (`Iowan Old
-Style`/`Hoefler Text`/Georgia) = the **editorial voice**: long-form
-*reading* surfaces — article titles, reference-page headlines + prose.
-It signals "sit and read." Sans = **the interface**: everything
-functional — navigation, tab/section labels, list names, counts,
-filters, buttons. It signals "scan and act." So serif on the Watchlists
-*landing* (a management surface) was wrong and got reverted to bold sans;
-serif on `ReferencePage`/articles is correct. Keep serif meaningful, not
-decorative.
+## Typography — the serif/sans system
+
+**One axis, two voices (Mark, 2026-05-27; systematized 2026-05-28).**
+**Serif = "sit and read." Sans = "scan and act."** The typeface *is* the
+signal for which mode the user is in. Serif appears ONLY on surfaces meant
+to be *read* — article + reference titles and prose, reference teasers.
+Sans carries everything functional — nav, tabs, section/list names, counts,
+filters, inputs, buttons. Serif reads as premium **because it's
+restricted**; the moment it leaks onto chrome it stops meaning anything.
+
+**The faces (tokens in `styles.js` — never inline a font string).**
+`FONT_SANS` is the interface (also the `public/index.html` body default,
+which 75% of UI inherits via `fontFamily: "inherit"`). `FONT_SERIF` /
+`FONT_SERIF_DISPLAY` are the editorial face = **Hoefler Text** (Mark's
+call: Apple-native, ligatures, magazine contrast; Iowan Old Style / Georgia
+are fallbacks). One exception: `PORTAL_SANS` in `CardShell.js` must
+hard-set a face because the card ⋯ menu portals to `document.body` (else iOS
+falls back to Times serif).
+
+**The editorial type ramp (`styles.js` factories — spread + override).**
+Use on reading surfaces only. Each bundles the full recipe (face + leading +
+tracking) so a surface opts into the whole register, not just the font:
+- `editorialDisplay({ isMobile })` — 44/72px, w600, lh 0.98. Hero headlines.
+- `editorialHeading({ isMobile })` — 25/30px, w600, lh 1.08. Section titles.
+- `editorialTitle({ isMobile })` — 22/20px, w400, lh 1.22. Card/teaser titles
+  (serif renders heavy — titles sit at 400; display/headings at 600).
+- `editorialProse({ isMobile })` — 16/17px, lh 1.6. Body reading copy.
+
+**The editorial *feel* is more than serif.** What makes articles/references
+read as produced (audit 2026-05-28): serif **+** generous spacing (36/64px,
+not 12px dense) **+** tight title leading (1.08–1.22) / comfortable prose
+(1.6) **+** hairline 0.5px dividers **+** negative tracking on display
+(−0.01em) **+** measured max-width (1080px) **+** uppercase tracked eyebrows.
+To extend the editorial feel to a NON-reading surface, reach for the
+*layout* ingredients (spacing/eyebrow/measure) — **not** the serif.
+
+**Where serif must NOT go (settled).** The Watchlists *landing* (management
+surface — reverted to bold sans); the search-results header (an editable
+input + Exit = scan-and-act); empty states ("nothing here yet" is
+functional); filter/nav/button chrome; list and section *names*. Adding a
+new reading surface? Reach for the ramp. Anything else stays sans.
 
 **borderRadius scale (post-2026-05-15 snap, PR #305):** **0, 4, 6,
 8, 10, 12, 20, 999**. Outliers snapped (1/2 → 0, 3 → 4, 14 → 12,

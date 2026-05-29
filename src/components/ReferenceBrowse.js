@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { ReferencePage } from "./ReferencePage";
 import { Breadcrumb } from "./Breadcrumb";
+import { editorialHeading, editorialProse } from "../styles";
 import {
   buildReferenceTree,
   REFERENCE_NODES_BY_ID,
@@ -336,14 +337,9 @@ function ComingSoon({ node }) {
   const [noted, setNoted] = useState(false);
   return (
     <div style={{ maxWidth: 560 }}>
-      <h1
-        style={{
-          fontSize: 22,
-          fontWeight: 700,
-          color: "var(--text1)",
-          margin: "0 0 4px",
-        }}
-      >
+      {/* Editorial register — this is a preview OF a serif reference node,
+          so the title + teaser read as editorial content, not chrome. */}
+      <h1 style={{ ...editorialHeading(), color: "var(--text1)", margin: "0 0 4px" }}>
         {node.brand} {node.modelLine}
       </h1>
       <div style={{ fontSize: 14, color: "var(--text2)", marginBottom: 12 }}>
@@ -351,7 +347,7 @@ function ComingSoon({ node }) {
         {node.definer ? ` · ${node.definer}` : ""}
       </div>
       {node.teaser && (
-        <p style={{ fontSize: 14, color: "var(--text2)", lineHeight: 1.6 }}>
+        <p style={{ ...editorialProse(), color: "var(--text2)" }}>
           {node.teaser}
         </p>
       )}
