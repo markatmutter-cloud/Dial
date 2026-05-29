@@ -89,6 +89,7 @@ export function ChatBubbleHost() {
   const [error, setError] = useState("");
   const [actionState, setActionState] = useState({}); // "<msgIdx>-<actIdx>" -> {status, message}
   const scrollRef = useRef(null);
+  const inputRef = useRef(null);
 
   const runAction = useCallback(async (action, key) => {
     setActionState((s) => ({ ...s, [key]: { status: "running" } }));
@@ -102,6 +103,16 @@ export function ChatBubbleHost() {
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages, loading, open]);
+
+  // Auto-grow the composer with the draft so a longer prompt stays visible
+  // (B-41), up to ~5 lines then it scrolls. Also shrinks back when the draft
+  // is cleared after send.
+  useEffect(() => {
+    const el = inputRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${Math.min(el.scrollHeight, 120)}px`;
+  }, [draft, open]);
 
   const send = useCallback(
     async (text) => {
@@ -364,17 +375,27 @@ export function ChatBubbleHost() {
           }}
           style={{
             display: "flex",
+            alignItems: "flex-end",
             gap: 8,
             padding: "10px 12px",
             borderTop: "0.5px solid var(--border)",
             flexShrink: 0,
           }}
         >
-          <input
+          <textarea
+            ref={inputRef}
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={(e) => {
+              // Enter sends; Shift+Enter inserts a newline.
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                send(draft);
+              }
+            }}
             placeholder="Ask about a watch…"
             disabled={loading}
+            rows={1}
             style={{
               flex: 1,
               border: "0.5px solid var(--border)",
@@ -382,6 +403,7 @@ export function ChatBubbleHost() {
               padding: "9px 12px",
               fontSize: 14,
               fontFamily: "inherit",
+              lineHeight: 1.4,
               background: "var(--bg)",
               // Explicit text colour + webkit fill + caret so the typed text
               // is always visible regardless of inherited colour (B-39).
@@ -389,6 +411,9 @@ export function ChatBubbleHost() {
               WebkitTextFillColor: "var(--text1)",
               caretColor: "var(--text1)",
               outline: "none",
+              resize: "none",
+              maxHeight: 120,
+              overflowY: "auto",
             }}
           />
           <button
@@ -400,6 +425,8 @@ export function ChatBubbleHost() {
               color: "#fff",
               borderRadius: 10,
               padding: "0 14px",
+              height: 38,
+              flexShrink: 0,
               fontSize: 14,
               fontWeight: 600,
               cursor: loading || !draft.trim() ? "default" : "pointer",
