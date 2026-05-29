@@ -232,14 +232,20 @@ diagram, data model, and folder layout.
 
 ## Internal-vs-UI naming (deliberate — don't "fix" casually)
 
-Three UI renames kept their internals on the old name, intentionally:
+UI labels diverge from internals on purpose — don't "fix" casually.
+- **Top-tab labels (2026-05-28): Watches · Lists · Collecting.** Internal tab
+  keys stay `listings` · `watchlist` · `references` (and `?tab=…` URLs). The
+  rename was label-only (#655). **NB "Lists" now labels BOTH the `watchlist`
+  tab AND the `collections` sub-section — a known collision; rename one if it
+  confuses (parked decision).**
 - **DB `collections` ↔ UI "Lists"** — `collections` is the umbrella for
   Lists, Wishlist, Owned, Sold, Challenges, shared inbox. Keep the DB name.
-- **Internal `watchlist` ↔ UI "Saved"** — hook `useWatchlist`, table
-  `watchlist_items`, `WatchlistTab.js`. URL is `?tab=saved`.
-- **Internal `references` ↔ UI "Collecting"** — `ReferencesTab.js`,
-  `?tab=learn`. "Reference" also means watch reference numbers (Epic 0), so
-  the internal name stays. (UI label moved Learn → Collecting.)
+- **Internal `watchlist` (tab "Lists", `?tab=saved`)** — hook `useWatchlist`,
+  table `watchlist_items`, `WatchlistTab.js`; "Saved" is the hearted band in it.
+- **Internal `references` ↔ tab "Collecting"** — `ReferencesTab.js`, `?tab=learn`.
+  "Reference" also means watch reference numbers (Epic 0), so the internal name
+  stays — and don't rename the tab to "Reference(s)" (that collision is why it's
+  "Collecting"; an "Explore" rename is parked).
 
 A full internal rename is a parked, low-priority sweep. **Never bump these
 storage keys** (resets user data): `LEGACY_WATCHLIST_KEY`, `LEGACY_HIDDEN_KEY`,

@@ -174,7 +174,7 @@ install/decision tails remaining.*
 - **Adjacent smell (maybe separate):** one static Enicar item is titled "Richard Mille RM 002-V2 Tourbillon…" but `brand: Enicar` (windvintage URL) — a brand-misclassification worth a look while in this code.
 
 ### B-29 — Sold tab: "Calendar" button → "Auctions"; closed-auction click should open its lots
-- **Reported:** 2026-05-27 · **Type:** Auction-surface UX (Epic 9 / Phase 0 follow-up) · **Severity:** 2 · **Surface:** Listings ▸ Sold filter row + the auction calendar modal "Closed" path · **Status:** Open — queued.
+- **Reported:** 2026-05-27 · **Type:** Auction-surface UX (Epic 9 / Phase 0 follow-up) · **Severity:** 2 · **Surface:** Listings ▸ Sold filter row + the auction calendar modal "Closed" path · **Status:** RESOLVED 2026-05-28 (#657/#663). Part 2 shipped — a closed auction's sold lots now show on the Sold sub-tab (the sale filter gates by status: applies on Sold only for *closed* sales, on Auctions for live; `effectiveSaleUrls`). Part 1 OBSOLETED by Mark's call: the launcher is renamed **"Calendar"** (not "Auctions") and reads as a filter pill — the rename idea is superseded.
 - **Detail (two parts):** (1) On the **Sold** sub-tab the **"Calendar"** filter-row button should read **"Auctions"** and take the user to / filter the **closed auctions** (the modal's Closed view). (2) Clicking a **closed (past) auction** should open the **closed listings for that sale** (its lots) — the same way a live sale opens its lots. Mark: "I want it to work like that." Likely the closed-sale card's onClick (`handleOpenSale`) doesn't filter the Sold grid by that sale's lots.
 
 ### B-30 — Auction calendar modal: month pills don't filter (only scroll); "ALL" + CLOSED layout

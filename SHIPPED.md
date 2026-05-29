@@ -128,6 +128,11 @@ within each section roughly last.
   `merge.py` carries an `image` field end-to-end to `auctions.json`; Christie's
   maps its `__NEXT_DATA__` `ImageUrl`. Other 5 houses are a follow-up (per-house
   extraction); frontend already renders `a.image`.
+- **2026-05-28 — Non-watch catalogs removed (#656).** Catalog-level exclusion
+  (`EXCLUDE_CATALOG_TITLES` + `is_excluded_catalog`, kept lockstep in
+  `auction_lots_scraper.py` for lots + `merge.py` for the calendar) drops
+  Sotheby's "Noble & Private Collections" + Bonhams "Espionage: Fact & Fiction"
+  from scrape + calendar; purged the existing lots/sales.
 
 ## Epic 3 — Watchlist
 
@@ -335,3 +340,26 @@ within each section roughly last.
   the calendar-first popup; mobile drops straight into the grid (button still opens it).
 - **2026-05-28 — Tropical Watch images served direct (#651).** TW's ~240 px
   CloudFront source got grainy through the resizer; serve it (and Bonhams) direct.
+- **2026-05-28 — Top tabs renamed (#655).** Labels Listings→Watches,
+  Watchlists→Lists (Collecting unchanged); internal keys / URLs / storage keys
+  unchanged (label-only).
+- **2026-05-28 — Auction filter "Calendar" pill + catalog card (#657/#663).**
+  Launcher restyled to a filter pill ("Calendar"); a single-sale view shows an
+  olive catalog-context card (house·location·date → name → lot count) with
+  "← Exit Auction"; mobile dead-end fixed (always-visible exit); the sale filter
+  no longer applies on Sold for a LIVE sale (closed sales still show their sold
+  lots); redundant "Closing this…" divider suppressed in single-catalog view;
+  modal title → "Auction Calendar".
+- **2026-05-28 — Pill/button library unified on olive (#658–#662).** One shared
+  `SELECTED_FILL` (olive tint + `--brand-olive-ink` + 0.5 px hairline) for every
+  active toggle (`pillBase`/`innerToggleButton`/`iconButton`/Chip); new
+  `clearAllPill` + `dismissChip` helpers; a SINGLE "Clear all" in the active-
+  filters chips strip (per-panel + filter-bar copies removed); primary CTAs
+  (`signInButton`/`producedPill` + ~16 inline) swept blue→olive — `--brand` blue
+  is now links / text-accents only. DESIGN_SYSTEM documents the state + clear rules.
+- **2026-05-28 — Home masthead + account-menu polish (#664–#667).** Account pill
+  → bare "M" (Watchbox label dropped; settings popout decluttered — Sign out under
+  the name, "Settings" header); desktop subtab font bump; Articles strip's right-
+  edge fade moved INTO the shared CardStrip (all strips match); minimal Home top
+  bar made an absolute overlay so the moonphase isn't clipped + small top spacing;
+  home icon added to the wordmark home-button (a user couldn't tell it was "home").

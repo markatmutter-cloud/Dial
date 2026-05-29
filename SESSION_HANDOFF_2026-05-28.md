@@ -1,94 +1,75 @@
-# Watchlist — Session Handoff (2026-05-28, performance / load-speed marathon)
+# Watchlist — Session Handoff (2026-05-28, UI-polish + pill design-system marathon)
 
 Conventions: [CLAUDE.md](CLAUDE.md). Direction: [ROADMAP.md](ROADMAP.md).
 History: [SHIPPED.md](SHIPPED.md). Backlog: [BUGS.md](BUGS.md). Prior handoff
-(2026-05-27, B-08 Watchlists) superseded — recoverable via git.
+(2026-05-28, performance / load-speed marathon) superseded — recoverable via git.
 
-## TL;DR — fixed the "site is slow / not working"
-Started on B-08 empty-list onboarding, then pivoted hard: real users said the
-site was "not working" — it was just **brutally slow to load**. Root-caused +
-shipped a **6-PR performance epic (#646–#651, all merged, CI green)** that
-addresses **B-34**. Also handled an emergent **Vercel Blob pause** (free-tier
-transfer cap) and two side tweaks (mobile calendar, Tropical Watch grain).
+## TL;DR
+A long live session driven by Mark testing the site and firing tweaks. **13 PRs
+(#655–#667), all merged, CI green, working tree clean, no open PRs.** Two streams:
+(1) a proper **pill/button design-system migration to olive** (audit → spec →
+phased PRs), and (2) a run of **landing + auction-surface chrome** polish.
 
-## What shipped (all merged to main)
-- **#646 — Image resize via wsrv.nl.** Every dealer/auction image now served
-  through the free wsrv resize CDN (~720px WebP) in `imgSrc()`. Loupe This 5 MB
-  photos → ~40 KB. **First-load payload ~198 MB → ~12–13 MB; desktop LCP 19 s → 6 s.**
-- **#647 — Home first-paint diet.** Below-the-fold strips render on scroll
-  (`DeferUntilVisible` in HomeTab); first LCP image eager; `listings_desc`
-  (0.9 MB) idle-loaded; Bonhams served direct.
-- **#648 — Blob images → thumbnails.** `cache_watchlist_images.mjs` stores
-  ~600px WebP (via wsrv), not full-res. One-time re-process (workflow_dispatch
-  `reprocess_thumbnails=true`) **shrank 382 existing blobs, 0 skipped → storage
-  ~242 MB → ~20 MB.**
-- **#649 — Code-split AuctionCalendar + Search-all (B-22 phase 2).**
-- **#650 — Mobile: no auto auction-calendar popup** (desktop unchanged).
-- **#651 — Tropical Watch served direct** (240px CloudFront source went grainy
-  through the resizer).
+## What shipped (all merged — detail in SHIPPED.md)
+- **Top tabs renamed** (#655): Listings→**Watches**, Watchlists→**Lists** (labels only).
+- **Non-watch catalogs removed** (#656): Sotheby's "Noble & Private Collections" +
+  Bonhams "Espionage" — catalog-level exclusion in scrape + calendar; existing purged.
+- **Auction filter pill + catalog card** (#657/#663): "Calendar" launcher as a filter
+  pill; single-sale = olive catalog-context card (house·loc·date → name → count) +
+  "← Exit Auction"; mobile dead-end fixed; sale filter gates by status on Sold;
+  redundant "Closing this…" divider suppressed in single-catalog view.
+- **Pill/button library → olive** (#658–#662): one shared `SELECTED_FILL`; new
+  `--brand-olive-ink` token + `clearAllPill`/`dismissChip`; single "Clear all" in the
+  chips strip; CTAs + sign-in/producedPill swept blue→olive. DESIGN_SYSTEM updated.
+- **Home masthead + account menu** (#664–#667): account pill → bare "M"; settings
+  popout decluttered; Articles strip fade moved into shared CardStrip; moonphase
+  top-bar overlay + top spacing; **home icon** on the wordmark home-button.
 
-## Key decisions / mental model (so they're not relitigated)
-- **Storage ≠ transfer.** Blob *storage* is cheap (~1 GB free); **transfer/egress**
-  is the metered cap that paused us (23.84 / 10 GB). The frontend wsrv serve +
-  thumbnail-store both target the right meters.
-- **Store thumbnails, not full-res** (Mark's call): dropped the full-res archival
-  promise — he downloads keepers manually. Was 242 MB/1 GB in *one month, one user*.
-- **Vercel is on Pro** (Mark upgraded — "option B" — to run the re-process now).
-  **Can downgrade back to Hobby next cycle**: transfer handled by wsrv, storage now tiny.
-- Vercel-downgrade-slowed-the-site? No — site bandwidth was 6/100 GB. Only Blob capped.
+## Mental model — so it's not relitigated
+- **One chrome accent = brand olive.** Blue `--brand` is now links / text-accents
+  ONLY. Every "selected/on" toggle spreads `SELECTED_FILL` (olive tint + ink +
+  0.5px hairline). New toggles → `pillBase`/`innerToggleButton`/`iconButton`; new
+  clears → `clearAllPill`; removable filter chips → `dismissChip`. **Reach-for
+  rules are in DESIGN_SYSTEM.md** — don't hand-roll a selected look or a clear.
+- **One "Clear all"**, in the active-filters chips strip (right-aligned). The
+  filter-bar copies + per-dimension picker "Clear"s were removed — don't re-add.
+- **Auction launcher = "Calendar"** (Mark chose this over "Auctions"); a single sale
+  = the olive catalog card + "Exit Auction"; on **Sold**, the sale filter applies
+  only for **closed** sales (live-sale-on-Sold = 0 lots was the bug). `effectiveSaleUrls`.
+- **Home top bar (About / M) is an absolute overlay** on Home so the moonphase isn't
+  clipped; hero has ~24px desktop top padding.
 
-## ⭐ NEXT PICKUP
-- **Re-run PageSpeed mobile** for the after-baseline (was 35; everything's stacked now).
+## ⭐ PARKED DECISIONS — need Mark (each a small, ready PR once decided)
+1. **"Collecting" → "Explore"?** Mark floated renaming the Collecting tab. My
+   advice: keep **Collecting** or go **Explore** — NOT "Reference(s)" (collides
+   with watch reference numbers; that collision is why it became Collecting).
+   Label-only change like #655 when decided.
+2. **"Lists" collision.** The `watchlist` TAB and the `collections` sub-section are
+   both labelled "Lists" now. Rename one if it reads ambiguous in-app.
+3. **Home-icon colour on white surfaces.** The house outline is currently white-only
+   (inherits the olive bar). If it ever sits on a neutral surface, decide olive vs white.
+
+## Carried forward (still open from the perf session)
+- **Re-run PageSpeed mobile** for the after-baseline (was 35 before the perf epic).
 - **Lazy-load the ReferencesTab subtree** (EditorialView/SizeCompare/ChallengeFlow/
-  ChallengesView, ~3k lines) — the biggest remaining bundle chunk; its own PR + an
-  in-browser check of the Collecting tab. (B-34's one follow-up.)
-- **Code review + hygiene** (Mark asked about review agents): run `/code-review`
-  per branch going forward; `/tidy` for orphaned code + the stranded branches
-  below; **B-27** (inert-code scan) is the tracked sweep.
-- **Optional:** refresh the grainy *hearted* Tropical Watch images (re-fetch from
-  live CloudFront — the re-process shrank them before #651 served TW direct).
-- **Parked, not built:** B-08 **empty-list onboarding** (+Listings/+Articles blocks
-  · title-seeded `+` suggestions) — this session's original pick; branch
-  `watchlists-empty-onboarding` exists but is **empty/unused**.
+  ChallengesView, ~3k lines) — the biggest remaining bundle chunk. **B-34's follow-up.**
+
+## Open backlog (BUGS.md — unchanged this session except B-29)
+- **B-29 resolved** this session (#657/#663). Still open, notable: **B-26**
+  (share item leaks into brand-filtered grid), **B-31** (search Auctions strip
+  alignment), **B-16/18/19/20/22/27** (platform health), **B-23/24/25** (residential
+  scrape — Bonhams/TW LaunchAgent install still pending with Mark), **B-28** (editorial
+  vintage filter). Epic-A IA redesign phase tracker still the headline plan.
 
 ## Loose ends
-- **No open PRs.** Working tree clean after this close.
-- **Stranded local branches** (flag for `/tidy`): `watchlists-empty-onboarding`
-  (mine, unused), `session-close-2026-05-27`, `session-close-2026-05-27-ia-build`,
-  `session-handoff-next`, `bk-bonhams-curlcffi-*`, `fix-screening-auction-copy-b02`.
-- Today's perf feature branches were auto-deleted on squash-merge.
+- **No open PRs.** Working tree clean; today's 13 feature branches merged + local
+  copies deleted.
+- One non-session local branch exists in a separate **git worktree**:
+  `rm-phillips-known-auctions` (not this session's — leave it / flag for `/tidy`).
 
 ## Bottom line
-The "site is broken/slow" complaint is fixed (payload −93 %, desktop LCP −70 %)
-and the Blob cost is structurally solved (thumbnails + transfer via wsrv). Real
-proof pending one mobile PageSpeed re-run. Remaining is polish (ReferencesTab
-split) + hygiene (code review / orphaned-code scan).
-
----
-
-## ADDENDUM — `/tidy` hygiene pass (2026-05-28, later)
-Ran the repo/code hygiene sweep + B-27 inert-code scan. The "Loose ends" /
-stranded-branches list above is now **resolved**.
-
-- **Root-caused the recurring orphan pattern.** Session-close branches normally
-  *do* merge (squash); the mess was two things: (1) squash-merge leaves the
-  local branch looking "1 ahead" forever → residue that hides real strands, and
-  (2) the 2026-05-28 close **genuinely never merged** — its SHIPPED #646–651 +
-  handoff were stranded (recovered via **#652**).
-- **Structural fix (#653, merged):** doc-only closes now commit **straight to
-  `main`, no PR** (`/wrap` step 5 + CLAUDE.md, in lockstep). This is *why* the
-  close can't strand again — and it answers Mark's ask: nothing left uncommitted
-  when the terminal closes. Branch-before-editing stays the rule for **code**.
-- **Branches:** deleted 17 dead remotes (merged/closed) + 9 local residue +
-  `wrap-close-direct-to-main` after merge. Now just `main` + the open scraper PR.
-- **Worktrees:** primary `/Documents/watchlist` was parked on the dead
-  `session-close-2026-05-28` → moved back to `main`; removed 2 empty leftover
-  worktrees (`ui-consistency`, `watchlist-v2`).
-- **B-27 scan:** removed orphaned `phillips_known_auctions_scraper.py` (**PR #654,
-  open — merge it**); **kept** `windvintage_guides_scraper.py` (corpus, Mark's
-  call). No other inert code. Full findings in BUGS B-27.
-- **Issue #569** (Tropical Watch scrape-fail) closed — fixed by #651.
-
-### ⭐ NEXT PICKUP (unchanged + one add)
-Still: mobile PageSpeed re-baseline, lazy-load ReferencesTab subtree (B-34
-follow-up). **Add:** merge **PR #654** (phillips scraper removal).
+The site's pill/button language is now coherent (one olive accent, one selected
+state, one clear-all, everything on the shared library + documented), and the
+landing + auction chrome got a solid polish pass. Clean state; three small naming/
+colour decisions parked for Mark, and B-34's ReferencesTab split is the next
+perf lever.
