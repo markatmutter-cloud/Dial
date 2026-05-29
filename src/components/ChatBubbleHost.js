@@ -185,9 +185,13 @@ export function ChatBubbleHost() {
         display: "flex",
         flexDirection: "column",
         background: "var(--bg)",
-        border: "0.5px solid var(--border)",
+        // The olive header otherwise blends into the app's olive chrome on
+        // mobile (Mark). Lift the whole panel off the background: a light
+        // hairline ring + a deeper shadow make the window edge read clearly on
+        // any backdrop, in both themes.
+        border: "1px solid rgba(255,255,255,0.22)",
         borderRadius: 16,
-        boxShadow: "0 12px 40px rgba(0,0,0,0.18)",
+        boxShadow: "0 0 0 1px rgba(0,0,0,0.18), 0 16px 48px rgba(0,0,0,0.5)",
         overflow: "hidden",
       }}
       role="dialog"
