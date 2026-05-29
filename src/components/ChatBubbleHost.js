@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { supabase, useAuth } from "../supabase";
+import { dispatchAction } from "./ActionBus";
 
 // Lumé — the watch-expert concierge bubble (Epic 9 "AI spine", Phase A).
 //
@@ -85,7 +86,17 @@ export function ChatBubbleHost() {
   const [loading, setLoading] = useState(false);
   const [capped, setCapped] = useState(false);
   const [error, setError] = useState("");
+  const [actionState, setActionState] = useState({}); // "<msgIdx>-<actIdx>" -> {status, message}
   const scrollRef = useRef(null);
+
+  const runAction = useCallback(async (action, key) => {
+    setActionState((s) => ({ ...s, [key]: { status: "running" } }));
+    const res = await dispatchAction(action);
+    setActionState((s) => ({
+      ...s,
+      [key]: { status: res.ok ? "done" : "failed", message: res.message },
+    }));
+  }, []);
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -127,7 +138,11 @@ export function ChatBubbleHost() {
           return;
         }
         const body = await res.json();
-        setMessages([...next, { role: "assistant", content: body.reply || "" }]);
+        setMessages([...next, {
+          role: "assistant",
+          content: body.reply || "",
+          actions: Array.isArray(body.actions) ? body.actions : [],
+        }]);
       } catch {
         setError("Couldn't reach Lumé — check your connection.");
       } finally {
@@ -212,24 +227,68 @@ export function ChatBubbleHost() {
           gap: 10,
         }}
       >
-        {display.map((m, i) => (
-          <div
-            key={i}
-            style={{
-              alignSelf: m.role === "user" ? "flex-end" : "flex-start",
-              maxWidth: "85%",
-              padding: "8px 12px",
-              borderRadius: 12,
-              fontSize: 14,
-              lineHeight: 1.45,
-              background: m.role === "user" ? "var(--brand-olive)" : "var(--card-bg, var(--surface))",
-              color: m.role === "user" ? "#fff" : "var(--text1)",
-              border: m.role === "user" ? "none" : "0.5px solid var(--border)",
-            }}
-          >
-            {m.role === "assistant" ? renderRich(m.content) : m.content}
-          </div>
-        ))}
+        {display.map((m, i) => {
+          const isUser = m.role === "user";
+          const acts = !isUser && Array.isArray(m.actions) ? m.actions : [];
+          return (
+            <div
+              key={i}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: isUser ? "flex-end" : "flex-start",
+                gap: 6,
+              }}
+            >
+              <div
+                style={{
+                  maxWidth: "85%",
+                  padding: "8px 12px",
+                  borderRadius: 12,
+                  fontSize: 14,
+                  lineHeight: 1.45,
+                  background: isUser ? "var(--brand-olive)" : "var(--card-bg, var(--surface))",
+                  color: isUser ? "#fff" : "var(--text1)",
+                  border: isUser ? "none" : "0.5px solid var(--border)",
+                }}
+              >
+                {isUser ? m.content : renderRich(m.content)}
+              </div>
+              {acts.length > 0 && (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6, maxWidth: "90%" }}>
+                  {acts.map((a, ai) => {
+                    const key = `${i}-${ai}`;
+                    const st = actionState[key];
+                    const failed = st && st.status === "failed";
+                    const done = st && st.status === "done";
+                    const running = st && st.status === "running";
+                    return (
+                      <button
+                        key={ai}
+                        onClick={() => runAction(a, key)}
+                        disabled={running || done}
+                        title={failed ? st.message : undefined}
+                        style={{
+                          border: "none",
+                          borderRadius: 999,
+                          padding: "6px 12px",
+                          fontSize: 13,
+                          fontFamily: "inherit",
+                          cursor: running || done ? "default" : "pointer",
+                          background: failed ? "var(--danger)" : "var(--brand-olive)",
+                          color: "#fff",
+                          opacity: running ? 0.6 : 1,
+                        }}
+                      >
+                        {done ? "✓ " : ""}{a.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          );
+        })}
 
         {/* one-tap nudges, only before the first real turn */}
         {messages.length === 0 && !loading && (

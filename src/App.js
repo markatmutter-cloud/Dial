@@ -60,6 +60,7 @@ import { DesktopShell } from "./components/DesktopShell";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { ConfirmHost } from "./components/ConfirmModal";
 import { ChatBubbleHost } from "./components/ChatBubbleHost";
+import { registerActionHandlers } from "./components/ActionBus";
 // IdentityBand import retired 2026-05-22 — component file still in
 // the repo for git history, no current call site.
 // import { IdentityBand } from "./components/IdentityBand";
@@ -1112,6 +1113,41 @@ export default function Watchlist() {
     else if (newTab === "references") setReferencesSubTab("editorial");
     setTab(newTab);
   };
+
+  // Lumé action handlers — let the concierge bubble drive the app via the
+  // decoupled ActionBus (see components/ActionBus.js). PR-A wires the two
+  // pure-navigation actions; open_watch + mutating actions land in later PRs.
+  // Uses stable useState/useFilters setters only (no body-defined functions in
+  // deps) so this doesn't re-register churn or trip exhaustive-deps.
+  useEffect(() => {
+    const show_listings = (p = {}) => {
+      resetFilters();
+      if (p.brand) setFilterBrands([canonicalizeBrand(p.brand)]);
+      if (p.model) setFilterModels([p.model]);
+      if (p.ref) setFilterRefs(Array.isArray(p.ref) ? p.ref : [p.ref]);
+      if (p.query) setSearch(p.query);
+      if (p.minPrice != null && p.minPrice !== "") setMinPriceText(String(p.minPrice));
+      if (p.maxPrice != null && p.maxPrice !== "") setMaxPriceText(String(p.maxPrice));
+      const status = p.statusMode === "sold" || p.statusMode === "all" ? p.statusMode : "live";
+      setStatusMode(status);
+      setListingsSubTab(status === "sold" ? "sold" : "live");
+      setPage(1);
+      setTab("listings");
+    };
+    const read_more = (p = {}) => {
+      if (p.articleUrl) {
+        try { window.open(p.articleUrl, "_blank", "noopener,noreferrer"); } catch {}
+        return;
+      }
+      setReferencesSubTab("references");
+      setTab("references");
+    };
+    return registerActionHandlers({ show_listings, read_more });
+  }, [
+    resetFilters, setFilterBrands, setFilterModels, setFilterRefs, setSearch,
+    setMinPriceText, setMaxPriceText, setStatusMode, setListingsSubTab,
+    setPage, setReferencesSubTab, setTab,
+  ]);
 
   // Saved searches are per-user (stored in Supabase). Signed-out visitors
   // get an empty list, and the whole Searches subsection is hidden inside

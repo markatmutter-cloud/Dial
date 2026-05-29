@@ -103,6 +103,9 @@ in-app since Claude can't run the app here.*
   1. **Err correct over colourful.** The reply called the CK2914 Railmaster "'40s-ish" (it's ~late-50s/60s) and wrote "anesthetic" for "aesthetic". The flourish came from free-recall, not a tool. Tighten: anchor dates/specs to `get_reference`/tool output; if unsure, omit the detail rather than embellish. (Note the tension: Mark *loved* the inbuilt 7016/9411 knowledge — keep the knowledgeable framing, but pin hard facts to the corpus.)
   2. **Never dead-end.** Saying "no 7021/7016 in stock" and stopping leaves the user nowhere. Always offer a constructive pivot — e.g. "but I can show you every Tudor Submariner we *do* have." (Pairs with the action-tools build below — the pivot should become a real action.)
 
+### B-41 — AI concierge: composer should auto-expand as you type
+- **Reported:** 2026-05-29 (Mark) · **Type:** Polish · **Severity:** 3 · **Surface:** `ChatBubbleHost.js` composer · **Status:** Open — queued ("hold for next polish"). The input is a single-line `<input>`, so a longer prompt scrolls and hides its start. Swap to an auto-growing `<textarea>` (grow with content up to a few lines / a max-height, then scroll), Enter-to-send + Shift+Enter newline. Fold into the next bubble-polish pass (alongside the pending SVG Lumé icon swap).
+
 ### ⓑ Epic B — Platform Health
 *Audit remediation + reliability. Low-risk, noise-reducing; mostly independent of
 the redesign.*
