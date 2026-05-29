@@ -1,5 +1,5 @@
 import React from "react";
-import { SearchIcon, FilterIcon } from "./icons";
+import { SearchIcon, FilterIcon, HomeIcon } from "./icons";
 import { Chip } from "./Chip";
 import { AboutModal } from "./AboutModal";
 import { SignInPromptModal } from "./SignInPromptModal";
@@ -151,12 +151,16 @@ export function MobileShell(props) {
         }}>
           {(tab !== "home" || anyShareActive || searchAllActive) && (
             <button onClick={() => { setTab("home"); setPage(1); }}
+              aria-label="Home" title="Home"
               style={{ background: "none", border: "none", cursor: "pointer",
                       padding: 0, paddingLeft: "0.14em", fontFamily: "inherit",
                       fontSize: 18, fontWeight: 700, letterSpacing: "0.14em",
                       textTransform: "uppercase",
-                      color: "#ffffff" }}>
-              Watchlist
+                      color: "#ffffff",
+                      // Home icon (Mark 2026-05-28) — same affordance as desktop.
+                      display: "inline-flex", alignItems: "center", gap: 7 }}>
+              <HomeIcon size={16} />
+              <span>Watchlist</span>
             </button>
           )}
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>

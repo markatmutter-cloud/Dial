@@ -28,6 +28,18 @@ export function SearchIcon() {
   );
 }
 
+// Simple house outline (Mark 2026-05-28) — a plain pentagon (walls + triangle
+// roof, no door/window). Marks the wordmark as the "home" affordance, since a
+// real user didn't realise the wordmark itself was the home button.
+export function HomeIcon({ size = 16 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M4 11 L12 4 L20 11 L20 20 L4 20 Z"/>
+    </svg>
+  );
+}
+
 // Small leading icons for the tab buttons. Sized 12 so they sit just
 // inside the pill text without stealing real estate.
 export function TabIcon({ kind }) {
