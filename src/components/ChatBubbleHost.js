@@ -27,7 +27,7 @@ const NAME = "Lumé";
 // Display-only opener — sets Lumé's voice and hands off; the substantive,
 // get_user_context-grounded cold open comes from the model on the first turn.
 const GREETING =
-  "Hey — I'm Lumé, your watch person here. Every word I say costs someone real money, so let's make it count. Tell me what you're into, or tap a nudge below.";
+  "Hey — I'm Lumé, your watch guide here. I can dig through live listings and auctions, pull up reference guides and articles, and save things to your lists. Tell me what you're after — a brand, a reference, or just a vibe — or tap a nudge to start.";
 
 const SUGGESTIONS = [
   "What should I look at?",
@@ -98,6 +98,10 @@ export function ChatBubbleHost() {
       ...s,
       [key]: { status: res.ok ? "done" : "failed", message: res.message },
     }));
+    // On success, minimise so the user sees the result behind (filtered grid,
+    // opened watch, the list picker). The conversation persists; reopen via the
+    // launcher. Keep open on failure so they see the error. (Mark feedback.)
+    if (res.ok) setOpen(false);
   }, []);
 
   useEffect(() => {
@@ -205,6 +209,7 @@ export function ChatBubbleHost() {
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <LumeIcon size={18} style={{ display: "block" }} />
           <span style={{ fontSize: 15, fontWeight: 600, letterSpacing: "-0.01em" }}>{NAME}</span>
+          <span style={{ fontSize: 13, fontWeight: 400, opacity: 0.85 }}>· Watch chat</span>
         </div>
         <button
           onClick={() => setOpen(false)}
@@ -461,7 +466,7 @@ export function ChatBubbleHost() {
         justifyContent: "center",
       }}
     >
-      <LumeIcon size={26} style={{ display: "block" }} />
+      <LumeIcon size={44} style={{ display: "block" }} />
     </button>
   );
 
