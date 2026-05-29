@@ -73,3 +73,40 @@ state, one clear-all, everything on the shared library + documented), and the
 landing + auction chrome got a solid polish pass. Clean state; three small naming/
 colour decisions parked for Mark, and B-34's ReferencesTab split is the next
 perf lever.
+
+---
+
+## ADDENDUM — typography / serif-sans design language (2026-05-28, later)
+Ran a font audit, then turned the one-paragraph serif/sans rule into a real type
+system. **Both PRs merged, CI green.**
+
+- **#668 — font tokens (cleanup).** Audit found a clean sans base (75% inherits the
+  body stack) but an under-formalized serif layer: the two premium surfaces rendered
+  in *different* faces (Iowan vs Hoefler), the serif stack was re-declared in 4 files,
+  two `SANS_STACK` consts held different values. Consolidated into
+  `FONT_SANS`/`FONT_SERIF`/`FONT_SERIF_DISPLAY` in `styles.js`; **editorial serif
+  unified on Hoefler Text** (Mark's call; the one visible change — Iowan→Hoefler on
+  ReferencePage/Watchlist headers). CardShell portal stack → `PORTAL_SANS` (kept
+  distinct — it must hard-set a face for the iOS Times-serif portal fallback).
+- **#669 — editorial type ramp.** `editorialDisplay`/`Heading`/`Title`/`Prose`
+  factories bundle the whole reading recipe (face + leading + tracking). Existing
+  editorial surfaces (ArticleCard, ReferencePage) now consume them (zero visual
+  change); extended to the **one** on-principle surface — the ReferenceBrowse
+  coming-soon teaser (a preview *of* a serif node). DESIGN_SYSTEM rewritten with the
+  full system + guardrail.
+
+### Key decision (so it's not relitigated)
+**Serif = read, sans = act — and serif must NOT leak onto chrome.** Deliberately did
+NOT serif the search hero (it's an editable input = scan-and-act), empty states, or
+list/section names — even though they were on the original candidate list. Serif
+reads premium *because* it's rationed. "Land the editorial feel more widely" on
+functional surfaces is a **layout** job (spacing / eyebrows / hairlines / measure),
+in sans — flagged as design-led follow-ups, not done here.
+
+### ⭐ NEXT PICKUP (typography thread)
+- **Eyebrow promotion** — the uppercase-tracked eyebrow is still re-rolled ~10 sites;
+  DESIGN_SYSTEM's pending `<Eyebrow>`/`eyebrowText` candidate. One clean follow-up PR.
+- **Editorial *layout* register on one functional surface** — pick a surface, apply
+  the recipe in sans (not serif) as a focused PR. This is how the produced feel
+  spreads without cheapening the serif. Mark to art-direct which surface.
+- (Unchanged from above: B-34 ReferencesTab split is still the next perf lever.)

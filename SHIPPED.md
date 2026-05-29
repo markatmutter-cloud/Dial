@@ -363,3 +363,12 @@ within each section roughly last.
   edge fade moved INTO the shared CardStrip (all strips match); minimal Home top
   bar made an absolute overlay so the moonphase isn't clipped + small top spacing;
   home icon added to the wordmark home-button (a user couldn't tell it was "home").
+- **2026-05-28 — Typography system: serif/sans codified (#668, #669).** Font
+  stacks consolidated into `FONT_SANS`/`FONT_SERIF`/`FONT_SERIF_DISPLAY` tokens
+  (the 4 duplicated serif consts + the two colliding `SANS_STACK` removed; editorial
+  serif unified on **Hoefler Text**; CardShell's portal stack → `PORTAL_SANS`).
+- **2026-05-28 — Editorial type ramp (#669).** `editorialDisplay`/`Heading`/
+  `Title`/`Prose` factories bundle the full reading recipe (face+leading+tracking);
+  existing editorial surfaces consume them; extended only to the ReferenceBrowse
+  teaser. DESIGN_SYSTEM carries the system + the "serif = read, never on chrome"
+  guardrail. Serif deliberately NOT added to search hero / empty states / list names.
