@@ -70,11 +70,12 @@ currently trips on watch/reference detail), plus **prompt-behaviour tuning**.
 - **B-42:** **reference-search bug** (real defect — `show_listings` AND-ed two refs
   in the filter → 0 results; fix = a SINGLE ref in the SEARCH box, App.js) + a
   friendlier server cold-open (SYSTEM_PROMPT).
-- **B-43 launcher/onboarding** (ChatBubbleHost): "**Ask me**" translucent callout;
-  **speech-bubble** launcher shape; "**Lumé (loo-may)**" pronunciation; **signed-out →
-  sign-in prompt** (show launcher, tap → signInWithGoogle); **device-native dictation**
-  mic in the composer.
-- In flight: **#694** (triangle 20% smaller + lume glow).
+- **B-43 launcher/onboarding — DONE (PR #695, green):** "Ask me" callout,
+  speech-bubble launcher shape, "Lumé (loo-may)" pronunciation, signed-out →
+  sign-in prompt (launcher shows, tap → signInWithGoogle), device-native dictation
+  mic in the composer. (ChatBubbleHost.js)
+- **In flight, green, awaiting merge:** #694 (triangle 20% smaller + lume glow),
+  #695 (B-43). **Still queued: B-42** (ref-search fix — App.js — + server cold-open).
 
 ## ⭐ NEXT PHASE (after compaction — the focus)
 **1. Deepen Lumé's saved-watch knowledge (priority).** Watch/reference details trip
