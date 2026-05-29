@@ -89,6 +89,14 @@ COLD START → RAPPORT (the hero):
 - If the user has little or no saved data (check via get_user_context), don't open with a blank "how can I help". Lead with one grounded, surprising observation or pick, then coax ONE signal: heart a few listings, save a search, name what they own, or name the itch. Offer a lane (dive watches, chronographs, dress, something weirder).
 - Confidence ramp, not a gate: ~3 saves and you can be useful, ~5 and you have a read — but one clearly stated itch beats five random hearts. Tell them where they are on that ramp; start being useful at the first signal.
 
+OFFER ACTIONS (tappable buttons):
+- When a concrete next step exists that the app can do, offer it in your prose ("want me to show you the few we have live?") AND append a machine-readable block as the VERY LAST thing in your reply:
+<actions>[{"type":"...","label":"<short imperative>","payload":{...}}]</actions>
+- Available action types right now:
+  • show_listings — jump to the listings grid, filtered. payload: {brand, model, ref, minPrice, maxPrice, statusMode:"live"|"sold"|"all", query}. Use for "show me…".
+  • read_more — open a reference guide or an article. payload: {articleUrl, referenceId, brand, model}. Use for "want to read about this?".
+- Rules: at most 3 actions; each needs a short imperative label ("Show live Tudor Subs"); only use values a tool actually returned this turn (real brands/models/refs/URLs) — never invent one. Never mention the block in prose ("see below"); omit it entirely when no good action fits.
+
 Keep replies tight and skimmable. Use the tools before making any factual claim.`;
 
 // ── tool definitions ──────────────────────────────────────────────────
@@ -390,6 +398,35 @@ function lastUserText(messages) {
   return "";
 }
 
+// ── structured actions (Lumé offer→do) ───────────────────────────────
+// The model appends a trailing <actions>[…]</actions> block; we extract,
+// validate, clamp (≤3), and strip it from the visible reply. Only types the
+// client ActionBus actually wires are allowed — so an offered button is never
+// a no-op. (Types grow per PR: PR-A = show_listings, read_more.)
+const ACTION_TYPES = new Set(["show_listings", "read_more"]);
+
+function extractActions(text) {
+  const m = (text || "").match(/<actions>\s*([\s\S]*?)<\/actions>/i);
+  if (!m) return { text: text || "", actions: [] };
+  let actions = [];
+  try {
+    const parsed = JSON.parse(m[1]);
+    if (Array.isArray(parsed)) {
+      actions = parsed
+        .filter((a) => a && ACTION_TYPES.has(a.type) && typeof a.label === "string" && a.label.trim())
+        .slice(0, 3)
+        .map((a) => ({
+          type: a.type,
+          label: a.label.trim().slice(0, 60),
+          payload: a.payload && typeof a.payload === "object" ? a.payload : {},
+        }));
+    }
+  } catch {
+    actions = [];
+  }
+  return { text: text.replace(m[0], "").trim(), actions };
+}
+
 // ── handler ───────────────────────────────────────────────────────────
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -518,6 +555,10 @@ export default async function handler(req, res) {
     return;
   }
 
+  // Pull out any structured actions Lumé appended; strip them from the text.
+  let actions = [];
+  ({ text: finalText, actions } = extractActions(finalText));
+
   if (!finalText) {
     finalText = "I hit my limit working that one out — try asking a bit more narrowly.";
   }
@@ -527,7 +568,7 @@ export default async function handler(req, res) {
     await sb.rpc("log_chat_tokens", { p_input: inputTok, p_output: outputTok, p_model: model });
   } catch {}
 
-  res.status(200).json({ reply: finalText, model });
+  res.status(200).json({ reply: finalText, actions, model });
 }
 
 function safeJson(s) {
