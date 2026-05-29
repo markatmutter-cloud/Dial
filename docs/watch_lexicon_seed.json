@@ -1,0 +1,1350 @@
+{
+  "schema_version": "0.1.0",
+  "generated": "2026-05-29",
+  "purpose": "Seed watch-domain lexicon for Lumé. Intended for docs/watch_lexicon_seed.json; mining/dedupe process emits public/watch_lexicon.json.",
+  "types": [
+    "brand_abbrev",
+    "model_nickname",
+    "dial",
+    "bezel",
+    "complication_abbrev",
+    "era/condition",
+    "general"
+  ],
+  "normalization_notes": [
+    "Do not duplicate BRAND_ALIASES already present in merge.py + utils.js.",
+    "Do not duplicate model-line nicknames already carried by watch_references_index.json.",
+    "Treat this seed as known input for mining; only emit new terms attested in the chunk.",
+    "Evidence should be a short quote or phrase from the source chunk in the mined output, not an invented explanation.",
+    "Canonical fields should use the same naming conventions as listing/reference data where possible."
+  ],
+  "terms": [
+    {
+      "term": "AP",
+      "aliases": [
+        "A.P."
+      ],
+      "type": "brand_abbrev",
+      "canonical": {
+        "brand": "Audemars Piguet"
+      },
+      "definition": "Audemars Piguet.",
+      "evidence": "Collector shorthand; AP's own archive refers to Audemars Piguet Royal Oak Jumbo lineage.",
+      "confidence": 0.98,
+      "source": "Audemars Piguet Chronicles"
+    },
+    {
+      "term": "PP",
+      "aliases": [
+        "Patek",
+        "Patek Philippe"
+      ],
+      "type": "brand_abbrev",
+      "canonical": {
+        "brand": "Patek Philippe"
+      },
+      "definition": "Patek Philippe.",
+      "evidence": "Common collector abbreviation for Patek Philippe; use mainly in high-end vintage/complication contexts.",
+      "confidence": 0.9,
+      "source": "Collector convention"
+    },
+    {
+      "term": "VC",
+      "aliases": [
+        "Vacheron"
+      ],
+      "type": "brand_abbrev",
+      "canonical": {
+        "brand": "Vacheron Constantin"
+      },
+      "definition": "Vacheron Constantin.",
+      "evidence": "Common collector abbreviation for Vacheron Constantin.",
+      "confidence": 0.9,
+      "source": "Collector convention"
+    },
+    {
+      "term": "ALS",
+      "aliases": [
+        "Lange",
+        "A. Lange",
+        "A Lange"
+      ],
+      "type": "brand_abbrev",
+      "canonical": {
+        "brand": "A. Lange & Söhne"
+      },
+      "definition": "A. Lange & Söhne.",
+      "evidence": "Common collector abbreviation for A. Lange & Söhne.",
+      "confidence": 0.88,
+      "source": "Collector convention"
+    },
+    {
+      "term": "Speedy",
+      "aliases": [
+        "Speedie"
+      ],
+      "type": "model_nickname",
+      "canonical": {
+        "brand": "Omega",
+        "model_line": "Speedmaster"
+      },
+      "definition": "Omega Speedmaster.",
+      "evidence": "Modern collector guides describe vintage Speedmaster details using 'Speedies' and 'Speedmaster'.",
+      "confidence": 0.97,
+      "source": "Teddy Baldassarre Speedmaster guide"
+    },
+    {
+      "term": "Moonwatch",
+      "aliases": [
+        "moon watch"
+      ],
+      "type": "model_nickname",
+      "canonical": {
+        "brand": "Omega",
+        "model_line": "Speedmaster Professional"
+      },
+      "definition": "Omega Speedmaster Professional associated with NASA Apollo missions and the Moon landing.",
+      "evidence": "Speedmaster guides connect the Speedmaster Professional/Moonwatch lineage to NASA and Apollo-era watches.",
+      "confidence": 0.95,
+      "source": "Fratello / Monochrome / Wristler Speedmaster guides"
+    },
+    {
+      "term": "Ed White",
+      "aliases": [
+        "105.003",
+        "ST105.003"
+      ],
+      "type": "model_nickname",
+      "canonical": {
+        "brand": "Omega",
+        "model_line": "Speedmaster",
+        "reference": "105.003"
+      },
+      "definition": "Omega Speedmaster reference 105.003, associated with astronaut Ed White and straight-lug Speedmasters.",
+      "evidence": "Speedmaster guides describe ST105.003 as famously worn by Ed White during America's first spacewalk.",
+      "confidence": 0.96,
+      "source": "Wristler Speedmaster guide"
+    },
+    {
+      "term": "DON",
+      "aliases": [
+        "dot over ninety",
+        "dot over 90",
+        "DON bezel"
+      ],
+      "type": "bezel",
+      "canonical": {
+        "brand": "Omega",
+        "model_line": "Speedmaster",
+        "bezel": "dot over ninety tachymeter"
+      },
+      "definition": "Speedmaster tachymeter bezel where the dot sits above the 90 marker, an important vintage detail.",
+      "evidence": "Collector guides describe dot-over-90 bezels as subtle but important for vintage Speedmaster authentication and value.",
+      "confidence": 0.96,
+      "source": "WatchProSite / Teddy Baldassarre / Wristler"
+    },
+    {
+      "term": "DNN",
+      "aliases": [
+        "dot next to ninety",
+        "dot next to 90"
+      ],
+      "type": "bezel",
+      "canonical": {
+        "brand": "Omega",
+        "model_line": "Speedmaster",
+        "bezel": "dot next to ninety tachymeter"
+      },
+      "definition": "Later Speedmaster tachymeter bezel style where the dot is next to rather than above the 90 marker.",
+      "evidence": "Used as the counterpart to DON in Speedmaster bezel discussions.",
+      "confidence": 0.85,
+      "source": "Speedmaster collector convention"
+    },
+    {
+      "term": "step dial",
+      "aliases": [
+        "stepped dial"
+      ],
+      "type": "dial",
+      "canonical": {
+        "dial": "step dial"
+      },
+      "definition": "Dial with a visible step or ledge near the outer track, especially important in vintage Speedmaster collecting.",
+      "evidence": "Speedmaster guides cite stepped dials among vintage details alongside applied logos and DON bezels.",
+      "confidence": 0.94,
+      "source": "Wristler / Hodinkee Speedmaster guides"
+    },
+    {
+      "term": "applied logo",
+      "aliases": [
+        "applied Omega logo",
+        "applied metal logo"
+      ],
+      "type": "dial",
+      "canonical": {
+        "dial": "applied logo"
+      },
+      "definition": "A physical applied brand logo mounted on the dial rather than printed text/logo.",
+      "evidence": "Speedmaster guides identify applied Omega logos as a vintage detail on some references.",
+      "confidence": 0.9,
+      "source": "Wristler / Hodinkee Speedmaster guides"
+    },
+    {
+      "term": "Sub",
+      "aliases": [
+        "Submariner"
+      ],
+      "type": "model_nickname",
+      "canonical": {
+        "brand": "Rolex",
+        "model_line": "Submariner"
+      },
+      "definition": "Rolex Submariner.",
+      "evidence": "Used universally in vintage Rolex collecting; Hodinkee's 5513 guide covers vintage Submariner variations.",
+      "confidence": 0.98,
+      "source": "Hodinkee Submariner guide"
+    },
+    {
+      "term": "Red Sub",
+      "aliases": [
+        "red Submariner"
+      ],
+      "type": "model_nickname",
+      "canonical": {
+        "brand": "Rolex",
+        "model_line": "Submariner",
+        "reference": "1680"
+      },
+      "definition": "Rolex Submariner Date 1680 with red 'Submariner' text on the dial.",
+      "evidence": "Vintage Rolex collectors use color/text details as model nicknames and value signals.",
+      "confidence": 0.9,
+      "source": "Rolex collector convention"
+    },
+    {
+      "term": "DRSD",
+      "aliases": [
+        "Double Red Sea-Dweller",
+        "double red"
+      ],
+      "type": "model_nickname",
+      "canonical": {
+        "brand": "Rolex",
+        "model_line": "Sea-Dweller"
+      },
+      "definition": "Vintage Rolex Sea-Dweller with two red lines of dial text.",
+      "evidence": "Common vintage Rolex nickname for early Sea-Dweller dials.",
+      "confidence": 0.92,
+      "source": "Rolex collector convention"
+    },
+    {
+      "term": "Great White",
+      "aliases": [
+        "Great White Sea-Dweller"
+      ],
+      "type": "model_nickname",
+      "canonical": {
+        "brand": "Rolex",
+        "model_line": "Sea-Dweller"
+      },
+      "definition": "White-text vintage Rolex Sea-Dweller variant following the Double Red era.",
+      "evidence": "Common vintage Rolex Sea-Dweller nickname.",
+      "confidence": 0.88,
+      "source": "Rolex collector convention"
+    },
+    {
+      "term": "Pepsi",
+      "aliases": [
+        "Pepsi bezel"
+      ],
+      "type": "bezel",
+      "canonical": {
+        "brand": "Rolex",
+        "model_line": "GMT-Master",
+        "bezel": "red blue GMT"
+      },
+      "definition": "Red and blue GMT bezel colorway, especially Rolex GMT-Master/GMT-Master II.",
+      "evidence": "Rolex GMT bezel nickname already likely present in reference index; keep as known seed to avoid duplicate mining.",
+      "confidence": 0.95,
+      "source": "Existing reference-index nickname"
+    },
+    {
+      "term": "Coke",
+      "aliases": [
+        "Coke bezel"
+      ],
+      "type": "bezel",
+      "canonical": {
+        "brand": "Rolex",
+        "model_line": "GMT-Master II",
+        "bezel": "red black GMT"
+      },
+      "definition": "Red and black GMT bezel colorway.",
+      "evidence": "Rolex GMT bezel nickname already likely present in reference index; keep as known seed to avoid duplicate mining.",
+      "confidence": 0.92,
+      "source": "Existing reference-index nickname"
+    },
+    {
+      "term": "Root Beer",
+      "aliases": [
+        "rootbeer"
+      ],
+      "type": "bezel",
+      "canonical": {
+        "brand": "Rolex",
+        "model_line": "GMT-Master",
+        "bezel": "brown gold GMT"
+      },
+      "definition": "Brown/gold or brown-toned Rolex GMT bezel/dial family nickname.",
+      "evidence": "Rolex GMT nickname likely present in reference index; keep as known seed to avoid duplicate mining.",
+      "confidence": 0.9,
+      "source": "Existing reference-index nickname"
+    },
+    {
+      "term": "gilt dial",
+      "aliases": [
+        "gilt",
+        "gloss gilt"
+      ],
+      "type": "dial",
+      "canonical": {
+        "dial": "gilt"
+      },
+      "definition": "Glossy black dial with gold-colored or gilt-effect text/printing, especially on early vintage Rolex sports watches.",
+      "evidence": "Hodinkee describes early 1960s Submariners as glossy dials with subtle gilt writing.",
+      "confidence": 0.96,
+      "source": "Hodinkee 5513 guide"
+    },
+    {
+      "term": "matte dial",
+      "aliases": [
+        "matte"
+      ],
+      "type": "dial",
+      "canonical": {
+        "dial": "matte"
+      },
+      "definition": "Non-gloss dial finish; important period distinction for many late-1960s to 1980s vintage Rolex sports watches.",
+      "evidence": "Hodinkee divides Submariner 5513 dials into gilt, matte, and glossy eras.",
+      "confidence": 0.94,
+      "source": "Hodinkee 5513 guide"
+    },
+    {
+      "term": "glossy dial",
+      "aliases": [
+        "gloss dial"
+      ],
+      "type": "dial",
+      "canonical": {
+        "dial": "glossy"
+      },
+      "definition": "Shiny lacquered dial finish; in vintage Rolex context may relate to early gilt dials or later glossy dials.",
+      "evidence": "Hodinkee describes early Submariner dials as glossy with gilt writing.",
+      "confidence": 0.9,
+      "source": "Hodinkee 5513 guide"
+    },
+    {
+      "term": "tropical dial",
+      "aliases": [
+        "tropical"
+      ],
+      "type": "era/condition",
+      "canonical": {
+        "dial": "tropical"
+      },
+      "definition": "A dial that has discolored with age, often black turning brown; can be valuable when natural and attractive.",
+      "evidence": "A Blog to Watch defines tropical dials as discolored vintage sport-watch faces valued by collectors.",
+      "confidence": 0.95,
+      "source": "A Blog to Watch tropical dial guide"
+    },
+    {
+      "term": "ghost bezel",
+      "aliases": [
+        "ghost insert",
+        "faded insert",
+        "ghost"
+      ],
+      "type": "bezel",
+      "canonical": {
+        "bezel": "ghost / faded"
+      },
+      "definition": "A bezel insert whose original color has faded to pale grey, lavender, pastel, or washed-out tones.",
+      "evidence": "Bob's Watches describes ghost bezels/dials as original color washed out to pale grey, lavender, or nearly white.",
+      "confidence": 0.94,
+      "source": "Bob's Watches vintage Rolex dial guide"
+    },
+    {
+      "term": "fat font",
+      "aliases": [
+        "fat font insert",
+        "FF insert"
+      ],
+      "type": "bezel",
+      "canonical": {
+        "bezel": "fat font insert"
+      },
+      "definition": "Bezel insert with thicker, bolder numerals; often used in vintage Rolex Submariner/GMT discussions.",
+      "evidence": "WatchProSite vintage Rolex insert guide describes bold/fat font identifying features across MK inserts.",
+      "confidence": 0.9,
+      "source": "WatchProSite Rolex insert guide"
+    },
+    {
+      "term": "meters first",
+      "aliases": [
+        "metres first",
+        "m-first"
+      ],
+      "type": "dial",
+      "canonical": {
+        "dial": "meters-first depth rating"
+      },
+      "definition": "Depth-rating format where meters appear before feet on the dial, important for vintage Rolex dating/variants.",
+      "evidence": "Wind Vintage discusses early meters-first matte dial Submariner 5512 printing.",
+      "confidence": 0.93,
+      "source": "Wind Vintage 5512 guide"
+    },
+    {
+      "term": "feet first",
+      "aliases": [
+        "ft first",
+        "f-first"
+      ],
+      "type": "dial",
+      "canonical": {
+        "dial": "feet-first depth rating"
+      },
+      "definition": "Depth-rating format where feet appear before meters on the dial.",
+      "evidence": "Counterpart term to meters-first in vintage Rolex depth-rating discussions.",
+      "confidence": 0.88,
+      "source": "Rolex collector convention"
+    },
+    {
+      "term": "SCOC",
+      "aliases": [
+        "Superlative Chronometer Officially Certified"
+      ],
+      "type": "dial",
+      "canonical": {
+        "dial_text": "Superlative Chronometer Officially Certified"
+      },
+      "definition": "Rolex dial text indicating chronometer certification wording.",
+      "evidence": "Wind Vintage discusses SCOC printing on meters-first matte dial Submariner 5512s.",
+      "confidence": 0.94,
+      "source": "Wind Vintage 5512 guide"
+    },
+    {
+      "term": "neat font",
+      "aliases": [
+        "Neat Font"
+      ],
+      "type": "dial",
+      "canonical": {
+        "brand": "Rolex",
+        "model_line": "Submariner",
+        "dial": "neat font"
+      },
+      "definition": "A vintage Rolex Submariner 5512 dial typography variant with relatively crisp/wide SCOC text.",
+      "evidence": "Wind Vintage distinguishes common SCOC printing from a 'Neat Font' reference 5512 version.",
+      "confidence": 0.87,
+      "source": "Wind Vintage 5512 guide"
+    },
+    {
+      "term": "maxi dial",
+      "aliases": [
+        "maxi"
+      ],
+      "type": "dial",
+      "canonical": {
+        "brand": "Rolex",
+        "dial": "maxi dial"
+      },
+      "definition": "Rolex sports dial with larger lume plots, especially late vintage Submariner/GMT contexts.",
+      "evidence": "Common vintage Rolex dial term to mine further by reference and mark.",
+      "confidence": 0.85,
+      "source": "Rolex collector convention"
+    },
+    {
+      "term": "long E",
+      "aliases": [
+        "Long E"
+      ],
+      "type": "dial",
+      "canonical": {
+        "brand": "Rolex",
+        "dial_detail": "long E"
+      },
+      "definition": "Rolex dial-print detail where the middle stroke of the E in ROLEX is elongated; often used in GMT/Sub dial variant discussion.",
+      "evidence": "Common vintage Rolex typography term; should be expanded with direct reference-specific evidence.",
+      "confidence": 0.78,
+      "source": "Rolex collector convention"
+    },
+    {
+      "term": "panda",
+      "aliases": [
+        "panda dial"
+      ],
+      "type": "dial",
+      "canonical": {
+        "dial": "panda"
+      },
+      "definition": "Light or white dial with contrasting dark/black subdials, usually on a chronograph.",
+      "evidence": "Common chronograph dial shorthand; mine editorial/dealer corpus for attested examples by brand/model.",
+      "confidence": 0.92,
+      "source": "Collector convention"
+    },
+    {
+      "term": "reverse panda",
+      "aliases": [
+        "inverse panda"
+      ],
+      "type": "dial",
+      "canonical": {
+        "dial": "reverse panda"
+      },
+      "definition": "Dark or black dial with contrasting light/white subdials, usually on a chronograph.",
+      "evidence": "Common chronograph dial shorthand; mine editorial/dealer corpus for attested examples by brand/model.",
+      "confidence": 0.92,
+      "source": "Collector convention"
+    },
+    {
+      "term": "exotic dial",
+      "aliases": [
+        "exotic"
+      ],
+      "type": "dial",
+      "canonical": {
+        "dial": "exotic"
+      },
+      "definition": "A non-standard, unusual, or special dial execution; in Rolex Daytona context often relates to Paul Newman-style exotic dials.",
+      "evidence": "Use with caution because meaning depends heavily on model and collector context.",
+      "confidence": 0.82,
+      "source": "Collector convention"
+    },
+    {
+      "term": "Paul Newman",
+      "aliases": [
+        "PN",
+        "Paul Newman dial"
+      ],
+      "type": "dial",
+      "canonical": {
+        "brand": "Rolex",
+        "model_line": "Daytona",
+        "dial": "Paul Newman exotic"
+      },
+      "definition": "Rolex Daytona exotic dial family associated with Paul Newman; not a generic panda synonym.",
+      "evidence": "Canonical vintage Daytona collector term; needs reference-specific mining.",
+      "confidence": 0.9,
+      "source": "Rolex Daytona collector convention"
+    },
+    {
+      "term": "cream dial",
+      "aliases": [
+        "panna dial",
+        "ivory dial"
+      ],
+      "type": "dial",
+      "canonical": {
+        "dial": "cream / panna"
+      },
+      "definition": "White or silver dial that has aged toward cream or ivory; especially discussed in some Rolex Explorer II contexts.",
+      "evidence": "Bob's Watches describes panna as cream in Italian and discusses cream dials in vintage Rolex dial context.",
+      "confidence": 0.88,
+      "source": "Bob's Watches vintage Rolex dial guide"
+    },
+    {
+      "term": "spider dial",
+      "aliases": [
+        "spider",
+        "crazed lacquer"
+      ],
+      "type": "era/condition",
+      "canonical": {
+        "dial": "spider dial"
+      },
+      "definition": "Dial with fine lacquer cracking/crazing, often seen on some glossy Rolex dials.",
+      "evidence": "Bob's Watches describes spider dials as fine cracks across the lacquer surface caused by aging/contraction.",
+      "confidence": 0.95,
+      "source": "Bob's Watches vintage Rolex dial guide"
+    },
+    {
+      "term": "retailer-signed",
+      "aliases": [
+        "double signed",
+        "Tiffany dial",
+        "Cartier dial"
+      ],
+      "type": "dial",
+      "canonical": {
+        "dial_signature": "retailer-signed"
+      },
+      "definition": "Dial carrying both the watch brand and a retailer signature such as Tiffany, Cartier, Beyer, Gobbi, or Serpico y Laino.",
+      "evidence": "Bob's Watches notes Rolex allowed select retailers to add names to dials, and Collectability discusses a 3940 made for Beyer.",
+      "confidence": 0.93,
+      "source": "Bob's Watches / Collectability"
+    },
+    {
+      "term": "lume",
+      "aliases": [
+        "luminescence",
+        "luminous material"
+      ],
+      "type": "general",
+      "canonical": {
+        "component": "lume"
+      },
+      "definition": "Luminescent material on hands and dial markers/plots.",
+      "evidence": "Core watch term; further mine corpus for material distinctions and condition language.",
+      "confidence": 0.98,
+      "source": "General watch vocabulary"
+    },
+    {
+      "term": "plots",
+      "aliases": [
+        "lume plots",
+        "hour plots"
+      ],
+      "type": "general",
+      "canonical": {
+        "component": "dial markers / lume plots"
+      },
+      "definition": "Luminous hour markers on the dial, often discussed by color, texture, loss, or originality.",
+      "evidence": "Common vintage-watch condition term; mine forums/listings for examples like puffy, creamy, missing, washed.",
+      "confidence": 0.88,
+      "source": "Collector convention"
+    },
+    {
+      "term": "patina",
+      "aliases": [
+        "patinated"
+      ],
+      "type": "era/condition",
+      "canonical": {
+        "condition": "patina"
+      },
+      "definition": "Visible aging of dial, lume, bezel, case, or other materials; desirable only when attractive, stable, and credible as natural.",
+      "evidence": "Time+Tide discusses coveted patination and service replacement of tritium-era parts; Revolution discusses vintage radium/tritium lume aging from orange to yellow.",
+      "confidence": 0.94,
+      "source": "Time+Tide / Revolution"
+    },
+    {
+      "term": "tritium",
+      "aliases": [
+        "T Swiss T",
+        "Swiss T<25",
+        "T<25"
+      ],
+      "type": "era/condition",
+      "canonical": {
+        "lume_material": "tritium"
+      },
+      "definition": "Radioactive luminous material used on many vintage watches; dial markings can indicate tritium-era lume.",
+      "evidence": "Time+Tide references tritium-dial era watches and service replacement; Revolution contrasts radium/tritium aging with modern LumiNova/Super-LumiNova.",
+      "confidence": 0.94,
+      "source": "Time+Tide / Revolution"
+    },
+    {
+      "term": "radium",
+      "aliases": [
+        "radium lume"
+      ],
+      "type": "era/condition",
+      "canonical": {
+        "lume_material": "radium"
+      },
+      "definition": "Earlier radioactive luminous material used before tritium on many vintage watches.",
+      "evidence": "Revolution discusses vintage radium and tritium lume on dials and hands.",
+      "confidence": 0.9,
+      "source": "Revolution"
+    },
+    {
+      "term": "LumiNova",
+      "aliases": [
+        "Super-LumiNova",
+        "Luminova",
+        "SLN"
+      ],
+      "type": "era/condition",
+      "canonical": {
+        "lume_material": "LumiNova / Super-LumiNova"
+      },
+      "definition": "Modern non-radioactive luminous material; on a vintage watch it may indicate later service parts unless correct for the era.",
+      "evidence": "Revolution contrasts vintage radium/tritium aging with bright white LumiNova and Super-LumiNova found on newer watches.",
+      "confidence": 0.9,
+      "source": "Revolution"
+    },
+    {
+      "term": "relume",
+      "aliases": [
+        "re-lume",
+        "relumed"
+      ],
+      "type": "era/condition",
+      "canonical": {
+        "condition": "relumed"
+      },
+      "definition": "Luminous material has been reapplied or replaced; often value-negative for collectability unless disclosed and contextually acceptable.",
+      "evidence": "Vintage watch glossary sources and forums treat replaced luminous material as an originality issue.",
+      "confidence": 0.9,
+      "source": "Time+Tide / collector convention"
+    },
+    {
+      "term": "service dial",
+      "aliases": [
+        "replacement dial"
+      ],
+      "type": "era/condition",
+      "canonical": {
+        "condition": "service dial"
+      },
+      "definition": "Dial replaced during service; may be functional but often less collectible than the original dial.",
+      "evidence": "Time+Tide notes service parts replacing tritium-era hands and dials can be a collector's nightmare despite functional benefits.",
+      "confidence": 0.94,
+      "source": "Time+Tide"
+    },
+    {
+      "term": "service hands",
+      "aliases": [
+        "replacement hands"
+      ],
+      "type": "era/condition",
+      "canonical": {
+        "condition": "service hands"
+      },
+      "definition": "Hands replaced during service, often with newer lume and potentially mismatched aging versus the dial.",
+      "evidence": "Time+Tide describes tritium-era watches receiving service replacement hands and dials.",
+      "confidence": 0.94,
+      "source": "Time+Tide"
+    },
+    {
+      "term": "matching patina",
+      "aliases": [
+        "matching lume"
+      ],
+      "type": "era/condition",
+      "canonical": {
+        "condition": "matching patina"
+      },
+      "definition": "Dial lume and hand lume have similar color/aging, suggesting visual coherence and possible originality.",
+      "evidence": "Common vintage condition language; should be mined from dealer/listing corpus for attested examples.",
+      "confidence": 0.86,
+      "source": "Collector convention"
+    },
+    {
+      "term": "polished",
+      "aliases": [
+        "case polished"
+      ],
+      "type": "era/condition",
+      "canonical": {
+        "condition": "polished case"
+      },
+      "definition": "Case has been refinished/polished; impact depends on how much original geometry remains.",
+      "evidence": "Vintage guides discuss polishing as value-relevant because it changes case/lug definition.",
+      "confidence": 0.9,
+      "source": "Time+Tide / Watchuseek / Crown Vintage"
+    },
+    {
+      "term": "overpolished",
+      "aliases": [
+        "over-polished",
+        "soft case"
+      ],
+      "type": "era/condition",
+      "canonical": {
+        "condition": "overpolished"
+      },
+      "definition": "Case has been polished heavily enough to soften lines, bevels, lugs, or engravings; usually value-negative.",
+      "evidence": "Watchuseek and polishing guides emphasize that polishing removes metal and changes lug/case shape.",
+      "confidence": 0.92,
+      "source": "Watchuseek / Crown Vintage"
+    },
+    {
+      "term": "sharp case",
+      "aliases": [
+        "sharp",
+        "strong case"
+      ],
+      "type": "era/condition",
+      "canonical": {
+        "condition": "sharp case"
+      },
+      "definition": "Case retains crisp geometry, bevels/chamfers, and lug definition.",
+      "evidence": "Hodinkee's 5513 guide notes original bevels on early Submariners; collectors use this to assess case quality.",
+      "confidence": 0.9,
+      "source": "Hodinkee 5513 guide"
+    },
+    {
+      "term": "chamfers",
+      "aliases": [
+        "bevels",
+        "case bevels"
+      ],
+      "type": "general",
+      "canonical": {
+        "component": "case bevels / chamfers"
+      },
+      "definition": "Angled case/lug edges that help define vintage case geometry and polishing quality.",
+      "evidence": "Hodinkee notes original bevels on early Submariners and their importance to condition.",
+      "confidence": 0.88,
+      "source": "Hodinkee 5513 guide"
+    },
+    {
+      "term": "pitting",
+      "aliases": [
+        "case pitting",
+        "corrosion pitting"
+      ],
+      "type": "era/condition",
+      "canonical": {
+        "condition": "pitting"
+      },
+      "definition": "Small corrosion marks or holes in metal, often on caseback, lugs, or movement; a risk flag.",
+      "evidence": "Common vintage condition term; mine listings/forums for context.",
+      "confidence": 0.85,
+      "source": "Collector convention"
+    },
+    {
+      "term": "bracelet stretch",
+      "aliases": [
+        "stretch"
+      ],
+      "type": "era/condition",
+      "canonical": {
+        "condition": "bracelet stretch"
+      },
+      "definition": "Looseness/wear in metal bracelet links, common on vintage bracelets and integrated bracelet watches.",
+      "evidence": "Frequently used in vintage Rolex and AP Royal Oak condition discussions.",
+      "confidence": 0.86,
+      "source": "Collector convention"
+    },
+    {
+      "term": "full set",
+      "aliases": [
+        "box and papers",
+        "B&P",
+        "box papers"
+      ],
+      "type": "general",
+      "canonical": {
+        "provenance": "box and papers"
+      },
+      "definition": "Watch accompanied by original box, papers, and sometimes accessories; exact contents vary by era/model.",
+      "evidence": "Collectability notes the 3940 was accompanied by presentation box, stylus, Certificate of Origin, and later double casebacks.",
+      "confidence": 0.9,
+      "source": "Collectability 3940 guide"
+    },
+    {
+      "term": "extract",
+      "aliases": [
+        "archive extract",
+        "Patek extract"
+      ],
+      "type": "general",
+      "canonical": {
+        "provenance": "archive extract"
+      },
+      "definition": "Archival document confirming production/sale information, especially important for Patek Philippe.",
+      "evidence": "Common Patek collector term; mine Collectability/A Collected Man/auction catalogues for attested usage.",
+      "confidence": 0.82,
+      "source": "Patek collector convention"
+    },
+    {
+      "term": "QP",
+      "aliases": [
+        "quantieme perpetuel",
+        "quantième perpétuel",
+        "PC"
+      ],
+      "type": "complication_abbrev",
+      "canonical": {
+        "complication": "perpetual calendar"
+      },
+      "definition": "Perpetual calendar complication; QP is the French abbreviation often used by collectors.",
+      "evidence": "Patek perpetual calendar guides discuss references such as 3940, 3970 and their perpetual calendar calibres/series.",
+      "confidence": 0.94,
+      "source": "Collectability 3940/3970 guides"
+    },
+    {
+      "term": "PCC",
+      "aliases": [
+        "perpetual chrono",
+        "perpetual calendar chronograph"
+      ],
+      "type": "complication_abbrev",
+      "canonical": {
+        "complication": "perpetual calendar chronograph"
+      },
+      "definition": "Perpetual calendar chronograph complication category.",
+      "evidence": "Collectability discusses the Patek Philippe 3970 as a perpetual calendar chronograph with four series.",
+      "confidence": 0.9,
+      "source": "Collectability 3970 guide"
+    },
+    {
+      "term": "annual calendar",
+      "aliases": [
+        "AC"
+      ],
+      "type": "complication_abbrev",
+      "canonical": {
+        "complication": "annual calendar"
+      },
+      "definition": "Calendar complication that accounts for month length but normally requires annual correction; not the same as perpetual calendar.",
+      "evidence": "General watch complication distinction; mine corpus for attested abbreviations.",
+      "confidence": 0.82,
+      "source": "General watch vocabulary"
+    },
+    {
+      "term": "chrono",
+      "aliases": [
+        "chronograph"
+      ],
+      "type": "complication_abbrev",
+      "canonical": {
+        "complication": "chronograph"
+      },
+      "definition": "Chronograph/stopwatch complication.",
+      "evidence": "Common collector shorthand, especially in Speedmaster, Daytona, Heuer, Universal Genève contexts.",
+      "confidence": 0.96,
+      "source": "Collector convention"
+    },
+    {
+      "term": "rattrapante",
+      "aliases": [
+        "split seconds",
+        "split-seconds"
+      ],
+      "type": "complication_abbrev",
+      "canonical": {
+        "complication": "split-seconds chronograph"
+      },
+      "definition": "Chronograph with split-seconds function for timing intermediate intervals.",
+      "evidence": "General high-complication vocabulary; mine corpus for usage.",
+      "confidence": 0.86,
+      "source": "General watch vocabulary"
+    },
+    {
+      "term": "Jumbo",
+      "aliases": [
+        "Royal Oak Jumbo"
+      ],
+      "type": "model_nickname",
+      "canonical": {
+        "brand": "Audemars Piguet",
+        "model_line": "Royal Oak Jumbo"
+      },
+      "definition": "Original-style ultra-thin 39mm Audemars Piguet Royal Oak lineage beginning with the 1972 Royal Oak.",
+      "evidence": "AP Chronicles describes the Royal Oak 'Jumbo' and its ultra-thin 39mm descendants.",
+      "confidence": 0.96,
+      "source": "Audemars Piguet Chronicles"
+    },
+    {
+      "term": "Petite Tapisserie",
+      "aliases": [
+        "petit tapisserie",
+        "small tapisserie"
+      ],
+      "type": "dial",
+      "canonical": {
+        "brand": "Audemars Piguet",
+        "model_line": "Royal Oak",
+        "dial": "Petite Tapisserie"
+      },
+      "definition": "Small waffle/grid Royal Oak dial pattern associated with Jumbo and early/vintage Royal Oak references.",
+      "evidence": "AP and Royal Oak dial guides identify Petite Tapisserie as a signature Royal Oak dial texture.",
+      "confidence": 0.92,
+      "source": "AP Chronicles / Royal Oak dial guides"
+    },
+    {
+      "term": "Grande Tapisserie",
+      "aliases": [
+        "large tapisserie"
+      ],
+      "type": "dial",
+      "canonical": {
+        "brand": "Audemars Piguet",
+        "model_line": "Royal Oak",
+        "dial": "Grande Tapisserie"
+      },
+      "definition": "Larger waffle/grid Royal Oak dial pattern.",
+      "evidence": "Royal Oak dial guides distinguish Petite and Grande Tapisserie dial patterns.",
+      "confidence": 0.88,
+      "source": "Royal Oak dial guides"
+    },
+    {
+      "term": "A-series",
+      "aliases": [
+        "A series"
+      ],
+      "type": "era/condition",
+      "canonical": {
+        "brand": "Audemars Piguet",
+        "model_line": "Royal Oak",
+        "era": "A-series"
+      },
+      "definition": "Early AP Royal Oak 5402 production series, especially important for original Jumbo collecting.",
+      "evidence": "AP Royal Oak Jumbo collector discussions classify early watches by production series.",
+      "confidence": 0.85,
+      "source": "AP Royal Oak collector convention"
+    },
+    {
+      "term": "Cal. 240Q",
+      "aliases": [
+        "240Q",
+        "caliber 240Q"
+      ],
+      "type": "general",
+      "canonical": {
+        "brand": "Patek Philippe",
+        "movement": "Caliber 240Q",
+        "complication": "perpetual calendar"
+      },
+      "definition": "Patek Philippe ultra-thin automatic perpetual calendar movement used in ref. 3940.",
+      "evidence": "Collectability describes the 3940's caliber 240Q as an ultra-thin automatic movement with perpetual calendar.",
+      "confidence": 0.96,
+      "source": "Collectability 3940 guide"
+    },
+    {
+      "term": "Padellone",
+      "aliases": [
+        "3448 Padellone"
+      ],
+      "type": "model_nickname",
+      "canonical": {
+        "brand": "Patek Philippe",
+        "model_line": "Perpetual Calendar",
+        "reference": "3448"
+      },
+      "definition": "Nickname associated with the Patek Philippe ref. 3448 automatic perpetual calendar.",
+      "evidence": "Patek 3448 collector guides use the model's nickname; mine specific auction/editorial sources for exact phrasing.",
+      "confidence": 0.8,
+      "source": "Patek collector convention"
+    },
+    {
+      "term": "series",
+      "aliases": [
+        "first series",
+        "second series",
+        "third series",
+        "fourth series"
+      ],
+      "type": "era/condition",
+      "canonical": {
+        "variant_axis": "series"
+      },
+      "definition": "Production/dial classification by series, especially important for complicated Patek references such as 3940 and 3970.",
+      "evidence": "Collectability identifies four distinct production series for Patek Philippe ref. 3940.",
+      "confidence": 0.92,
+      "source": "Collectability 3940 guide"
+    },
+    {
+      "term": "Autavia",
+      "aliases": [],
+      "type": "model_nickname",
+      "canonical": {
+        "brand": "Heuer",
+        "model_line": "Autavia"
+      },
+      "definition": "Heuer chronograph line whose name combines automobile and aviation contexts.",
+      "evidence": "OnTheDash provides a detailed collector guide to Heuer Autavia references and variants.",
+      "confidence": 0.95,
+      "source": "OnTheDash Autavia guide"
+    },
+    {
+      "term": "Siffert",
+      "aliases": [
+        "Jo Siffert"
+      ],
+      "type": "model_nickname",
+      "canonical": {
+        "brand": "Heuer",
+        "model_line": "Autavia"
+      },
+      "definition": "Heuer Autavia nickname/colorway associated with racing driver Jo Siffert.",
+      "evidence": "TAG Heuer and OnTheDash identify collector-named Autavia variants such as Siffert and Viceroy.",
+      "confidence": 0.9,
+      "source": "TAG Heuer / OnTheDash"
+    },
+    {
+      "term": "Viceroy",
+      "aliases": [
+        "Viceroy Autavia"
+      ],
+      "type": "model_nickname",
+      "canonical": {
+        "brand": "Heuer",
+        "model_line": "Autavia",
+        "reference": "1163V"
+      },
+      "definition": "Heuer Autavia 1163V model associated with the Viceroy promotion.",
+      "evidence": "OnTheDash compares Orange Boy Autavia with the Viceroy model and notes red accents on the Viceroy.",
+      "confidence": 0.92,
+      "source": "OnTheDash Autavia guide"
+    },
+    {
+      "term": "Orange Boy",
+      "aliases": [
+        "Orange Boy Autavia"
+      ],
+      "type": "model_nickname",
+      "canonical": {
+        "brand": "Heuer",
+        "model_line": "Autavia",
+        "reference": "1163"
+      },
+      "definition": "Rare Heuer Autavia 1163 variant with orange accents; should not be applied to every orange-accented Autavia.",
+      "evidence": "OnTheDash and TAG Heuer identify the Reference 1163 Autavia with orange accents as 'Orange Boy'; Heuer Price Guide warns the term applies only to specific 1163 variants.",
+      "confidence": 0.94,
+      "source": "OnTheDash / TAG Heuer / Heuer Price Guide"
+    },
+    {
+      "term": "Chronomatic",
+      "aliases": [
+        "Calibre 11",
+        "Cal. 11"
+      ],
+      "type": "general",
+      "canonical": {
+        "movement": "Chronomatic / Calibre 11 automatic chronograph"
+      },
+      "definition": "Early automatic chronograph movement/platform used by Heuer and partners; key term for vintage Heuer collecting.",
+      "evidence": "Heuer Autavia collector guides discuss Chronomatic/Calibre 11-era models.",
+      "confidence": 0.86,
+      "source": "OnTheDash / Heuer collector convention"
+    },
+    {
+      "term": "Pogue",
+      "aliases": [
+        "Seiko Pogue"
+      ],
+      "type": "model_nickname",
+      "canonical": {
+        "brand": "Seiko",
+        "model_line": "6139 chronograph"
+      },
+      "definition": "Nickname for Seiko 6139 chronograph variants, especially yellow-dial examples associated with Colonel William Pogue.",
+      "evidence": "Fratello discusses the Seiko 6139 'Pogue' chronograph and notes collector usage of the nickname.",
+      "confidence": 0.94,
+      "source": "Fratello Pogue guide"
+    },
+    {
+      "term": "Willard",
+      "aliases": [
+        "Captain Willard",
+        "Capt. Willard"
+      ],
+      "type": "model_nickname",
+      "canonical": {
+        "brand": "Seiko",
+        "model_line": "6105 diver"
+      },
+      "definition": "Nickname for Seiko 6105-style diver associated with Captain Willard in Apocalypse Now.",
+      "evidence": "Seiko nickname guides list Capt. Willard among unofficial fan nicknames.",
+      "confidence": 0.88,
+      "source": "Seiko nickname guides"
+    },
+    {
+      "term": "Turtle",
+      "aliases": [
+        "Seiko Turtle"
+      ],
+      "type": "model_nickname",
+      "canonical": {
+        "brand": "Seiko",
+        "model_line": "Turtle diver"
+      },
+      "definition": "Nickname for cushion-case Seiko dive watches resembling a turtle shell shape.",
+      "evidence": "Seiko nickname guides list Turtle and King Turtle as fan nicknames based on design/case form.",
+      "confidence": 0.9,
+      "source": "Seiko nickname guides"
+    },
+    {
+      "term": "Tuna",
+      "aliases": [
+        "Seiko Tuna"
+      ],
+      "type": "model_nickname",
+      "canonical": {
+        "brand": "Seiko",
+        "model_line": "Tuna diver"
+      },
+      "definition": "Nickname for Seiko professional divers with large shrouded cases.",
+      "evidence": "Seiko nickname guides list Tuna among unofficial Seiko fan nicknames.",
+      "confidence": 0.9,
+      "source": "Seiko nickname guides"
+    },
+    {
+      "term": "Suwa",
+      "aliases": [
+        "Suwa symbol"
+      ],
+      "type": "general",
+      "canonical": {
+        "brand": "Seiko",
+        "factory": "Suwa"
+      },
+      "definition": "Seiko production/factory marking associated with Suwa Seikosha; used in vintage Seiko dial/movement identification.",
+      "evidence": "Fratello's Pogue guide discusses Seiko collector details including Suwa symbols.",
+      "confidence": 0.86,
+      "source": "Fratello / Seiko collector convention"
+    },
+    {
+      "term": "Daini",
+      "aliases": [
+        "Daini symbol"
+      ],
+      "type": "general",
+      "canonical": {
+        "brand": "Seiko",
+        "factory": "Daini"
+      },
+      "definition": "Seiko production/factory marking associated with Daini Seikosha; used in vintage Seiko identification.",
+      "evidence": "Vintage Seiko collectors distinguish Suwa and Daini production markings.",
+      "confidence": 0.82,
+      "source": "Seiko collector convention"
+    },
+    {
+      "term": "Proof dial",
+      "aliases": [
+        "waterproof dial",
+        "proof/proof"
+      ],
+      "type": "dial",
+      "canonical": {
+        "brand": "Seiko",
+        "dial_text": "waterproof / proof"
+      },
+      "definition": "Vintage Seiko dial/caseback terminology using 'waterproof' before transition to 'water resistant/resist'.",
+      "evidence": "Beyond The Dial explains Seiko 'proof' and 'resist' dials around the 1970 transition.",
+      "confidence": 0.92,
+      "source": "Beyond The Dial"
+    },
+    {
+      "term": "Resist dial",
+      "aliases": [
+        "water resist",
+        "resist/resist"
+      ],
+      "type": "dial",
+      "canonical": {
+        "brand": "Seiko",
+        "dial_text": "water resist / resist"
+      },
+      "definition": "Vintage Seiko dial/caseback wording after transition away from 'waterproof'.",
+      "evidence": "Beyond The Dial explains Seiko 'proof' and 'resist' dials and shows 1971 Resist text examples.",
+      "confidence": 0.92,
+      "source": "Beyond The Dial"
+    },
+    {
+      "term": "pie-pan dial",
+      "aliases": [
+        "pie pan"
+      ],
+      "type": "dial",
+      "canonical": {
+        "dial": "pie-pan"
+      },
+      "definition": "Dial with sloped faceted outer edge, famously associated with vintage Omega Constellation and other dress watches.",
+      "evidence": "Common vintage dress-watch dial term; mine Omega/Constellation guides for examples.",
+      "confidence": 0.85,
+      "source": "Collector convention"
+    },
+    {
+      "term": "sector dial",
+      "aliases": [
+        "sector"
+      ],
+      "type": "dial",
+      "canonical": {
+        "dial": "sector"
+      },
+      "definition": "Dial divided into clear inner/outer sectors or tracks, often seen on vintage dress and chronograph designs.",
+      "evidence": "Common design term; mine editorial/dealer corpus for attested usage.",
+      "confidence": 0.84,
+      "source": "Collector convention"
+    },
+    {
+      "term": "linen dial",
+      "aliases": [
+        "linen"
+      ],
+      "type": "dial",
+      "canonical": {
+        "dial": "linen texture"
+      },
+      "definition": "Dial with woven or fabric-like texture resembling linen.",
+      "evidence": "Common dial texture term across Rolex Datejust/Day-Date and other vintage watches.",
+      "confidence": 0.84,
+      "source": "Collector convention"
+    },
+    {
+      "term": "sigma dial",
+      "aliases": [
+        "sigma"
+      ],
+      "type": "dial",
+      "canonical": {
+        "dial_marking": "sigma"
+      },
+      "definition": "Dial with sigma marks, often indicating gold hour markers on some Swiss watches.",
+      "evidence": "Common vintage Swiss dial-marking term; mine Rolex/Patek sources for model-specific usage.",
+      "confidence": 0.78,
+      "source": "Collector convention"
+    },
+    {
+      "term": "safe queen",
+      "aliases": [
+        "safequeen"
+      ],
+      "type": "general",
+      "canonical": {
+        "usage": "safe queen"
+      },
+      "definition": "Watch kept mostly unworn/preserved rather than used regularly.",
+      "evidence": "Common collector behavior term; useful for taste and ownership intent.",
+      "confidence": 0.88,
+      "source": "Collector convention"
+    },
+    {
+      "term": "beater",
+      "aliases": [
+        "daily beater"
+      ],
+      "type": "general",
+      "canonical": {
+        "usage": "beater"
+      },
+      "definition": "Watch worn casually without much concern for scratches or wear.",
+      "evidence": "Common collector usage term; useful for recommendation intent.",
+      "confidence": 0.9,
+      "source": "Collector convention"
+    },
+    {
+      "term": "grail",
+      "aliases": [
+        "grail watch"
+      ],
+      "type": "general",
+      "canonical": {
+        "collector_intent": "grail"
+      },
+      "definition": "Highly desired aspirational watch, often rare, expensive, or personally meaningful.",
+      "evidence": "Common collector term; useful for taste exploration.",
+      "confidence": 0.92,
+      "source": "Collector convention"
+    },
+    {
+      "term": "sleeper",
+      "aliases": [
+        "underrated"
+      ],
+      "type": "general",
+      "canonical": {
+        "collector_intent": "sleeper"
+      },
+      "definition": "Undervalued or under-discussed watch/reference relative to its quality, history, or collector relevance.",
+      "evidence": "Common collector/recommendation term; useful for Lumé's edge recommendations.",
+      "confidence": 0.85,
+      "source": "Collector convention"
+    }
+  ]
+}

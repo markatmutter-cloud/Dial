@@ -1,0 +1,52 @@
+name: Mine watch lexicon (phase 2)
+
+# Manual, cost-controlled corpus mining for the Lumé lexicon. Phase 1 ships the
+# ChatGPT seed directly as public/watch_lexicon.json; THIS workflow runs Claude
+# over the corpus (scripts/mine_lexicon.py) to expand it with attested,
+# source-cited terms. Bounded by max_chunks (cost cap). Runs in CI so it uses
+# the existing ANTHROPIC_API_KEY secret — never a local key. Commits the merged
+# lexicon back to the branch it's dispatched on.
+#
+# Trigger: Actions tab → "Mine watch lexicon (phase 2)" → Run workflow.
+
+on:
+  workflow_dispatch:
+    inputs:
+      max_chunks:
+        description: "Max corpus chunks to process (cost cap)"
+        required: true
+        default: "150"
+      model:
+        description: "Anthropic model (haiku = cheapest)"
+        required: false
+        default: "claude-haiku-4-5"
+
+permissions:
+  contents: write
+
+jobs:
+  mine:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install pinned deps
+        run: pip install -r requirements-ai.txt
+      - name: Mine lexicon
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          LEXICON_MODEL: ${{ github.event.inputs.model }}
+        run: python scripts/mine_lexicon.py --max-chunks ${{ github.event.inputs.max_chunks }}
+      - name: Commit lexicon
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/watch_lexicon.json
+          if git diff --cached --quiet; then
+            echo "No lexicon changes."
+          else
+            git commit -m "Mine watch lexicon (max_chunks=${{ github.event.inputs.max_chunks }})"
+            git push
+          fi

@@ -60,6 +60,26 @@ function readPublicJson(fname) {
   return data;
 }
 
+// Compact glossary from public/watch_lexicon.json (phase-1 seed; the mine-lexicon
+// workflow expands it later). Injected as a cached system block so Lumé expands
+// collector shorthand ("speedie", "panda", "QP", "DON") to canonical terms before
+// calling the grounding tools — and understands it when the user writes it. Cheap
+// after the first call (prompt-cached).
+function buildLexiconGlossary() {
+  const lex = readPublicJson("watch_lexicon.json");
+  const terms = lex && Array.isArray(lex.terms) ? lex.terms : [];
+  if (!terms.length) return "";
+  const lines = terms.map((t) => {
+    const names = [t.term, ...((t.aliases || []))].filter(Boolean).join(" / ");
+    const c = t.canonical || {};
+    const canon = [c.brand, c.model_line, c.reference, c.dial, c.bezel, c.complication, c.condition, c.collector_intent]
+      .filter(Boolean).join(" · ");
+    const def = t.definition ? ` — ${t.definition}` : "";
+    return `- ${names}${def}${canon ? ` [${canon}]` : ""}`;
+  });
+  return "WATCH LEXICON — collectors use this shorthand. Understand it when the user writes it, and EXPAND it to the canonical brand/model/dial/etc. terms below before calling the search tools:\n" + lines.join("\n");
+}
+
 // ── system prompt — the cold-open voice + grounding contract ──────────
 // One versioned constant. Tune here. Honors the house style: intrinsic,
 // lateral, NO hierarchy/diminishment ("starter/entry watch") — see
@@ -500,9 +520,12 @@ export default async function handler(req, res) {
   const model = chooseModel(lastUserText(messages));
   const anthropic = new Anthropic({ apiKey: ANTHROPIC_API_KEY });
 
-  const system = [
-    { type: "text", text: SYSTEM_PROMPT, cache_control: { type: "ephemeral" } },
-  ];
+  // System prefix: the voice/contract + the watch lexicon (phase 1). cache_control
+  // on the LAST block caches the whole static prefix (system + lexicon) together.
+  const lexiconGlossary = buildLexiconGlossary();
+  const system = [{ type: "text", text: SYSTEM_PROMPT }];
+  if (lexiconGlossary) system.push({ type: "text", text: lexiconGlossary });
+  system[system.length - 1].cache_control = { type: "ephemeral" };
   // cache_control on the last tool caches the whole tools block with system.
   const tools = TOOLS.map((t, i) =>
     i === TOOLS.length - 1 ? { ...t, cache_control: { type: "ephemeral" } } : t
