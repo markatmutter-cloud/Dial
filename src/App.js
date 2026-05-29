@@ -3219,7 +3219,7 @@ export default function Watchlist() {
           <div style={{ marginTop: 8 }}>
             <button onClick={() => { setShowUserMenu(false); signOut(); }}
               style={{ display: "block", width: "100%", textAlign: "left",
-                      padding: "8px 12px", border: "none", background: "transparent",
+                      padding: "8px 8px", border: "none", background: "transparent",
                       color: "var(--text1)", cursor: "pointer", fontFamily: "inherit",
                       fontSize: 13, borderRadius: 6 }}>
               Sign out
@@ -3229,7 +3229,7 @@ export default function Watchlist() {
               <button onClick={() => { setShowUserMenu(false); setTab("admin"); setPage(1); }}
                 style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
                         gap: 8, width: "100%", textAlign: "left",
-                        padding: "8px 12px", border: "none", background: "transparent",
+                        padding: "8px 8px", border: "none", background: "transparent",
                         color: "var(--text1)", cursor: "pointer", fontFamily: "inherit",
                         fontSize: 13, fontWeight: 500, borderRadius: 6 }}>
                 <span>Site stats</span>
@@ -3252,17 +3252,16 @@ export default function Watchlist() {
           {!isMobile ? (
             <div style={{
               marginTop: 10,
-              padding: "10px 4px 4px",
-              // PR_δ pattern 2026-05-22: drop surface fill + border;
-              // a hairline top-rule separates VIEW SETTINGS from the
-              // utility links above.
+              // Horizontal inset matches the utility rows above (8px) so
+              // every left edge in the menu lines up. The redundant
+              // "Settings" umbrella label was removed (2026-05-28, Mark):
+              // it duplicated the Currency/Theme/Columns labels below it and
+              // clashed with them in size/tracking. The hairline top-rule is
+              // the section break between account utilities and display
+              // settings — no second label needed.
+              padding: "10px 8px 4px",
               borderTop: "0.5px solid var(--border)",
             }}>
-              <div style={{ fontSize: 10, color: "var(--text3)",
-                          letterSpacing: "0.12em", textTransform: "uppercase",
-                          fontWeight: 600, marginBottom: 6 }}>
-                Settings
-              </div>
               <ViewSettingsControls
                 primaryCurrency={primaryCurrency}
                 setPrimaryCurrency={setPrimaryCurrency}
@@ -3281,7 +3280,7 @@ export default function Watchlist() {
             <button onClick={() => { setShowUserMenu(false); setSettingsModalOpen(true); }}
               style={{ display: "block", width: "100%", textAlign: "left",
                       marginTop: 4,
-                      padding: "8px 12px", border: "none", background: "transparent",
+                      padding: "8px 8px", border: "none", background: "transparent",
                       color: "var(--text1)", cursor: "pointer", fontFamily: "inherit",
                       fontSize: 13, borderRadius: 6 }}>
               Display settings
