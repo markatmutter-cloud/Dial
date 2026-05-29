@@ -104,7 +104,7 @@ in-app since Claude can't run the app here.*
   2. **Never dead-end.** Saying "no 7021/7016 in stock" and stopping leaves the user nowhere. Always offer a constructive pivot — e.g. "but I can show you every Tudor Submariner we *do* have." (Pairs with the action-tools build below — the pivot should become a real action.)
 
 ### B-41 — AI concierge: composer should auto-expand as you type
-- **Reported:** 2026-05-29 (Mark) · **Type:** Polish · **Severity:** 3 · **Surface:** `ChatBubbleHost.js` composer · **Status:** Open — queued ("hold for next polish"). The input is a single-line `<input>`, so a longer prompt scrolls and hides its start. Swap to an auto-growing `<textarea>` (grow with content up to a few lines / a max-height, then scroll), Enter-to-send + Shift+Enter newline. Fold into the next bubble-polish pass (alongside the pending SVG Lumé icon swap).
+- **Reported:** 2026-05-29 (Mark) · **Type:** Polish · **Severity:** 3 · **Surface:** `ChatBubbleHost.js` composer · **Status:** **Fixed (this PR).** Swapped the single-line `<input>` for an auto-growing `<textarea>` (grows with content to ~5 lines / 120px then scrolls; resize effect on `draft`); Enter sends, Shift+Enter inserts a newline; form `align-items:flex-end` + fixed-height Send so the button stays bottom-aligned as it grows.
 
 ### ⓑ Epic B — Platform Health
 *Audit remediation + reliability. Low-risk, noise-reducing; mostly independent of
