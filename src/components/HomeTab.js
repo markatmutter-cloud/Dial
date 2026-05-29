@@ -58,7 +58,10 @@ function EditorialHero({ isMobile, dark }) {
       // Bring the hero back up — bigger wordmark + moonphase, less
       // top padding so the whole composition sits closer to the
       // top of the viewport.
-      padding: isMobile ? "4px 16px 6px" : "4px 16px 10px",
+      // Desktop top padding 4 → 24 (Mark 2026-05-28): with the top bar now an
+      // overlay the moon sat flush to the very top; this drops it so its top
+      // lands ~halfway down the About/M bar. Mobile unchanged.
+      padding: isMobile ? "4px 16px 6px" : "24px 16px 10px",
       textAlign: "center",
     }}>
       <div style={{
