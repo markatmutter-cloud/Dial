@@ -1114,41 +1114,6 @@ export default function Watchlist() {
     setTab(newTab);
   };
 
-  // Lumé action handlers — let the concierge bubble drive the app via the
-  // decoupled ActionBus (see components/ActionBus.js). PR-A wires the two
-  // pure-navigation actions; open_watch + mutating actions land in later PRs.
-  // Uses stable useState/useFilters setters only (no body-defined functions in
-  // deps) so this doesn't re-register churn or trip exhaustive-deps.
-  useEffect(() => {
-    const show_listings = (p = {}) => {
-      resetFilters();
-      if (p.brand) setFilterBrands([canonicalizeBrand(p.brand)]);
-      if (p.model) setFilterModels([p.model]);
-      if (p.ref) setFilterRefs(Array.isArray(p.ref) ? p.ref : [p.ref]);
-      if (p.query) setSearch(p.query);
-      if (p.minPrice != null && p.minPrice !== "") setMinPriceText(String(p.minPrice));
-      if (p.maxPrice != null && p.maxPrice !== "") setMaxPriceText(String(p.maxPrice));
-      const status = p.statusMode === "sold" || p.statusMode === "all" ? p.statusMode : "live";
-      setStatusMode(status);
-      setListingsSubTab(status === "sold" ? "sold" : "live");
-      setPage(1);
-      setTab("listings");
-    };
-    const read_more = (p = {}) => {
-      if (p.articleUrl) {
-        try { window.open(p.articleUrl, "_blank", "noopener,noreferrer"); } catch {}
-        return;
-      }
-      setReferencesSubTab("references");
-      setTab("references");
-    };
-    return registerActionHandlers({ show_listings, read_more });
-  }, [
-    resetFilters, setFilterBrands, setFilterModels, setFilterRefs, setSearch,
-    setMinPriceText, setMaxPriceText, setStatusMode, setListingsSubTab,
-    setPage, setReferencesSubTab, setTab,
-  ]);
-
   // Saved searches are per-user (stored in Supabase). Signed-out visitors
   // get an empty list, and the whole Searches subsection is hidden inside
   // the Watchlist tab.
@@ -2645,6 +2610,54 @@ export default function Watchlist() {
     for (const it of auctionLotItems) m.set(it.id, it);
     return m;
   }, [items, auctionLotItems]);
+
+  // Lumé "open a watch" trigger — bumped by the open_watch action so
+  // ShareReceiver opens the focused surface for an item without a reload.
+  const [shareOpenTick, setShareOpenTick] = useState(0);
+  const [shareOpenId, setShareOpenId] = useState(null);
+
+  // Lumé action handlers — let the concierge bubble drive the app via the
+  // decoupled ActionBus (components/ActionBus.js). Placed AFTER liveStateById
+  // so open_watch can resolve an item by id. Stable setters only in deps
+  // (+ the liveStateById memo) so no exhaustive-deps churn.
+  useEffect(() => {
+    const show_listings = (p = {}) => {
+      resetFilters();
+      if (p.brand) setFilterBrands([canonicalizeBrand(p.brand)]);
+      if (p.model) setFilterModels([p.model]);
+      if (p.ref) setFilterRefs(Array.isArray(p.ref) ? p.ref : [p.ref]);
+      if (p.query) setSearch(p.query);
+      if (p.minPrice != null && p.minPrice !== "") setMinPriceText(String(p.minPrice));
+      if (p.maxPrice != null && p.maxPrice !== "") setMaxPriceText(String(p.maxPrice));
+      const status = p.statusMode === "sold" || p.statusMode === "all" ? p.statusMode : "live";
+      setStatusMode(status);
+      setListingsSubTab(status === "sold" ? "sold" : "live");
+      setPage(1);
+      setTab("listings");
+    };
+    const read_more = (p = {}) => {
+      if (p.articleUrl) {
+        try { window.open(p.articleUrl, "_blank", "noopener,noreferrer"); } catch {}
+        return;
+      }
+      setReferencesSubTab("references");
+      setTab("references");
+    };
+    const open_watch = (p = {}) => {
+      const id = p.itemId || (p.itemUrl ? shortHash(p.itemUrl) : null);
+      if (!id || !liveStateById.has(id)) {
+        return { ok: false, message: "That one's gone." };
+      }
+      setShareOpenId(id);
+      setShareOpenTick((n) => n + 1);
+      return { ok: true };
+    };
+    return registerActionHandlers({ show_listings, read_more, open_watch });
+  }, [
+    resetFilters, setFilterBrands, setFilterModels, setFilterRefs, setSearch,
+    setMinPriceText, setMaxPriceText, setStatusMode, setListingsSubTab,
+    setPage, setReferencesSubTab, setTab, liveStateById,
+  ]);
 
   const watchItems = useMemo(() => {
     // Hearted dealer items from `watchlist_items`. Mark 2026-05-07
@@ -4499,6 +4512,10 @@ export default function Watchlist() {
       // receive surface so the user can navigate away cleanly.
       setTab={setTabWithReceiveEscape}
       resetTick={shareReceiveResetTick}
+      // Lumé open_watch: App bumps openTick (+ openListingId) to open the
+      // focused surface for a specific item in-app, no reload.
+      openTick={shareOpenTick}
+      openListingId={shareOpenId}
     />
   );
 

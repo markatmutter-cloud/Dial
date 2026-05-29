@@ -54,6 +54,11 @@ export function ShareReceiver({
   // via main-nav (Watchlist logo, top tabs). We watch it and clear
   // our intent state. Mark D5 (2026-05-06).
   resetTick,
+  // Lumé open_watch: App bumps openTick (with openListingId set) to open
+  // the focused surface for a specific item post-mount — without a reload
+  // or URL params. Mirrors resetTick's external-trigger mechanism.
+  openTick,
+  openListingId,
 }) {
   const [shareIntent, setShareIntent] = useState(null);
   const [busy, setBusy] = useState(false);
@@ -102,6 +107,14 @@ export function ShareReceiver({
       setShareIntent(null);
     }
   }, [resetTick]);
+
+  // External open — bumped by App when Lumé's open_watch action fires.
+  // Opens the focused surface for the given item id, no reload / URL change.
+  useEffect(() => {
+    if (openTick && openTick > 0 && openListingId) {
+      setShareIntent({ id: openListingId, from: "" });
+    }
+  }, [openTick, openListingId]);
 
   const sharedItem = useMemo(() => {
     if (!shareIntent || !shareIntent.id) return null;

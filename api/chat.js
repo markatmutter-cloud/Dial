@@ -94,6 +94,7 @@ OFFER ACTIONS (tappable buttons):
 <actions>[{"type":"...","label":"<short imperative>","payload":{...}}]</actions>
 - Available action types right now:
   • show_listings — jump to the listings grid, filtered. payload: {brand, model, ref, minPrice, maxPrice, statusMode:"live"|"sold"|"all", query}. Use for "show me…".
+  • open_watch — open ONE specific watch's focused card (where they can heart / add-to-list / share). payload: {itemId} — use the "id" field from a search_listings result (or {itemUrl} = its url). Only for a single real listing you got from search_listings.
   • read_more — open a reference guide or an article. payload: {articleUrl, referenceId, brand, model}. Use for "want to read about this?".
 - Rules: at most 3 actions; each needs a short imperative label ("Show live Tudor Subs"); only use values a tool actually returned this turn (real brands/models/refs/URLs) — never invent one. Never mention the block in prose ("see below"); omit it entirely when no good action fits.
 
@@ -261,6 +262,7 @@ function toolSearchListings(input) {
       if (minP != null && (price == null || price < minP)) continue;
       if (maxP != null && (price == null || price > maxP)) continue;
       results.push({
+        id: it.id || "",          // stable id for open_watch (resolve in-app)
         brand: it.brand || "",
         model: it.model || it.model_line || "",
         reference: it.reference_id || it.reference_no || "",
@@ -403,7 +405,7 @@ function lastUserText(messages) {
 // validate, clamp (≤3), and strip it from the visible reply. Only types the
 // client ActionBus actually wires are allowed — so an offered button is never
 // a no-op. (Types grow per PR: PR-A = show_listings, read_more.)
-const ACTION_TYPES = new Set(["show_listings", "read_more"]);
+const ACTION_TYPES = new Set(["show_listings", "open_watch", "read_more"]);
 
 function extractActions(text) {
   const m = (text || "").match(/<actions>\s*([\s\S]*?)<\/actions>/i);
