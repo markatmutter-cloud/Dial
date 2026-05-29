@@ -106,6 +106,15 @@ in-app since Claude can't run the app here.*
 ### B-41 — AI concierge: composer should auto-expand as you type
 - **Reported:** 2026-05-29 (Mark) · **Type:** Polish · **Severity:** 3 · **Surface:** `ChatBubbleHost.js` composer · **Status:** **Fixed (this PR).** Swapped the single-line `<input>` for an auto-growing `<textarea>` (grows with content to ~5 lines / 120px then scrolls; resize effect on `draft`); Enter sends, Shift+Enter inserts a newline; form `align-items:flex-end` + fixed-height Send so the button stays bottom-aligned as it grows.
 
+### B-42 — Lumé usage feedback batch (2026-05-29)
+- **Reported:** 2026-05-29 (Mark, real use) · **Type:** Polish + one functional bug · **Severity:** 2 · **Surface:** `ChatBubbleHost.js`, `LumeIcon.js`, `App.js` (show_listings), `api/chat.js` (cold open). · **Status:** Partly fixed.
+  1. **Cold open friendlier + descriptive** — client GREETING rewritten to say what Lumé can do (listings/auctions, reference guides/articles, save to lists). **Fixed (this PR).** Server-side cold-open tone tweak (SYSTEM_PROMPT) — *deferred* (api/chat.js, conflicts with open #690/#691).
+  2. **Header title = name + descriptor** — header now reads "Lumé · Watch chat". **Fixed (this PR).**
+  3. **⚠️ Reference search bug** — asked Lumé for a reference; it returned two correct Rolex refs but `show_listings` set BOTH in the refs *filter* (AND-ish) → zero results. Fix: for a reference, put a SINGLE ref in the search box (`setSearch`, substring), not the multi-ref filter. *Deferred* — App.js `show_listings` handler, conflicts with open #690.
+  4. **Hide bubble after an action** — so the filtered grid / opened watch / created note is visible behind; reopen via the launcher. **Fixed (this PR)** — `runAction` minimises (`setOpen(false)`) on success; conversation persists; stays open on failure.
+  5. **Triangle proportion** — deeper, ~1:1.5 (w:h, Rolex-1675-hand feel), fills more of the circle, width retained as far as 1:1.5 allows inside the inscribed circle. **Fixed (this PR)** — polygon `24,11 76,11 50,89`; launcher icon 26→44.
+- **Remaining (one crisp follow-up after #690/#691 merge):** the ref-search fix (#3) + the server cold-open tone (#1).
+
 ### ⓑ Epic B — Platform Health
 *Audit remediation + reliability. Low-risk, noise-reducing; mostly independent of
 the redesign.*
