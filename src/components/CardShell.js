@@ -57,7 +57,11 @@ function CardImage({ image, priority }) {
   );
 }
 
-const SANS_STACK = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif";
+// Portal-only sans stack. Intentionally NOT the shared FONT_SANS token: the
+// card ⋯ menu portals to document.body, so it must hard-set a face or iOS
+// falls back to Times serif (Mark report 2026-05-11). Distinct name so it
+// can't be confused with the interface FONT_SANS in styles.js.
+const PORTAL_SANS = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif";
 
 const ASPECT = { square: "100%", editorial: "62.5%" /* 16:10 */ };
 
@@ -194,7 +198,7 @@ export default function CardShell({
                     boxShadow: "0 6px 20px rgba(0,0,0,0.18)",
                     // Portal mounts to document.body — pin font-family or iOS
                     // falls back to Times (Mark report 2026-05-11).
-                    fontFamily: SANS_STACK,
+                    fontFamily: PORTAL_SANS,
                   }}>
                   {menu.onShare && (
                     <button onClick={async e => {

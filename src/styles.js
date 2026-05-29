@@ -12,6 +12,21 @@
 // behavior. Components compose them with their own per-instance overrides
 // using the spread operator: style={{ ...iconButton(), background: ... }}.
 
+// ── TYPEFACES ─────────────────────────────────────────────────────────
+// The ONLY place a font-family string should live (2026-05-28 type-system
+// pass). Two voices, one axis: sans = "scan and act" (the interface, also
+// the body default in public/index.html); serif = "sit and read" (the
+// editorial register — article/reference titles + prose). Serif face is
+// Hoefler Text (Mark's call): Apple-native, ligatures, magazine contrast;
+// Iowan Old Style / Georgia are fallbacks. Never inline a font string —
+// import from here so the editorial face can't drift per surface. See
+// DESIGN_SYSTEM.md "Serif vs sans". (Portal menus that must hard-set a
+// face for the iOS Times-serif fallback are the one exception — see
+// PORTAL_SANS in CardShell.js.)
+export const FONT_SANS = "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif";
+export const FONT_SERIF = "'Hoefler Text', 'Iowan Old Style', Georgia, 'Times New Roman', serif";          // body + titles
+export const FONT_SERIF_DISPLAY = "'Hoefler Text', 'Iowan Old Style', Georgia, 'Times New Roman', serif";  // hero/display (same face; separate name documents the role)
+
 // ── PILLS ─────────────────────────────────────────────────────────────
 
 // Sort/filter pills in the sticky/filter rows. Inactive = transparent

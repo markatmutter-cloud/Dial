@@ -3010,7 +3010,7 @@ export default function Watchlist() {
   const NEW_OPTS = [{ label: "Today", days: 1 }, { label: "3 days", days: 3 }, { label: "This week", days: 7 }];
 
   const baseStyle = {
-    fontFamily: "-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',sans-serif",
+    fontFamily: "inherit",
     WebkitFontSmoothing: "antialiased", minHeight: "100vh",
     background: "var(--bg)", color: "var(--text1)",
     ...Object.fromEntries(Object.entries(c).map(([k, v]) => [k, v]))

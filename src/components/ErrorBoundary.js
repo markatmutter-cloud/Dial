@@ -37,7 +37,7 @@ export class ErrorBoundary extends React.Component {
       return (
         <div style={{
           padding: "20px 16px",
-          fontFamily: "-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',sans-serif",
+          fontFamily: "inherit",
           color: "var(--text1)",
           background: "var(--bg)",
           minHeight: "100vh",
