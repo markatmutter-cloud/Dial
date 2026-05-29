@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { supabase, useAuth } from "../supabase";
 import { dispatchAction } from "./ActionBus";
+import { LumeIcon } from "./LumeIcon";
 
 // Lumé — the watch-expert concierge bubble (Epic 9 "AI spine", Phase A).
 //
@@ -191,7 +192,7 @@ export function ChatBubbleHost() {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span aria-hidden style={{ fontSize: 15 }}>✦</span>
+          <LumeIcon size={22} style={{ borderRadius: 6, display: "block" }} />
           <span style={{ fontSize: 15, fontWeight: 600, letterSpacing: "-0.01em" }}>{NAME}</span>
         </div>
         <button
@@ -422,17 +423,19 @@ export function ChatBubbleHost() {
         zIndex: Z,
         width: 52,
         height: 52,
-        borderRadius: "50%",
+        borderRadius: 15,
         border: "none",
-        background: "var(--brand-olive)",
-        color: "#fff",
-        boxShadow: "0 6px 20px rgba(0,0,0,0.22)",
+        padding: 0,
+        // The Lumé mark carries its own dark tile; match the button bg so any
+        // sub-pixel corner gap stays seamless, and clip to the button radius.
+        background: "#1c1c1e",
+        overflow: "hidden",
+        boxShadow: "0 6px 20px rgba(0,0,0,0.28)",
         cursor: "pointer",
-        fontSize: 22,
-        lineHeight: 1,
+        lineHeight: 0,
       }}
     >
-      ✦
+      <LumeIcon size={52} style={{ display: "block" }} />
     </button>
   );
 
