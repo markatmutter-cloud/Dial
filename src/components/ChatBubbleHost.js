@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { supabase, useAuth } from "../supabase";
 
-// Floating watch-expert concierge bubble (Epic 9 "AI spine", Phase A).
+// Lumé — the watch-expert concierge bubble (Epic 9 "AI spine", Phase A).
 //
 // Mounts ONCE at the top of the app next to <ConfirmHost/> (App.js), as a
 // sibling of the shells — so all of its state lives here and App.js gains
@@ -14,20 +14,68 @@ import { supabase, useAuth } from "../supabase";
 // open VOICE + grounding rules live server-side in SYSTEM_PROMPT, so this
 // file stays a thin shell. The opening teaser below is display-only (the
 // real, context-aware cold open arrives on the first user turn).
+//
+// NB: surfaces painted with the SOLID olive (--brand-olive) use #fff text,
+// NOT --brand-olive-ink — that ink is the DARK sage meant for light olive
+// *tints* (chips), so on the solid dark olive it renders invisible (B-39).
 
 const Z = 1400; // below confirm/overlay modals, above page content
+const NAME = "Lumé";
 
-// Display-only opener. Deliberately short — it sets the voice and hands
-// off; the substantive, get_user_context-grounded cold open comes from the
-// model on the first real turn (don't duplicate the full voice here).
+// Display-only opener — sets Lumé's voice and hands off; the substantive,
+// get_user_context-grounded cold open comes from the model on the first turn.
 const GREETING =
-  "Hi — I'm the watch nerd who lives in the corner of this app. Every word I say costs someone real money, so let's skip the small talk. Tell me what you're into, or pick a nudge below.";
+  "Hey — I'm Lumé, your watch person here. Every word I say costs someone real money, so let's make it count. Tell me what you're into, or tap a nudge below.";
 
 const SUGGESTIONS = [
   "What should I look at?",
   "I'm into dive watches",
   "Surprise me",
 ];
+
+const LINK_STYLE = { color: "var(--brand)", textDecoration: "underline" };
+const ANIM_CSS =
+  "@keyframes lumeBlink{0%,80%,100%{opacity:.25}40%{opacity:1}}";
+
+// Minimal rich-text renderer for assistant replies: **bold**, [md](links),
+// bare URLs (→ clickable, new tab), and line breaks. No markdown dependency,
+// builds React nodes (no dangerouslySetInnerHTML).
+const RICH = /\*\*([^*]+)\*\*|\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)|(https?:\/\/[^\s)]+)/g;
+
+function renderInline(text, kp) {
+  const out = [];
+  let last = 0;
+  let i = 0;
+  let m;
+  RICH.lastIndex = 0;
+  while ((m = RICH.exec(text)) !== null) {
+    if (m.index > last) out.push(text.slice(last, m.index));
+    if (m[1] !== undefined) {
+      out.push(<strong key={`${kp}-${i}`}>{m[1]}</strong>);
+    } else if (m[2] !== undefined) {
+      out.push(
+        <a key={`${kp}-${i}`} href={m[3]} target="_blank" rel="noopener noreferrer" style={LINK_STYLE}>{m[2]}</a>
+      );
+    } else if (m[4] !== undefined) {
+      out.push(
+        <a key={`${kp}-${i}`} href={m[4]} target="_blank" rel="noopener noreferrer" style={LINK_STYLE}>{m[4]}</a>
+      );
+    }
+    i += 1;
+    last = RICH.lastIndex;
+  }
+  if (last < text.length) out.push(text.slice(last));
+  return out;
+}
+
+function renderRich(text) {
+  return String(text || "").split("\n").map((line, i) => (
+    <React.Fragment key={i}>
+      {i > 0 && <br />}
+      {renderInline(line, `l${i}`)}
+    </React.Fragment>
+  ));
+}
 
 export function ChatBubbleHost() {
   const { user } = useAuth();
@@ -81,7 +129,7 @@ export function ChatBubbleHost() {
         const body = await res.json();
         setMessages([...next, { role: "assistant", content: body.reply || "" }]);
       } catch {
-        setError("Couldn't reach the concierge — check your connection.");
+        setError("Couldn't reach Lumé — check your connection.");
       } finally {
         setLoading(false);
       }
@@ -112,8 +160,9 @@ export function ChatBubbleHost() {
         overflow: "hidden",
       }}
       role="dialog"
-      aria-label="Watch concierge"
+      aria-label={NAME}
     >
+      <style>{ANIM_CSS}</style>
       {/* header */}
       <div
         style={{
@@ -122,22 +171,29 @@ export function ChatBubbleHost() {
           justifyContent: "space-between",
           padding: "12px 14px",
           background: "var(--brand-olive)",
-          color: "var(--brand-olive-ink, #fff)",
+          color: "#fff",
           flexShrink: 0,
         }}
       >
-        <div style={{ fontSize: 14, fontWeight: 600 }}>Concierge</div>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <span aria-hidden style={{ fontSize: 15 }}>✦</span>
+          <span style={{ fontSize: 15, fontWeight: 600, letterSpacing: "-0.01em" }}>{NAME}</span>
+        </div>
         <button
           onClick={() => setOpen(false)}
           aria-label="Close"
           style={{
             border: "none",
-            background: "transparent",
-            color: "inherit",
-            fontSize: 20,
-            lineHeight: 1,
+            background: "rgba(255,255,255,0.16)",
+            color: "#fff",
+            width: 26,
+            height: 26,
+            borderRadius: "50%",
+            fontSize: 17,
+            lineHeight: "26px",
+            textAlign: "center",
             cursor: "pointer",
-            padding: 2,
+            padding: 0,
           }}
         >
           ×
@@ -166,13 +222,12 @@ export function ChatBubbleHost() {
               borderRadius: 12,
               fontSize: 14,
               lineHeight: 1.45,
-              whiteSpace: "pre-wrap",
-              background: m.role === "user" ? "var(--brand-olive)" : "var(--card, var(--bg))",
-              color: m.role === "user" ? "var(--brand-olive-ink, #fff)" : "var(--text1)",
+              background: m.role === "user" ? "var(--brand-olive)" : "var(--card-bg, var(--surface))",
+              color: m.role === "user" ? "#fff" : "var(--text1)",
               border: m.role === "user" ? "none" : "0.5px solid var(--border)",
             }}
           >
-            {m.content}
+            {m.role === "assistant" ? renderRich(m.content) : m.content}
           </div>
         ))}
 
@@ -201,8 +256,33 @@ export function ChatBubbleHost() {
         )}
 
         {loading && (
-          <div style={{ alignSelf: "flex-start", fontSize: 13, color: "var(--text2)", padding: "4px 2px" }}>
-            thinking…
+          <div
+            aria-label={`${NAME} is thinking`}
+            style={{
+              alignSelf: "flex-start",
+              display: "flex",
+              gap: 4,
+              alignItems: "center",
+              padding: "10px 12px",
+              borderRadius: 12,
+              background: "var(--card-bg, var(--surface))",
+              border: "0.5px solid var(--border)",
+            }}
+          >
+            {[0, 1, 2].map((d) => (
+              <span
+                key={d}
+                style={{
+                  width: 6,
+                  height: 6,
+                  borderRadius: "50%",
+                  background: "var(--text2)",
+                  display: "inline-block",
+                  animation: "lumeBlink 1.2s infinite",
+                  animationDelay: `${d * 0.15}s`,
+                }}
+              />
+            ))}
           </div>
         )}
         {error && (
@@ -210,7 +290,7 @@ export function ChatBubbleHost() {
         )}
         {capped && (
           <div style={{ fontSize: 13, color: "var(--text2)", padding: "2px" }}>
-            You've used today's concierge messages — back tomorrow.
+            You've used today's messages with {NAME} — back tomorrow.
           </div>
         )}
       </div>
@@ -243,7 +323,11 @@ export function ChatBubbleHost() {
               fontSize: 14,
               fontFamily: "inherit",
               background: "var(--bg)",
+              // Explicit text colour + webkit fill + caret so the typed text
+              // is always visible regardless of inherited colour (B-39).
               color: "var(--text1)",
+              WebkitTextFillColor: "var(--text1)",
+              caretColor: "var(--text1)",
               outline: "none",
             }}
           />
@@ -253,7 +337,7 @@ export function ChatBubbleHost() {
             style={{
               border: "none",
               background: "var(--brand-olive)",
-              color: "var(--brand-olive-ink, #fff)",
+              color: "#fff",
               borderRadius: 10,
               padding: "0 14px",
               fontSize: 14,
@@ -271,7 +355,7 @@ export function ChatBubbleHost() {
   ) : (
     <button
       onClick={() => setOpen(true)}
-      aria-label="Open watch concierge"
+      aria-label={`Open ${NAME}`}
       style={{
         position: "fixed",
         right: "max(16px, env(safe-area-inset-right))",
@@ -282,7 +366,7 @@ export function ChatBubbleHost() {
         borderRadius: "50%",
         border: "none",
         background: "var(--brand-olive)",
-        color: "var(--brand-olive-ink, #fff)",
+        color: "#fff",
         boxShadow: "0 6px 20px rgba(0,0,0,0.22)",
         cursor: "pointer",
         fontSize: 22,

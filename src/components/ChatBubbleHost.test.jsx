@@ -19,12 +19,12 @@ describe("ChatBubbleHost", () => {
     const { container } = render(<ChatBubbleHost />);
     // Portal target is document.body; signed-out → no launcher anywhere.
     expect(container).toBeEmptyDOMElement();
-    expect(screen.queryByLabelText("Open watch concierge")).toBeNull();
+    expect(screen.queryByLabelText("Open Lumé")).toBeNull();
   });
 
   test("renders the launcher when signed in", () => {
     mockUser = { id: "user-123" };
     render(<ChatBubbleHost />);
-    expect(screen.getByLabelText("Open watch concierge")).toBeInTheDocument();
+    expect(screen.getByLabelText("Open Lumé")).toBeInTheDocument();
   });
 });

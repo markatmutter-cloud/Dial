@@ -89,6 +89,20 @@ in-app since Claude can't run the app here.*
 ### B-37 — Can't heart / add-to-list from article or reference pages (dossier input side)
 - **Reported:** 2026-05-27 (Mark's wife, real user test + Mark) · **Type:** Feature gap / save-tangle · **Severity:** 2 · **Surface:** article page (`EditorialView`/article detail) + `ReferencePage` · **Status:** Open — **immediate fast-follow PR after B-08** (Mark wants it). Today only listings can be hearted; articles and reference guides have no heart / "add to list" affordance from where you encounter them. But the dossier (Phase 1) is meant to hold articles + reference guides + watches, so you must be able to **save them at the point of reading**. Add a heart / add-to-list control on the article detail + reference node pages, routing through the existing collection-picker (`openCollectionPicker`) + the `listing_snapshot.kind = 'article'` / reference-node patterns. Different files from B-08 → its own branch.
 
+### B-39 — AI concierge bubble: UI polish defects (first real test)
+- **Reported:** 2026-05-29 (Mark, first live test of the Epic 9 concierge) · **Type:** Usability/polish · **Severity:** 2 · **Surface:** `src/components/ChatBubbleHost.js` · **Status:** Open — quick batch. Several defects from the first session:
+  1. **Input text invisible** — composer text renders same colour as its background (Mark: "there if I highlight it"). Fix the input `color`/contrast.
+  2. **No visible close** — the header `×` isn't showing (white-on-olive contrast or clipped header); add a clearly visible close.
+  3. **No title / name** — header reads empty; the bot needs a NAME (Mark's call) shown in the header.
+  4. **No thinking indicator** — Mark didn't know it was working during the (multi-second) reply; the `thinking…` text is too subtle. Add a clear animated typing/thinking indicator.
+  5. **Markdown renders raw** — replies use `**bold**` / lists; the bubble prints literal `**`. Render at least bold + line breaks.
+  6. **Links not clickable** — citations come back as URLs in plain text; auto-linkify / render markdown links as anchors (open in new tab).
+
+### B-40 — AI concierge voice: accuracy over commentary; never dead-end
+- **Reported:** 2026-05-29 (Mark) · **Type:** Model/prompt tuning · **Severity:** 2 · **Surface:** `SYSTEM_PROMPT` in `api/chat.js` · **Status:** Open — quick prompt edit. Two principles from the first test:
+  1. **Err correct over colourful.** The reply called the CK2914 Railmaster "'40s-ish" (it's ~late-50s/60s) and wrote "anesthetic" for "aesthetic". The flourish came from free-recall, not a tool. Tighten: anchor dates/specs to `get_reference`/tool output; if unsure, omit the detail rather than embellish. (Note the tension: Mark *loved* the inbuilt 7016/9411 knowledge — keep the knowledgeable framing, but pin hard facts to the corpus.)
+  2. **Never dead-end.** Saying "no 7021/7016 in stock" and stopping leaves the user nowhere. Always offer a constructive pivot — e.g. "but I can show you every Tudor Submariner we *do* have." (Pairs with the action-tools build below — the pivot should become a real action.)
+
 ### ⓑ Epic B — Platform Health
 *Audit remediation + reliability. Low-risk, noise-reducing; mostly independent of
 the redesign.*
