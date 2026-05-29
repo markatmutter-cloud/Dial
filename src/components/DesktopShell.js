@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { SearchIcon, TabIcon } from "./icons";
+import { SearchIcon, TabIcon, HomeIcon } from "./icons";
 import { Chip } from "./Chip";
 import { AboutModal } from "./AboutModal";
 import { SignInPromptModal } from "./SignInPromptModal";
@@ -541,12 +541,19 @@ export function DesktopShell(props) {
             brand mark there) AND on the minimal Home top bar. */}
         {onOlive && !minimalTopBar && (
           <button onClick={() => { setTab("home"); setPage(1); }}
+            aria-label="Home" title="Home"
             style={{ background: "none", border: "none", cursor: "pointer",
                     padding: 0, paddingLeft: "0.16em", fontFamily: "inherit",
                     fontSize: 24, fontWeight: 700, letterSpacing: "0.16em",
                     textTransform: "uppercase",
-                    color: "#ffffff", flexShrink: 0 }}>
-            Watchlist
+                    color: "#ffffff", flexShrink: 0,
+                    // Home icon (Mark 2026-05-28): a real user didn't realise
+                    // the wordmark was the home button — the leading house
+                    // outline makes it read as one. Inherits currentColor
+                    // (white on the olive bar).
+                    display: "inline-flex", alignItems: "center", gap: 9 }}>
+            <HomeIcon size={20} />
+            <span>Watchlist</span>
           </button>
         )}
         {/* Tabs cluster — hidden on minimal Home top bar (tabs live
