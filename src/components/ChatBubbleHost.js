@@ -203,7 +203,7 @@ export function ChatBubbleHost() {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <LumeIcon size={22} style={{ borderRadius: 6, display: "block" }} />
+          <LumeIcon size={18} style={{ display: "block" }} />
           <span style={{ fontSize: 15, fontWeight: 600, letterSpacing: "-0.01em" }}>{NAME}</span>
         </div>
         <button
@@ -450,19 +450,18 @@ export function ChatBubbleHost() {
         zIndex: Z,
         width: 52,
         height: 52,
-        borderRadius: 15,
+        borderRadius: "50%",
         border: "none",
         padding: 0,
-        // The Lumé mark carries its own dark tile; match the button bg so any
-        // sub-pixel corner gap stays seamless, and clip to the button radius.
-        background: "#1c1c1e",
-        overflow: "hidden",
-        boxShadow: "0 6px 20px rgba(0,0,0,0.28)",
+        background: "var(--brand-olive)",
+        boxShadow: "0 6px 20px rgba(0,0,0,0.22)",
         cursor: "pointer",
-        lineHeight: 0,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
       }}
     >
-      <LumeIcon size={52} style={{ display: "block" }} />
+      <LumeIcon size={26} style={{ display: "block" }} />
     </button>
   );
 
