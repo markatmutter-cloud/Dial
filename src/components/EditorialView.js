@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { pillBase, inputBase, clearAllPill } from "../styles";
+import { pillBase, inputBase, clearAllPill, FONT_SERIF } from "../styles";
 import { Chip } from "./Chip";
 import { FilterRow } from "./FilterRow";
 import { shortHash } from "../utils";
@@ -942,7 +942,7 @@ export function ArticleCard({ article, isMobile, compact, cols, watchlist, handl
   // retired alongside the multi-col grid; the parent grids now
   // cap at 3 cols on desktop / 1 on mobile so a single card size
   // works everywhere.
-  const SERIF_TITLE = "'Hoefler Text', 'Garamond', 'Georgia', 'Times New Roman', serif";
+  const SERIF_TITLE = FONT_SERIF;
 
   return (
     <div style={{ position: "relative", height: "100%" }}>

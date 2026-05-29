@@ -199,7 +199,7 @@ module.exports = function handler(req, res) {
 <meta name="twitter:description" content="${escapeHtml(ogDesc)}">
 <meta name="twitter:image" content="${escapeHtml(ogImage)}">
 <meta http-equiv="refresh" content="0;url=${escapeHtml(redirectUrl)}">
-<style>body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;max-width:480px;margin:60px auto;padding:0 20px;color:#333;line-height:1.5}</style>
+<style>body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',sans-serif;max-width:480px;margin:60px auto;padding:0 20px;color:#333;line-height:1.5}</style>
 </head>
 <body>
 <p>Opening Watchlist…</p>

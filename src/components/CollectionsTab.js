@@ -15,7 +15,7 @@ import { articleAsListing } from "./EditorialView";
 import CardShell from "./CardShell";
 import { DossierBlocks } from "./DossierBlocks";
 import { fmtUSD, matchesSearch, imgSrc } from "../utils";
-import { actionButton, signInButton, innerToggleButton } from "../styles";
+import { actionButton, signInButton, innerToggleButton, FONT_SERIF } from "../styles";
 import { EmptyState } from "./EmptyState";
 import { Section } from "./Section";
 
@@ -66,7 +66,7 @@ const SAVED_AUCTIONS_COLLECTION_ID = "__saved_auctions__";
 // bunch of lines you click into" (Mark, 2026-05-27). The helpers +
 // presentational leaf components below are pure/props-driven; ListsView
 // composes them in its landing return.
-const WL_SERIF = "'Iowan Old Style', Georgia, 'Times New Roman', serif";
+const WL_SERIF = FONT_SERIF;
 
 // imgUrl from a mixed item (list item / hearted listing / article).
 const wlItemImg = (it) =>

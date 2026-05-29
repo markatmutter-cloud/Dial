@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { imgSrc, fmtUSD } from "../utils";
-import { producedPill } from "../styles";
+import { producedPill, FONT_SANS, FONT_SERIF_DISPLAY } from "../styles";
 
 // Swipe gesture thresholds + tap detection.
 const SWIPE_THRESHOLD_X = 90;
@@ -17,11 +17,11 @@ const BREAK_INTERVAL = 50;
 // fullscreen portal for focus.
 const SIDE_BY_SIDE_MIN = 900;
 
-// Editorial type stacks.
-const SANS_STACK = "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif";
-// Serif system stack for display headlines — Mark feedback
-// "title and option fonts still a bit simple, don't look produced."
-const SERIF_DISPLAY_STACK = "'Hoefler Text', 'Garamond', 'Georgia', 'Times New Roman', serif";
+// Editorial type stacks (shared tokens — 2026-05-28 type-system pass).
+const SANS_STACK = FONT_SANS;
+// Serif display headlines — Mark feedback "title and option fonts still
+// a bit simple, don't look produced."
+const SERIF_DISPLAY_STACK = FONT_SERIF_DISPLAY;
 
 // One-time onboarding flag — global per browser.
 const INTRO_SEEN_KEY = "screening_intro_seen_v1";

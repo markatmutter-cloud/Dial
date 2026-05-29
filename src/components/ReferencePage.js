@@ -19,9 +19,9 @@ import React, { useState, useEffect } from "react";
 import CardStrip from "./CardStrip";
 import { Card } from "./Card";
 import { imgSrc } from "../utils";
-import { innerToggleButton } from "../styles";
+import { innerToggleButton, FONT_SERIF } from "../styles";
 
-const SERIF = "'Iowan Old Style', Georgia, 'Times New Roman', serif";
+const SERIF = FONT_SERIF;
 const MAXW = 1080;
 const NONDEBATE = /(not a factual conflict|no source ranks|tonal|sibling watches|consensus is that)/i;
 
