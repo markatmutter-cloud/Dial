@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useLayoutEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
-import { useAuth, useWatchlist, useHidden, useAdminHidden, useSearches, useTrackedLots, useSavedAuctions, useCollections, useUserSettings, useUserProfile, isAuthConfigured } from "./supabase";
+import { useAuth, useWatchlist, useHidden, useAdminHidden, useSearches, useTrackedLots, useSavedAuctions, useCollections, useUserSettings, useUserProfile, isAuthConfigured, addNoteToCollection } from "./supabase";
 import { useEventTelemetry } from "./hooks/useEventTelemetry";
 import { useUserLimit } from "./hooks/useUserLimit";
 import { UserLimitBanner } from "./components/UserLimitBanner";
@@ -33,6 +33,7 @@ import { FavSearchModal } from "./components/FavSearchModal";
 import { AddSearchModal } from "./components/AddSearchModal";
 import { CollectionEditModal } from "./components/CollectionEditModal";
 import { CollectionPickerModal } from "./components/CollectionPickerModal";
+import { NotePickerModal } from "./components/NotePickerModal";
 import { SettingsModal } from "./components/SettingsModal";
 import { ViewSettingsControls } from "./components/ViewSettingsControls";
 import { ShareReceiver } from "./components/ShareReceiver";
@@ -1295,6 +1296,8 @@ export default function Watchlist() {
   // the same picker. Holds the item being added; null = closed.
   const [pickerTarget, setPickerTarget] = useState(null);
   const openCollectionPicker = useCallback((item) => setPickerTarget(item), []);
+  // Lumé save_note: the note text awaiting a list choice (null = picker closed).
+  const [notePickerText, setNotePickerText] = useState(null);
 
   // Edit modal state — used for both Create new collection (id='new')
   // and Rename existing (id=<uuid>). Lifted here because the sub-tab
@@ -2676,8 +2679,16 @@ export default function Watchlist() {
       if (error) return { ok: false, message: "Couldn't create that list." };
       return { ok: true, message: `Created "${name}".` };
     };
+    const save_note = (p = {}) => {
+      const text = (p.noteText || "").trim();
+      if (!text) return { ok: false, message: "Nothing to note." };
+      // Opens the note picker — user picks an existing list or creates one, then
+      // the note saves there (NotePickerModal, z2500 over the bubble).
+      setNotePickerText(text);
+      return { ok: true };
+    };
     return registerActionHandlers({
-      show_listings, read_more, open_watch, add_to_list, create_list,
+      show_listings, read_more, open_watch, add_to_list, create_list, save_note,
     });
   }, [
     resetFilters, setFilterBrands, setFilterModels, setFilterRefs, setSearch,
@@ -4474,15 +4485,25 @@ export default function Watchlist() {
     return collectionsApi.addItemToCollection(collectionId, item);
   };
   const collectionPickerModalJSX = (
-    <CollectionPickerModal
-      target={pickerTarget}
-      setTarget={setPickerTarget}
-      collections={collectionsApi.collections}
-      itemsByCollection={collectionsApi.itemsByCollection}
-      addItemToCollection={addItemToCollectionWithTelemetry}
-      removeItemFromCollection={collectionsApi.removeItemFromCollection}
-      createCollection={collectionsApi.createCollection}
-    />
+    <>
+      <CollectionPickerModal
+        target={pickerTarget}
+        setTarget={setPickerTarget}
+        collections={collectionsApi.collections}
+        itemsByCollection={collectionsApi.itemsByCollection}
+        addItemToCollection={addItemToCollectionWithTelemetry}
+        removeItemFromCollection={collectionsApi.removeItemFromCollection}
+        createCollection={collectionsApi.createCollection}
+      />
+      <NotePickerModal
+        noteText={notePickerText}
+        setNoteText={setNotePickerText}
+        collections={collectionsApi.collections}
+        itemsByCollection={collectionsApi.itemsByCollection}
+        createCollection={collectionsApi.createCollection}
+        addNote={addNoteToCollection}
+      />
+    </>
   );
 
   // Settings modal — currency (cross-device) plus theme + columns

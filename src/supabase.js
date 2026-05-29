@@ -22,6 +22,27 @@ export const supabase =
 
 export const isAuthConfigured = !!supabase;
 
+// Imperative note insert for Lumé's save_note action (the NotePickerModal lets
+// the user choose the target list). Mirrors useCollectionBlocks.addBlock's
+// insert shape (kind='note', position = max+1) but callable outside the hook,
+// since the chosen collection isn't known until the user picks. Direct insert
+// works under RLS (same path the dossier note UI uses).
+export async function addNoteToCollection(collectionId, noteText) {
+  if (!supabase) return { error: "auth not configured" };
+  const text = (noteText || "").trim();
+  if (!collectionId || !text) return { error: "missing collection or note" };
+  const { data: last } = await supabase
+    .from("collection_blocks")
+    .select("position")
+    .eq("collection_id", collectionId)
+    .order("position", { ascending: false })
+    .limit(1);
+  const position = last && last.length ? (last[0].position || 0) + 1 : 0;
+  return supabase.from("collection_blocks").insert({
+    collection_id: collectionId, kind: "note", position, note_text: text,
+  });
+}
+
 
 // ── AUTH ──────────────────────────────────────────────────────────────────────
 
