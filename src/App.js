@@ -2652,11 +2652,38 @@ export default function Watchlist() {
       setShareOpenTick((n) => n + 1);
       return { ok: true };
     };
-    return registerActionHandlers({ show_listings, read_more, open_watch });
+    const resolveItem = (p) => {
+      const id = p.itemId || (p.itemUrl ? shortHash(p.itemUrl) : null);
+      return id ? liveStateById.get(id) : null;
+    };
+    const add_to_list = (p = {}) => {
+      const item = resolveItem(p);
+      if (!item) return { ok: false, message: "That one's gone." };
+      // Opens the collection picker: user adds to an existing list OR creates a
+      // new one inline, then the item drops in (Mark: "create new or add to
+      // existing, then the element within it"). Picker (z2500) floats over the bubble.
+      openCollectionPicker(item);
+      return { ok: true };
+    };
+    const create_list = async (p = {}) => {
+      const item = resolveItem(p);
+      // With an item, the picker's "+ create new list" path covers create+add
+      // in one go — same flow as add_to_list.
+      if (item) { openCollectionPicker(item); return { ok: true }; }
+      const name = (p.listName || "").trim();
+      if (!name) return { ok: false, message: "What should I call the list?" };
+      const { error } = await collectionsApi.createCollection(name);
+      if (error) return { ok: false, message: "Couldn't create that list." };
+      return { ok: true, message: `Created "${name}".` };
+    };
+    return registerActionHandlers({
+      show_listings, read_more, open_watch, add_to_list, create_list,
+    });
   }, [
     resetFilters, setFilterBrands, setFilterModels, setFilterRefs, setSearch,
     setMinPriceText, setMaxPriceText, setStatusMode, setListingsSubTab,
     setPage, setReferencesSubTab, setTab, liveStateById,
+    openCollectionPicker, collectionsApi,
   ]);
 
   const watchItems = useMemo(() => {
