@@ -13,10 +13,14 @@
 // buttons on the card are absolute and don't shrink with the tile, which is
 // why mobile didn't go narrower than 38%.
 //
-// Scroll affordance (B-33, 2026-05-27): a slim always-on scroll indicator under
-// the strip on DESKTOP (mobile relies on touch + the peeking next tile), so it's
-// obvious the row scrolls sideways. Native scrollbars stay hidden; this is a
-// custom thin track + thumb sized to the visible/total ratio.
+// Scroll affordance (B-33, 2026-05-27; reworked 2026-05-28): the row scrolls
+// sideways, signalled by a right-edge fade gradient + the peeking next tile.
+// Native scrollbars stay hidden. We deliberately do NOT render a custom thumb:
+// the prior version drove a thumb off `onScroll` -> setState every frame with a
+// `transition: left 0.06s` ease, so the indicator visibly trailed the scroll
+// ("scroll, stop, then the bar catches up"). The fade is the affordance now; the
+// only scroll state we track is a guarded `atEnd` boolean (re-renders only when
+// it flips) so the fade can hide once you reach the end.
 
 import React, { useRef, useState, useEffect, useCallback } from "react";
 
@@ -31,41 +35,47 @@ export default function CardStrip({
 }) {
   const slice = max != null ? items.slice(0, max) : items;
   const scrollRef = useRef(null);
-  // thumb: width + left as % of the track; show only when the strip overflows.
-  const [thumb, setThumb] = useState({ w: 0, l: 0, show: false });
+  // Two cheap booleans, not per-frame geometry: does the strip overflow, and is
+  // it scrolled to the end. The fade shows only when overflowing && !atEnd.
+  const [overflowing, setOverflowing] = useState(false);
+  const [atEnd, setAtEnd] = useState(false);
 
-  const update = useCallback(() => {
+  // Measure overflow on mount / resize / content change — NOT on scroll.
+  const measure = useCallback(() => {
     const el = scrollRef.current;
     if (!el) return;
-    const { scrollWidth, clientWidth, scrollLeft } = el;
-    const overflowing = scrollWidth > clientWidth + 2;
-    setThumb({
-      w: overflowing ? Math.max((clientWidth / scrollWidth) * 100, 8) : 0,
-      l: overflowing ? (scrollLeft / scrollWidth) * 100 : 0,
-      show: overflowing,
-    });
+    setOverflowing(el.scrollWidth > el.clientWidth + 2);
+  }, []);
+
+  // Scroll handler is a guarded boolean flip: setState bails out (no re-render)
+  // unless `atEnd` actually changes, so dragging doesn't churn React.
+  const onScroll = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const ended = el.scrollLeft + el.clientWidth >= el.scrollWidth - 4;
+    setAtEnd((prev) => (prev === ended ? prev : ended));
   }, []);
 
   useEffect(() => {
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
-  }, [update, slice.length, isMobile]);
-
-  const padX = inset ? (isMobile ? 16 : 20) : 0;
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [measure, slice.length, isMobile]);
 
   return (
     <div>
       {/* position:relative wrapper hosts the right-edge fade overlay so it
-          tracks the scroll area (not the indicator below). Fade is part of
-          CardStrip itself now (2026-05-28) — every strip that uses CardStrip
-          gets the same affordance, instead of each caller adding its own
-          (only SectionStrip had one, so the Articles strip read differently). */}
+          overlays the scroll area. Fade is part of CardStrip itself now
+          (2026-05-28) — every strip that uses CardStrip gets the same
+          affordance, instead of each caller adding its own (only SectionStrip
+          had one, so the Articles strip read differently). */}
       <div style={{ position: "relative" }}>
-        <div ref={scrollRef} onScroll={update} style={{
+        <div ref={scrollRef} onScroll={onScroll} style={{
           display: "flex", gap: 1, overflowX: "auto", overflowY: "hidden",
           padding: inset ? (isMobile ? "0 16px 4px" : "0 20px 4px") : "0 0 4px",
-          scrollSnapType: "x mandatory",
+          // proximity (not mandatory) so the drag stays free / un-sticky and
+          // only gently lands on a tile when you let go near one.
+          scrollSnapType: "x proximity",
           WebkitOverflowScrolling: "touch",
           scrollbarWidth: "none", msOverflowStyle: "none",
           background,
@@ -78,29 +88,18 @@ export default function CardStrip({
             </div>
           ))}
         </div>
-        {/* Right-edge fade — only when the strip overflows. pointerEvents
-            none so it never swallows taps/swipes. */}
-        {thumb.show && (
-          <div aria-hidden style={{
-            position: "absolute", top: 0, right: 0, bottom: 0,
-            width: isMobile ? 36 : 72, pointerEvents: "none",
-            background: `linear-gradient(to right, transparent 0%, ${fadeColor} 75%)`,
-          }} />
-        )}
+        {/* Right-edge fade — the scroll affordance. Shows only when the strip
+            overflows AND you're not at the end, and fades in/out smoothly via
+            opacity (cheap; no layout, no per-frame state). pointerEvents none so
+            it never swallows taps/swipes. */}
+        <div aria-hidden style={{
+          position: "absolute", top: 0, right: 0, bottom: 0,
+          width: isMobile ? 36 : 72, pointerEvents: "none",
+          background: `linear-gradient(to right, transparent 0%, ${fadeColor} 75%)`,
+          opacity: overflowing && !atEnd ? 1 : 0,
+          transition: "opacity 0.15s ease",
+        }} />
       </div>
-      {/* Slim scroll indicator — desktop only, only when the strip overflows. */}
-      {!isMobile && thumb.show && (
-        <div style={{
-          height: 3, margin: `4px ${padX}px 0`, borderRadius: 2,
-          background: "var(--border)", position: "relative",
-        }}>
-          <div style={{
-            position: "absolute", top: 0, height: 3, borderRadius: 2,
-            width: `${thumb.w}%`, left: `${thumb.l}%`,
-            background: "var(--text3)", transition: "left 0.06s linear",
-          }} />
-        </div>
-      )}
     </div>
   );
 }
