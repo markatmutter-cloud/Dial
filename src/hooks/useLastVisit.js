@@ -1,5 +1,14 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 
+// DORMANT (B-27, 2026-05-28): not imported anywhere. It was written for
+// the feed-screening "new since last visit" flow, which retired with the
+// screening collapse. Kept (not deleted) because the same "what landed
+// since you last opened" computation is the planned consumer for the
+// Home/Watchlists "pulse" / new-since-visit surface (BUGS B-32,
+// [[watchlists_pulse]]). Reactivates by importing it where that surface
+// lands. If pulse ships with a different shape and never uses this,
+// delete it in that pass.
+//
 // Tracks the timestamp of the user's PREVIOUS visit so the new-
 // listings screening flow (Mark spec 2026-05-14) can compute "what
 // landed since you last opened Watchlist." On mount, reads the

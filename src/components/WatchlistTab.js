@@ -100,10 +100,10 @@ export function WatchlistTab(props) {
     cursor: "pointer", fontFamily: "inherit",
   };
 
-  // (subTabIntroJSX helper lifted to ./SubTabIntro on 2026-05-05 so
-  // Cool Stuff can share the exact same shell. Imported as <SubTabIntro/>
-  // at the top; call sites below use JSX directly rather than the
-  // previous {fn(...)} pattern.)
+  // (SubTabIntro retired — the intro card was removed from this tab and
+  // ./SubTabIntro.js deleted as orphaned in the B-27 inert-code sweep,
+  // 2026-05-28. The IA Phase-2 dispatch layer will be a new shared
+  // component, not this one.)
 
 
   // (Group-by feature removed 2026-04-30. Only implicit date
