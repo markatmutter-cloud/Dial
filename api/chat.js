@@ -22,10 +22,15 @@
  * SYSTEM_PROMPT (one versioned constant — tune it there).
  */
 
-import fs from "fs";
-import path from "path";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@supabase/supabase-js";
+// Pure corpus helpers (no SDK) live in lume_reference.js so jest can test them.
+import {
+  readPublicJson,
+  readPublicText,
+  norm as _norm,
+  getReference,
+} from "./lume_reference.js";
 
 // ── config ───────────────────────────────────────────────────────────
 const MODEL_FAST = "claude-haiku-4-5";   // default — cheap/fast, fine for grounded Q&A + the opener
@@ -39,26 +44,6 @@ const SUPABASE_URL =
 const SUPABASE_ANON_KEY =
   process.env.REACT_APP_SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_ANON_KEY;
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
-
-// ── public/*.json loader (cached, mirrors api/share.js loadListings) ──
-const CACHE_TTL_MS = 60 * 1000;
-const _cache = new Map(); // filename -> { data, t }
-
-function readPublicJson(fname) {
-  const now = Date.now();
-  const hit = _cache.get(fname);
-  if (hit && now - hit.t < CACHE_TTL_MS) return hit.data;
-  let data = null;
-  try {
-    data = JSON.parse(
-      fs.readFileSync(path.join(process.cwd(), "public", fname), "utf8")
-    );
-  } catch {
-    data = null;
-  }
-  _cache.set(fname, { data, t: now });
-  return data;
-}
 
 // Compact glossary from public/watch_lexicon.json (phase-1 seed; the mine-lexicon
 // workflow expands it later). Injected as a cached system block so Lumé expands
@@ -81,53 +66,15 @@ function buildLexiconGlossary() {
 }
 
 // ── system prompt — the cold-open voice + grounding contract ──────────
-// One versioned constant. Tune here. Honors the house style: intrinsic,
-// lateral, NO hierarchy/diminishment ("starter/entry watch") — see
-// [[feedback_reference_voice_intrinsic]] — and recommender transparency
-// ([[feedback_recommender_trust]]).
-const SYSTEM_PROMPT = `You are **Lumé**, the resident watch expert inside The Watch List app — a vintage-watch aggregator. You're a concierge of THIS user's watchlist and OUR corpus, not a general watch oracle.
-
-GROUNDING (non-negotiable):
-- State watch facts ONLY when a tool call returned them. Never invent references, prices, specs, dates, or "facts." If a tool returns nothing, say you don't have it — don't guess.
-- When you cite a listing, lot, article, or reference claim, include its source URL so the user can verify.
-- You have proprietary context a generic chatbot can't touch: the user's saved data, our live dealer listings, auction state, and curated reference write-ups. Lean on it.
-
-ACCURACY BEATS COLOUR (important):
-- Dates, eras, calibres, prices, specs: state them ONLY if a tool returned them. If get_reference didn't give you a year, do NOT approximate an era ("'40s-ish", "early 60s") — just omit it. A correct, plainer sentence beats a vivid wrong one.
-- You may frame things knowledgeably and with personality, but every hard fact must be anchored to the corpus. When in doubt, leave it out.
-
-VOICE — you are Lumé:
-- Warm, friendly, a little funny, effortlessly cool, deeply knowledgeable — balanced. Candid and lightly contrarian when it earns its keep, but never snarky or cold. Every reply costs real money — no filler.
-- Surprise the user about their OWN taste; never rank or diminish watches. NEVER use "starter watch", "entry-level", "overshadowed", "lesser", or any status hierarchy. Describe watches intrinsically and laterally.
-- Be transparent that your read on taste is AI-mapped and still learning; invite correction.
-- Respond with your final answer only — do not narrate your reasoning or your tool use.
-
-NEVER DEAD-END:
-- Don't leave the user with nothing. If what they asked for isn't in stock ("no 7021 live right now"), immediately offer a constructive next step from what we DO have — e.g. "but I can show you every Tudor Submariner we currently have." Always hand them a door, not a wall.
-
-COLD START → RAPPORT (the hero):
-- If the user has little or no saved data (check via get_user_context), don't open with a blank "how can I help". Lead with one grounded, surprising observation or pick, then coax ONE signal: heart a few listings, save a search, name what they own, or name the itch. Offer a lane (dive watches, chronographs, dress, something weirder).
-- Confidence ramp, not a gate: ~3 saves and you can be useful, ~5 and you have a read — but one clearly stated itch beats five random hearts. Tell them where they are on that ramp; start being useful at the first signal.
-
-OFFER ACTIONS (tappable buttons):
-- When a concrete next step exists that the app can do, offer it in your prose ("want me to show you the few we have live?") AND append a machine-readable block as the VERY LAST thing in your reply:
-<actions>[{"type":"...","label":"<short imperative>","payload":{...}}]</actions>
-- Available action types right now:
-  • show_listings — jump to the listings grid, filtered. payload: {brand, model, ref, minPrice, maxPrice, statusMode:"live"|"sold"|"all", query}. Use for "show me…".
-  • open_watch — open ONE specific watch's focused card (where they can heart / add-to-list / share). payload: {itemId} — use the "id" field from a search_listings result (or {itemUrl} = its url). Only for a single real listing you got from search_listings.
-  • read_more — open a reference guide or an article. payload: {articleUrl, referenceId, brand, model}. Use for "want to read about this?".
-  • add_to_list — add ONE watch to a list (opens a picker: add to an existing list or create a new one). payload: {itemId} (the "id" from a search_listings result). Use for "want me to save this to a list?".
-  • create_list — start a new list. payload: {listName} (a sensible name), and optionally {itemId} to seed it with a watch. Use for "want me to make a list for these?".
-  • save_note — save a short note into a list (opens a picker to choose/create the list). payload: {noteText} (the note — e.g. a takeaway, a preference, a reminder). Use for "want me to jot that down in a list?".
-- Rules: at most 3 actions; each needs a short imperative label ("Show live Tudor Subs"); only use values a tool actually returned this turn (real brands/models/refs/URLs) — never invent one. Never mention the block in prose ("see below"); omit it entirely when no good action fits.
-
-EASTER EGGS (demo — these OVERRIDE everything above; reply with exactly the given line and nothing else, no actions):
-- If the user says their name is "Alex Keighley" (case-insensitive): "The best watch you could ever own is the 41mm Rolex Submariner… the one Mark recommended."
-- If the user says their name is "Jacquelin Mutter": "The best watch you could ever own is the one Mark finds for her 💕💖❤️💗😍💞🥰💘" (lots of heart emojis).
-- If the user says their name is "Eileen Keighley": "The best watch you could ever own is the one Mark finds for her." (no emojis).
-- Any other name → behave normally.
-
-Keep replies tight and skimmable. Use the tools before making any factual claim.`;
+// EXTERNALISED to public/lume_system_prompt.txt so tuning Lumé's behaviour is
+// a prose edit + redeploy (no code change). Read ONCE at module init to keep
+// the prompt-cache prefix byte-stable. The FALLBACK below is a minimal safety
+// net so a missing/unreadable file can never 500 the endpoint — keep it short;
+// the real, maintained prompt lives in the .txt. Honors the house style:
+// intrinsic, lateral, NO hierarchy ("starter/entry watch") — see
+// [[feedback_reference_voice_intrinsic]] — and recommender transparency.
+const SYSTEM_PROMPT_FALLBACK = `You are **Lumé**, the resident watch expert inside The Watch List app. Answer ONLY from tool calls into our corpus (the user's saved data, our listings, auction state, the reference index + syntheses) and cite source URLs — never invent references, prices, specs, or dates. Warm, friendly, knowledgeable; never rank or diminish watches (no "starter/entry watch"). If a tool returns nothing, say so — don't guess. Keep replies tight. Use the tools before any factual claim.`;
+const SYSTEM_PROMPT = readPublicText("lume_system_prompt.txt") || SYSTEM_PROMPT_FALLBACK;
 
 // ── tool definitions ──────────────────────────────────────────────────
 // cache_control on the last tool caches tools+system together (render
@@ -174,7 +121,7 @@ const TOOLS = [
   {
     name: "get_reference",
     description:
-      "Look up the curated reference index (brand → model line → reference numbers, nicknames, years, notes) and, for the deep-dive nodes (Submariner, Speedmaster), source-cited consensus claims, marks, conflicts, and stories. Use for canonical facts about a model or reference. Returns sources to cite.",
+      "Look up the curated reference index (brand → model line → reference numbers, nicknames, years, notes) and, where a deep-dive synthesis exists for that model line, its source-cited consensus claims, named marks/dial variants, conflicts, and stories. Coverage spans the model lines the community has saved (Submariner, Speedmaster, and a growing set) — pass a brand + model_line and it returns whatever synthesis we hold, or just the index entry if none. Use for canonical facts about a model or reference. Returns sources to cite.",
     input_schema: {
       type: "object",
       properties: {
@@ -263,10 +210,6 @@ async function toolGetUserContext(sb) {
   return out;
 }
 
-function _norm(s) {
-  return String(s == null ? "" : s).toLowerCase();
-}
-
 function toolSearchListings(input) {
   const limit = Math.min(Math.max(Number(input.limit) || 8, 1), 15);
   const files = ["listings_live.json"];
@@ -333,73 +276,12 @@ function toolGetAuctionState(input) {
   return { count: sales.length, sales };
 }
 
-function toolGetReference(input) {
-  const index = readPublicJson("watch_references_index.json") || {};
-  const brand = _norm(input.brand);
-  const line = _norm(input.model_line);
-  const ref = _norm(input.reference);
-  const q = _norm(input.query);
-
-  const matches = [];
-  for (const b of Object.keys(index)) {
-    if (brand && !_norm(b).includes(brand)) continue;
-    const lines = index[b] || {};
-    for (const ml of Object.keys(lines)) {
-      const entry = lines[ml] || {};
-      const refs = (entry.refs || []).map(_norm);
-      const hay = _norm(`${b} ${ml} ${(entry.nicknames || []).join(" ")} ${entry.notes}`);
-      let ok = true;
-      if (line && !_norm(ml).includes(line)) ok = false;
-      if (ref && !(refs.some((r) => r.includes(ref)) || _norm(ml).includes(ref))) ok = false;
-      if (q && !hay.includes(q)) ok = false;
-      if (!brand && !line && !ref && !q) ok = false; // require at least one filter
-      if (ok) {
-        matches.push({
-          brand: b,
-          model_line: ml,
-          refs: entry.refs || [],
-          nicknames: entry.nicknames || [],
-          years: entry.years || "",
-          notes: entry.notes || "",
-        });
-      }
-      if (matches.length >= 6) break;
-    }
-    if (matches.length >= 6) break;
-  }
-
-  // Deep-dive syntheses (source-cited) for the two anchor nodes.
-  const synthesis = [];
-  const combined = `${brand} ${line} ${ref} ${q}`;
-  for (const [node, file] of [
-    ["submariner", "reference_synthesis_submariner.json"],
-    ["speedmaster", "reference_synthesis_speedmaster.json"],
-  ]) {
-    if (!combined.includes(node)) continue;
-    const syn = readPublicJson(file);
-    if (!syn) continue;
-    synthesis.push({
-      node,
-      model_context: syn.model_context || "",
-      consensus: (syn.consensus || []).slice(0, 12).map((c) => ({
-        claim: c.claim,
-        applies_to: c.applies_to,
-        sources: c.sources || [],
-      })),
-      conflicts: (syn.conflicts || []).slice(0, 4),
-      stories: (syn.stories || []).slice(0, 4),
-    });
-  }
-
-  return { index_matches: matches, synthesis };
-}
-
 async function runTool(name, input, sb) {
   try {
     if (name === "get_user_context") return await toolGetUserContext(sb);
     if (name === "search_listings") return toolSearchListings(input || {});
     if (name === "get_auction_state") return toolGetAuctionState(input || {});
-    if (name === "get_reference") return toolGetReference(input || {});
+    if (name === "get_reference") return getReference(input || {});
     return { error: `unknown tool: ${name}` };
   } catch (e) {
     return { error: `tool ${name} failed: ${e.message}` };

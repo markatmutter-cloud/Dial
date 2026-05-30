@@ -1,0 +1,13 @@
+{
+  "_comment": "Single source of truth for node-slug parity. Read by BOTH tests/test_node_slug_parity.py (node_slug.py) AND src/lume_reference.test.js (api/lume_reference.js) so the Python and JS slug logic can never silently drift. Each case: brand+model_line -> slug + ordered aliases.",
+  "cases": [
+    { "brand": "Rolex", "model_line": "Submariner", "slug": "rolex-submariner", "aliases": ["rolex-submariner", "submariner"] },
+    { "brand": "Rolex", "model_line": "Submariner (additions — gold variants)", "slug": "rolex-submariner", "aliases": ["rolex-submariner", "submariner"] },
+    { "brand": "Rolex", "model_line": "GMT-Master / GMT-Master II", "slug": "rolex-gmt-master", "aliases": ["rolex-gmt-master", "gmt-master"] },
+    { "brand": "Rolex", "model_line": "Sea-Dweller / Deepsea", "slug": "rolex-sea-dweller", "aliases": ["rolex-sea-dweller", "sea-dweller"] },
+    { "brand": "Rolex", "model_line": "Day-Date", "slug": "rolex-day-date", "aliases": ["rolex-day-date", "day-date"] },
+    { "brand": "Omega", "model_line": "Speedmaster", "slug": "omega-speedmaster", "aliases": ["omega-speedmaster", "speedmaster"] },
+    { "brand": "Tudor", "model_line": "Black Bay", "slug": "tudor-black-bay", "aliases": ["tudor-black-bay", "black-bay"] },
+    { "brand": "", "model_line": "Submariner", "slug": "submariner", "aliases": ["submariner"] }
+  ]
+}
