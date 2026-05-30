@@ -19,12 +19,13 @@ export function LumeIcon({ size = 26, color = "#fff", glow = "#C9FFD6", style })
       xmlns="http://www.w3.org/2000/svg"
     >
       <defs>
-        <filter id="lumeGlow" x="-60%" y="-60%" width="220%" height="220%">
-          <feGaussianBlur stdDeviation="3.5" />
+        <filter id="lumeGlow" x="-100%" y="-100%" width="300%" height="300%">
+          <feGaussianBlur stdDeviation="7" />
         </filter>
       </defs>
-      {/* soft lume halo */}
-      <polygon points={pts} fill={glow} opacity="0.6" filter="url(#lumeGlow)" />
+      {/* lume halo — two passes so the glow actually reads (Mark) */}
+      <polygon points={pts} fill={glow} opacity="0.9" filter="url(#lumeGlow)" />
+      <polygon points={pts} fill={glow} opacity="0.7" filter="url(#lumeGlow)" />
       {/* crisp mark */}
       <polygon points={pts} fill={color} />
     </svg>

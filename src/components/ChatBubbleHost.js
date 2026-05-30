@@ -30,7 +30,7 @@ const SpeechRec =
 // Display-only opener — sets Lumé's voice + teaches the pronunciation; the
 // substantive get_user_context-grounded cold open comes from the model.
 const GREETING =
-  "Hey — I'm Lumé (loo-may), your watch guide here. I can dig through live listings and auctions, pull up reference guides and articles, and save things to your lists. Tell me what you're after — a brand, a reference, or just a vibe — or tap a nudge to start.";
+  "I'm Lumé.\n\nSo, what's your watch problem?\n\nLate-night Speedmaster browsing? Talking yourself into a vintage Sub? I speak fluent Speedy, Sub, QP, gilt, tropical, ghost bezel, soft case, and \"why is this one somehow twice the price?\"\n\nGive me 3–5 watches you like, one you're thinking about buying, and a rabbit hole you want to go down. The more you give me, the better I'll be.\n\nWhat should we look at first?";
 
 const SUGGESTIONS = ["What should I look at?", "I'm into dive watches", "Surprise me"];
 
@@ -186,12 +186,13 @@ export function ChatBubbleHost() {
   };
   // Speech-bubble launcher: a rounded square with one squared corner (tail) so
   // it reads as a chat icon, not a plain circle. (B-43)
+  // Back to a circle (Mark), with a larger lume glow + drop shadow.
   const launcherStyle = {
     width: 52, height: 52,
-    borderRadius: "22px 22px 22px 6px",
+    borderRadius: "50%",
     border: "none", padding: 0,
     background: "var(--brand-olive)",
-    boxShadow: "0 6px 20px rgba(0,0,0,0.22)",
+    boxShadow: "0 0 22px 5px rgba(201,255,214,0.45), 0 8px 24px rgba(0,0,0,0.32)",
     cursor: "pointer",
     display: "flex", alignItems: "center", justifyContent: "center",
   };
