@@ -1,0 +1,333 @@
+{
+  "node": "heuer-autavia",
+  "brand": "Heuer",
+  "model_line": "Autavia (vintage)",
+  "reference_focus": [
+    "1163",
+    "2446"
+  ],
+  "where_next_refs": [],
+  "auto_generated": true,
+  "sources": [
+    {
+      "url": "https://www.onthedash.com/heuer-100-guide/",
+      "title": "OnTheDash Guide to the Heuer 100",
+      "publication": "onthedash",
+      "author": "Jeffrey Stein",
+      "type": "editorial_blog",
+      "focus": "Autavia (vintage)"
+    },
+    {
+      "url": "https://www.onthedash.com/autavia-guide/",
+      "title": "The Collector’s Guide to the Heuer Autavia",
+      "publication": "onthedash",
+      "author": "admin",
+      "type": "editorial_blog",
+      "focus": "Autavia (vintage)"
+    },
+    {
+      "url": "https://www.fratellowatches.com/tbt-heuer-autavia-2446-jochen-rindt/",
+      "title": "#TBT Heuer Autavia 2446 “Jochen Rindt”",
+      "publication": "fratello",
+      "author": "Fratello",
+      "type": "editorial_blog",
+      "focus": "Autavia (vintage)"
+    },
+    {
+      "url": "https://www.onthedash.com/noteworthy-abercrombie-seafarer-2446/",
+      "title": "A Noteworthy Watch — Abercrombie & Fitch Seafarer, Ref 2446 (Screw-Back Case), to be Sold by Sotheby’s",
+      "publication": "onthedash",
+      "author": "Jeffrey Stein",
+      "type": "editorial_blog",
+      "focus": "Autavia (vintage)"
+    },
+    {
+      "url": "https://www.onthedash.com/2446c-and-2446c-gmt/",
+      "title": "Detailed Review: Autavia 2446C GMT (and Standard Autavia 2446C)",
+      "publication": "onthedash",
+      "author": "admin",
+      "type": "editorial_blog",
+      "focus": "Autavia (vintage)"
+    },
+    {
+      "url": "https://www.rolexmagazine.com/2014/07/the-precision-wristwatch-was-born-100.html",
+      "title": "The Precision Wristwatch Was Born 100 Years Ago...",
+      "publication": "rolex_magazine",
+      "author": "Jake Ehrlich",
+      "type": "editorial_blog",
+      "focus": "Autavia (vintage)"
+    },
+    {
+      "url": "https://www.onthedash.com/autavia-isograph-introduction/",
+      "title": "Anatomy of the (Three-Handed) Autavia – Introducing the Isograph",
+      "publication": "onthedash",
+      "author": "Jeffrey Stein",
+      "type": "editorial_blog",
+      "focus": "Autavia (vintage)"
+    },
+    {
+      "url": "https://www.onthedash.com/autavia-baselworld-2019-preview/",
+      "title": "Baselworld Preview — Are We Ready for the Three-Handed Autavia?",
+      "publication": "onthedash",
+      "author": "Jeffrey Stein",
+      "type": "editorial_blog",
+      "focus": "Autavia (vintage)"
+    },
+    {
+      "url": "https://www.onthedash.com/autavia-2446c-silver-dial/",
+      "title": "Finishing Heuer’s Unfinished Project — Autavia 2446C with Silver Dial",
+      "publication": "onthedash",
+      "author": "admin",
+      "type": "editorial_blog",
+      "focus": "Autavia (vintage)"
+    },
+    {
+      "url": "https://www.fratellowatches.com/sunday-morning-showdown-citizen-tsuyosa-vs-casio-edifice-efk-100/",
+      "title": "Sunday Morning Showdown: Citizen Tsuyosa Vs. Casio Edifice EFK-100",
+      "publication": "fratello",
+      "author": "Fratello",
+      "type": "editorial_blog",
+      "focus": "Autavia (vintage)"
+    },
+    {
+      "url": "https://www.onthedash.com/pawn-stars-autavia/",
+      "title": "What’s It Worth?  Heuer Autavia Sold on “Pawn Stars”",
+      "publication": "onthedash",
+      "author": "admin",
+      "type": "editorial_blog",
+      "focus": "Autavia (vintage)"
+    },
+    {
+      "url": "https://www.onthedash.com/found-first-chronomatic-autavia/",
+      "title": "Found – Heuer’s Very First Automatic Chronograph (Chronomatic Autavia)",
+      "publication": "onthedash",
+      "author": "admin",
+      "type": "editorial_blog",
+      "focus": "Autavia (vintage)"
+    },
+    {
+      "url": "https://www.hodinkee.com/articles/bring-a-loupe-november-20-2015",
+      "title": "Bring a Loupe: A Submariner You Probably Haven't Seen Before, An Enicar You Likely Did Not Know, And A Heuer Autavia You Absolutely Should Not Buy",
+      "publication": "hodinkee_bring_a_loupe",
+      "author": "Louis Westphalen",
+      "type": "editorial_column",
+      "focus": "Autavia (vintage)"
+    },
+    {
+      "url": "https://www.onthedash.com/2016-summit-and-new-autavia/",
+      "title": "Vintage Heuer Collectors Summit 2016 (and Jean-Claude Biver Introduces the New Autavia)",
+      "publication": "onthedash",
+      "author": "admin",
+      "type": "editorial_blog",
+      "focus": "Autavia (vintage)"
+    },
+    {
+      "url": "https://www.onthedash.com/autavia-cup-matches/",
+      "title": "The Match-by-Match Guide to the Autavia Cup — Round One",
+      "publication": "onthedash",
+      "author": "admin",
+      "type": "editorial_blog",
+      "focus": "Autavia (vintage)"
+    },
+    {
+      "url": "https://www.onthedash.com/autavia-50th-birthday-scrapbook/",
+      "title": "Autavia 50th Birthday Scrapbook",
+      "publication": "onthedash",
+      "author": "admin",
+      "type": "editorial_blog",
+      "focus": "Autavia (vintage)"
+    },
+    {
+      "url": "https://www.hodinkee.com/articles/bring-a-loupe-january-27-2017",
+      "title": "Bring a Loupe: The Most Expensive Example Of The Ultra-Rare Heuer Autavia 2446 Ever Offered (And More)",
+      "publication": "hodinkee_bring_a_loupe",
+      "author": "Louis Westphalen",
+      "type": "editorial_column",
+      "focus": "Autavia (vintage)"
+    },
+    {
+      "url": "https://www.onthedash.com/serial-numbers-of-viceroy-autavias/",
+      "title": "Mark Moss Explores Serial Numbers and Batches of Viceroy Autavias",
+      "publication": "onthedash",
+      "author": "admin",
+      "type": "editorial_blog",
+      "focus": "Autavia (vintage)"
+    },
+    {
+      "url": "https://www.fratellowatches.com/the-ongoing-mystery-of-round-typeface-heuer-autavia-2446m/",
+      "title": "#TBT The Ongoing Mystery Of The Round-Typeface Heuer Autavia 2446M",
+      "publication": "fratello",
+      "author": "Fratello",
+      "type": "editorial_blog",
+      "focus": "Autavia (vintage)"
+    },
+    {
+      "url": "https://www.onthedash.com/transitional-autavia/",
+      "title": "Discovered:  Transitional Version of 1960s Autavia",
+      "publication": "onthedash",
+      "author": "admin",
+      "type": "editorial_blog",
+      "focus": "Autavia (vintage)"
+    },
+    {
+      "url": "https://www.fratellowatches.com/urwerk-time-and-culture-i/",
+      "title": "URWERK Delivers A History Lesson With The Birth Of The UR-100V Time and Culture Line",
+      "publication": "fratello",
+      "author": "Fratello",
+      "type": "editorial_blog",
+      "focus": "Autavia (vintage)"
+    },
+    {
+      "url": "https://www.onthedash.com/field-guide-to-the-heuer-autavia-reference-1163-black-dial/",
+      "title": "Field Guide to the Heuer Autavia, Reference 1163 (Black Dial)",
+      "publication": "onthedash",
+      "author": "admin",
+      "type": "editorial_blog",
+      "focus": "Autavia (vintage)"
+    },
+    {
+      "url": "https://www.fratellowatches.com/is-it-still-possible-to-start-a-watch-collection-with-e100-a-top-5-from-casio-timex-and-swatch-says-yes/",
+      "title": "Is It Still Possible To Start A Watch Collection With €100? A Top 5 From Casio, Timex, And Swatch Says Yes!",
+      "publication": "fratello",
+      "author": "Fratello",
+      "type": "editorial_blog",
+      "focus": "Autavia (vintage)"
+    },
+    {
+      "url": "https://www.hodinkee.com/articles/bring-a-loupe-7-july-2017",
+      "title": "Bring a Loupe: A Universal Genève 'Nina Rindt' And A Selection Of Other Chronographs Available On Ebay",
+      "publication": "hodinkee_bring_a_loupe",
+      "author": "Louis Westphalen",
+      "type": "editorial_column",
+      "focus": "Autavia (vintage)"
+    },
+    {
+      "url": "https://www.fratellowatches.com/hands-on-with-the-highly-impressive-new-casio-edifice-efk-100/",
+      "title": "Hands-On With The Highly Impressive New Casio Edifice EFK-100",
+      "publication": "fratello",
+      "author": "Fratello",
+      "type": "editorial_blog",
+      "focus": "Autavia (vintage)"
+    },
+    {
+      "url": "https://shop.hodinkee.com/collections/vintage-watches/products/autavia-ref-1163-on-bracelet-case-225559",
+      "title": "1970s Heuer Autavia 'Pre-Viceroy' Ref. 1163",
+      "publication": "hodinkee_shop",
+      "author": "Hodinkee",
+      "type": "dealer_archive",
+      "focus": "Autavia (vintage)"
+    },
+    {
+      "url": "https://www.onthedash.com/autavia-watch-and-act-auction/",
+      "title": "Unique Autavia to be Sold in “Watch & Act” Auction (ending Jan 30 / 31)",
+      "publication": "onthedash",
+      "author": "Jeffrey Stein",
+      "type": "editorial_blog",
+      "focus": "Autavia (vintage)"
+    },
+    {
+      "url": "https://www.rolexmagazine.com/2020/01/fabien-cousteau-100-million-sharks.html",
+      "title": "Fabien Cousteau: 100 Million Sharks Killed Per Year",
+      "publication": "rolex_magazine",
+      "author": "Jake Ehrlich",
+      "type": "editorial_blog",
+      "focus": "Autavia (vintage)"
+    },
+    {
+      "url": "https://www.fratellowatches.com/hands-on-with-the-impressive-casio-edifice-efk-110-series-a-welcome-evolution-of-the-efk-100/",
+      "title": "Hands-On With The Impressive Casio Edifice EFK-110 Series — A Welcome Evolution Of The EFK-100",
+      "publication": "fratello",
+      "author": "Fratello",
+      "type": "editorial_blog",
+      "focus": "Autavia (vintage)"
+    },
+    {
+      "url": "https://www.fratellowatches.com/we-didnt-see-this-coming-the-new-casio-edifice-efk-100-mechanical-collection/",
+      "title": "We Didn’t See This Coming! The New Casio Edifice EFK-100 Mechanical Collection",
+      "publication": "fratello",
+      "author": "Fratello",
+      "type": "editorial_blog",
+      "focus": "Autavia (vintage)"
+    },
+    {
+      "url": "https://www.onthedash.com/autavia-cup-guide/",
+      "title": "The Enthusiast’s Guide to the Autavia Cup",
+      "publication": "onthedash",
+      "author": "admin",
+      "type": "editorial_blog",
+      "focus": "Autavia (vintage)"
+    },
+    {
+      "url": "https://shop.hodinkee.com/collections/vintage-watches/products/2738-heuer-pre-viceroy-ref-1163",
+      "title": "1970s Heuer Autavia 'Pre-Viceroy' Ref. 1163",
+      "publication": "hodinkee_shop",
+      "author": "Hodinkee",
+      "type": "dealer_archive",
+      "focus": "Autavia (vintage)"
+    },
+    {
+      "url": "https://shop.hodinkee.com/collections/vintage-watches/products/2700-heuer-ref-1163-siffert",
+      "title": "1970s Heuer Autavia 'Siffert' Ref. 1163 On Gay Frères Bracelet",
+      "publication": "hodinkee_shop",
+      "author": "Hodinkee",
+      "type": "dealer_archive",
+      "focus": "Autavia (vintage)"
+    },
+    {
+      "url": "https://shop.hodinkee.com/collections/vintage-watches/products/autavia",
+      "title": "1970s Heuer Autavia Ref. 2446C",
+      "publication": "hodinkee_shop",
+      "author": "Hodinkee",
+      "type": "dealer_archive",
+      "focus": "Autavia (vintage)"
+    },
+    {
+      "url": "https://www.onthedash.com/autavia-gmt-red-needles/",
+      "title": "Heuer Autavia GMT — Why the Red Needles Were Changed to Black",
+      "publication": "onthedash",
+      "author": "admin",
+      "type": "editorial_blog",
+      "focus": "Autavia (vintage)"
+    },
+    {
+      "url": "https://shop.hodinkee.com/collections/vintage-watches/products/2733-heuer-autavia-ref-1163-siffert-on-bracelet",
+      "title": "1970s Heuer Autavia 'Siffert' Ref. 1163 On Bracelet",
+      "publication": "hodinkee_shop",
+      "author": "Hodinkee",
+      "type": "dealer_archive",
+      "focus": "Autavia (vintage)"
+    },
+    {
+      "url": "https://shop.hodinkee.com/collections/vintage-watches/products/autavia-ref-7863c-case-138634",
+      "title": "1960s Heuer Autavia Ref. 7863C 'Dato'",
+      "publication": "hodinkee_shop",
+      "author": "Hodinkee",
+      "type": "dealer_archive",
+      "focus": "Autavia (vintage)"
+    },
+    {
+      "url": "https://shop.hodinkee.com/collections/vintage-watches/products/2837-heuer-autavia-jo-siffert",
+      "title": "1970s Heuer Autavia 'Siffert' Ref. 1163 On Gay Frères Bracelet",
+      "publication": "hodinkee_shop",
+      "author": "Hodinkee",
+      "type": "dealer_archive",
+      "focus": "Autavia (vintage)"
+    },
+    {
+      "url": "https://shop.hodinkee.com/collections/vintage-watches/products/1535-heuer-autavia-a-f-timer-with-box",
+      "title": "1950s Heuer Autavia Dashboard Stopwatch Retailed By Abercrombie & Fitch Co. With Box",
+      "publication": "hodinkee_shop",
+      "author": "Hodinkee",
+      "type": "dealer_archive",
+      "focus": "Autavia (vintage)"
+    },
+    {
+      "url": "https://shop.hodinkee.com/collections/vintage-watches/products/2686-heuer-super-autavia",
+      "title": "1960s Heuer Super Autavia Dashboard Chronograph",
+      "publication": "hodinkee_shop",
+      "author": "Hodinkee",
+      "type": "dealer_archive",
+      "focus": "Autavia (vintage)"
+    }
+  ]
+}

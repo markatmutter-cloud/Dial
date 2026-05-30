@@ -1,0 +1,334 @@
+{
+  "node": "heuer-carrera",
+  "brand": "Heuer",
+  "model_line": "Carrera (additions and clarifications)",
+  "reference_focus": [
+    "1153",
+    "1153N",
+    "CS3111"
+  ],
+  "where_next_refs": [],
+  "auto_generated": true,
+  "sources": [
+    {
+      "url": "https://www.hodinkee.com/articles/reference-points-tag-heuer-carrera",
+      "title": "Reference Points: The Heuer Carrera",
+      "publication": "hodinkee_reference_points",
+      "author": "Benjamin Clymer",
+      "type": "editorial_reference_points",
+      "focus": "Carrera (additions and clarifications)"
+    },
+    {
+      "url": "https://www.onthedash.com/carrera-calibre-36-flyback-full-review/",
+      "title": "Carrera Calibre 36 Flyback Chronograph — Full Review",
+      "publication": "onthedash",
+      "author": "admin",
+      "type": "editorial_blog",
+      "focus": "Carrera (additions and clarifications)"
+    },
+    {
+      "url": "https://www.onthedash.com/geneva-scrapbook/",
+      "title": "Geneva Scrapbook:  Carrera 50th Anniversary Celebration, January 21, 2013",
+      "publication": "onthedash",
+      "author": "admin",
+      "type": "editorial_blog",
+      "focus": "Carrera (additions and clarifications)"
+    },
+    {
+      "url": "https://www.onthedash.com/carrera-calibre-36-flyback/",
+      "title": "Everything Old is New Again — Inspirations for the New Carrera Calibre 36 Flyback",
+      "publication": "onthedash",
+      "author": "admin",
+      "type": "editorial_blog",
+      "focus": "Carrera (additions and clarifications)"
+    },
+    {
+      "url": "https://www.onthedash.com/carrera-fragment-introduction/",
+      "title": "Introducing the Carrera Heuer 02 by Fragment Design / Hiroshi Fujiwara (LE)",
+      "publication": "onthedash",
+      "author": "Jeffrey Stein",
+      "type": "editorial_blog",
+      "focus": "Carrera (additions and clarifications)"
+    },
+    {
+      "url": "https://www.onthedash.com/lvmh-watch-week-2020-news-20jan12/",
+      "title": "Introducing the Heuer Carrera 160th Anniversary Silver Limited Edition",
+      "publication": "onthedash",
+      "author": "Jeffrey Stein",
+      "type": "editorial_blog",
+      "focus": "Carrera (additions and clarifications)"
+    },
+    {
+      "url": "https://www.onthedash.com/new-old-solid-gold-carrera/",
+      "title": "A New Old Solid Gold Carrera . . . a Play in Five Acts",
+      "publication": "onthedash",
+      "author": "Jeffrey Stein",
+      "type": "editorial_blog",
+      "focus": "Carrera (additions and clarifications)"
+    },
+    {
+      "url": "https://www.onthedash.com/carrera-heuer-01-preview/",
+      "title": "08 Reasons Why I Can’t Wait to Buy the Carrera Heuer 01",
+      "publication": "onthedash",
+      "author": "admin",
+      "type": "editorial_blog",
+      "focus": "Carrera (additions and clarifications)"
+    },
+    {
+      "url": "https://www.fratellowatches.com/tbt-heuer-carrera-2447s/",
+      "title": "#TBT Heuer Carrera 2447S",
+      "publication": "fratello",
+      "author": "Fratello",
+      "type": "editorial_blog",
+      "focus": "Carrera (additions and clarifications)"
+    },
+    {
+      "url": "https://www.onthedash.com/retrospective-first-generation-glassbox-carreras/",
+      "title": "Retrospective — The “First Generation” Glassbox Carrera Chronographs (2015 to 2023)",
+      "publication": "onthedash",
+      "author": "Jeffrey Stein",
+      "type": "editorial_blog",
+      "focus": "Carrera (additions and clarifications)"
+    },
+    {
+      "url": "https://www.hodinkee.com/articles/bring-a-loupe-july-17-2025",
+      "title": "Bring a Loupe: A Skeletonized Chopard, An Honest Wittnauer Chronograph, And A Dishonest Heuer Carrera",
+      "publication": "hodinkee_bring_a_loupe",
+      "author": "Rich Fordon",
+      "type": "editorial_column",
+      "focus": "Carrera (additions and clarifications)"
+    },
+    {
+      "url": "https://www.fratellowatches.com/watch-year-2021-retrospect/",
+      "title": "Watch Year 2021 In Retrospect — Unstoppable Trends, Auction Absurdities, Exploding Rolex Prices, And Other Highs And Lows",
+      "publication": "fratello",
+      "author": "Fratello",
+      "type": "editorial_blog",
+      "focus": "Carrera (additions and clarifications)"
+    },
+    {
+      "url": "https://www.fratellowatches.com/tbt-vulcain-minstop-parking-meter-watch/",
+      "title": "#TBT Vulcain MinStop Parking Meter Watch",
+      "publication": "fratello",
+      "author": "Fratello",
+      "type": "editorial_blog",
+      "focus": "Carrera (additions and clarifications)"
+    },
+    {
+      "url": "https://www.fratellowatches.com/the-70s-another-golden-era-for-the-heuer-carrera-2/",
+      "title": "The 70s: Another Golden Era for the Heuer Carrera",
+      "publication": "fratello",
+      "author": "Fratello",
+      "type": "editorial_blog",
+      "focus": "Carrera (additions and clarifications)"
+    },
+    {
+      "url": "https://www.onthedash.com/mick-jagger/",
+      "title": "Satisfaction — Mick Jagger is a Heuer Guy!",
+      "publication": "onthedash",
+      "author": "admin",
+      "type": "editorial_blog",
+      "focus": "Carrera (additions and clarifications)"
+    },
+    {
+      "url": "https://www.hodinkee.com/articles/bring-a-loupe-oct-4",
+      "title": "Bring a Loupe: A Platinum Swatch, An Oversized Eberhard, And A Gold Heuer Carrera",
+      "publication": "hodinkee_bring_a_loupe",
+      "author": "Isaac Wingold",
+      "type": "editorial_column",
+      "focus": "Carrera (additions and clarifications)"
+    },
+    {
+      "url": "https://www.fratellowatches.com/tbt-the-unstoppable-tissot-mediostat-chronograph/",
+      "title": "#TBT The Unstoppable Tissot Mediostat Chronograph",
+      "publication": "fratello",
+      "author": "Fratello",
+      "type": "editorial_blog",
+      "focus": "Carrera (additions and clarifications)"
+    },
+    {
+      "url": "https://www.fratellowatches.com/fewer-millimeters-please-calling-out-mainstream-brands-that-still-focus-on-large-watches-tissot-iwc-breitling-and-more/",
+      "title": "Fewer Millimeters, Please: Calling Out Mainstream Brands That Still Focus On Large Watches — Tissot, IWC, Breitling, And More",
+      "publication": "fratello",
+      "author": "Fratello",
+      "type": "editorial_blog",
+      "focus": "Carrera (additions and clarifications)"
+    },
+    {
+      "url": "https://www.fratellowatches.com/the-history-and-future-of-the-fight-against-magnetism-in-watches/",
+      "title": "The History And Future Of The Fight Against Magnetism In Watches",
+      "publication": "fratello",
+      "author": "Fratello",
+      "type": "editorial_blog",
+      "focus": "Carrera (additions and clarifications)"
+    },
+    {
+      "url": "https://www.fratellowatches.com/this-world-war-ii-rolex-fought-with-the-rats-of-tobruk-against-erwin-rommels-afrika-korps/",
+      "title": "This World War II Rolex Fought With The Rats Of Tobruk Against Erwin Rommel’s Afrika Korps",
+      "publication": "fratello",
+      "author": "Fratello",
+      "type": "editorial_blog",
+      "focus": "Carrera (additions and clarifications)"
+    },
+    {
+      "url": "https://www.hodinkee.com/articles/bring-a-loupe-august-19-2016",
+      "title": "Bring a Loupe: A Selection Of Sports Chronographs Including A Split-Seconds Eberhard, A Mint Heuer Carrera 3647N, And A Longines 13ZN On Ebay, And More",
+      "publication": "hodinkee_bring_a_loupe",
+      "author": "Louis Westphalen",
+      "type": "editorial_column",
+      "focus": "Carrera (additions and clarifications)"
+    },
+    {
+      "url": "https://www.screwdowncrown.com/p/self-deception-watch-collecting-robert-trivers",
+      "title": "Self deception and Survival Instincts",
+      "publication": "screwdowncrown",
+      "author": "kingflum",
+      "type": "editorial_blog",
+      "focus": "Carrera (additions and clarifications)"
+    },
+    {
+      "url": "https://www.hodinkee.com/articles/bring-a-loupe-28-july-2017",
+      "title": "Bring a Loupe: A Rare Heuer Carrera 'Dato 45' Ref. 3147N, An Early Breguet Type XX In Yellow Gold, A Crazy Mido Robot, And More",
+      "publication": "hodinkee_bring_a_loupe",
+      "author": "Louis Westphalen",
+      "type": "editorial_column",
+      "focus": "Carrera (additions and clarifications)"
+    },
+    {
+      "url": "https://www.fratellowatches.com/seiko-watches/tbt-seiko-monster-skx779/",
+      "title": "#TBT Seiko Monster SKX779",
+      "publication": "fratello",
+      "author": "Fratello",
+      "type": "editorial_blog",
+      "focus": "Carrera (additions and clarifications)"
+    },
+    {
+      "url": "https://www.fratellowatches.com/vintage-heuer-lookalikes-carrera-connection-for-less/",
+      "title": "Vintage Heuer Lookalikes: The Carrera Connection For Less",
+      "publication": "fratello",
+      "author": "Fratello",
+      "type": "editorial_blog",
+      "focus": "Carrera (additions and clarifications)"
+    },
+    {
+      "url": "https://www.onthedash.com/beware-fake-heuer-carrera-ims-dial/",
+      "title": "Buyer Beware — Heuer Carrera with Fake Indianapolis Motor Speedway Logo",
+      "publication": "onthedash",
+      "author": "Jeffrey Stein",
+      "type": "editorial_blog",
+      "focus": "Carrera (additions and clarifications)"
+    },
+    {
+      "url": "https://www.hodinkee.com/articles/bring-a-loupe-june-24-2016",
+      "title": "Bring a Loupe: Special Instagram Picks, From A Tag Heuer For The Marine Nationale To A Full-Set Universal Geneve",
+      "publication": "hodinkee_bring_a_loupe",
+      "author": "Louis Westphalen",
+      "type": "editorial_column",
+      "focus": "Carrera (additions and clarifications)"
+    },
+    {
+      "url": "https://www.rolexmagazine.com/2019/03/rolex-ranked-1-for-fourth-year-in-row.html",
+      "title": "ROLEX Ranked #1 for Fourth Year In A Row by Reputation Institute...",
+      "publication": "rolex_magazine",
+      "author": "Jake Ehrlich",
+      "type": "editorial_blog",
+      "focus": "Carrera (additions and clarifications)"
+    },
+    {
+      "url": "https://bulangandsons.com/blogs/watch-talks/spot-heuer-carrera-3147-ns",
+      "title": "Spot On - The Heuer Carrera Dato 3147",
+      "publication": "bulang_watch_talks",
+      "author": "",
+      "type": "editorial_blog",
+      "focus": "Carrera (additions and clarifications)"
+    },
+    {
+      "url": "https://shop.hodinkee.com/collections/vintage-watches/products/2680-heuer-dato-silver-dial",
+      "title": "1960s Heuer Carrera 'Dato 45' Ref. 3147S",
+      "publication": "hodinkee_shop",
+      "author": "Hodinkee",
+      "type": "dealer_archive",
+      "focus": "Carrera (additions and clarifications)"
+    },
+    {
+      "url": "https://www.onthedash.com/instagram-tag-heuer-vintage/",
+      "title": "Vintage Heuers on TAG Heuer Instagram",
+      "publication": "onthedash",
+      "author": "admin",
+      "type": "editorial_blog",
+      "focus": "Carrera (additions and clarifications)"
+    },
+    {
+      "url": "https://shop.hodinkee.com/collections/vintage-watches/products/2767-heuer-carrera-ref-2447-silver",
+      "title": "1960s Heuer Carrera Ref. 2447S",
+      "publication": "hodinkee_shop",
+      "author": "Hodinkee",
+      "type": "dealer_archive",
+      "focus": "Carrera (additions and clarifications)"
+    },
+    {
+      "url": "https://shop.hodinkee.com/collections/vintage-watches/products/2799-heuer-carrera-dato-45-ref-3147",
+      "title": "1960s Heuer Carrera 'Dato 45' Ref. 3147N",
+      "publication": "hodinkee_shop",
+      "author": "Hodinkee",
+      "type": "dealer_archive",
+      "focus": "Carrera (additions and clarifications)"
+    },
+    {
+      "url": "https://www.onthedash.com/note-belgian-carrera/",
+      "title": "A Noteworthy Watch — Carrera 30 Issued to Belgian Air Force (Force Aérienne Belge)",
+      "publication": "onthedash",
+      "author": "Jeffrey Stein",
+      "type": "editorial_blog",
+      "focus": "Carrera (additions and clarifications)"
+    },
+    {
+      "url": "https://shop.hodinkee.com/collections/vintage-watches/products/carrera-blue-dial-ref-110-253-case-971765",
+      "title": "1970s Heuer Carrera Ref. 110.253B",
+      "publication": "hodinkee_shop",
+      "author": "Hodinkee",
+      "type": "dealer_archive",
+      "focus": "Carrera (additions and clarifications)"
+    },
+    {
+      "url": "https://shop.hodinkee.com/collections/vintage-watches/products/carrera-3647s-case-73078",
+      "title": "1960s Heuer Carrera '45' Ref. 3647S",
+      "publication": "hodinkee_shop",
+      "author": "Hodinkee",
+      "type": "dealer_archive",
+      "focus": "Carrera (additions and clarifications)"
+    },
+    {
+      "url": "https://shop.hodinkee.com/collections/vintage-watches/products/heuer-ref-2447s",
+      "title": "1960s Heuer Carrera Ref. 2447S 'Early First Execution' With Eggshell Dial",
+      "publication": "hodinkee_shop",
+      "author": "Hodinkee",
+      "type": "dealer_archive",
+      "focus": "Carrera (additions and clarifications)"
+    },
+    {
+      "url": "https://shop.hodinkee.com/collections/vintage-watches/products/carrera-ref-2447-nst-c-103950-on-gf-bracelet",
+      "title": "1960s Heuer Carrera Ref. 2447 NST With Gay Frères Bracelet",
+      "publication": "hodinkee_shop",
+      "author": "Hodinkee",
+      "type": "dealer_archive",
+      "focus": "Carrera (additions and clarifications)"
+    },
+    {
+      "url": "https://shop.hodinkee.com/collections/vintage-watches/products/carrera-dato45-ref-3147n-case-128123",
+      "title": "1960s Heuer Carrera 'Dato 45' Ref. 3147N",
+      "publication": "hodinkee_shop",
+      "author": "Hodinkee",
+      "type": "dealer_archive",
+      "focus": "Carrera (additions and clarifications)"
+    },
+    {
+      "url": "https://shop.hodinkee.com/collections/vintage-watches/products/dato-45-black-dial",
+      "title": "1960s Heuer Carrera 'Dato 45' Ref. 3147N",
+      "publication": "hodinkee_shop",
+      "author": "Hodinkee",
+      "type": "dealer_archive",
+      "focus": "Carrera (additions and clarifications)"
+    }
+  ]
+}
