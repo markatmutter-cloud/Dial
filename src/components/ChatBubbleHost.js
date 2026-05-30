@@ -86,6 +86,9 @@ export function ChatBubbleHost() {
   const [error, setError] = useState("");
   const [actionState, setActionState] = useState({});
   const [listening, setListening] = useState(false);
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== "undefined" && !!window.matchMedia && window.matchMedia("(max-width: 600px)").matches
+  );
   const [hasOpened, setHasOpened] = useState(() => {
     try { return typeof localStorage !== "undefined" && localStorage.getItem(OPENED_KEY) === "1"; }
     catch { return false; }
@@ -128,6 +131,27 @@ export function ChatBubbleHost() {
   }, [listening, draft]);
 
   useEffect(() => () => { try { recognitionRef.current && recognitionRef.current.stop(); } catch {} }, []);
+
+  // Track narrow viewports → Lumé goes full-screen on mobile.
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    const mq = window.matchMedia("(max-width: 600px)");
+    const on = () => setIsMobile(mq.matches);
+    on();
+    if (mq.addEventListener) mq.addEventListener("change", on);
+    else mq.addListener(on);
+    return () => { if (mq.removeEventListener) mq.removeEventListener("change", on); else mq.removeListener(on); };
+  }, []);
+
+  // While the full-screen sheet is open on mobile, lock the page behind it so
+  // scrolling stays inside the chat (no underlying-screen scroll bleed — Mark).
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    if (!(open && isMobile)) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, [open, isMobile]);
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -196,31 +220,50 @@ export function ChatBubbleHost() {
     cursor: "pointer",
     display: "flex", alignItems: "center", justifyContent: "center",
   };
-  const panelFrame = {
-    ...FIXED,
-    width: "min(380px, calc(100vw - 24px))",
-    display: "flex", flexDirection: "column",
-    background: "var(--bg)",
-    border: "1px solid rgba(255,255,255,0.22)",
-    borderRadius: 16,
-    boxShadow: "0 0 0 1px rgba(0,0,0,0.18), 0 16px 48px rgba(0,0,0,0.5)",
-    overflow: "hidden",
-  };
+  // Desktop: a floating rounded frame, bottom-right. Mobile: full-screen sheet
+  // (you can't see the page behind it anyway), with safe-area-aware chrome.
+  const panelFrame = isMobile
+    ? {
+        position: "fixed", inset: 0, zIndex: Z,
+        width: "100%", height: "100dvh",
+        display: "flex", flexDirection: "column",
+        background: "var(--bg)",
+        overflow: "hidden",
+      }
+    : {
+        ...FIXED,
+        width: "min(380px, calc(100vw - 24px))",
+        display: "flex", flexDirection: "column",
+        background: "var(--bg)",
+        border: "1px solid rgba(255,255,255,0.22)",
+        borderRadius: 16,
+        boxShadow: "0 0 0 1px rgba(0,0,0,0.18), 0 16px 48px rgba(0,0,0,0.5)",
+        overflow: "hidden",
+      };
   const header = (
     <div style={{
       display: "flex", alignItems: "center", justifyContent: "space-between",
-      padding: "12px 14px", background: "var(--brand-olive)", color: "#fff", flexShrink: 0,
+      padding: isMobile ? "calc(12px + env(safe-area-inset-top)) 14px 12px" : "12px 14px",
+      background: "var(--brand-olive)", color: "#fff", flexShrink: 0,
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         <LumeIcon size={18} style={{ display: "block" }} />
         <span style={{ fontSize: 15, fontWeight: 600, letterSpacing: "-0.01em" }}>{NAME}</span>
         <span style={{ fontSize: 13, fontWeight: 400, opacity: 0.85 }}>· Watch chat</span>
       </div>
-      <button onClick={() => setOpen(false)} aria-label="Close" style={{
+      {/* Mobile: a down-chevron reads as "minimise" (drop it back to the launcher);
+          desktop: the usual ×. Both just setOpen(false). */}
+      <button onClick={() => setOpen(false)} aria-label="Minimise" title="Minimise" style={{
         border: "none", background: "rgba(255,255,255,0.16)", color: "#fff",
-        width: 26, height: 26, borderRadius: "50%", fontSize: 17, lineHeight: "26px",
-        textAlign: "center", cursor: "pointer", padding: 0,
-      }}>×</button>
+        width: isMobile ? 34 : 26, height: isMobile ? 34 : 26, borderRadius: "50%",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        fontSize: 17, lineHeight: 1, textAlign: "center", cursor: "pointer", padding: 0,
+      }}>
+        {isMobile
+          ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M6 9l6 6 6-6" /></svg>
+          : "×"}
+      </button>
     </div>
   );
 
@@ -267,11 +310,11 @@ export function ChatBubbleHost() {
     // Signed-in: the full chat.
     const display = [{ role: "assistant", content: GREETING }, ...messages];
     node = (
-      <div style={{ ...panelFrame, height: "min(560px, calc(100vh - 120px))" }} role="dialog" aria-label={NAME}>
+      <div style={{ ...panelFrame, ...(isMobile ? {} : { height: "min(560px, calc(100vh - 120px))" }) }} role="dialog" aria-label={NAME}>
         <style>{ANIM_CSS}</style>
         {header}
         <div ref={scrollRef} style={{
-          flex: 1, overflowY: "auto", padding: "14px",
+          flex: 1, overflowY: "auto", overscrollBehavior: "contain", padding: "14px",
           display: "flex", flexDirection: "column", gap: 10,
         }}>
           {display.map((m, i) => {
@@ -349,7 +392,8 @@ export function ChatBubbleHost() {
 
         {!capped && (
           <form onSubmit={(e) => { e.preventDefault(); send(draft); }} style={{
-            display: "flex", alignItems: "flex-end", gap: 8, padding: "10px 12px",
+            display: "flex", alignItems: "flex-end", gap: 8,
+            padding: isMobile ? "10px 12px calc(10px + env(safe-area-inset-bottom))" : "10px 12px",
             borderTop: "0.5px solid var(--border)", flexShrink: 0,
           }}>
             {SpeechRec && (
