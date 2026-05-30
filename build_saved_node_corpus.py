@@ -95,8 +95,13 @@ def synthesis_exists(brand, model_line):
     return False
 
 
-def derive_nodes(snapshots, max_nodes):
-    """Distinct (brand, model_line) → node; skip no-model_line + already-synthesised."""
+def derive_nodes(snapshots, max_nodes, synth_exists=synthesis_exists):
+    """Distinct (brand, model_line) → node; skip no-model_line + already-synthesised.
+
+    `synth_exists(brand, model_line) -> bool` decides which nodes are already
+    synthesised (defaults to the real public/ filesystem check). Injectable so
+    tests stay deterministic as the fan-out adds more reference_synthesis_* files.
+    """
     nodes = {}  # slug -> {brand, model_line, refs:set}
     skipped_no_model = 0
     for s in snapshots:
@@ -111,7 +116,7 @@ def derive_nodes(snapshots, max_nodes):
         if s["ref"]:
             n["refs"].add(s["ref"])
     # Drop nodes that already have a (hand-curated) synthesis.
-    fresh = {k: v for k, v in nodes.items() if not synthesis_exists(v["brand"], v["model_line"])}
+    fresh = {k: v for k, v in nodes.items() if not synth_exists(v["brand"], v["model_line"])}
     have = [k for k in nodes if k not in fresh]
     # Most-saved (by ref count, then breadth) first; cap for cost.
     ordered = sorted(fresh.items(), key=lambda kv: (-len(kv[1]["refs"]), kv[0]))
