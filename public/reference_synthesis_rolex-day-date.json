@@ -1,0 +1,791 @@
+{
+  "conflicts": [
+    {
+      "applies_to": [
+        "model-wide"
+      ],
+      "note": "The corpus is consistent that Eisenhower was the 'first US president to wear a Rolex' — but on the actual watch, the Rolex Magazine multi-part history argues he wore a Datejust, while popular retellings often conflate that with the later Day-Date. The nickname most likely crystallised in the 1960s around the Day-Date / LBJ era and was used commercially by Rolex from at least 1967.",
+      "positions": [
+        "Some sources tie the nickname to Lyndon B. Johnson wearing a yellow gold Day-Date on the dedicated bracelet during his presidency, supported by photographic evidence and a 1966 Rolex advertisement explicitly captioned 'the presidents' watch' (Rolex Magazine, Fratello)",
+        "Other sources cite an earlier tradition that Rolex gifted Dwight D. Eisenhower a Day-Date in 1956 from which the nickname derived (Fratello historical overview, WOE), even though the photographically documented Eisenhower watch was a yellow gold Datejust, not a Day-Date"
+      ],
+      "topic": "Origin of the 'President' nickname"
+    },
+    {
+      "applies_to": [
+        "model-wide"
+      ],
+      "note": "The corpus presents both the popular story and the serial-number objection without resolution. Treat the Monroe/JFK Day-Date as a famous and contested piece of provenance rather than confirmed fact.",
+      "positions": [
+        "Auction provenance: a Day-Date engraved 'Jack, With love always, from Marilyn, May 29th, 1962' sold in October 2005 for ~$120,000, with associated photographs of Marilyn holding a Day-Date at the post-Madison-Square-Garden party",
+        "Skeptical reading: published Rolex serial-number references place the watch's case in 1965 — two years after Kennedy's death — undermining the gift narrative"
+      ],
+      "topic": "Marilyn Monroe / JFK Day-Date"
+    },
+    {
+      "applies_to": [
+        "model-wide"
+      ],
+      "note": "The factual claim is consistent — steel Day-Dates exist only in vanishingly small numbers and were not part of the production line. The framing varies between 'prototype' and 'test piece that escaped'.",
+      "positions": [
+        "Most sources describe the Day-Date as 'only ever in precious metal' with a tiny number of steel pieces believed to be prototypes or test pieces (Bulang & Sons, Fratello)",
+        "Some collector framing treats those steel pieces as collectible curiosities that 'found their way into collectors' hands' (Bulang & Sons)"
+      ],
+      "topic": "Steel Day-Dates"
+    }
+  ],
+  "consensus": [
+    {
+      "applies_to": [
+        "model-wide"
+      ],
+      "claim": "The Day-Date was launched at the Basel fair in spring 1956 as Rolex's flagship — the first self-winding, chronometer-certified, waterproof wristwatch to display the day of the week spelled out in full at 12 o'clock alongside a date at 3 o'clock.",
+      "confidence": "high",
+      "sources": [
+        "https://bulangandsons.com/blogs/watch-talks/rolex-day-date",
+        "https://www.fratellowatches.com/rolex-day-date-historical-overview-of-rolexs-flagship/",
+        "https://www.fratellowatches.com/fratellos-top-5-rolex-day-date-references-ever-created/",
+        "https://www.fratellowatches.com/exploring-evergreens-the-rolex-day-date-18238/"
+      ]
+    },
+    {
+      "applies_to": [
+        "model-wide"
+      ],
+      "claim": "The Day-Date has only ever been produced in precious metal — 18k yellow, white and rose/Everose gold, and platinum — with a tiny number of steel pieces believed to be prototypes or test pieces.",
+      "confidence": "high",
+      "sources": [
+        "https://bulangandsons.com/blogs/watch-talks/rolex-day-date",
+        "https://www.fratellowatches.com/rolex-day-date-historical-overview-of-rolexs-flagship/",
+        "https://www.fratellowatches.com/fratellos-top-5-rolex-day-date-references-ever-created/",
+        "https://www.fratellowatches.com/why-i-bought-the-rolex-day-date-18238/"
+      ]
+    },
+    {
+      "applies_to": [
+        "model-wide"
+      ],
+      "claim": "The President bracelet was introduced alongside the Day-Date in 1956 and remains exclusive to the model; its construction blends Jubilee-style rounded links with Oyster-like proportions and a concealed Crownclasp, giving the watch its characteristic weight and feel.",
+      "confidence": "high",
+      "sources": [
+        "https://bulangandsons.com/blogs/watch-talks/rolex-day-date",
+        "https://www.fratellowatches.com/exploring-evergreens-the-rolex-day-date-18238/",
+        "https://www.fratellowatches.com/spending-time-with-the-president-the-rolex-day-date-40-refs-228239-and-228235/"
+      ]
+    },
+    {
+      "applies_to": [
+        "1803"
+      ],
+      "claim": "The 1803 (yellow gold, fluted bezel) was the most popular reference of the 1800 series introduced around 1959–1960; it ran until ~1978, used calibers 1555 and (from ~1965) 1565, had no quickset for day or date, and retained the acrylic crystal and pie-pan dial that characterise the early Day-Date aesthetic.",
+      "confidence": "high",
+      "sources": [
+        "https://bulangandsons.com/blogs/watch-talks/rolex-day-date",
+        "https://www.fratellowatches.com/rolex-day-date-historical-overview-of-rolexs-flagship/",
+        "https://www.fratellowatches.com/fratellos-top-5-rolex-day-date-references-ever-created/",
+        "https://www.fratellowatches.com/pre-owned-spotlight-rjs-selection-of-vintage-gold-rolex-day-date-watches/"
+      ]
+    },
+    {
+      "applies_to": [
+        "1803"
+      ],
+      "claim": "In 1972 the caliber powering the 1803 (1565) received a hacking-seconds function.",
+      "confidence": "high",
+      "sources": [
+        "https://www.fratellowatches.com/fratellos-top-5-rolex-day-date-models-with-exotic-dials/",
+        "https://www.fratellowatches.com/rolex-day-date-historical-overview-of-rolexs-flagship/"
+      ]
+    },
+    {
+      "applies_to": [
+        "18039"
+      ],
+      "claim": "The 18000 series (introduced 1978) brought the first sapphire crystal to the Day-Date, replaced the pie-pan dial with a flat dial, and used caliber 3055 — the first Day-Date movement with a quickset date (single quickset; the day still required advancing the hands).",
+      "confidence": "high",
+      "sources": [
+        "https://www.fratellowatches.com/fratellos-top-5-rolex-day-date-references-ever-created/",
+        "https://www.fratellowatches.com/rolex-day-date-historical-overview-of-rolexs-flagship/",
+        "https://www.fratellowatches.com/pre-owned-spotlight-rjs-selection-of-vintage-gold-rolex-day-date-watches/",
+        "https://www.fratellowatches.com/tbt-rolex-day-date-the-president/"
+      ]
+    },
+    {
+      "applies_to": [
+        "18039"
+      ],
+      "claim": "The 18039 is the white gold version of the 18000-series Day-Date and shares the technical updates of the generation (sapphire, caliber 3055, single quickset date).",
+      "confidence": "high",
+      "sources": [
+        "https://www.fratellowatches.com/pre-owned-spotlight-rjs-selection-of-vintage-gold-rolex-day-date-watches/",
+        "https://www.fratellowatches.com/fratellos-top-5-rolex-day-date-models-with-exotic-dials/",
+        "https://www.fratellowatches.com/wrist-game-or-crying-shame-rolex-day-date-tridor/"
+      ]
+    },
+    {
+      "applies_to": [
+        "18238"
+      ],
+      "claim": "The 18238 (introduced 1988, in production until 2000) was the first Day-Date with a double-quickset for both day and date, courtesy of the new caliber 3155 (28,800 vph, ~48h power reserve); it is also the last Day-Date generation to feature a brushed top to the lugs.",
+      "confidence": "high",
+      "sources": [
+        "https://www.fratellowatches.com/exploring-evergreens-the-rolex-day-date-18238/",
+        "https://www.fratellowatches.com/fratellos-top-5-rolex-day-date-references-ever-created/",
+        "https://www.fratellowatches.com/rolex-day-date-historical-overview-of-rolexs-flagship/",
+        "https://www.fratellowatches.com/why-i-bought-the-rolex-day-date-18238/"
+      ]
+    },
+    {
+      "applies_to": [
+        "model-wide"
+      ],
+      "claim": "The Day-Date day disc has historically been offered in roughly two dozen languages (the modern catalogue lists 26), letting an owner pick or later swap a disc to suit them — discs can be sourced and exchanged by a watchmaker.",
+      "confidence": "high",
+      "sources": [
+        "https://www.fratellowatches.com/exploring-evergreens-the-rolex-day-date-18238/",
+        "https://www.fratellowatches.com/rolex-day-date-historical-overview-of-rolexs-flagship/"
+      ]
+    },
+    {
+      "applies_to": [
+        "18238"
+      ],
+      "claim": "On the 18238, the President bracelet clasp mechanism is made of 18k rose gold even on a yellow gold watch — copper-rich rose gold is the most robust gold alloy, and the rose-gold parts are hidden from view in use.",
+      "confidence": "medium",
+      "sources": [
+        "https://www.fratellowatches.com/exploring-evergreens-the-rolex-day-date-18238/"
+      ]
+    },
+    {
+      "applies_to": [
+        "model-wide"
+      ],
+      "claim": "Day-Date cases on the 36mm models measure roughly 36mm in diameter, ~12mm thick, ~43mm lug-to-lug, with 20mm lug width — proportions that have remained essentially unchanged from the vintage to modern eras.",
+      "confidence": "high",
+      "sources": [
+        "https://www.fratellowatches.com/exploring-evergreens-the-rolex-day-date-18238/",
+        "https://www.fratellowatches.com/hands-on-rolex-day-date-with-a-white-dial-and-deconstructed-roman-numerals/"
+      ]
+    },
+    {
+      "applies_to": [
+        "model-wide"
+      ],
+      "claim": "The Day-Date is the canvas for an unusually wide dial vocabulary: lacquered Stella dials in vivid colours, exotic stone dials (onyx, coral, jasper, tiger's eye, malachite), wood dials (sequoia, birchwood, mahogany, walnut), Buckley (painted Roman numeral) dials, tapestry/'pyramid' textured dials, and many more — Rolex famously let buyers choose almost any combination from the catalogue.",
+      "confidence": "high",
+      "sources": [
+        "https://www.fratellowatches.com/fratellos-top-5-rolex-day-date-models-with-exotic-dials/",
+        "https://www.fratellowatches.com/exploring-evergreens-the-rolex-day-date-18238/",
+        "https://bulangandsons.com/blogs/watch-talks/rolex-day-date",
+        "https://www.fratellowatches.com/pre-owned-spotlight-rjs-selection-of-vintage-gold-rolex-day-date-watches/"
+      ]
+    },
+    {
+      "applies_to": [
+        "model-wide"
+      ],
+      "claim": "The Day-Date is widely known as 'the President', a nickname tied both to the President bracelet and to its association with US Presidents starting with Lyndon B. Johnson, who is photographed repeatedly wearing a yellow gold Day-Date in office from at least 1965 onward.",
+      "confidence": "high",
+      "sources": [
+        "https://www.rolexmagazine.com/2008/07/history-of-rolex-president-part-10.html",
+        "https://www.fratellowatches.com/rolex-day-date-historical-overview-of-rolexs-flagship/",
+        "https://www.watchesofespionage.com/blogs/woe-dispatch/u-s-presidents-and-timepieces-the-last-40-years",
+        "https://www.rolexmagazine.com/2010/09/1956-very-first-rolex-day-date.html"
+      ]
+    },
+    {
+      "applies_to": [
+        "model-wide"
+      ],
+      "claim": "The Day-Date has a long, well-documented association with golf — Arnold Palmer became Rolex's first golf ambassador in 1967 and wore a yellow gold Day-Date for decades, with Jack Nicklaus and Gary Player following suit as 'Golf's Big Three'.",
+      "confidence": "high",
+      "sources": [
+        "https://www.rolexmagazine.com/2008/12/arnold-palmer-rolex-day-date-ad-from.html",
+        "https://www.rolexmagazine.com/2024/08/president-tump-receives-rolex-president.html"
+      ]
+    },
+    {
+      "applies_to": [
+        "model-wide"
+      ],
+      "claim": "The Day-Date carries a long-standing cultural reputation as a status piece, worn by political leaders, entertainers, athletes and business figures — an image Rolex cultivated in mid-century 'men who guide the destinies of the world' advertising and that has stuck through to the modern era.",
+      "confidence": "high",
+      "sources": [
+        "https://bulangandsons.com/blogs/watch-talks/rolex-day-date",
+        "https://www.fratellowatches.com/rolex-day-date-historical-overview-of-rolexs-flagship/",
+        "https://www.fratellowatches.com/tbt-rolex-day-date-the-president/",
+        "https://www.rolexmagazine.com/2016/11/donald-trump-next-rolex-president.html"
+      ]
+    },
+    {
+      "applies_to": [
+        "model-wide",
+        "1803",
+        "18039",
+        "18238"
+      ],
+      "claim": "For decades the Day-Date depreciated sharply against steel sports Rolexes — a 1973 German price list showed a yellow gold Day-Date at DM 4,100 while a steel Submariner was DM 590, and yet the steel sports references later overtook the gold flagship in market value; in recent years the gap has narrowed and Day-Date interest among younger buyers has grown.",
+      "confidence": "high",
+      "sources": [
+        "https://bulangandsons.com/blogs/watch-talks/rolex-day-date",
+        "https://www.fratellowatches.com/exploring-evergreens-the-rolex-day-date-18238/",
+        "https://www.fratellowatches.com/rolex-day-date-historical-overview-of-rolexs-flagship/",
+        "https://www.fratellowatches.com/why-i-bought-the-rolex-day-date-18238/"
+      ]
+    },
+    {
+      "applies_to": [
+        "1803",
+        "18039",
+        "18238",
+        "model-wide"
+      ],
+      "claim": "When shopping vintage and neo-vintage Day-Dates, the President bracelet is the make-or-break item: hollow-link bracelets on early 1800/18000-series watches are prone to stretch, and condition there often matters more than papers; over-polished cases (thin lugs, dull bezel flutes) are the other red flag.",
+      "confidence": "high",
+      "sources": [
+        "https://www.fratellowatches.com/pre-owned-spotlight-rjs-selection-of-vintage-gold-rolex-day-date-watches/",
+        "https://www.fratellowatches.com/tbt-rolex-day-date-the-president/",
+        "https://www.fratellowatches.com/exploring-evergreens-the-rolex-day-date-18238/"
+      ]
+    },
+    {
+      "applies_to": [
+        "model-wide"
+      ],
+      "claim": "In 2000 the 118200 series replaced the 18200 series — adding a digit to the reference, introducing a heavier solid-link President bracelet and an upgraded Crownclasp.",
+      "confidence": "high",
+      "sources": [
+        "https://www.fratellowatches.com/rolex-day-date-historical-overview-of-rolexs-flagship/",
+        "https://www.fratellowatches.com/fratellos-top-5-rolex-day-date-references-ever-created/"
+      ]
+    },
+    {
+      "applies_to": [
+        "model-wide"
+      ],
+      "claim": "A 41mm Day-Date II (ref. 218238) was introduced in 2008 and was generally regarded as out of proportion; it was replaced in 2015 by the better-balanced Day-Date 40 with caliber 3255 (70-hour power reserve, ±2 sec/day Superlative Chronometer rating).",
+      "confidence": "high",
+      "sources": [
+        "https://www.fratellowatches.com/rolex-day-date-historical-overview-of-rolexs-flagship/",
+        "https://www.fratellowatches.com/rolex-day-date-return-of-a-classic/",
+        "https://www.fratellowatches.com/spending-time-with-the-president-the-rolex-day-date-40-refs-228239-and-228235/"
+      ]
+    },
+    {
+      "applies_to": [
+        "model-wide"
+      ],
+      "claim": "The 36mm Day-Date was modernised again in 2019 with a refined case profile and caliber 3255; the configurator-driven modern catalogue continues to emphasise dial variety over case design changes.",
+      "confidence": "high",
+      "sources": [
+        "https://www.fratellowatches.com/rolex-day-date-historical-overview-of-rolexs-flagship/",
+        "https://www.fratellowatches.com/rolex-day-date-36-variations/",
+        "https://www.fratellowatches.com/hands-on-rolex-day-date-with-a-white-dial-and-deconstructed-roman-numerals/"
+      ]
+    },
+    {
+      "applies_to": [
+        "model-wide"
+      ],
+      "claim": "In parallel with the mechanical line, Rolex offered an Oysterquartz Day-Date (ref. 19018 / 19019 and variants) from ~1977 to ~2001, with integrated-bracelet case design and the in-house quartz caliber 5055 — a separate aesthetic lineage from the mechanical Day-Date.",
+      "confidence": "high",
+      "sources": [
+        "https://www.fratellowatches.com/rolex-oysterquartz-day-date/",
+        "https://www.fratellowatches.com/rolex-day-date-historical-overview-of-rolexs-flagship/"
+      ]
+    }
+  ],
+  "gaps": [
+    {
+      "gap": "The corpus is heavily reliant on Fratello — many 'consensus' lines actually rest on multiple Fratello articles by the same authors. We have only one Bulang & Sons retailer piece, one A Collected Man piece (which is mainly about Khanjar Daytonas and Pateks rather than Day-Dates), and a cluster of Rolex Magazine articles whose historical claims overlap with each other.",
+      "suggestion": "Add Hodinkee, Phillips/Christie's/Sotheby's catalogue notes on landmark Day-Date lots, A Collected Man Day-Date specific pieces, and Italian/French collector sources (Mondani, Davide Parmegiani) for vintage 1803/18039 detail and Stella-dial nuance."
+    },
+    {
+      "gap": "Movement-level technical detail is thin for the 1803 specifically — beat-rate transitions (1555 → 1565), hacking-seconds addition (1972), and the exact production-year ranges per case material are mentioned in passing rather than authoritatively documented.",
+      "suggestion": "Add a deep-dive movement reference (e.g. Ranfft, Caliber Corner) and a vintage-specialist piece on the 1555/1565 family, including service-history considerations for non-quickset Day-Dates."
+    },
+    {
+      "gap": "Coverage of the 18039 white gold reference specifically is comparatively shallow — the corpus tends to discuss it as 'the white gold 18038/18039' or in the context of wood-dial and Tridor examples.",
+      "suggestion": "Source an 18039-focused long read (collector interview, auction catalogue note, or dealer essay) that documents bezel/dial combinations, common service issues, and price evolution distinct from the yellow gold 18038."
+    },
+    {
+      "gap": "Documentation of contested provenance stories (Eisenhower's actual gift, Monroe/JFK Day-Date, JFK Cartier-not-Rolex narrative) leans heavily on a single source (Rolex Magazine).",
+      "suggestion": "Cross-reference with auction house lot notes (Bonhams, Phillips), the Eisenhower Library / LBJ Library archives directly, and at least one independent historian piece — so contested claims can be presented as genuinely sourced rather than passed through one publisher."
+    },
+    {
+      "gap": "Modern catalogue pricing/availability detail for current references (128238, 128235, 228238, 228239, 228206, 228235JG, Emoji, Rainbow) is scattered and uses mixed currencies and dates.",
+      "suggestion": "Pull a recent Rolex retail price reference (e.g. an end-of-2024 or 2025 European/US price list) so the modern pricing section can be cited cleanly and consistently."
+    },
+    {
+      "gap": "Bracelet servicing, link sourcing, and stretch-repair specifics — mentioned across multiple pieces but never in real depth.",
+      "suggestion": "Commission or source a watchmaker-led piece on President bracelet anatomy across hollow-link (pre-2000) and solid-link (118200 onward) eras, including pin-and-collar service, link pricing, and authenticity tells for replacement links."
+    },
+    {
+      "gap": "Khanjar Day-Dates and other Middle Eastern royal-signed Day-Dates are not directly covered — the A Collected Man article is about Daytona and Patek examples.",
+      "suggestion": "Source Khanjar Day-Date specific examples (Khimji Ramdas / Al Qurum / Asprey provenance) so the cross-reference to the broader Khanjar story can be made on a Day-Date page without overreach."
+    }
+  ],
+  "marks": [
+    {
+      "applies_to": [
+        "18238"
+      ],
+      "explanation": "Caliber 3155 (28,800 vph, ~48h power reserve, 31 jewels, COSC-certified) introduced an independent quickset for the day at the same crown position as the date — pull, turn one way for date, the other for day. It is the headline practical reason many enthusiasts target the 18238 over the earlier 18038 (single quickset) and 1803 (no quickset).",
+      "name": "Caliber 3155 double-quickset",
+      "sources": [
+        "https://www.fratellowatches.com/exploring-evergreens-the-rolex-day-date-18238/",
+        "https://www.fratellowatches.com/rolex-day-date-historical-overview-of-rolexs-flagship/",
+        "https://www.fratellowatches.com/fratellos-top-5-rolex-day-date-models-with-exotic-dials/"
+      ]
+    },
+    {
+      "applies_to": [
+        "18238"
+      ],
+      "explanation": "The 18238 is the last Day-Date generation in which the tops of the lugs were brushed/satin-finished against polished case flanks. From the 118238 onward this surface became fully polished — a small but commonly cited reason vintage-inclined buyers prefer the 18238.",
+      "name": "Brushed lug tops",
+      "sources": [
+        "https://www.fratellowatches.com/exploring-evergreens-the-rolex-day-date-18238/",
+        "https://www.fratellowatches.com/hands-on-rolex-day-date-with-a-white-dial-and-deconstructed-roman-numerals/"
+      ]
+    },
+    {
+      "applies_to": [
+        "1803"
+      ],
+      "explanation": "The 1803 retains the stepped 'pie-pan' dial of the earliest Day-Dates — a shape that catches light and gives depth, but which makes the watch read slightly smaller than later flat-dial references. From the 18000-series onward Rolex dropped the pie-pan in favour of a flat dial.",
+      "name": "Pie-pan dial (1803)",
+      "sources": [
+        "https://www.fratellowatches.com/fratellos-top-5-rolex-day-date-references-ever-created/",
+        "https://www.fratellowatches.com/rolex-day-date-historical-overview-of-rolexs-flagship/",
+        "https://www.fratellowatches.com/rolex-day-date-return-of-a-classic/"
+      ]
+    },
+    {
+      "applies_to": [
+        "1803"
+      ],
+      "explanation": "The 1803 (and 18039 in some early discussion) wears an acrylic/plexi crystal with the period cyclops; sapphire arrives with the 18000 series in 1978. The plexi gives the 1803 a softer, more vintage light play.",
+      "name": "Acrylic crystal",
+      "sources": [
+        "https://www.fratellowatches.com/rolex-day-date-historical-overview-of-rolexs-flagship/",
+        "https://www.fratellowatches.com/fratellos-top-5-rolex-day-date-references-ever-created/"
+      ]
+    },
+    {
+      "applies_to": [
+        "18039"
+      ],
+      "explanation": "The 18000-series caliber 3055 (28,800 vph) introduced a quickset date but the day still has to be advanced by scrolling the hands through 24-hour cycles — the 'single quickset' generation between the no-quickset 1803 and the double-quickset 18238.",
+      "name": "Caliber 3055 single quickset",
+      "sources": [
+        "https://www.fratellowatches.com/rolex-day-date-historical-overview-of-rolexs-flagship/",
+        "https://www.fratellowatches.com/pre-owned-spotlight-rjs-selection-of-vintage-gold-rolex-day-date-watches/",
+        "https://www.fratellowatches.com/tbt-rolex-day-date-the-president/"
+      ]
+    },
+    {
+      "applies_to": [
+        "1803",
+        "18039",
+        "18238",
+        "model-wide"
+      ],
+      "explanation": "On 1803 / 18039 / 18238-era watches the President bracelet uses hollow centre links and is prone to lateral 'stretch' between pins, particularly when worn loose. Stretch can be repaired but is awkward and expensive; the universally repeated advice is to inspect bracelet condition before chasing dial rarities, and to budget for missing links (often €300–€350 each).",
+      "name": "Stretch in the President bracelet",
+      "sources": [
+        "https://www.fratellowatches.com/pre-owned-spotlight-rjs-selection-of-vintage-gold-rolex-day-date-watches/",
+        "https://www.fratellowatches.com/exploring-evergreens-the-rolex-day-date-18238/",
+        "https://www.fratellowatches.com/why-i-bought-the-rolex-day-date-18238/"
+      ]
+    },
+    {
+      "applies_to": [
+        "1803",
+        "18039",
+        "18238"
+      ],
+      "explanation": "On 1803/18039/18238 dials the small tritium lume plots above the indices and on the hands age over time — sometimes evenly, sometimes patchy or missing. Original, fully-present plots and matching hand lume are an important condition tell on vintage Day-Dates.",
+      "name": "Tritium markers and aging",
+      "sources": [
+        "https://www.fratellowatches.com/pre-owned-spotlight-rjs-selection-of-vintage-gold-rolex-day-date-watches/",
+        "https://www.fratellowatches.com/rolex-day-date-historical-overview-of-rolexs-flagship/"
+      ]
+    },
+    {
+      "applies_to": [
+        "1803",
+        "18039",
+        "18238",
+        "model-wide"
+      ],
+      "explanation": "Because the case is soft 18k gold, Day-Dates are particularly vulnerable to over-polishing. The two visual tells are bezel flutes that have lost their crispness and lugs that look thin or 'spindly'. A thick, sharp 18238 in particular commands a premium.",
+      "name": "Bezel sharpness and lug thickness",
+      "sources": [
+        "https://www.fratellowatches.com/pre-owned-spotlight-rjs-selection-of-vintage-gold-rolex-day-date-watches/",
+        "https://www.fratellowatches.com/tbt-rolex-day-date-the-president/"
+      ]
+    },
+    {
+      "applies_to": [
+        "1803"
+      ],
+      "explanation": "A 'Buckley' Day-Date dial features painted (not applied) Roman numerals — most often seen on white gold 1803s. The dial style is named (by collectors) after vintage watch dealer John Buckley.",
+      "name": "Buckley dial",
+      "sources": [
+        "https://www.fratellowatches.com/hands-on-rolex-day-date-with-a-white-dial-and-deconstructed-roman-numerals/",
+        "https://www.watchesofespionage.com/blogs/woe-dispatch/tucker-carlson-and-president-putin-interview-cia-timepiece-analysis"
+      ]
+    },
+    {
+      "applies_to": [
+        "1803",
+        "18039",
+        "18238"
+      ],
+      "explanation": "Lacquered enamel-like 'Stella' dials in vivid colours (oxblood, lilac, mint green, light blue, coral red etc.) are most associated with 1800-series (1803) and 18000-series Day-Dates. They are highly collected and command very strong premiums; lilac and certain reds are particularly sought after.",
+      "name": "Stella dials",
+      "sources": [
+        "https://www.fratellowatches.com/fratellos-top-5-rolex-day-date-models-with-exotic-dials/",
+        "https://bulangandsons.com/blogs/watch-talks/rolex-day-date",
+        "https://www.fratellowatches.com/fratellos-top-5-rolex-day-date-references-ever-created/"
+      ]
+    },
+    {
+      "applies_to": [
+        "18039",
+        "18238",
+        "1803"
+      ],
+      "explanation": "From the 1970s Rolex offered wood dials across Day-Date and Cellini lines; on Day-Dates they are particularly striking on 1803/18039/18038/18238 white gold cases. Some examples were further paired with 'bark-finish' bezels and bracelet centre links for a coordinated look. Wood dials are fragile and cracks/lifting are common condition concerns.",
+      "name": "Wood dials (birchwood/sequoia/walnut/mahogany)",
+      "sources": [
+        "https://www.fratellowatches.com/fratellos-top-5-rolex-day-date-models-with-exotic-dials/",
+        "https://www.fratellowatches.com/fratellos-top-5-rolex-day-date-references-ever-created/",
+        "https://bulangandsons.com/blogs/watch-talks/rolex-day-date"
+      ]
+    },
+    {
+      "applies_to": [
+        "18238"
+      ],
+      "explanation": "An 18238 dial variant with a small repeating pyramid/cross-hatch motif under applied Roman numerals and no lume — gives the dial three-dimensional depth and is one of the more characterful 18238 configurations.",
+      "name": "Pyramid dial",
+      "sources": [
+        "https://www.fratellowatches.com/pre-owned-spotlight-rjs-selection-of-vintage-gold-rolex-day-date-watches/"
+      ]
+    },
+    {
+      "applies_to": [
+        "18238",
+        "18039"
+      ],
+      "explanation": "Day-Date stone-dial configurations — black onyx, orange coral (natural stone, no markers), green jasper — appear across the 18038/18238/18239 generations. They were a slight upcharge new (onyx added ~US$900 to a 1991 18238 retail price) and are now among the most sought-after configurations. Hairlines and cracks are common in stone dials; truly clean examples are scarce.",
+      "name": "Stone dials (onyx, coral, jasper, etc.)",
+      "sources": [
+        "https://www.fratellowatches.com/fratellos-top-5-rolex-day-date-models-with-exotic-dials/",
+        "https://www.fratellowatches.com/exploring-evergreens-the-rolex-day-date-18238/"
+      ]
+    },
+    {
+      "applies_to": [
+        "18039"
+      ],
+      "explanation": "On certain 1980s–2000s white gold Day-Dates (e.g. ref. 18039), Rolex offered a 'Tridor' bracelet in which the centre links combine yellow, white and rose gold strands. The watches usually have a yellow gold fluted bezel and a white gold crown; the goal was to provide a Day-Date answer to the rising popularity of two-tone Datejust looks without sliding into a Seiko-style aesthetic.",
+      "name": "Tridor execution",
+      "sources": [
+        "https://www.fratellowatches.com/wrist-game-or-crying-shame-rolex-day-date-tridor/",
+        "https://www.rolexmagazine.com/2008/12/arnold-palmer-rolex-day-date-ad-from.html"
+      ]
+    }
+  ],
+  "model_context": "The Rolex Day-Date — launched at Basel 1956 — is widely regarded as Rolex's flagship: the first self-winding, chronometer-certified, waterproof wristwatch to display both the day (spelled out in full at 12) and the date (at 3). It has only ever been produced in precious metal (yellow, white, and rose/Everose gold, and platinum), with a tiny number of steel pieces believed to be prototypes. The accompanying President bracelet was created for it and remains exclusive to the Day-Date (and certain platinum Day-Dates aside, to the model line). Across nearly seven decades the watch has changed surprisingly little outwardly while the references trace the technical evolution of Rolex itself: from the early 6510/6511 and 6611 (caliber 1055), through the 1800 series with pie-pan dials and acrylic crystals (1803 with caliber 1555/1565, no quickset), the 18000 series of 1978 (sapphire crystal, flat dials, caliber 3055 with single quickset date), the 18200 series of 1988 (caliber 3155 with double quickset day and date), the 118200 series of 2000 (new solid-link President bracelet and Crownclasp), and the modern Day-Date 36/40 with caliber 3255 (70h power reserve, ±2 sec/day). The reference focus here — 1803, 18039, 18238 — spans the vintage 1800 series in white gold and the neo-vintage 18238 that many enthusiasts treat as the sweet spot for daily wear. The demand story is cultural as much as mechanical: precious-metal-only construction, the President bracelet's weight and feel, an extraordinary variety of dials (Stella, wood, stone, exotic), and decades of association with heads of state, sports legends, entertainers, and self-made figures who chose it as a personal mark of arrival.",
+  "module_candidates": [
+    {
+      "module": "The President bracelet",
+      "rationale": "Several sources spend significant space on the bracelet's design, hybrid Jubilee/Oyster construction, concealed Crownclasp, hollow-vs-solid links across generations, and the role its weight plays in how the Day-Date feels. Worth a standalone page distinct from any reference."
+    },
+    {
+      "module": "Stella, stone and wood dials",
+      "rationale": "Dial typology is itself a vast topic — lacquered Stella colours (oxblood, lilac, mint green, light blue), natural stone (onyx, coral, jasper, malachite, tiger's eye), wood (birchwood, sequoia, walnut, mahogany), Buckley, pyramid/tapestry. The corpus already supports a dedicated 'Dials of the Day-Date' page."
+    },
+    {
+      "module": "The President nickname and US Presidents who wore it",
+      "rationale": "From Eisenhower-era ad copy through LBJ's photographed Day-Date, Gerald Ford, Bill Clinton's post-office collection, and Trump's pre- and post-presidency Day-Date wearing, plus contemporary gifting episodes — enough self-contained material to support a 'Day-Date and the US Presidency' module."
+    },
+    {
+      "module": "Golf's Big Three (Palmer / Nicklaus / Player)",
+      "rationale": "Arnold Palmer as Rolex's first golf ambassador (1967), the trio's joint appearances, and Rolex's broader use of golf-legend imagery (including Palmer's Tridor ad) — a coherent thematic page distinct from the political-leader story."
+    },
+    {
+      "module": "Rolex Oysterquartz Day-Date",
+      "rationale": "The 19018 / 19019 / 19028 line has its own integrated case design, quartz caliber 5055, distinctive movement aesthetics, and its own wearer mythology (Caine, Messner, Hillary). It sits adjacent to the mechanical Day-Date rather than as a reference within it."
+    },
+    {
+      "module": "The Tridor",
+      "rationale": "A specific Day-Date sub-line of the 1980s–early 2000s combining yellow/white/rose gold centre links on a white gold case; visually polarising, technically interesting, and tied to a specific 1980s commercial moment."
+    },
+    {
+      "module": "The Day-Date and the Khanjar",
+      "rationale": "The A Collected Man article in the corpus is mostly about Daytona/PP Khanjar pieces, but the broader Sultan of Oman / Asprey / décalque dial-stamping story is directly relevant to any Day-Date with a Khanjar emblem and warrants its own page when more Day-Date-specific Khanjar examples are sourced."
+    },
+    {
+      "module": "Modern off-catalogue and 'exceptional' Day-Dates",
+      "rationale": "The Jubilee-gold green-aventurine Day-Date 40 (ref. 228235JG), the Emoji Day-Date, the diamond Rainbow 128349RBR — modern Rolex is increasingly treating the Day-Date as a vehicle for off-catalogue exceptional pieces; worth a dedicated page rather than scattering across reference pages."
+    }
+  ],
+  "source_contributions": [
+    {
+      "publication": "bulang_watch_talks",
+      "source": "https://bulangandsons.com/blogs/watch-talks/rolex-day-date",
+      "unique_contribution": "Concrete period pricing (1973 German DM price list with yellow gold Day-Date at 4,100 DM vs steel Submariner at 590 DM, platinum 1804 at 25,900 DM) and a styling perspective on wearing the 1803 across leather, President bracelet, and casual straps."
+    },
+    {
+      "publication": "fratello",
+      "source": "https://www.fratellowatches.com/rolex-day-date-historical-overview-of-rolexs-flagship/",
+      "unique_contribution": "The most thorough single timeline of every Day-Date generation (6510/6511 → 6611 → 1803 → 18038 → 18238 → 118238 → 218238 → 228x → 128238), including movement transitions and dial/crystal changes."
+    },
+    {
+      "publication": "fratello",
+      "source": "https://www.fratellowatches.com/exploring-evergreens-the-rolex-day-date-18238/",
+      "unique_contribution": "Long-term owner perspective on the 18238 specifically — period retail (US$13,750 in 1991 on a champagne dial, US$14,650 onyx, US$35,000 platinum 18206), case dimensions, the rose-gold clasp detail, comparison to the 128238."
+    },
+    {
+      "publication": "fratello",
+      "source": "https://www.fratellowatches.com/fratellos-top-5-rolex-day-date-references-ever-created/",
+      "unique_contribution": "Generation-by-generation 'best of' framing including the rationale for picking 6611 over 6510/6511 (first-year movement couldn't build enough reserve to switch at midnight; caliber 1055 updated with free-sprung balance and micro-stella adjustment in 1957)."
+    },
+    {
+      "publication": "fratello",
+      "source": "https://www.fratellowatches.com/fratellos-top-5-rolex-day-date-models-with-exotic-dials/",
+      "unique_contribution": "Dedicated dial typology — onyx, birchwood, oxblood Stella, coral (natural stone, no markers), jasper — with current market price bands and the distinction between natural stone 'coral' and lacquered 'coral red' Stella."
+    },
+    {
+      "publication": "fratello",
+      "source": "https://www.fratellowatches.com/pre-owned-spotlight-rjs-selection-of-vintage-gold-rolex-day-date-watches/",
+      "unique_contribution": "Practical buying-guide voice: tritium marker condition, hollow-link bracelet stretch, link availability (~€350 each), tips for spotting over-polished cases."
+    },
+    {
+      "publication": "fratello",
+      "source": "https://www.fratellowatches.com/why-i-bought-the-rolex-day-date-18238/",
+      "unique_contribution": "First-person 'why I picked the 18238' essay — articulates the trade-off between vintage 1803 character and the double-quickset of the 18238 and the personal/era dimension of choosing a 1990s reference."
+    },
+    {
+      "publication": "fratello",
+      "source": "https://www.fratellowatches.com/tbt-rolex-day-date-the-president/",
+      "unique_contribution": "Period American context (Day-Date as 'Texas Timex'), structural notes (extra metal between the lugs, no lug holes, twin-lock crown, 50m depth rating on the 18038) and the 'tuxedo dial' description."
+    },
+    {
+      "publication": "fratello",
+      "source": "https://www.fratellowatches.com/spending-time-with-the-president-the-rolex-day-date-40-refs-228239-and-228235/",
+      "unique_contribution": "Hands-on comparison of Day-Date II to Day-Date 40, including the visual tell that the 40mm 'ten diamond' dial has larger baguettes at 6 and 9 (whereas the 36mm has all ten equal) and discussion of the President bracelet's lateral rigidity/longitudinal suppleness."
+    },
+    {
+      "publication": "fratello",
+      "source": "https://www.fratellowatches.com/rolex-day-date-return-of-a-classic/",
+      "unique_contribution": "Detailed coverage of the 2015 Day-Date 40 launch including the 14 patents tied to caliber 3255, Chronergy escapement, Parachrom hairspring, Paraflex shock absorbers and original Swiss-franc retail prices."
+    },
+    {
+      "publication": "fratello",
+      "source": "https://www.fratellowatches.com/rolex-day-date-36-variations/",
+      "unique_contribution": "2019 36mm refresh detail — case-profile refinements and the introduction of the 3255 in the 36mm line, plus the ombré green/brown dial variants (128238, 128235) and the Rainbow 128349RBR."
+    },
+    {
+      "publication": "fratello",
+      "source": "https://www.fratellowatches.com/hands-on-rolex-day-date-with-a-white-dial-and-deconstructed-roman-numerals/",
+      "unique_contribution": "Discussion of how Roman numerals have appeared on Day-Dates — painted Buckley dials on 1803s, sans-serif and serif applied numerals on later refs, and the new deconstructed numeral style now offered on the 36mm."
+    },
+    {
+      "publication": "fratello",
+      "source": "https://www.fratellowatches.com/hands-on-with-the-majestic-everose-gold-rolex-day-date-36-with-an-olive-green-dial/",
+      "unique_contribution": "Hands-on review of the modern Everose Day-Date 36 ref. 128235 with the olive-green sunray dial and Roman/baton-mix indices."
+    },
+    {
+      "publication": "fratello",
+      "source": "https://www.fratellowatches.com/rolex-introduces-a-day-date-40-in-the-new-jubilee-gold-with-a-stunning-green-aventurine-dial/",
+      "unique_contribution": "Coverage of the off-catalogue Day-Date 40 ref. 228235JG in newly introduced in-house 'Jubilee gold' alloy with a green aventurine dial — the first Rolex piece in that alloy."
+    },
+    {
+      "publication": "fratello",
+      "source": "https://www.fratellowatches.com/fratellos-top-5-rolex-day-date-alternatives-in-2026/",
+      "unique_contribution": "Lateral context: how brands like Tudor (Royal 41), Patek (Cubitus Grand Date), A. Lange & Söhne (Odysseus), TAG Heuer (Carrera Day-Date) and Seiko (5 Sports SNXS) position day-date watches relative to the Day-Date."
+    },
+    {
+      "publication": "fratello",
+      "source": "https://www.fratellowatches.com/fratellos-top-5-rolex-day-date-emoji/",
+      "unique_contribution": "Coverage of the polarising 2023 Day-Date 'Emoji' — champlevé enamel jigsaw-puzzle dials with arched inspirational keywords and 31 different emojis at 3 o'clock."
+    },
+    {
+      "publication": "fratello",
+      "source": "https://www.fratellowatches.com/rolex-oysterquartz-day-date/",
+      "unique_contribution": "Dedicated treatment of the Oysterquartz Day-Date — caliber 5055 movement aesthetics, integrated case design, 1977–2001 production span and notable wearers (Sir Michael Caine, Reinhold Messner, Sir Edmund Hillary)."
+    },
+    {
+      "publication": "fratello",
+      "source": "https://www.fratellowatches.com/wrist-game-or-crying-shame-rolex-day-date-tridor/",
+      "unique_contribution": "Profile of the Tridor variant — white gold case with a President bracelet whose centre links combine yellow, white and rose gold (e.g. ref. 18039), produced from the 1980s into the early 2000s."
+    },
+    {
+      "publication": "fratello",
+      "source": "https://www.fratellowatches.com/sunday-morning-showdown-a-day-date-with-destiny-rolex-vs-rolex/",
+      "unique_contribution": "Notes that platinum Day-Dates carry the 'Big Kahuna' nickname dating back to ref. 6612 (1958), and discusses the platinum-exclusive ice-blue dial and grid/hatching dial motif."
+    },
+    {
+      "publication": "fratello",
+      "source": "https://www.fratellowatches.com/story-time-ron-santos-rolex-president/",
+      "unique_contribution": "The Ron Santo provenance story — a 1989 L-series 18238 with caseback engraved with the Cubs logo, 'This Old Cub' film title, and 'Thank You', gifted by his son Jeff Santo in 2005 and later sold via New York Jewelers to Sean Madigan."
+    },
+    {
+      "publication": "rolex_magazine",
+      "source": "https://www.rolexmagazine.com/2010/09/1956-very-first-rolex-day-date.html",
+      "unique_contribution": "Documentary evidence: Marc Huguenin's 1950 Swiss patent precursor and the July 23 1955 Rolex Day-Date patent #323982 with the seven-toothed star wheel sitting on a 31-tooth calendar wheel."
+    },
+    {
+      "publication": "rolex_magazine",
+      "source": "https://www.rolexmagazine.com/2008/07/history-of-rolex-president-part-10.html",
+      "unique_contribution": "Photographic and archival evidence (from the LBJ Library) that Lyndon Johnson wore a yellow gold Day-Date on a President bracelet from at least July 1965 through his presidency."
+    },
+    {
+      "publication": "rolex_magazine",
+      "source": "https://www.rolexmagazine.com/2008/07/history-of-rolex-president-part-9.html",
+      "unique_contribution": "The contested Marilyn Monroe / JFK Day-Date story — the engraved 'Jack, With love always, from Marilyn, May 29th, 1962' watch sold at auction in October 2005 for $120,000, and the serial-number objection that the case appears to date to 1965, two years after Kennedy's death."
+    },
+    {
+      "publication": "rolex_magazine",
+      "source": "https://www.rolexmagazine.com/2008/07/history-of-rolex-president-part-8.html",
+      "unique_contribution": "Biographical material on Eisenhower as the figure to whom Rolex sent its 150,000th Officially Certified Chronometer (a yellow gold Datejust, not a Day-Date) while he was Supreme Commander of NATO."
+    },
+    {
+      "publication": "rolex_magazine",
+      "source": "https://www.rolexmagazine.com/2008/12/arnold-palmer-rolex-day-date-ad-from.html",
+      "unique_contribution": "Detail on Arnold Palmer becoming Rolex's first golf ambassador in 1967 and a discussion of the Tridor ref. 18239 specifically as Palmer's later Day-Date."
+    },
+    {
+      "publication": "rolex_magazine",
+      "source": "https://www.rolexmagazine.com/2009/07/eddie-murphy-rolex-day-date.html",
+      "unique_contribution": "Documents Eddie Murphy's 36+ year association with a yellow gold Day-Date with diamond bezel, and Charlie Murphy and Arsenio Hall wearing Day-Dates."
+    },
+    {
+      "publication": "rolex_magazine",
+      "source": "https://www.rolexmagazine.com/2016/10/us-presidential-candidate-hillary.html",
+      "unique_contribution": "Documents Bill Clinton's post-presidency Day-Date wearing — including a platinum President and a 'Pro-Hunter' Rolex (PVD-modified)."
+    },
+    {
+      "publication": "rolex_magazine",
+      "source": "https://www.rolexmagazine.com/2016/11/donald-trump-next-rolex-president.html",
+      "unique_contribution": "Documents Donald Trump's pre-presidency yellow gold Day-Date wearing and his role presenting Rolex-related awards (e.g. LPGA Player of the Year at Mar-A-Lago with Rolex USA's Peter Nicholson)."
+    },
+    {
+      "publication": "rolex_magazine",
+      "source": "https://www.rolexmagazine.com/2024/08/president-tump-receives-rolex-president.html",
+      "unique_contribution": "Reports Adin Ross gifting Donald Trump an Everose gold 40mm Day-Date with olive green dial and raised rose gold Roman numerals on a livestream — including Trump's verbal reaction associating Rolex with Nicklaus, Player and Palmer."
+    },
+    {
+      "publication": "rolex_magazine",
+      "source": "https://www.rolexmagazine.com/2024/11/jon-jones-greatest-mixed-marshal-arts.html",
+      "unique_contribution": "Documents UFC heavyweight Jon Jones as a long-term yellow gold Day-Date wearer; useful contemporary 'who wears it' colour."
+    },
+    {
+      "publication": "rolex_magazine",
+      "source": "https://www.rolexmagazine.com/2024/11/president-trump-declared-election.html",
+      "unique_contribution": "Notes Joe Biden's wider watch collection and his choice of a steel/blue Datejust at his 2021 inauguration — useful contrasting context to Day-Date-wearing presidents."
+    },
+    {
+      "publication": "fratello",
+      "source": "https://www.fratellowatches.com/april-fools-day-the-rolex-day-date-emoji/",
+      "unique_contribution": "Captures the moment-in-time debate over whether the Day-Date Emoji was a real catalogue piece or an April Fools' style provocation — useful for the 'modern dial experimentation' thread."
+    },
+    {
+      "publication": "woe_dispatch",
+      "source": "https://www.watchesofespionage.com/blogs/woe-dispatch/u-s-presidents-and-timepieces-the-last-40-years",
+      "unique_contribution": "Contextualises the Day-Date among other presidential watch choices (Timex Ironman, Jorg Gray Secret Service, Apple Watch, etc.), framing the 'plain folk' propaganda counter-trend to the gold Day-Date."
+    },
+    {
+      "publication": "woe_dispatch",
+      "source": "https://www.watchesofespionage.com/blogs/woe-dispatch/trump-rolex-clock-diplomacy-tariffs",
+      "unique_contribution": "Modern Rolex–US political relationship colour: a 2025 Rolex desk clock with malachite-style green dial gifted to the White House amid Swiss tariff negotiations."
+    },
+    {
+      "publication": "fratello",
+      "source": "https://www.fratellowatches.com/rolex-day-date-historical-overview-of-rolexs-flagship/",
+      "unique_contribution": "Lists the full set of 26 day-disc languages currently offered (including Basque, Catalan, Ethiopian, Moroccan, Farsi, Greek, Hebrew etc.) — useful detail for the 'language disc' point."
+    },
+    {
+      "publication": "woe_dispatch",
+      "source": "https://www.watchesofespionage.com/blogs/woe-dispatch/tucker-carlson-and-president-putin-interview-cia-timepiece-analysis",
+      "unique_contribution": "Off-topic for the Day-Date but documents Tucker Carlson wearing a 'Buckley dial' Datejust — referenced here only to confirm the Buckley-dial naming/aesthetic that also appears on early Day-Dates."
+    },
+    {
+      "publication": "woe_dispatch",
+      "source": "https://www.watchesofespionage.com/blogs/woe-dispatch/vice-president-jd-vance-apple-watch-smartwatch-intelligence-risks",
+      "unique_contribution": "Not Day-Date-specific; provides political/wristwatch-symbolism framing that complements the Day-Date's status-symbol story."
+    }
+  ],
+  "stories": [
+    {
+      "applies_to": [
+        "18238"
+      ],
+      "source": "https://www.fratellowatches.com/story-time-ron-santos-rolex-president/",
+      "title": "Ron Santo's 18238 'This Old Cub'",
+      "why": "A 1989 L-series yellow gold Day-Date 18238 originally bought by Cubs third baseman and broadcaster Ron Santo at New York Jewelers in Chicago. After Santo's death in 2010 his son Jeff returned it to the same retailer, where it was bought by Sean Madigan — who, like Santo, lives with Type 1 diabetes. The caseback carries the Chicago Cubs logo, the title of Jeff Santo's documentary 'This Old Cub', and a 'Thank You' engraving. A clean example of how a single 18238 can carry a real human-charity-sports story."
+    },
+    {
+      "applies_to": [
+        "model-wide"
+      ],
+      "source": "https://www.rolexmagazine.com/2009/07/eddie-murphy-rolex-day-date.html",
+      "title": "Eddie Murphy's 36+ year Day-Date",
+      "why": "Murphy has worn a yellow gold Day-Date with diamond bezel from his Saturday Night Live years in the early 1980s straight through to his recent late-night and SNL host appearances — a rare example of a single Day-Date configuration being effectively a lifelong signature. His brother Charlie Murphy and frequent collaborator Arsenio Hall are also long-term Day-Date wearers."
+    },
+    {
+      "applies_to": [
+        "model-wide",
+        "18039"
+      ],
+      "source": "https://www.rolexmagazine.com/2008/12/arnold-palmer-rolex-day-date-ad-from.html",
+      "title": "Golf's Big Three",
+      "why": "Arnold Palmer became Rolex's first golf ambassador in 1967 and wore a yellow gold Day-Date for decades; Jack Nicklaus and Gary Player joined him as Rolex's 'Big Three', all photographed together at Rolex Geneva in 2007 wearing Day-Dates (Palmer is also seen in a green-bezel Submariner). Palmer is also documented wearing a Tridor Day-Date in 1990s Rolex advertising."
+    },
+    {
+      "applies_to": [
+        "model-wide"
+      ],
+      "source": "https://www.rolexmagazine.com/2008/07/history-of-rolex-president-part-10.html",
+      "title": "Lyndon Johnson and the 'presidents' watch'",
+      "why": "LBJ wore a yellow gold Day-Date on the dedicated President bracelet through his presidency (1965–1968), and a 1966 Rolex advertisement explicitly captioned the watch 'the presidents' watch' — the moment that arguably welded the Day-Date to its 'President' identity in popular culture."
+    },
+    {
+      "applies_to": [
+        "model-wide"
+      ],
+      "source": "https://www.rolexmagazine.com/2016/10/us-presidential-candidate-hillary.html",
+      "title": "Bill Clinton's platinum and his 'Pro-Hunter'",
+      "why": "Clinton, a known watch enthusiast, has worn a platinum Day-Date and also a PVD-blackened 'Pro-Hunter' Rolex on a NATO strap during a visit with Nelson Mandela — a less-told corner of Day-Date wearing, mixing the most formal metal in the Rolex catalogue with the most heavily modified treatment."
+    },
+    {
+      "applies_to": [
+        "model-wide"
+      ],
+      "source": "https://www.rolexmagazine.com/2024/08/president-tump-receives-rolex-president.html",
+      "title": "Adin Ross gifts Donald Trump an Everose 40 olive-green dial Day-Date",
+      "why": "On a 2024 livestream the streamer gifted Trump a 40mm Everose Day-Date with an olive-green dial and raised rose-gold Roman numerals; Trump's unrehearsed verbal reaction explicitly linked Rolex to 'Jack Nicklaus, and Gary Player and Arnold Palmer'. A contemporary example of the Day-Date functioning as a status gift in a political context."
+    },
+    {
+      "applies_to": [
+        "model-wide"
+      ],
+      "source": "https://www.fratellowatches.com/rolex-oysterquartz-day-date/",
+      "title": "Sir Michael Caine's Oysterquartz Day-Date",
+      "why": "Caine's 1980 18k gold Oysterquartz Day-Date 19018 was auctioned at Bonhams in 2022 — a reminder that the Oysterquartz Day-Date has its own distinct cultural lineage, with wearers including Reinhold Messner (on Everest in 1978) and Sir Edmund Hillary."
+    },
+    {
+      "applies_to": [
+        "model-wide"
+      ],
+      "source": "https://bulangandsons.com/blogs/watch-talks/rolex-day-date",
+      "title": "Tony Soprano and the small-screen Day-Date",
+      "why": "The Day-Date's screen presence on the wrist of Tony Soprano is repeatedly cited in the corpus as a shorthand for how the watch crossed from boardrooms and oval offices into the popular imagination of late-90s/early-2000s American success — both aspirational and faintly transgressive."
+    }
+  ]
+}

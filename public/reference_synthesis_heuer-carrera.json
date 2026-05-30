@@ -1,0 +1,522 @@
+{
+  "conflicts": [
+    {
+      "applies_to": [
+        "model-wide"
+      ],
+      "note": "The overwhelming consensus across the corpus is 1963. The single 1964 reference in the 110.253B listing appears to be an editorial error.",
+      "positions": [
+        "1963 — the year of design and announcement (Jack Heuer, named after the Carrera Panamericana); supported by Bulang, Hodinkee Shop, Fratello, Hodinkee Reference Points, OnTheDash",
+        "1964 — date given by one Hodinkee Shop listing for the ref. 110.253B context line ('Heuer introduced the Carrera in 1964')"
+      ],
+      "topic": "Year the Carrera was introduced"
+    },
+    {
+      "applies_to": [
+        "model-wide"
+      ],
+      "note": "Stein's framing — 'enthusiasts still argue' — is the responsible one to use; each brand has a defensible claim depending on whether 'first' means announced, shipped to customers, or shipped to the world.",
+      "positions": [
+        "Heuer-Breitling-Büren-Dubois-Dépraz unveiled Calibre 11 on 3 March 1969 and were first to retail in major markets in Summer 1969 (Fratello, OnTheDash)",
+        "Zenith publicly showed the El Primero in January 1969 but did not ship to customers until October (OnTheDash)",
+        "Seiko's ref. 6139 went on sale in May 1969 but only in Japan (OnTheDash)"
+      ],
+      "topic": "Who 'won' the 1969 automatic chronograph race"
+    }
+  ],
+  "consensus": [
+    {
+      "applies_to": [
+        "model-wide"
+      ],
+      "claim": "The Carrera was launched in 1963, designed by Jack Heuer, and named after the Carrera Panamericana road race held in Mexico in the early 1950s.",
+      "confidence": "high",
+      "sources": [
+        "https://bulangandsons.com/blogs/watch-talks/spot-heuer-carrera-3147-ns",
+        "https://www.fratellowatches.com/vintage-heuer-lookalikes-carrera-connection-for-less/",
+        "https://www.fratellowatches.com/tbt-heuer-carrera-2447s/",
+        "https://www.hodinkee.com/articles/reference-points-tag-heuer-carrera",
+        "https://www.onthedash.com/lvmh-watch-week-2020-news-20jan12/"
+      ]
+    },
+    {
+      "applies_to": [
+        "model-wide"
+      ],
+      "claim": "Jack Heuer prioritised legibility above all when designing the Carrera, after studying dial readability at the Swiss Federal Institute of Technology in Zürich; this is why the original dials are uncluttered with scales relocated to an inner tension ring/flange.",
+      "confidence": "high",
+      "sources": [
+        "https://shop.hodinkee.com/collections/vintage-watches/products/2767-heuer-carrera-ref-2447-silver",
+        "https://shop.hodinkee.com/collections/vintage-watches/products/carrera-3647s-case-73078",
+        "https://shop.hodinkee.com/collections/vintage-watches/products/heuer-ref-2447s",
+        "https://www.onthedash.com/carrera-calibre-36-flyback/",
+        "https://www.hodinkee.com/articles/reference-points-tag-heuer-carrera"
+      ]
+    },
+    {
+      "applies_to": [
+        "model-wide",
+        "early"
+      ],
+      "claim": "Early Carrera cases were supplied by Ervin Piquerez S.A. (EPSA), the same case maker used for the Monaco and many other water-resistant watches of the period; Jack Heuer chose the case for its long diamond-polished, faceted lugs unlike anything else at the time.",
+      "confidence": "high",
+      "sources": [
+        "https://shop.hodinkee.com/collections/vintage-watches/products/2767-heuer-carrera-ref-2447-silver",
+        "https://shop.hodinkee.com/collections/vintage-watches/products/carrera-3647s-case-73078",
+        "https://shop.hodinkee.com/collections/vintage-watches/products/heuer-ref-2447s",
+        "https://shop.hodinkee.com/collections/vintage-watches/products/carrera-ref-2447-nst-c-103950-on-gf-bracelet"
+      ]
+    },
+    {
+      "applies_to": [
+        "model-wide",
+        "early"
+      ],
+      "claim": "Heuer and Rolex both released their flagship chronographs (Carrera and Daytona) in 1963, and both used Singer for dials and Valjoux for movements during the manual-wind era.",
+      "confidence": "high",
+      "sources": [
+        "https://shop.hodinkee.com/collections/vintage-watches/products/2767-heuer-carrera-ref-2447-silver",
+        "https://shop.hodinkee.com/collections/vintage-watches/products/2799-heuer-carrera-dato-45-ref-3147",
+        "https://shop.hodinkee.com/collections/vintage-watches/products/carrera-3647s-case-73078",
+        "https://www.hodinkee.com/articles/bring-a-loupe-august-19-2016"
+      ]
+    },
+    {
+      "applies_to": [
+        "1153",
+        "1153N"
+      ],
+      "claim": "The 1153 reference is the automatic Carrera in the C-shape case, powered by the Calibre 11 (later 11-i, 12, 15), with the crown on the left and pushers on the right — a layout dictated by the Dubois-Dépraz chronograph module sitting opposite the crown on the Büren micro-rotor base.",
+      "confidence": "high",
+      "sources": [
+        "https://www.fratellowatches.com/the-70s-another-golden-era-for-the-heuer-carrera-2/",
+        "https://shop.hodinkee.com/collections/vintage-watches/products/carrera-blue-dial-ref-110-253-case-971765",
+        "https://www.onthedash.com/mick-jagger/",
+        "https://www.onthedash.com/new-old-solid-gold-carrera/"
+      ]
+    },
+    {
+      "applies_to": [
+        "1153",
+        "1153N",
+        "model-wide"
+      ],
+      "claim": "The Calibre 11 was unveiled on 3 March 1969 at simultaneous press conferences in Geneva and New York; it was the result of an alliance between Heuer-Leonidas, Büren (microrotor base), Dubois-Dépraz (chronograph module) and Breitling.",
+      "confidence": "high",
+      "sources": [
+        "https://www.fratellowatches.com/the-70s-another-golden-era-for-the-heuer-carrera-2/",
+        "https://www.onthedash.com/carrera-calibre-36-flyback-full-review/"
+      ]
+    },
+    {
+      "applies_to": [
+        "1153",
+        "1153N"
+      ],
+      "claim": "The first-generation automatic Carreras carried 'Chronomatic' on the dial until September 1969; the wording was replaced by 'Automatic Chronograph' from 1970 onward.",
+      "confidence": "high",
+      "sources": [
+        "https://www.fratellowatches.com/the-70s-another-golden-era-for-the-heuer-carrera-2/"
+      ]
+    },
+    {
+      "applies_to": [
+        "1153",
+        "1153N"
+      ],
+      "claim": "Heuer's first three executions of the automatic Carrera kept the elegant earlier styling; the third generation (mid-1970s) widened the case, integrated the strap lugs, and used Cal. 12 or 15.",
+      "confidence": "medium",
+      "sources": [
+        "https://www.fratellowatches.com/the-70s-another-golden-era-for-the-heuer-carrera-2/",
+        "https://shop.hodinkee.com/collections/vintage-watches/products/carrera-blue-dial-ref-110-253-case-971765"
+      ]
+    },
+    {
+      "applies_to": [
+        "model-wide"
+      ],
+      "claim": "The 18k gold Carrera ref. 1158 (Cal. 11/12) was given by Jack Heuer to Ferrari Formula 1 drivers in the 1970s, with each watch engraved with the driver's name and blood type on the caseback — part of a sponsorship in which Heuer's red logo appeared on the cars in exchange for supplying a Centigraph timing system to the Maranello test track.",
+      "confidence": "high",
+      "sources": [
+        "https://www.fratellowatches.com/the-70s-another-golden-era-for-the-heuer-carrera-2/",
+        "https://www.hodinkee.com/articles/bring-a-loupe-oct-4",
+        "https://www.onthedash.com/new-old-solid-gold-carrera/"
+      ]
+    },
+    {
+      "applies_to": [
+        "model-wide"
+      ],
+      "claim": "Jo Siffert was the first Formula 1 driver to sign a sponsorship deal with Heuer (logo patch on overalls; red Heuer sticker on his cars), and the partnership opened the door for Heuer's broader entry into motorsport marketing.",
+      "confidence": "high",
+      "sources": [
+        "https://www.fratellowatches.com/the-70s-another-golden-era-for-the-heuer-carrera-2/"
+      ]
+    },
+    {
+      "applies_to": [
+        "model-wide"
+      ],
+      "claim": "The Carrera 'Dato 45' (ref. 3147) introduced in 1966 was one of the very first wristwatch chronographs with a rotating date disc; the first execution placed the date at 12 o'clock with two sub-registers, and the second execution (1968) moved the date to 9 o'clock with a single chronograph minute register at 3, giving the 'cyclops' or 'winking' look. Powered by the Landeron calibre 189, not the Valjoux 72 used on most Carreras.",
+      "confidence": "high",
+      "sources": [
+        "https://bulangandsons.com/blogs/watch-talks/spot-heuer-carrera-3147-ns",
+        "https://shop.hodinkee.com/collections/vintage-watches/products/2680-heuer-dato-silver-dial",
+        "https://shop.hodinkee.com/collections/vintage-watches/products/2799-heuer-carrera-dato-45-ref-3147",
+        "https://shop.hodinkee.com/collections/vintage-watches/products/dato-45-black-dial"
+      ]
+    },
+    {
+      "applies_to": [
+        "early",
+        "model-wide"
+      ],
+      "claim": "Manual-wind Carreras (refs 2447 / 3647) generally measure 35.5–36mm with an 18mm lug width, plexiglass crystal, and were offered with silver ('S') or black ('N') dials; the addition of a 'T' marker on the dial indicates tritium lume, used from roughly 1964/65 onward (earlier dials just say 'SWISS').",
+      "confidence": "high",
+      "sources": [
+        "https://shop.hodinkee.com/collections/vintage-watches/products/2767-heuer-carrera-ref-2447-silver",
+        "https://shop.hodinkee.com/collections/vintage-watches/products/carrera-3647s-case-73078",
+        "https://www.fratellowatches.com/tbt-heuer-carrera-2447s/"
+      ]
+    },
+    {
+      "applies_to": [
+        "model-wide"
+      ],
+      "claim": "After Heuer's involvement in early-1970s currency/quartz shocks, the Carrera went into hibernation; it was relaunched under TAG Heuer in 1996 with re-editions that closely mirrored the original 1960s case geometry.",
+      "confidence": "high",
+      "sources": [
+        "https://www.fratellowatches.com/the-70s-another-golden-era-for-the-heuer-carrera-2/",
+        "https://www.onthedash.com/retrospective-first-generation-glassbox-carreras/",
+        "https://www.onthedash.com/lvmh-watch-week-2020-news-20jan12/"
+      ]
+    },
+    {
+      "applies_to": [
+        "model-wide",
+        "early"
+      ],
+      "claim": "The Carrera dial design is widely regarded as one of the most iconic chronograph dials ever — defined by applied baton hour markers with lume dots, an inner tension ring (flange) carrying the fifth-second graduations, and minimal text.",
+      "confidence": "high",
+      "sources": [
+        "https://shop.hodinkee.com/collections/vintage-watches/products/2767-heuer-carrera-ref-2447-silver",
+        "https://www.fratellowatches.com/tbt-heuer-carrera-2447s/",
+        "https://www.hodinkee.com/articles/reference-points-tag-heuer-carrera"
+      ]
+    },
+    {
+      "applies_to": [
+        "model-wide"
+      ],
+      "claim": "Heuer commissioned 'budget' Carrera-style chronographs (e.g. ref. 7823 SN) that were also branded for Hamilton, Zodiac and Dugena — these so-called 'poor man's Carreras' share Heuer's components (Valjoux 7732, similar cases/dials).",
+      "confidence": "medium",
+      "sources": [
+        "https://www.fratellowatches.com/vintage-heuer-lookalikes-carrera-connection-for-less/"
+      ]
+    },
+    {
+      "applies_to": [
+        "model-wide"
+      ],
+      "claim": "Jeff Stein's OnTheDash is the recognised reference resource for vintage Heuer scholarship, including the Carrera and its sub-references.",
+      "confidence": "high",
+      "sources": [
+        "https://shop.hodinkee.com/collections/vintage-watches/products/2680-heuer-dato-silver-dial",
+        "https://shop.hodinkee.com/collections/vintage-watches/products/2799-heuer-carrera-dato-45-ref-3147",
+        "https://shop.hodinkee.com/collections/vintage-watches/products/dato-45-black-dial",
+        "https://www.fratellowatches.com/tbt-heuer-carrera-2447s/"
+      ]
+    }
+  ],
+  "gaps": [
+    {
+      "gap": "The corpus barely covers the 1153N specifically as a reference — most of the colour comes from the Mick Jagger article, with no dedicated production-history piece.",
+      "suggestion": "Pull in OnTheDash reference guides for the 1153/1153N executions (first, second, third) and dial colour variants (silver, black, blue/grey 'Jagger'), plus any Calibre11.com production-history coverage."
+    },
+    {
+      "gap": "The CS3111 modern re-edition is named in the node metadata but is not directly documented in the corpus — it sits implicitly within the 1996+ TAG Heuer re-edition wave.",
+      "suggestion": "Add a dedicated source for the CS3111 (TAG Heuer archive, Calibre11.com, or auction listings) covering case dimensions, movement (typically ETA-based), dial variants, and how closely it mimics the 1963 2447 design."
+    },
+    {
+      "gap": "No deep coverage of the Calibre 12/15 distinction beyond Stein's brief mention.",
+      "suggestion": "Add a movement-focused piece (Calibre11.com or Hodinkee technical) explaining the Cal. 11 → 11-i → 12 → 15 progression, what changed, and what to expect when servicing a 1153."
+    },
+    {
+      "gap": "Limited buyer-beware content for the 1153 specifically — the existing fake-dial warnings cover the IMS 3147 (OnTheDash) and a manual-wind 2447 (Hodinkee BAL July 2025), not the automatic 1153.",
+      "suggestion": "Source a vintage Heuer authentication guide for the 1153 — known dial reprints, swapped handsets, redialled examples, and the originality of the orange chronograph seconds hand on the blue/grey dial."
+    },
+    {
+      "gap": "Mention of the 'Carrera Panamericana' as the namesake race is universal but never explored — the race itself (1950–1954, Mexico) is only named.",
+      "suggestion": "Add a Carrera Panamericana history source so the 'where the name came from' story can be told properly rather than just asserted."
+    },
+    {
+      "gap": "Period advertising for the 1153 specifically is absent.",
+      "suggestion": "Add OnTheDash or Calibre11 vintage ad scans showing how the automatic Carrera was marketed during 1969–1975 (the 'Chronomatic' campaign, the F1 driver imagery)."
+    }
+  ],
+  "marks": [
+    {
+      "applies_to": [
+        "1153",
+        "1153N"
+      ],
+      "explanation": "On the 1153/1153N the crown sits on the left of the case and the chronograph pushers on the right. This is not stylistic — it is a structural consequence of the Dubois-Dépraz chronograph module being fitted opposite the crown on the Büren microrotor base. It is the single fastest way to identify a Calibre 11-family Carrera in a photograph.",
+      "name": "Crown-on-left, pushers-on-right (Cal. 11/12 layout)",
+      "sources": [
+        "https://www.fratellowatches.com/the-70s-another-golden-era-for-the-heuer-carrera-2/",
+        "https://www.onthedash.com/mick-jagger/"
+      ]
+    },
+    {
+      "applies_to": [
+        "1153",
+        "1153N"
+      ],
+      "explanation": "Earliest Calibre 11 Carreras (through September 1969) read 'Chronomatic' on the dial. From 1970 this was replaced by 'Automatic Chronograph.' The 'Chronomatic' dials are the most collected of the early autos.",
+      "name": "'Chronomatic' vs 'Automatic Chronograph' dial text",
+      "sources": [
+        "https://www.fratellowatches.com/the-70s-another-golden-era-for-the-heuer-carrera-2/"
+      ]
+    },
+    {
+      "applies_to": [
+        "1153",
+        "1153N"
+      ],
+      "explanation": "Mick Jagger's 1973 Carrera is identified by Stein as a second-execution 1153N: main time-of-day hands painted white (rather than the polished steel of the first execution), thinner than the third-execution hands, with the distinctive blue/grey dial and orange chronograph seconds hand. These details — handset finish, dial colour, accent colour — are the principal way to distinguish executions within the 1153.",
+      "name": "Second-execution 1153 hand and dial details",
+      "sources": [
+        "https://www.onthedash.com/mick-jagger/"
+      ]
+    },
+    {
+      "applies_to": [
+        "1153",
+        "1153N"
+      ],
+      "explanation": "By the mid-1970s the C-shape case had given way to a wider, sportier 'third-generation' design with strap lugs integrated into the case, housing Cal. 12 or 15 — visible in references such as the 110.253.",
+      "name": "Third-execution case widening",
+      "sources": [
+        "https://www.fratellowatches.com/the-70s-another-golden-era-for-the-heuer-carrera-2/",
+        "https://shop.hodinkee.com/collections/vintage-watches/products/carrera-blue-dial-ref-110-253-case-971765"
+      ]
+    },
+    {
+      "applies_to": [
+        "gold"
+      ],
+      "explanation": "Although the 18k gold 1158 case is solid gold, Heuer fitted the Corfam strap with a gold-plated buckle marked 'Plaque G' with the sun logo and 'Swiss.' These buckles have generally aged poorly and are easy to misidentify as solid gold.",
+      "name": "Plaque G (gold-plated) buckle on gold Carreras",
+      "sources": [
+        "https://www.onthedash.com/new-old-solid-gold-carrera/"
+      ]
+    },
+    {
+      "applies_to": [
+        "1153",
+        "1153N",
+        "gold"
+      ],
+      "explanation": "The original Calibre 11 was updated to 11-i and then Calibre 12 specifications, increasing reliability and beat rate. Owners face a choice when servicing: keep an original Cal. 11 for originality (Stein's choice on the 1158) or upgrade to 11-i/12 specs for usability. Many surviving 1153s have been upgraded; an untouched Cal. 11 is increasingly uncommon.",
+      "name": "Calibre 11 / 11-i / 12 movement evolution",
+      "sources": [
+        "https://www.onthedash.com/new-old-solid-gold-carrera/",
+        "https://www.fratellowatches.com/the-70s-another-golden-era-for-the-heuer-carrera-2/"
+      ]
+    },
+    {
+      "applies_to": [
+        "CS3111"
+      ],
+      "explanation": "The CS3111 is part of the wave of TAG Heuer Carrera re-editions launched from 1996 onward that brought back the original 1960s case geometry and dial language. These re-editions are the bridge between the vintage Carrera and the modern Glassbox / Heuer 02 era.",
+      "name": "Modern CS3111 re-edition lineage",
+      "sources": [
+        "https://www.onthedash.com/lvmh-watch-week-2020-news-20jan12/",
+        "https://www.onthedash.com/retrospective-first-generation-glassbox-carreras/"
+      ]
+    }
+  ],
+  "model_context": "The Heuer Carrera (refs 1153/1153N and the modern CS3111 Re-Edition) sits at the centre of Heuer's racing chronograph identity. Designed by Jack Heuer and launched in 1963, the Carrera was conceived around legibility for drivers — the dial was stripped of clutter, with the fifth-second track relocated to an inner tension ring so the central dial could 'breathe.' The name came from the Carrera Panamericana road race in Mexico. The 1153 references covered here are the automatic-era Carreras of the early-to-mid 1970s, powered by the Chronomatic Calibre 11 (later Cal. 12/15). These watches share the C-shape case, crown-on-the-left / pushers-on-the-right layout that telegraphs the Calibre 11/12 family, and represent the moment Heuer carried the Carrera idea into the automatic chronograph era — including the 18k gold 1158, gifted by Jack Heuer to Ferrari F1 drivers. The modern CS3111 is a late-1990s TAG Heuer re-edition that brought the original 1963 design language back into the catalogue, kicking off three decades of Carrera reissues.",
+  "module_candidates": [
+    {
+      "module": "Carrera Dato 45 (ref. 3147 / 3147N / 3147S)",
+      "rationale": "Coverage in the corpus is unusually deep: two execution variants (date at 12, date at 9), three Hodinkee Shop listings, two HODINKEE x TAG Heuer limited-edition collaborations inspired by it (Skipper 2017, Dato 2021), and the Landeron 189 movement rather than the Valjoux 72 used elsewhere in the Carrera line — this deserves its own page rather than being a footnote on the 1153."
+    },
+    {
+      "module": "Carrera 1158 (18k gold, Ferrari F1 driver gift)",
+      "rationale": "Detailed coverage across Stein's 'New Old Solid Gold Carrera' piece, Fratello's 1970s Carrera history (Ronnie Peterson's example at Sotheby's), and Christie's listings — a distinct sub-reference with its own story (Ferrari/Maranello sponsorship, individual driver provenance) that doesn't belong on a 1153 stainless page."
+    },
+    {
+      "module": "Carrera ref. 2447 (manual-wind, 1963–1970)",
+      "rationale": "The original Carrera, with extensive coverage of executions (eggshell first execution, sunburst second execution, T-Swiss dating, S/N/NT/NST/NS/SND variants) across multiple Hodinkee Shop listings, Fratello's 2447S essay, and Hodinkee Reference Points. Anchor reference for the whole vintage Carrera world."
+    },
+    {
+      "module": "Carrera Glassbox limited editions (2015–2023)",
+      "rationale": "OnTheDash has a full retrospective documenting the ten First Generation Glassbox Carreras (Calibre 18 Telemeter, Hodinkee Skipper, Blue Dreamer, Fragment Design, 160th Anniversary Silver/Montreal, Dato Hodinkee, Teal, Red, 60th Anniversary Panda) — a coherent modern collecting category that bridges vintage references and the current catalogue."
+    },
+    {
+      "module": "Pre-Carrera chronographs (refs 2444, 3336)",
+      "rationale": "Hodinkee's Reference Points piece documents these mid-to-late-1950s Heuer chronographs (in S and N variants, sometimes signed Abercrombie & Fitch) that introduced the case geometry and inner tension ring later used on the Carrera — they deserve recognition as the design ancestors."
+    },
+    {
+      "module": "Belgian Air Force Carrera ref. 7753",
+      "rationale": "A unique military-issued Carrera with no 'Carrera' on the dial, painted Arabic numerals and pilot-style hands, fewer than 20 known — Stein has a dedicated piece with a registry of known issue numbers."
+    }
+  ],
+  "source_contributions": [
+    {
+      "publication": "onthedash",
+      "source": "https://www.onthedash.com/new-old-solid-gold-carrera/",
+      "unique_contribution": "Detailed first-hand account of an 18k gold Carrera ref. 1158 S (third execution) from 1973 originally gifted to a Sportex watchmaker for 25 years of service — including the discovery that the watch had sat unworn in a safe for 50 years; explains the three Reference 1158 dial variants (S/CH/CHN) and notes that Heuer used gold-plated 'Plaque G' buckles on the gold-cased Carreras."
+    },
+    {
+      "publication": "onthedash",
+      "source": "https://www.onthedash.com/mick-jagger/",
+      "unique_contribution": "Documents Mick Jagger wearing a Heuer Carrera ref. 1153B (second execution, blue/grey dial) in 1972–73 photographs (including one with John Lennon and Yoko Ono at the Record Plant, NYC), then switching to an Autavia ref. 11630P later in the decade — concrete period-correct provenance for the 1153."
+    },
+    {
+      "publication": "fratello",
+      "source": "https://www.fratellowatches.com/the-70s-another-golden-era-for-the-heuer-carrera-2/",
+      "unique_contribution": "Tells the Ferrari–Heuer story: Jack Heuer's visit to Maranello, the Centigraph trade for advertising space, and the gold 1158 CHN gifted to drivers including Ronnie Peterson (whose example sold at Sotheby's in 2016 for 225,000 CHF); also documents Jo Siffert as the first F1 driver sponsorship and Steve McQueen's choice of Monaco on the set of Le Mans."
+    },
+    {
+      "publication": "hodinkee_reference_points",
+      "source": "https://www.hodinkee.com/articles/reference-points-tag-heuer-carrera",
+      "unique_contribution": "Sets the Carrera in the broader chronograph landscape of 1955–1963; covers the 'pre-Carrera' references 2444 and 3336 (in S and N variants), explains the dating convention (S = soleil/silver, N = noir, T = tachymeter), and shows how the ref. 2447 first appeared on pre-Carrera models before the Carrera name."
+    },
+    {
+      "publication": "onthedash",
+      "source": "https://www.onthedash.com/carrera-calibre-36-flyback/",
+      "unique_contribution": "Explains the design lineage from Heuer's 1960 Century stopwatch line (redesigned for legibility on the brand's 100th anniversary, with a 'dual-track' / centre-mounted minute hand) into the original Carrera's legibility philosophy — Jack Heuer's insistence on stripping the dial."
+    },
+    {
+      "publication": "bulang_watch_talks",
+      "source": "https://bulangandsons.com/blogs/watch-talks/spot-heuer-carrera-3147-ns",
+      "unique_contribution": "Notes a Royal Jordanian Air Force-issued 3147 Dato (military caseback engraving on otherwise standard watch) and an early Shelby Cobra Racing logo-dial 3147 — both rare commissioned variants."
+    },
+    {
+      "publication": "hodinkee_bring_a_loupe",
+      "source": "https://www.hodinkee.com/articles/bring-a-loupe-28-july-2017",
+      "unique_contribution": "Documents a Carrera Dato 45 ref. 3147N with the Indianapolis Motor Speedway 'Wings & Wheel' logo, retailed only at the Speedway, with verified provenance from an Indianapolis estate."
+    },
+    {
+      "publication": "onthedash",
+      "source": "https://www.onthedash.com/beware-fake-heuer-carrera-ims-dial/",
+      "unique_contribution": "Crucial buyer-beware piece: Heuer only made IMS 'Wings & Wheel' dials for five timepieces (two-register Autavia 3646, three Carrera 3147 Dato variants, and a 52mm stopwatch), in very limited numbers; a faked painted IMS logo dial (with telltale wrong placement and overprinting on the 'T Swiss' marking) sold on eBay in 2019 for $1,575 and could be made into a counterfeit complete watch."
+    },
+    {
+      "publication": "onthedash",
+      "source": "https://www.onthedash.com/carrera-fragment-introduction/",
+      "unique_contribution": "Documents the Carrera Heuer 02 by Fragment Design (Hiroshi Fujiwara), Dec 2018, limited to 500 pieces at $8,100 — based on the 1968 Reference 2447 NT (black dial with white tachymeter) in a 38mm glassbox case with the Heuer 02 movement."
+    },
+    {
+      "publication": "onthedash",
+      "source": "https://www.onthedash.com/retrospective-first-generation-glassbox-carreras/",
+      "unique_contribution": "Comprehensive catalogue of the ten 'First Generation' Glassbox Carrera limited editions (2015–2023), covering the Calibre 18 Telemeter, Hodinkee Skipper, Revolution/The Rake Blue Dreamer, Fragment Design, 160th Anniversary Silver + Montreal, Hodinkee Dato, Teal, Red, and 60th Anniversary Panda."
+    },
+    {
+      "publication": "onthedash",
+      "source": "https://www.onthedash.com/note-belgian-carrera/",
+      "unique_contribution": "Documents the rare Belgian Air Force (Force Aérienne Belge) Carrera ref. 7753 — a military-issued two-register Carrera with painted Arabic numerals and pilot-style hands, NATO stock number 6645-13-107-6724, issued in 1970 to fewer than ~20 known examples."
+    },
+    {
+      "publication": "onthedash",
+      "source": "https://www.onthedash.com/carrera-heuer-01-preview/",
+      "unique_contribution": "First-look impressions of the 2015 Carrera Heuer 01 — TAG Heuer's bold 45mm skeletonised Carrera designed as the brand's flagship at $5,250, marking the Biver-era repositioning of the line."
+    },
+    {
+      "publication": "onthedash",
+      "source": "https://www.onthedash.com/carrera-calibre-36-flyback-full-review/",
+      "unique_contribution": "Detailed review of the 2013 Carrera Calibre 36 Flyback (TAG Heuer's version of the Zenith El Primero) — explains how the El Primero/Calibre 36 sits alongside the historical Caliber 11 in the automatic chronograph race of 1969."
+    },
+    {
+      "publication": "onthedash",
+      "source": "https://www.onthedash.com/geneva-scrapbook/",
+      "unique_contribution": "Eyewitness account of TAG Heuer's '50 Years of Carrera' launch event in Geneva (January 2013), including first sight of the Jack Heuer 50th Anniversary Carrera (Cal. 1887, bullhead orientation) and the carbon-cased concept Carrera."
+    },
+    {
+      "publication": "onthedash",
+      "source": "https://www.onthedash.com/lvmh-watch-week-2020-news-20jan12/",
+      "unique_contribution": "Introduction of the Carrera 160 Years Silver Limited Edition (2020) — 1,860 pieces at ~$6,450, the first heritage re-edition under the post-Biver TAG Heuer leadership team (Stéphane Bianchi, Frédéric Arnault, Guy Bove), patterned closely on the 1964 ref. 2447S."
+    },
+    {
+      "publication": "fratello",
+      "source": "https://www.fratellowatches.com/vintage-heuer-lookalikes-carrera-connection-for-less/",
+      "unique_contribution": "Explores 'poor man's Carreras' — Hamilton, Zodiac and Dugena chronographs (e.g. ref. 7823 SN) that share components and even cases with Heuer-made chronographs at a fraction of the price."
+    },
+    {
+      "publication": "hodinkee_shop",
+      "source": "https://shop.hodinkee.com/collections/vintage-watches/products/carrera-blue-dial-ref-110-253-case-971765",
+      "unique_contribution": "Documents the third-generation (1970s) automatic Carrera ref. 110.253B with the tonneau case and the rare watchmaking-school dual signature 'Uhrmacherschule Solothurn' — an unusual example of a school-signed final-exam Carrera assembled from genuine Heuer parts."
+    },
+    {
+      "publication": "fratello",
+      "source": "https://www.fratellowatches.com/tbt-heuer-carrera-2447s/",
+      "unique_contribution": "Personal essay framing the manual-wind Carrera 2447S as a generational gift; documents the first-execution / second-execution transition (1963 matte black or flat white dial → 1964/65 sunburst silver dial; tritium 'T' added on dials from around 1964/65)."
+    },
+    {
+      "publication": "hodinkee_bring_a_loupe",
+      "source": "https://www.hodinkee.com/articles/bring-a-loupe-july-17-2025",
+      "unique_contribution": "Cautionary example of a dishonest vintage Heuer Carrera on eBay with a reprinted dial (wrong subdial graduation, oversized lume plots, suspicious markings inside caseback) — a useful checklist of telltales for what's wrong on a faked manual-wind Carrera."
+    }
+  ],
+  "stories": [
+    {
+      "applies_to": [
+        "1153",
+        "1153N"
+      ],
+      "source": "https://www.onthedash.com/mick-jagger/",
+      "title": "Mick Jagger wears a Carrera 1153 (1972–73), then an Autavia 11630P (1977–78)",
+      "why": "Concrete, photographic evidence of Mick Jagger choosing a second-execution Carrera 1153N with the blue/grey dial and orange chronograph seconds hand — including a 1972 Bob Gruen photograph at the Record Plant in NYC with John Lennon and Yoko Ono. Stein documents this as a 'watch in the wild' — Jagger chose it himself, not as a paid endorsement."
+    },
+    {
+      "applies_to": [
+        "gold"
+      ],
+      "source": "https://www.fratellowatches.com/the-70s-another-golden-era-for-the-heuer-carrera-2/",
+      "title": "Jack Heuer's gold Carrera 1158 gifts to Ferrari F1 drivers",
+      "why": "Each gold 1158 was engraved on the caseback with the driver's name and blood type. Ronnie Peterson's example (engraved by Heuer in 1972) was auctioned at Sotheby's in 2016 by his heirs for 225,000 Swiss francs. The arrangement grew out of Heuer trading its Centigraph timing system to Maranello for advertising space on the cars."
+    },
+    {
+      "applies_to": [
+        "gold"
+      ],
+      "source": "https://www.onthedash.com/new-old-solid-gold-carrera/",
+      "title": "A new-old gold Carrera 1158 from a watchmaker's safe",
+      "why": "Jeff Stein's 18k gold ref. 1158S was given to Gianni Sartori in 1973 for 25 years of service at the Sportex watch company — and Sartori, a watchmaker himself, simply put it in his safe and never wore it. Acquired 52 years later in nearly-new condition, serviced for the first time by a 15-year-old watchmaker (Owen Berger). Pure example of provenance and how a Carrera can survive untouched."
+    },
+    {
+      "applies_to": [
+        "model-wide"
+      ],
+      "source": "https://www.onthedash.com/note-belgian-carrera/",
+      "title": "Belgian Air Force Carrera ref. 7753",
+      "why": "A military-issued two-register Carrera supplied to the Force Aérienne Belge with painted Arabic numerals and pilot-style hands — no 'Carrera' on the dial, blacked-out tension ring, NATO stock 6645-13-107-6724. Fewer than ~20 known examples; case-backs marked 'F.Ae.' with issue numbers in the form 70/XXX."
+    },
+    {
+      "applies_to": [
+        "model-wide"
+      ],
+      "source": "https://www.onthedash.com/beware-fake-heuer-carrera-ims-dial/",
+      "title": "The Indianapolis Motor Speedway 'Wings & Wheel' Carrera",
+      "why": "Between 1966 and 1968 Heuer made chronographs for the Indianapolis Motor Speedway, sold only at the venue, including three execution variants of the 3147 Dato. Genuine examples are very rare (fewer than 12 of each model known). Hodinkee sold one in 2017 with full Indianapolis estate provenance; OnTheDash documents a faked painted-logo dial that sold on eBay in 2019 for $1,575 — a warning to anyone buying one of these."
+    },
+    {
+      "applies_to": [
+        "model-wide"
+      ],
+      "source": "https://bulangandsons.com/blogs/watch-talks/spot-heuer-carrera-3147-ns",
+      "title": "Royal Jordanian Air Force and Shelby Cobra Racing 3147s",
+      "why": "Two distinct commissioned variants of the Dato 3147: one a regular-issue watch with military engravings on the caseback for the Royal Jordanian Air Force, the other an early logo-dial example commissioned by Shelby Cobra Racing — both extremely rare and historically interesting."
+    },
+    {
+      "applies_to": [
+        "1153"
+      ],
+      "source": "https://shop.hodinkee.com/collections/vintage-watches/products/carrera-blue-dial-ref-110-253-case-971765",
+      "title": "The 'Uhrmacherschule Solothurn' Carrera 110.253",
+      "why": "A Hodinkee Shop find with two extra lines of dial text at six o'clock — 'Uhrmacherschule Solothurn,' the name of a Swiss watchmaking school. Story goes that this was assembled by a student as a final-exam piece, but unusually using genuine Heuer parts rather than generic ébauches — quadruple-signed by Heuer."
+    }
+  ]
+}
