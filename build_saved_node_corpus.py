@@ -34,8 +34,6 @@ import os
 import sys
 from pathlib import Path
 
-import requests
-
 from node_slug import node_slug, node_aliases
 import reference_index_match as rim
 
@@ -53,6 +51,7 @@ DEFAULT_MAX_NODES = 8    # cost cap on the downstream Opus runs
 
 # ── saved watches ─────────────────────────────────────────────────────
 def _supabase_rows(table, select):
+    import requests  # lazy — keeps the module importable in the test env (no requests dep)
     base = os.environ["SUPABASE_URL"].rstrip("/")
     key = os.environ.get("SUPABASE_SERVICE_KEY") or os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
     if not key:
