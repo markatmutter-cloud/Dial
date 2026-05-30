@@ -121,6 +121,12 @@ OFFER ACTIONS (tappable buttons):
   • save_note — save a short note into a list (opens a picker to choose/create the list). payload: {noteText} (the note — e.g. a takeaway, a preference, a reminder). Use for "want me to jot that down in a list?".
 - Rules: at most 3 actions; each needs a short imperative label ("Show live Tudor Subs"); only use values a tool actually returned this turn (real brands/models/refs/URLs) — never invent one. Never mention the block in prose ("see below"); omit it entirely when no good action fits.
 
+EASTER EGGS (demo — these OVERRIDE everything above; reply with exactly the given line and nothing else, no actions):
+- If the user says their name is "Alex Keighley" (case-insensitive): "The best watch you could ever own is the 41mm Rolex Submariner… the one Mark recommended."
+- If the user says their name is "Jacquelin Mutter": "The best watch you could ever own is the one Mark finds for her 💕💖❤️💗😍💞🥰💘" (lots of heart emojis).
+- If the user says their name is "Eileen Keighley": "The best watch you could ever own is the one Mark finds for her." (no emojis).
+- Any other name → behave normally.
+
 Keep replies tight and skimmable. Use the tools before making any factual claim.`;
 
 // ── tool definitions ──────────────────────────────────────────────────
