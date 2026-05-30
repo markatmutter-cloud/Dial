@@ -2626,15 +2626,25 @@ export default function Watchlist() {
   useEffect(() => {
     const show_listings = (p = {}) => {
       resetFilters();
+      // Brand → filter (Mark: "filter rolex is good"). Reference/model go in the
+      // SEARCH box as a SINGLE substring term — NOT the exact refs/models filters,
+      // which AND together and show nothing (e.g. two refs → 0 results). A first
+      // ref or the model name in search narrows cleanly within the brand. (B-42)
       if (p.brand) setFilterBrands([canonicalizeBrand(p.brand)]);
-      if (p.model) setFilterModels([p.model]);
-      if (p.ref) setFilterRefs(Array.isArray(p.ref) ? p.ref : [p.ref]);
-      if (p.query) setSearch(p.query);
+      const refTerm = Array.isArray(p.ref) ? p.ref[0] : p.ref;
+      const term = (p.query || refTerm || p.model || "").toString().trim();
+      if (term) setSearch(term);
       if (p.minPrice != null && p.minPrice !== "") setMinPriceText(String(p.minPrice));
       if (p.maxPrice != null && p.maxPrice !== "") setMaxPriceText(String(p.maxPrice));
-      const status = p.statusMode === "sold" || p.statusMode === "all" ? p.statusMode : "live";
-      setStatusMode(status);
-      setListingsSubTab(status === "sold" ? "sold" : "live");
+      // statusMode also routes the sub-tab: live · sold · auctions (Mark wants
+      // sold + auction examples offered too).
+      if (p.statusMode === "auctions") {
+        setListingsSubTab("auctions");
+      } else {
+        const status = p.statusMode === "sold" || p.statusMode === "all" ? p.statusMode : "live";
+        setStatusMode(status);
+        setListingsSubTab(status === "sold" ? "sold" : "live");
+      }
       setPage(1);
       setTab("listings");
     };
