@@ -281,6 +281,29 @@ within each section roughly last.
   hearted/Saved leading, bigger tiles, distinct in-list header, drill-in back-nav fix, list rename/delete
   (cards + in-list), hearted "♡ Saved" filter chip, Saved band on the shared CardStrip.
 
+### Lumé — the AI spine (Epic 9 / Phase A)
+
+- **2026-05-29 — Lumé AI concierge v1 (#680/#681/#682).** Grounded watch-expert chat in a
+  bottom-right bubble — signed-in only, daily-capped (`ai_chat_usage` + `consume_chat_quota` RPC).
+  `api/chat.js` runs a bounded tool-use loop over the corpus (user's saved data, live/sold listings,
+  auction state, reference index + deep-dive syntheses); cites source URLs, never free-generates facts.
+- **2026-05-29 — Lumé bubble polish + offer→do actions.** Markdown + clickable links, mic dictation,
+  "Ask me" callout, signed-out→sign-in prompt, hide-on-action; action set show_listings / open_watch /
+  read_more / add_to_list / create_list / save_note wired via an ActionBus to App handlers.
+- **2026-05-29 — Watch lexicon Phase 1 (#691).** `public/watch_lexicon.json` seed injected as a cached
+  glossary so Lumé expands collector slang (speedie/panda/QP/DON) to canonical terms; Phase-2 corpus
+  miner + workflow built (cost-capped, not yet run).
+- **2026-05-30 — Lumé Phase 2: generic reference grounding (#702).** `get_reference` now serves ANY
+  saved model line's deep-dive by node slug (drops the hardcoded Sub/Speedy grep) and returns named dial
+  "marks"; SYSTEM_PROMPT externalised to `public/lume_system_prompt.txt`; ref search-term discipline +
+  sold/auction offers. Built on `node_slug` + saved-node pipeline (#698) + `min_sources` knob (#703).
+- **2026-05-30 — Lumé saved-node syntheses (fan-out).** Mined 607 saved watches → 5 source-cited
+  model-line deep-dives synthesised + live (Heuer Carrera/Autavia, Omega Seamaster 300, Rolex
+  Day-Date/Datejust); Lumé's deep coverage 2 → 7 model lines.
+- **2026-05-30 — Lumé mark + chat timeout hotfix (#700/#701/#704).** Vintage flat-patina lume-triangle
+  icon; `api/chat` `maxDuration: 60` — Opus tool-loop turns were being killed at Vercel's ~10–15s
+  default (the "Something went wrong" outage); same PR repaired two tests the fan-out had broken on main.
+
 ## UI & chrome (cross-cutting)
 
 - **2026-05-27 — Home "Articles" strip + reorder (#636).** Idle-loaded recent editorial; Home strips
