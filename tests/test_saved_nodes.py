@@ -30,12 +30,19 @@ def test_aliases_include_legacy_bare_slug():
 
 def test_derive_nodes_folds_and_skips_already_synthesised():
     snaps = b.load_saved_snapshots(FIXTURE)
-    nodes, stats = b.derive_nodes(snaps, max_nodes=8)
-    # Submariner + its "(additions…)" variant fold to one node, which already has
-    # a hand-curated synthesis → excluded from the fresh set, reported as "have".
+    # Inject a deterministic "already synthesised" set so this test doesn't depend
+    # on which reference_synthesis_*.json files happen to exist in public/ — the
+    # saved-node fan-out adds more over time (e.g. it later synthesised datejust).
+    synthed = {"rolex-submariner"}
+    nodes, stats = b.derive_nodes(
+        snaps, max_nodes=8,
+        synth_exists=lambda brand, ml: node_slug(brand, ml) in synthed,
+    )
+    # Submariner + its "(additions…)" variant fold to one node, which we marked
+    # synthesised → excluded from the fresh set, reported as "have".
     assert "rolex-submariner" not in nodes
     assert "rolex-submariner" in stats["already_have"]
-    # New nodes are derived for synthesis.
+    # New (un-synthesised) nodes are derived for synthesis.
     assert "rolex-datejust" in nodes
     assert "rolex-gmt-master" in nodes
     assert stats["skipped_no_model"] == 0

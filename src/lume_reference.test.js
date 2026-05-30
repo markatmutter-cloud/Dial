@@ -52,10 +52,17 @@ describe("getReference — generic synthesis by node slug", () => {
     expect(r.synthesis.some((s) => s.node === "speedmaster")).toBe(true);
   });
 
-  test("a model line with no synthesis returns index match but empty synthesis", () => {
+  test("never fabricates synthesis — every returned node has a real file on disk", () => {
+    // (Don't assert a specific line is empty: the saved-node fan-out keeps adding
+    // reference_synthesis_*.json files, so "Datejust has none" goes stale. The
+    // durable invariant is that getReference only ever returns nodes it actually
+    // loaded from disk.)
     const r = getReference({ brand: "Rolex", model_line: "Datejust" });
     expect(r.index_matches.length).toBeGreaterThan(0);
-    expect(r.synthesis.length).toBe(0);
+    for (const s of r.synthesis) {
+      const p = path.join(process.cwd(), "public", `reference_synthesis_${s.node}.json`);
+      expect(fs.existsSync(p)).toBe(true);
+    }
   });
 
   test("no filters → no matches (guard against dumping the whole index)", () => {
