@@ -1,0 +1,104 @@
+# Saved-watch reference synthesis — deepen Lumé's knowledge of the model lines
+# users have SAVED. Manual-only (spends Anthropic credit), cost-capped.
+#
+# Stage 0 (build_saved_node_corpus.py): read saved watches from Supabase →
+#   distinct nodes → AUTO-assemble each node's corpus from the existing editorial
+#   corpus (reuses URLs we already hold) → reference_sources/<slug>.json + a slug
+#   list. Skips already-synthesised (Submariner/Speedmaster) + thin nodes.
+# Stage 1 (reference_corpus_scraper.py): build public/reference_corpus_<slug>.json
+#   (reuses bodies — fetches nothing for auto-manifests).
+# Stage 2 (reference_synthesis.py): ONE Opus pass per node → reference_synthesis_<slug>.json.
+# Stage 3 (reference_digest.py): docs/reference_synthesis_<slug>.md for review.
+#
+# COST: ~$1–3 per node (Opus). `max_nodes` caps it; run with `dry_run: yes` first
+# (manifests only, no Opus), then `max_nodes: 1` to validate one node before fan-out.
+#
+# Secrets: SUPABASE_URL, SUPABASE_SERVICE_KEY (or _SERVICE_ROLE_KEY), ANTHROPIC_API_KEY.
+name: Synthesise saved-watch nodes
+
+on:
+  workflow_dispatch:
+    inputs:
+      max_nodes:
+        description: 'Max nodes to synthesise (Opus cost cap)'
+        required: true
+        default: '8'
+      dry_run:
+        description: 'Build manifests only (no Opus synthesis)'
+        required: true
+        default: 'no'
+        type: choice
+        options:
+          - 'no'
+          - 'yes'
+
+concurrency:
+  group: saved-node-synthesis
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install pipeline deps
+        run: pip install -r requirements-pipeline.txt
+
+      - name: Stage 0 — build saved-node manifests
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: python build_saved_node_corpus.py --max-nodes ${{ github.event.inputs.max_nodes }}
+
+      - name: Resolve slug list
+        id: slugs
+        run: |
+          if [ -s reference_sources/_saved_slugs.txt ]; then
+            echo "list=$(tr '\n' ' ' < reference_sources/_saved_slugs.txt)" >> "$GITHUB_OUTPUT"
+          else
+            echo "list=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Stage 1 — build reference corpus
+        if: steps.slugs.outputs.list != ''
+        run: python reference_corpus_scraper.py ${{ steps.slugs.outputs.list }}
+
+      - name: Stage 2 — Opus synthesis
+        if: ${{ steps.slugs.outputs.list != '' && github.event.inputs.dry_run != 'yes' }}
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python reference_synthesis.py ${{ steps.slugs.outputs.list }}
+
+      - name: Stage 3 — readable digest
+        if: ${{ steps.slugs.outputs.list != '' && github.event.inputs.dry_run != 'yes' }}
+        run: python reference_digest.py ${{ steps.slugs.outputs.list }}
+
+      - name: Commit + push outputs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add reference_sources/ \
+                  public/reference_corpus_*.json \
+                  public/reference_synthesis_*.json \
+                  docs/reference_synthesis_*.md 2>/dev/null || true
+          if git diff --staged --quiet; then
+            echo "No changes — nothing to commit."
+            exit 0
+          fi
+          git commit -m "Synthesise saved-watch nodes (max_nodes=${{ github.event.inputs.max_nodes }}) $(date -u '+%Y-%m-%d %H:%M UTC')"
+          for i in 1 2 3; do
+            if git push; then exit 0; fi
+            git pull --rebase
+            sleep 5
+          done
+          exit 1
