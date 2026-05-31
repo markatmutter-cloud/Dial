@@ -162,6 +162,7 @@ suite("Lumé eval — live behaviour (LUME_EVAL=1)", () => {
     const r = await runTurn("Thinking about a Tudor Submariner snowflake. What models does this include?");
     expect(r.rawText).not.toMatch(FALLBACK);
     expect(r.finalText.length).toBeGreaterThan(0);
+    expect(r.finalText).not.toMatch(/<actions>/i);  // no exposed-code leak (truncated actions block)
   }, TIMEOUT);
 
   test("Taste statement engages, doesn't claim 'we have N' stock (gold)", async () => {

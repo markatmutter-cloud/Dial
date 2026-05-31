@@ -345,25 +345,32 @@ const ACTION_TYPES = new Set([
 ]);
 
 function extractActions(text) {
-  const m = (text || "").match(/<actions>\s*([\s\S]*?)<\/actions>/i);
-  if (!m) return { text: text || "", actions: [] };
+  let t = text || "";
   let actions = [];
-  try {
-    const parsed = JSON.parse(m[1]);
-    if (Array.isArray(parsed)) {
-      actions = parsed
-        .filter((a) => a && ACTION_TYPES.has(a.type) && typeof a.label === "string" && a.label.trim())
-        .slice(0, 3)
-        .map((a) => ({
-          type: a.type,
-          label: a.label.trim().slice(0, 60),
-          payload: a.payload && typeof a.payload === "object" ? a.payload : {},
-        }));
+  const m = t.match(/<actions>\s*([\s\S]*?)<\/actions>/i);
+  if (m) {
+    try {
+      const parsed = JSON.parse(m[1]);
+      if (Array.isArray(parsed)) {
+        actions = parsed
+          .filter((a) => a && ACTION_TYPES.has(a.type) && typeof a.label === "string" && a.label.trim())
+          .slice(0, 3)
+          .map((a) => ({
+            type: a.type,
+            label: a.label.trim().slice(0, 60),
+            payload: a.payload && typeof a.payload === "object" ? a.payload : {},
+          }));
+      }
+    } catch {
+      actions = [];
     }
-  } catch {
-    actions = [];
+    t = t.replace(m[0], "");
   }
-  return { text: text.replace(m[0], "").trim(), actions };
+  // Strip any DANGLING/unclosed <actions> fragment too — if the reply was
+  // truncated mid-block (hit max_tokens), the open tag + raw JSON would otherwise
+  // leak to the user as "exposed code" (Mark saw this). Cut from <actions> to end.
+  t = t.replace(/<actions>[\s\S]*$/i, "");
+  return { text: t.trim(), actions };
 }
 
 // ── handler ───────────────────────────────────────────────────────────
