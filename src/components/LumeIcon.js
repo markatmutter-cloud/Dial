@@ -1,12 +1,10 @@
 import React from "react";
 
-// Lumé mark — an inverted triangle (watch-hand / lume-pip) in flat aged-tritium
-// PATINA (biscuit #D6BC88 — one colour, no edge/gradient — Mark's call) with a
-// soft pale-mint lume glow behind, on a transparent ground so the host supplies
-// the colour behind. ~1:1.5 (width:height), sized at 80%. Vintage, not "shiny new".
-export function LumeIcon({ size = 26, color = "#D6BC88", glow = "#C9FFD6", style }) {
-  // 1:1.5 triangle, scaled to 80% about the icon centre (50,50).
-  const pts = "29,19 71,19 50,81";
+// Lumé mark — a glowing lume PIP: a bright pale-mint dot with a soft radial
+// lume glow fading to transparent, on a transparent ground so the host supplies
+// the colour behind (the launcher's olive circle). Reads as a lume plot glowing
+// in the dark — the literal "Lumé". Replaces the earlier patina triangle.
+export function LumeIcon({ size = 26, pip = "#EAFFEF", glow = "#C9FFD6", style }) {
   return (
     <svg
       width={size}
@@ -18,15 +16,17 @@ export function LumeIcon({ size = 26, color = "#D6BC88", glow = "#C9FFD6", style
       xmlns="http://www.w3.org/2000/svg"
     >
       <defs>
-        <filter id="lumeGlow" x="-100%" y="-100%" width="300%" height="300%">
-          <feGaussianBlur stdDeviation="7" />
-        </filter>
+        <radialGradient id="lumePipGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor={pip} stopOpacity="1" />
+          <stop offset="20%" stopColor={glow} stopOpacity="0.95" />
+          <stop offset="52%" stopColor={glow} stopOpacity="0.28" />
+          <stop offset="100%" stopColor={glow} stopOpacity="0" />
+        </radialGradient>
       </defs>
-      {/* lume halo — two passes so the glow actually reads */}
-      <polygon points={pts} fill={glow} opacity="0.9" filter="url(#lumeGlow)" />
-      <polygon points={pts} fill={glow} opacity="0.7" filter="url(#lumeGlow)" />
-      {/* flat vintage-patina mark — one colour, no edge */}
-      <polygon points={pts} fill={color} />
+      {/* soft mint lume glow, fading to transparent */}
+      <circle cx="50" cy="50" r="50" fill="url(#lumePipGlow)" />
+      {/* bright pip core */}
+      <circle cx="50" cy="50" r="14" fill={pip} />
     </svg>
   );
 }
