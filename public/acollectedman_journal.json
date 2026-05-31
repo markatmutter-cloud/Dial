@@ -37,7 +37,8 @@
     "sub_model": null,
     "themes": [
       "reference_profile",
-      "vintage_care"
+      "vintage_care",
+      "collecting_philosophy"
     ],
     "title": "A collector's guide: Patek Philippe 3800 Nautilus",
     "updated_at": "2026-02-05",
@@ -106,7 +107,7 @@
     "sub_model": null,
     "themes": [
       "market_commentary",
-      "brand_history"
+      "collecting_philosophy"
     ],
     "title": "A year in watches: 2021",
     "updated_at": "2026-02-04",
@@ -152,7 +153,7 @@
     "sub_model": null,
     "themes": [
       "brand_history",
-      "review"
+      "collecting_philosophy"
     ],
     "title": "An afternoon with Daniel Roth",
     "updated_at": "2026-01-27",
@@ -173,6 +174,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "community_ethics"
+    ],
     "title": "An Afternoon with Dann Phimphrachanh",
     "updated_at": "2026-05-28",
     "url": "https://www.acollectedman.com/blogs/journal/an-afternoon-with-dann-phimphrachanh",
@@ -193,7 +198,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "brand_history"
+      "brand_history",
+      "community_ethics"
     ],
     "title": "An afternoon with Luca Soprana",
     "updated_at": "2025-12-11",
@@ -216,7 +222,7 @@
     "sub_model": null,
     "themes": [
       "design",
-      "market_commentary"
+      "collecting_philosophy"
     ],
     "title": "An honest take on integrated bracelet sports watches",
     "updated_at": "2023-08-16",
@@ -238,8 +244,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "celebrity",
-      "auction_results"
+      "collecting_philosophy",
+      "collector_mindset"
     ],
     "title": "Understanding Andy Warhol as a collector",
     "updated_at": "2026-02-04",
@@ -261,6 +267,7 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
+      "collecting_philosophy",
       "design"
     ],
     "title": "Can we compare art and watches?",
@@ -305,7 +312,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "brand_history"
+      "brand_history",
+      "collecting_philosophy"
     ],
     "title": "Becoming Rexhep Rexhepi",
     "updated_at": "2026-02-13",
@@ -392,7 +400,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "market_commentary"
+      "market_commentary",
+      "collector_mindset"
     ],
     "title": "Can and should watches be investments ?",
     "updated_at": "2026-02-04",
@@ -414,7 +423,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "complications"
+      "complications",
+      "brand_history"
     ],
     "title": "Five ways watchmakers chase accuracy",
     "updated_at": "2026-02-04",
@@ -437,7 +447,7 @@
     "sub_model": null,
     "themes": [
       "brand_history",
-      "design"
+      "market_commentary"
     ],
     "title": "How collaborations shaped the watch world",
     "updated_at": "2026-02-04",
@@ -506,8 +516,9 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
+      "reference_profile",
       "brand_history",
-      "reference_profile"
+      "design"
     ],
     "title": "A collectors' guide to Urwerk : Part one",
     "updated_at": "2025-12-11",
@@ -529,8 +540,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "brand_history",
-      "reference_profile"
+      "reference_profile",
+      "brand_history"
     ],
     "title": "A collectors' guide to Urwerk: Part two",
     "updated_at": "2025-12-11",
@@ -599,7 +610,7 @@
     "sub_model": null,
     "themes": [
       "reference_profile",
-      "design"
+      "brand_history"
     ],
     "title": "A collector's guide: The Datograph",
     "updated_at": "2026-02-05",
@@ -622,7 +633,7 @@
     "sub_model": null,
     "themes": [
       "brand_history",
-      "vintage_care"
+      "collecting_philosophy"
     ],
     "title": "Derek Pratt: The forgotten watchmaker",
     "updated_at": "2026-02-04",
@@ -666,7 +677,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "brand_history"
+      "brand_history",
+      "design"
     ],
     "title": "Discovering Bernhard Zwinz",
     "updated_at": "2023-10-17",
@@ -688,8 +700,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "vintage_care",
-      "brand_history"
+      "brand_history",
+      "vintage_care"
     ],
     "title": "An exploration of double-signed watches",
     "updated_at": "2023-08-04",
@@ -711,8 +723,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "military",
-      "brand_history"
+      "collecting_philosophy",
+      "military"
     ],
     "title": "Downtime: Nigel Cabourn",
     "updated_at": "2023-08-04",
@@ -734,7 +746,7 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "celebrity"
+      "collecting_philosophy"
     ],
     "title": "Downtime: Jack Peñate",
     "updated_at": "2023-08-10",
@@ -756,8 +768,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "market_commentary",
-      "brand_history"
+      "collecting_philosophy",
+      "market_commentary"
     ],
     "title": "The early days of wristwatch collecting",
     "updated_at": "2026-02-04",
@@ -801,8 +813,9 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "celebrity",
-      "brand_history"
+      "reference_profile",
+      "brand_history",
+      "celebrity"
     ],
     "title": "The enigmatic Khanjar watches of the Sultan of Oman",
     "updated_at": "2026-02-04",
@@ -847,7 +860,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "market_commentary"
+      "collector_mindset",
+      "community_ethics"
     ],
     "title": "How five collectors under-30 approach watches",
     "updated_at": "2026-02-04",
@@ -889,7 +903,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "complications"
+      "complications",
+      "brand_history"
     ],
     "title": "Five movements that changed the world – part I",
     "updated_at": "2026-02-05",
@@ -956,7 +971,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "complications"
+      "complications",
+      "brand_history"
     ],
     "title": "Five watchmakers pick their favourite movement - Part II",
     "updated_at": "2026-02-04",
@@ -1000,7 +1016,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "brand_history"
+      "brand_history",
+      "collecting_philosophy"
     ],
     "title": "An introduction to gem-setting with Pierre Salanitro",
     "updated_at": "2026-01-27",
@@ -1045,8 +1062,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "brand_history",
-      "auction_results"
+      "collecting_philosophy",
+      "brand_history"
     ],
     "title": "George Daniels the collector",
     "updated_at": "2026-02-04",
@@ -1069,7 +1086,7 @@
     "sub_model": null,
     "themes": [
       "brand_history",
-      "reference_profile"
+      "complications"
     ],
     "title": "George Margetts - The unknown watchmaker who inspired George Daniels",
     "updated_at": "2026-02-04",
@@ -1136,7 +1153,7 @@
     "sub_model": null,
     "themes": [
       "brand_history",
-      "complications"
+      "community_ethics"
     ],
     "title": "The hidden names behind movements",
     "updated_at": "2026-02-04",
@@ -1205,7 +1222,7 @@
     "sub_model": null,
     "themes": [
       "complications",
-      "review"
+      "design"
     ],
     "title": "In Practice: Making and tuning gongs with Hazemann & Monnin",
     "updated_at": "2025-12-11",
@@ -1296,8 +1313,8 @@
     "sub_model": null,
     "themes": [
       "reference_profile",
-      "complications",
-      "design"
+      "design",
+      "complications"
     ],
     "title": "In Focus: Haldimann H1 Flying Tourbillon",
     "updated_at": "2025-05-13",
@@ -1319,7 +1336,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "brand_history"
+      "brand_history",
+      "collecting_philosophy"
     ],
     "title": "What is independent watchmaking?",
     "updated_at": "2026-02-04",
@@ -1341,7 +1359,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "brand_history"
+      "brand_history",
+      "collecting_philosophy"
     ],
     "title": "Inspirations behind today’s independent watchmakers",
     "updated_at": "2026-02-04",
@@ -1505,8 +1524,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "market_commentary",
-      "brand_history"
+      "collector_mindset",
+      "community_ethics"
     ],
     "title": "A closer look at collecting with Doo Sik Lew",
     "updated_at": "2026-02-04",
@@ -1548,7 +1567,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "brand_history"
+      "brand_history",
+      "news"
     ],
     "title": "Interview: François-Henry Bennahmias CEO of Audemars Piguet",
     "updated_at": "2023-08-08",
@@ -1589,7 +1609,9 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "community_ethics"
+    ],
     "title": "Interview: Han Ates",
     "updated_at": "2023-08-07",
     "url": "https://www.acollectedman.com/blogs/journal/interview-han-ates",
@@ -1631,7 +1653,7 @@
     "sub_model": null,
     "themes": [
       "brand_history",
-      "news"
+      "collecting_philosophy"
     ],
     "title": "The Morteau Makers: What’s next for Alexandre Hazemann & Victor Monnin?",
     "updated_at": "2025-12-11",
@@ -1774,7 +1796,7 @@
     "sub_model": null,
     "themes": [
       "brand_history",
-      "racing"
+      "community_ethics"
     ],
     "title": "Interview: Nicholas Biebuyck",
     "updated_at": "2023-08-08",
@@ -1816,7 +1838,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "brand_history"
+      "collector_mindset",
+      "community_ethics"
     ],
     "title": "A closer look at collecting with Osama Sendi (The Journe Guy)",
     "updated_at": "2026-02-04",
@@ -1878,8 +1901,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "reference_profile",
-      "design"
+      "design",
+      "brand_history"
     ],
     "title": "An afternoon with Raúl Pagès",
     "updated_at": "2026-02-04",
@@ -1901,8 +1924,7 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "brand_history",
-      "design"
+      "brand_history"
     ],
     "title": "An afternoon with Rémi Maillat",
     "updated_at": "2025-12-11",
@@ -1985,7 +2007,7 @@
     "sub_model": null,
     "themes": [
       "brand_history",
-      "complications"
+      "collecting_philosophy"
     ],
     "title": "The philosophies of Stephen Forsey",
     "updated_at": "2025-12-11",
@@ -2007,7 +2029,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "brand_history"
+      "brand_history",
+      "collecting_philosophy"
     ],
     "title": "The Morteau Makers: What drives Théo Auffret?",
     "updated_at": "2024-09-13",
@@ -2029,7 +2052,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "brand_history"
+      "community_ethics",
+      "collecting_philosophy"
     ],
     "title": "A closer look at collecting in Singapore with Tom Chng",
     "updated_at": "2026-02-04",
@@ -2111,8 +2135,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "auction_results",
-      "brand_history"
+      "community_ethics",
+      "collecting_philosophy"
     ],
     "title": "Interview with Aurel Bacs",
     "updated_at": "2023-08-18",
@@ -2153,7 +2177,9 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "collecting_philosophy"
+    ],
     "title": "Interview: Riley Harper",
     "updated_at": "2023-08-07",
     "url": "https://www.acollectedman.com/blogs/journal/interview-with-riley-harper",
@@ -2174,7 +2200,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "brand_history"
+      "brand_history",
+      "collecting_philosophy"
     ],
     "title": "An introduction to Rexhep Rexhepi",
     "updated_at": "2026-02-13",
@@ -2265,6 +2292,7 @@
     "sub_model": null,
     "themes": [
       "reference_profile",
+      "brand_history",
       "complications"
     ],
     "title": "Is the Longines 13ZN still collectible?",
@@ -2286,7 +2314,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "collecting_philosophy",
+      "collector_mindset"
+    ],
     "title": "The philosophies of Matt Jacobson",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/matt-jacobson",
@@ -2307,6 +2338,7 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
+      "collecting_philosophy",
       "brand_history"
     ],
     "title": "From the bench: Max Busser",
@@ -2374,7 +2406,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "brand_history"
+      "brand_history",
+      "community_ethics"
     ],
     "title": "The museum every watch collector has to visit",
     "updated_at": "2026-02-04",
@@ -2397,7 +2430,7 @@
     "sub_model": null,
     "themes": [
       "brand_history",
-      "vintage_care"
+      "collecting_philosophy"
     ],
     "title": "A collector’s guide: Parmigiani Fleurier",
     "updated_at": "2026-02-05",
@@ -2420,7 +2453,7 @@
     "sub_model": null,
     "themes": [
       "brand_history",
-      "design"
+      "collecting_philosophy"
     ],
     "title": "The curious case of the Patek Philippe Golden Ellipse lighter",
     "updated_at": "2026-01-27",
@@ -2489,7 +2522,7 @@
     "sub_model": null,
     "themes": [
       "brand_history",
-      "design"
+      "collecting_philosophy"
     ],
     "title": "The watchmaking journey of Philippe Dufour",
     "updated_at": "2026-01-27",
@@ -2512,7 +2545,7 @@
     "sub_model": null,
     "themes": [
       "brand_history",
-      "design"
+      "collecting_philosophy"
     ],
     "title": "The philosophies of Felix Baumgartner and Martin Frei",
     "updated_at": "2024-05-23",
@@ -2534,8 +2567,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "brand_history",
-      "complications"
+      "collecting_philosophy",
+      "brand_history"
     ],
     "title": "The philosophies of Stephen McDonnell",
     "updated_at": "2025-04-10",
@@ -2603,8 +2636,7 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "brand_history",
-      "market_commentary"
+      "collecting_philosophy"
     ],
     "title": "Do people still care about pocket watches?",
     "updated_at": "2026-02-04",
@@ -2626,7 +2658,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "vintage_care"
+      "collecting_philosophy",
+      "community_ethics"
     ],
     "title": "Why does provenance in watches matter?",
     "updated_at": "2026-02-04",
@@ -2649,7 +2682,7 @@
     "sub_model": null,
     "themes": [
       "market_commentary",
-      "brand_history"
+      "collecting_philosophy"
     ],
     "title": "Have we been too quick to dismiss quartz?",
     "updated_at": "2026-02-04",
@@ -2671,8 +2704,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "reference_profile",
-      "brand_history"
+      "brand_history",
+      "reference_profile"
     ],
     "title": "A visual guide to rare Patek Philippe Calatravas",
     "updated_at": "2026-02-04",
@@ -2695,7 +2728,7 @@
     "sub_model": null,
     "themes": [
       "brand_history",
-      "reference_profile"
+      "design"
     ],
     "title": "A collector's guide: Early F.P. Journe, chapter three",
     "updated_at": "2026-02-04",
@@ -2717,8 +2750,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "brand_history",
-      "design"
+      "collecting_philosophy",
+      "brand_history"
     ],
     "title": "Rediscovering the romance of travel clocks",
     "updated_at": "2026-01-27",
@@ -2763,7 +2796,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "brand_history"
+      "brand_history",
+      "collecting_philosophy"
     ],
     "title": "The Morteau Makers: Rémy Cools",
     "updated_at": "2025-07-17",
@@ -2786,7 +2820,8 @@
     "sub_model": null,
     "themes": [
       "diving",
-      "brand_history"
+      "brand_history",
+      "market_commentary"
     ],
     "title": "Race to the bottom: Rolex and Omega's fight over COMEX",
     "updated_at": "2023-08-07",
@@ -2809,8 +2844,7 @@
     "sub_model": null,
     "themes": [
       "reference_profile",
-      "brand_history",
-      "celebrity"
+      "brand_history"
     ],
     "title": "Is the Rolex Pre-Daytona a forgotten classic?",
     "updated_at": "2023-08-04",
@@ -2834,7 +2868,7 @@
     "themes": [
       "design",
       "celebrity",
-      "racing"
+      "brand_history"
     ],
     "title": "Making the case for round and shaped watches",
     "updated_at": "2026-02-05",
@@ -2902,7 +2936,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "market_commentary"
+      "community_ethics",
+      "collector_mindset"
     ],
     "title": "Has social media been a force for good in the watch world?",
     "updated_at": "2026-02-04",
@@ -3085,7 +3120,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "brand_history"
+      "brand_history",
+      "collecting_philosophy"
     ],
     "title": "Ten independent watchmakers you may not know, but really should...",
     "updated_at": "2026-02-04",
@@ -3107,7 +3143,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "design"
+      "design",
+      "brand_history"
     ],
     "title": "The art of movement finishing",
     "updated_at": "2026-03-19",
@@ -3129,9 +3166,9 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "reference_profile",
+      "design",
       "brand_history",
-      "design"
+      "collecting_philosophy"
     ],
     "title": "The colourful world of Rolex Stella dials",
     "updated_at": "2023-08-04",
@@ -3175,7 +3212,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "brand_history"
+      "brand_history",
+      "community_ethics"
     ],
     "title": "The origins of the AHCI",
     "updated_at": "2026-02-04",
@@ -3217,8 +3255,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "market_commentary",
-      "brand_history"
+      "collecting_philosophy",
+      "market_commentary"
     ],
     "title": "The rise of Neo-Vintage watches",
     "updated_at": "2026-02-04",
@@ -3263,7 +3301,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "brand_history"
+      "brand_history",
+      "reference_profile"
     ],
     "title": "A collector’s guide: Early F.P. Journe, chapter one",
     "updated_at": "2026-01-27",
@@ -3332,7 +3371,8 @@
     "sub_model": null,
     "themes": [
       "reference_profile",
-      "brand_history"
+      "vintage_care",
+      "complications"
     ],
     "title": "Collectors’ guide to Urban Jürgensen wristwatches",
     "updated_at": "2026-01-27",
@@ -3355,7 +3395,7 @@
     "sub_model": null,
     "themes": [
       "brand_history",
-      "complications"
+      "vintage_care"
     ],
     "title": "Collectors’ guide to Urban Jürgensen",
     "updated_at": "2025-12-11",
@@ -3378,8 +3418,7 @@
     "sub_model": null,
     "themes": [
       "brand_history",
-      "design",
-      "complications"
+      "design"
     ],
     "title": "The watchmaking journey of Vianney Halter",
     "updated_at": "2026-01-27",
@@ -3424,7 +3463,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "market_commentary"
+      "market_commentary",
+      "collector_mindset"
     ],
     "title": "Are there bubbles in the watch market?",
     "updated_at": "2025-12-11",
@@ -3446,7 +3486,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "celebrity"
+      "celebrity",
+      "community_ethics"
     ],
     "title": "How watches end up in films",
     "updated_at": "2025-12-11",
@@ -3491,7 +3532,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "brand_history"
+      "brand_history",
+      "collecting_philosophy"
     ],
     "title": "The watchmaking journey of Roger W. Smith",
     "updated_at": "2026-01-27",
@@ -3535,7 +3577,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "brand_history"
+      "brand_history",
+      "community_ethics"
     ],
     "title": "Women in watchmaking",
     "updated_at": "2026-02-04",
