@@ -23,14 +23,28 @@ const TIMEOUT = 120000;
 let Anthropic, E, getReference, searchArticles;
 async function load() {
   if (E) return;
-  // CRA's jest (node env, jest 27) doesn't expose a global fetch, which the
-  // Anthropic SDK needs. Polyfill from undici before constructing the client.
+  // CRA's jest (node env, jest 27) doesn't expose a global fetch, nor the web
+  // globals undici depends on (ReadableStream, MessageChannel, Blob…). Seed them
+  // from Node's built-in modules, THEN load undici, THEN set fetch — so the
+  // Anthropic SDK has a working fetch stack.
   if (typeof globalThis.fetch !== "function") {
+    const web = await import("node:stream/web");
+    const wt = await import("node:worker_threads");
+    const buf = await import("node:buffer");
+    const g = globalThis;
+    g.ReadableStream ??= web.ReadableStream;
+    g.WritableStream ??= web.WritableStream;
+    g.TransformStream ??= web.TransformStream;
+    g.MessageChannel ??= wt.MessageChannel;
+    g.MessagePort ??= wt.MessagePort;
+    g.Blob ??= buf.Blob;
+    g.structuredClone ??= (v) => JSON.parse(JSON.stringify(v));
     const u = await import("undici");
-    globalThis.fetch = u.fetch;
-    globalThis.Headers = u.Headers;
-    globalThis.Request = u.Request;
-    globalThis.Response = u.Response;
+    g.fetch = u.fetch;
+    g.Headers = u.Headers;
+    g.Request = u.Request;
+    g.Response = u.Response;
+    g.FormData ??= u.FormData;
   }
   Anthropic = (await import("@anthropic-ai/sdk")).default;
   ({ __evalInternals: E } = await import("../api/chat.js"));
@@ -139,5 +153,13 @@ suite("Lumé eval — live behaviour (LUME_EVAL=1)", () => {
     const r = await runTurn("Thinking about a Tudor Submariner snowflake. What models does this include?");
     expect(r.rawText).not.toMatch(FALLBACK);
     expect(r.finalText.length).toBeGreaterThan(0);
+  }, TIMEOUT);
+
+  test("Taste statement engages, doesn't claim 'we have N' stock (gold)", async () => {
+    // Real failure: "we have 45" (we own nothing; 775 actually showed); shopped
+    // instead of engaging the taste.
+    const r = await runTurn("I really like gold watches.");
+    expect(r.finalText.length).toBeGreaterThan(0);
+    expect(r.rawText).not.toMatch(/\bwe (have|own|stock|carry|'ve got)\b/i);  // not our stock
   }, TIMEOUT);
 });
