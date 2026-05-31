@@ -23,6 +23,15 @@ const TIMEOUT = 120000;
 let Anthropic, E, getReference, searchArticles;
 async function load() {
   if (E) return;
+  // CRA's jest (node env, jest 27) doesn't expose a global fetch, which the
+  // Anthropic SDK needs. Polyfill from undici before constructing the client.
+  if (typeof globalThis.fetch !== "function") {
+    const u = await import("undici");
+    globalThis.fetch = u.fetch;
+    globalThis.Headers = u.Headers;
+    globalThis.Request = u.Request;
+    globalThis.Response = u.Response;
+  }
   Anthropic = (await import("@anthropic-ai/sdk")).default;
   ({ __evalInternals: E } = await import("../api/chat.js"));
   ({ getReference, searchArticles } = await import("../api/lume_reference.js"));
@@ -67,6 +76,13 @@ async function runTurn(userText, ctx = { hearted_count: 0, saved_search_count: 0
     }
     raw = resp.content.filter((b) => b.type === "text").map((b) => b.text).join("\n").trim();
     break;
+  }
+  if (!raw) {
+    // Mirror chat.js: loop exhausted on tool calls → force one no-tools answer.
+    const fp = { model, max_tokens: 1024, system, messages: convo };
+    if (model === E.MODEL_SMART) fp.thinking = { type: "disabled" };
+    const fr = await client.messages.create(fp);
+    raw = fr.content.filter((b) => b.type === "text").map((b) => b.text).join("\n").trim();
   }
   const { text, actions } = E.extractActions(raw);
   return { finalText: text, rawText: raw, toolCalls, actions };
@@ -116,5 +132,12 @@ suite("Lumé eval — live behaviour (LUME_EVAL=1)", () => {
   test("Doesn't call the user's real watch 'mislabeled' (Tudor 9411 date)", async () => {
     const r = await runTurn("I'm looking at a Tudor 9411/0 listing and it has a date window. Is that right?");
     expect(r.rawText).not.toMatch(/mislabel|probably (a |an )?7021|red flag|it'?s fake|not a (real |genuine )?9411/i);
+  }, TIMEOUT);
+
+  test("Basic question doesn't dead-end (Tudor snowflake — Mark's repro)", async () => {
+    // Real failure: this exact ask returned "I hit my limit working that one out".
+    const r = await runTurn("Thinking about a Tudor Submariner snowflake. What models does this include?");
+    expect(r.rawText).not.toMatch(FALLBACK);
+    expect(r.finalText.length).toBeGreaterThan(0);
   }, TIMEOUT);
 });
