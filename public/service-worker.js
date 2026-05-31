@@ -20,7 +20,12 @@
  *   - Bumping CACHE_VERSION invalidates the static cache entirely.
  */
 
-const CACHE_VERSION = "watchlist-v3";
+// Bump on any deploy that must purge stale client caches. v3 had been static for
+// many deploys, so the v3-static cache held an ancient index.html + bundles that
+// `activate` never cleaned (it only drops caches NOT matching CACHE_VERSION) — a
+// failed navigation fetch then fell back to that ancient "/" (the old-masthead
+// build users saw). Bumping → activate purges the old cache on next load.
+const CACHE_VERSION = "watchlist-v4";
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 
 self.addEventListener("install", (event) => {
