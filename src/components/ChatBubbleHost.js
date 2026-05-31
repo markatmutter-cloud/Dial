@@ -2,7 +2,22 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { supabase, useAuth } from "../supabase";
 import { dispatchAction } from "./ActionBus";
+import { registerLumeOpener } from "./LumeBus";
 import { LumeIcon } from "./LumeIcon";
+
+// "Share with Lumé" seed: compose the opening user message from a listing the
+// user handed to Lumé via a card's ⋯ menu. Lumé resolves brand/model/ref (and
+// the URL) with its tools and engages about THIS watch.
+function describeItem(it) {
+  if (!it || typeof it !== "object") return "Tell me about this watch.";
+  const bits = [it.brand, it.model || it.model_line, it.reference_id || it.reference_no]
+    .filter(Boolean).join(" ").trim();
+  const title = (it.title || bits || "this watch").toString().trim();
+  const price = it.priceUSD ? `, $${Number(it.priceUSD).toLocaleString()}` : "";
+  const src = it.source ? ` (${it.source})` : "";
+  const url = it.url ? ` ${it.url}` : "";
+  return `I'm looking at this listing — ${title}${price}${src}. What should I know about it?${url}`;
+}
 
 // Lumé — the watch-expert concierge bubble (Epic 9 "AI spine").
 //
@@ -199,6 +214,17 @@ export function ChatBubbleHost() {
     },
     [messages, loading]
   );
+
+  // "Share with Lumé" (B-52): a card's ⋯ row calls askLumeAbout(item) → this
+  // opens the bubble and, if signed in, kicks off a conversation about that
+  // listing. Re-registers when send/openChat change so it always uses the live
+  // handlers. Signed-out → just opens (the sign-in panel shows).
+  useEffect(() => {
+    return registerLumeOpener((item) => {
+      openChat();
+      if (user && item) send(describeItem(item));
+    });
+  }, [user, send, openChat]);
 
   if (typeof document === "undefined") return null;
 
