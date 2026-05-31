@@ -508,3 +508,12 @@ export default async function handler(req, res) {
 function safeJson(s) {
   try { return JSON.parse(s); } catch { return {}; }
 }
+
+// Internals exposed ONLY for the offline eval harness (src/lume_eval.test.js),
+// so it drives the REAL system prompt + tool defs + pure tool handlers + routing
+// rather than a drifting copy. Not used by the handler; harmless to Vercel
+// (the default export is still the handler).
+export const __evalInternals = {
+  SYSTEM_PROMPT, TOOLS, toolSearchListings, toolGetAuctionState,
+  chooseModel, extractActions, MAX_TOOL_ROUNDS, MODEL_FAST, MODEL_SMART,
+};
