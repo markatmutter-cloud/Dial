@@ -84,10 +84,12 @@ jobs:
           fi
 
       - name: Commit + push tagged corpus
-        # Match scrape-editorial-corpus.yml's commit pattern: stage
-        # all corpus JSON files, commit with timestamp, retry-push on
-        # race. Bodies files aren't touched by the indexer but staging
-        # them is harmless and keeps the cron sweep self-consistent.
+        # Stage EVERY tagged source (the indexer rewrites all SOURCE_META_PATHS —
+        # keep this in lockstep with that list). A long --retag run races main, so
+        # the push retry rebases with --autostash. PREVIOUS BUG: only 8 of the 12
+        # sources were staged, so the 4 newer ones (screwdowncrown, woe_dispatch,
+        # christies_stories, fratello) were left UNSTAGED → the rebase aborted
+        # ("you have unstaged changes") → a 3.5h / ~$12 retag was discarded.
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -95,17 +97,20 @@ jobs:
                   public/rolex_magazine.json public/onthedash.json \
                   public/bulang_watch_talks.json public/hodinkee_shop.json \
                   public/hodinkee_reference_points.json \
-                  public/acollectedman_journal.json
+                  public/acollectedman_journal.json public/screwdowncrown.json \
+                  public/woe_dispatch.json public/christies_stories.json \
+                  public/fratello.json
           if git diff --staged --quiet; then
             echo "No changes — nothing to commit."
             exit 0
           fi
           git commit -m "Index editorial corpus topics $(date -u '+%Y-%m-%d %H:%M UTC')"
-          # Single retry on race with the scrape cron.
+          # Retry on race with the scrape cron. --autostash so any stray unstaged
+          # change can't abort the rebase and bin the whole run.
           for i in 1 2 3; do
             if git push; then exit 0; fi
             echo "Push failed; rebasing and retrying ($i/3)…"
-            git pull --rebase origin main
+            git pull --rebase --autostash origin main
             sleep 5
           done
           echo "Push failed after 3 attempts."
