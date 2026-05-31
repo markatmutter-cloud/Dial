@@ -23,6 +23,15 @@ const TIMEOUT = 120000;
 let Anthropic, E, getReference, searchArticles;
 async function load() {
   if (E) return;
+  // CRA's jest (node env, jest 27) doesn't expose a global fetch, which the
+  // Anthropic SDK needs. Polyfill from undici before constructing the client.
+  if (typeof globalThis.fetch !== "function") {
+    const u = await import("undici");
+    globalThis.fetch = u.fetch;
+    globalThis.Headers = u.Headers;
+    globalThis.Request = u.Request;
+    globalThis.Response = u.Response;
+  }
   Anthropic = (await import("@anthropic-ai/sdk")).default;
   ({ __evalInternals: E } = await import("../api/chat.js"));
   ({ getReference, searchArticles } = await import("../api/lume_reference.js"));
