@@ -44,6 +44,77 @@ export function norm(s) {
   return String(s == null ? "" : s).toLowerCase();
 }
 
+// ── search_articles: knowledge over the editorial corpus ──────────────
+// Lumé's window into OUR 13k editorial articles (collector mags, dealer
+// journals, deep-dive write-ups) — the knowledge that lets it TALK ABOUT a
+// watch, far beyond the curated reference index. Scores each article on a
+// title/brand/excerpt/themes match + a body-presence bonus, then returns the
+// top matches with a snippet drawn from the body and the source URL to cite.
+// Essay/journal sources only (skips the priced shop feeds + reference_corpus_*
+// node subsets). Bodies are cached (readPublicJson, 60s) so a session is cheap.
+const ARTICLE_SOURCES = [
+  "acollectedman_journal", "bring_a_loupe", "bulang_watch_talks", "christies_stories",
+  "fratello", "hodinkee_reference_points", "onthedash", "rolex_magazine",
+  "screwdowncrown", "woe_dispatch",
+];
+
+function _snippet(text, terms, width = 380) {
+  const t = String(text || "");
+  if (!t) return "";
+  const low = t.toLowerCase();
+  let at = -1;
+  for (const term of terms) {
+    const i = low.indexOf(term);
+    if (i !== -1 && (at === -1 || i < at)) at = i;
+  }
+  if (at === -1) return t.slice(0, width).trim() + (t.length > width ? "…" : "");
+  const start = Math.max(0, at - Math.floor(width / 3));
+  const end = Math.min(t.length, start + width);
+  return (start > 0 ? "…" : "") + t.slice(start, end).trim() + (end < t.length ? "…" : "");
+}
+
+export function searchArticles(input) {
+  const q = norm(input.query);
+  const brand = norm(input.brand);
+  const limit = Math.min(Math.max(Number(input.limit) || 5, 1), 8);
+  const terms = `${q} ${brand}`.split(/\s+/).filter((t) => t.length > 2);
+  if (!terms.length) return { count: 0, results: [] };
+
+  const scored = [];
+  for (const src of ARTICLE_SOURCES) {
+    const meta = readPublicJson(`${src}.json`);
+    if (!meta) continue;
+    const bodies = readPublicJson(`${src}_bodies.json`) || {};
+    const items = Array.isArray(meta) ? meta : Object.values(meta);
+    for (const r of items) {
+      if (!r || typeof r !== "object") continue;
+      const url = r.url || "";
+      const title = norm(r.title);
+      const metaHay = norm(`${r.title} ${r.excerpt} ${r.brand} ${r.model} ${r.model_line} ${(r.themes || []).join(" ")}`);
+      const bodyLow = (bodies[url] || "").toLowerCase();
+      let score = 0;
+      for (const term of terms) {
+        if (title.includes(term)) score += 4;
+        else if (metaHay.includes(term)) score += 2;
+        if (bodyLow.includes(term)) score += 1;
+      }
+      if (score > 0) scored.push({ score, src, r, body: bodies[url] || r.excerpt || "" });
+    }
+  }
+  scored.sort((a, b) => b.score - a.score);
+  return {
+    count: scored.length,
+    results: scored.slice(0, limit).map(({ src, r, body }) => ({
+      title: r.title || "",
+      publication: r.source || src,
+      author: r.author || "",
+      url: r.url || "",
+      themes: r.themes || [],
+      snippet: _snippet(body, terms),
+    })),
+  };
+}
+
 // ── node slug (mirrors node_slug.py) ──────────────────────────────────
 // Folds variant model-line labels onto one node ("Submariner (gold variants)"
 // → submariner) and exposes the legacy BARE alias so the two pre-existing

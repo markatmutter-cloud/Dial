@@ -13,6 +13,7 @@ import {
   nodeAliases,
   getReference,
   readPublicText,
+  searchArticles,
 } from "../api/lume_reference.js";
 
 const CASES = JSON.parse(
@@ -78,5 +79,29 @@ describe("readPublicText — externalised prompt loader", () => {
     const txt = readPublicText("lume_system_prompt.txt");
     expect(typeof txt).toBe("string");
     expect(txt).toMatch(/Lum/);
+  });
+});
+
+describe("searchArticles — knowledge over the editorial corpus", () => {
+  test("finds a brand the curated index lacks (Enicar) with a snippet + source URL", () => {
+    // The case that exposed the gap: Lumé was blind to Enicar despite 600+ corpus
+    // mentions, because it had no article-search tool.
+    const r = searchArticles({ query: "Enicar" });
+    expect(r.count).toBeGreaterThan(0);
+    expect(r.results.length).toBeGreaterThan(0);
+    const top = r.results[0];
+    expect(typeof top.snippet).toBe("string");
+    expect(top.snippet.length).toBeGreaterThan(0);
+    expect(top.url).toMatch(/^https?:\/\//);
+  });
+
+  test("empty query → no results (don't dump the corpus)", () => {
+    expect(searchArticles({}).results.length).toBe(0);
+    expect(searchArticles({ query: "" }).count).toBe(0);
+  });
+
+  test("respects the limit cap", () => {
+    const r = searchArticles({ query: "Rolex", limit: 3 });
+    expect(r.results.length).toBeLessThanOrEqual(3);
   });
 });
