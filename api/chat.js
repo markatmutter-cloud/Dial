@@ -482,6 +482,19 @@ export default async function handler(req, res) {
         .trim();
       break;
     }
+    if (!finalText) {
+      // The loop spent its whole round budget on tool calls without ever writing
+      // an answer (the "I hit my limit" dead-end Mark hit on a basic snowflake
+      // question). Force ONE more turn with NO tools so the model MUST answer
+      // from everything it just gathered.
+      const fp = { model, max_tokens: MAX_OUTPUT_TOKENS, system, messages: convo };
+      if (model === MODEL_SMART) fp.thinking = { type: "disabled" };
+      const fr = await anthropic.messages.create(fp);
+      const fu = fr.usage || {};
+      inputTok += (fu.input_tokens || 0) + (fu.cache_read_input_tokens || 0) + (fu.cache_creation_input_tokens || 0);
+      outputTok += fu.output_tokens || 0;
+      finalText = fr.content.filter((b) => b.type === "text").map((b) => b.text).join("\n").trim();
+    }
   } catch (e) {
     // Don't refund the quota message — a failed attempt still counts (cheap
     // backstop against retry-spam); surface a clean error.
