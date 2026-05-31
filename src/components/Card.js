@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, memo } from "react";
 import { fmt, imgSrc, fmtCountdown, fmtLotPrice, fmtSoldDate, priceIn, daysOnSale, daysOnSaleLabel, CURRENCY_SYM, FX_RATES_USD_PER } from "../utils";
 import CardShell from "./CardShell";
+import { askLumeAbout } from "./LumeBus";
 
 // Card system (2026-05-24): Card renders into the shared CardShell — it keeps
 // ALL its price/FX/auction logic and computes the slot nodes (imageOverlay /
@@ -326,9 +327,13 @@ export const Card = memo(function Card({
         onHide: onHide ? () => onHide(item) : null,
         hideLabel,
         isHidden,
-        extraMenuItems: (extraMenuItems || []).map(entry => ({
-          label: entry.label, onClick: () => entry.onClick(item),
-        })),
+        extraMenuItems: [
+          // Built-in on every card: hand this listing to Lumé to chat about it.
+          { label: "Share with Lumé", onClick: () => askLumeAbout(item) },
+          ...(extraMenuItems || []).map(entry => ({
+            label: entry.label, onClick: () => entry.onClick(item),
+          })),
+        ],
       }}
     />
   );
