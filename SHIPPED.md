@@ -303,6 +303,24 @@ within each section roughly last.
 - **2026-05-30 — Lumé mark + chat timeout hotfix (#700/#701/#704).** Vintage flat-patina lume-triangle
   icon; `api/chat` `maxDuration: 60` — Opus tool-loop turns were being killed at Vercel's ~10–15s
   default (the "Something went wrong" outage); same PR repaired two tests the fan-out had broken on main.
+- **2026-05-31 — Lumé knowledge + behaviour pass (#702/#709/#713/#714/#715).** `search_articles` tool
+  (Lumé can finally read the 13k-article editorial corpus — fixed the Enicar blindness); prompt: lead
+  with knowledge not listings, know-your-limits (filter tiers: brand/model/single-ref only; attributes
+  aren't filterable → coach), don't quote listing counts ("there are N listed", not "we have N"), never
+  join two refs, humble + no plumbing-talk, never call a real listing mislabeled, never reply actions-only.
+  Fixed two empty-answer dead-ends (loop-exhaustion + actions-only).
+- **2026-05-31 — Lumé eval harness (#710 + fixes).** `src/lume_eval.test.js` drives the real prompt+tools
+  over regression scenarios (LUME_EVAL=1 workflow, gated/skipped on normal CI); first live run confirmed
+  6/8 fixes + auto-caught 2 real bugs. Foundation for the discovery eval (LLM-judge, next).
+- **2026-05-31 — Collector-mentality tagging live on essay sources.** `corpus_topic_indexer` taxonomy +4
+  mentality themes (collecting_philosophy/collector_mindset/life_lessons/community_ethics) + 4 sources;
+  tagged Screwdown Crown (175 mentality) / A Collected Man / Christie's (WOE re-running). search_articles
+  returns `themes` so Lumé sees them. Fixed the commit step that had discarded a 3.5h/$12 run (B-44 class).
+- **2026-05-31 — Lumé mobile + reach (#705/#700/#701/#712).** Full-screen mobile chat + scroll-lock +
+  minimise; flat mint-pip → glowing-pip icon; SW cache-version bump (purged a stale old-build cache).
+- **2026-05-31 — Share with Lumé + article actions (#717/#718).** B-52: a built-in "Share with Lumé" ⋯
+  row on every card (LumeBus, app→Lumé) opens the bubble seeded with that listing. B-37: heart + ⋯
+  (add-to-list/share/Share-with-Lumé) on Home article tiles via articleAsListing.
 
 ## UI & chrome (cross-cutting)
 
