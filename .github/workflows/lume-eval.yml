@@ -1,0 +1,35 @@
+name: Lumé eval (live behaviour)
+
+# Runs the Lumé eval harness (src/lume_eval.test.js) against the LIVE system
+# prompt + tools, asserting on real behaviour: reaches the article corpus, leads
+# with knowledge, keeps attribute words out of the search query, produces a real
+# answer (no "I hit my limit"), no plumbing-talk, doesn't call a listing fake.
+#
+# Skipped by normal CI (the suite is describe.skip unless LUME_EVAL=1). This
+# workflow sets the flag + the ANTHROPIC_API_KEY secret. Costs ~$0.30-0.80/run
+# (a few Opus/Haiku turns). A failing scenario fails the run = regression gate.
+#
+# Trigger: Actions tab → "Lumé eval (live behaviour)" → Run workflow.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install deps
+        run: npm install --no-audit --no-fund
+      - name: Run Lumé eval
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          LUME_EVAL: "1"
+          CI: "true"
+        run: npx react-scripts test --watchAll=false --testPathPattern=lume_eval
