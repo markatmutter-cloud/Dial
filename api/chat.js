@@ -77,6 +77,14 @@ function buildLexiconGlossary() {
 const SYSTEM_PROMPT_FALLBACK = `You are **Lumé**, the resident watch expert inside The Watch List app. Answer ONLY from tool calls into our corpus (the user's saved data, our listings, auction state, the reference index + syntheses) and cite source URLs — never invent references, prices, specs, or dates. Warm, friendly, knowledgeable; never rank or diminish watches (no "starter/entry watch"). If a tool returns nothing, say so — don't guess. Keep replies tight. Use the tools before any factual claim.`;
 const SYSTEM_PROMPT = readPublicText("lume_system_prompt.txt") || SYSTEM_PROMPT_FALLBACK;
 
+// Lumé memory (2026-05-31): the cheap Haiku pass that maintains a user's evolving
+// TASTE profile (ai_user_profile.profile JSONB). Runs occasionally (gated to bound
+// cost), merging the recent exchange into the prior profile.
+const PROFILE_EXTRACT_SYSTEM = `You maintain a watch collector's evolving TASTE profile as compact JSON, so a vintage-watch concierge can personalise future chats.
+MERGE what the recent conversation reveals into the prior profile, and track how taste CHANGES over time (e.g. budget 15k→20k, going off a model, a new itch).
+Capture ONLY when evidenced: a one-line \`summary\`, plus \`brands\`, \`model_lines\`, \`eras\`, \`budget\`, \`likes\`, \`dislikes\`, \`considering\`, \`owns\`, short \`notes\`.
+Keep it concise and durable — drop stale speculation, keep what's clearly held. NEVER invent. Output ONLY the full updated profile as valid JSON — no prose, no markdown.`;
+
 // ── tool definitions ──────────────────────────────────────────────────
 // cache_control on the last tool caches tools+system together (render
 // order is tools → system → messages). Per-user data arrives in messages.
@@ -424,12 +432,27 @@ export default async function handler(req, res) {
   const model = chooseModel(lastUserText(messages));
   const anthropic = new Anthropic({ apiKey: ANTHROPIC_API_KEY });
 
+  // Lumé memory: load this user's evolving taste profile (RLS-scoped to them;
+  // `enabled=false` is their off/reset switch). Best-effort — never block chat.
+  let priorProfile = null, profileEnabled = true;
+  try {
+    const { data } = await sb.from("ai_user_profile").select("enabled, profile").maybeSingle();
+    if (data) { profileEnabled = data.enabled !== false; priorProfile = profileEnabled ? (data.profile || null) : null; }
+  } catch {}
+
   // System prefix: the voice/contract + the watch lexicon (phase 1). cache_control
   // on the LAST block caches the whole static prefix (system + lexicon) together.
   const lexiconGlossary = buildLexiconGlossary();
   const system = [{ type: "text", text: SYSTEM_PROMPT }];
   if (lexiconGlossary) system.push({ type: "text", text: lexiconGlossary });
   system[system.length - 1].cache_control = { type: "ephemeral" };
+  // Per-user profile AFTER the cache breakpoint (it changes per user; keep the
+  // big static prefix warm). Durable across sessions + survives history truncation.
+  if (priorProfile && Object.keys(priorProfile).length) {
+    system.push({ type: "text", text:
+      "WHAT WE'VE LEARNED ABOUT THIS COLLECTOR (their evolving taste — lean on it to personalise, but it's AI-inferred and may be stale: invite correction, and NEVER state it as a fact about a watch):\n"
+      + JSON.stringify(priorProfile).slice(0, 4000) });
+  }
   // cache_control on the last tool caches the whole tools block with system.
   const tools = TOOLS.map((t, i) =>
     i === TOOLS.length - 1 ? { ...t, cache_control: { type: "ephemeral" } } : t
@@ -517,6 +540,33 @@ export default async function handler(req, res) {
 
   if (!finalText) {
     finalText = "I hit my limit working that one out — try asking a bit more narrowly.";
+  }
+
+  // Lumé memory: occasionally refresh the user's taste profile from the exchange.
+  // Gated (~every couple of exchanges, after the 3rd) + cheap Haiku → bounded cost.
+  // Best-effort; never block the response. (enabled=false → skip entirely.)
+  if (profileEnabled && messages.length >= 5 && (messages.length - 1) % 4 === 0) {
+    try {
+      const convoText = [
+        ...messages.map((m) => `${m.role}: ${typeof m.content === "string" ? m.content : JSON.stringify(m.content).slice(0, 200)}`),
+        `assistant: ${finalText}`,
+      ].slice(-10).join("\n").slice(0, 6000);
+      const pr = await anthropic.messages.create({
+        model: MODEL_FAST,
+        max_tokens: 700,
+        system: [{ type: "text", text: PROFILE_EXTRACT_SYSTEM }],
+        messages: [{ role: "user", content: `PRIOR PROFILE (JSON, may be {}):\n${JSON.stringify(priorProfile || {})}\n\nRECENT CONVERSATION:\n${convoText}\n\nReturn the UPDATED profile as JSON only.` }],
+      });
+      const txt = pr.content.filter((b) => b.type === "text").map((b) => b.text).join("").trim();
+      const m = txt.match(/\{[\s\S]*\}/);
+      const updated = m ? JSON.parse(m[0]) : null;
+      if (updated && typeof updated === "object" && !Array.isArray(updated)) {
+        await sb.from("ai_user_profile").upsert(
+          { user_id: userId, profile: updated, enabled: true, updated_at: new Date().toISOString() },
+          { onConflict: "user_id" }
+        );
+      }
+    } catch {}
   }
 
   // 5) Log token spend (best-effort; never block the response on it).
