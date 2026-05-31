@@ -162,4 +162,21 @@ suite("Lumé eval — live behaviour (LUME_EVAL=1)", () => {
     expect(r.finalText.length).toBeGreaterThan(0);
     expect(r.rawText).not.toMatch(/\bwe (have|own|stock|carry|'ve got)\b/i);  // not our stock
   }, TIMEOUT);
+
+  test("Two references: never joins them into one zero-result query", async () => {
+    // Real failure: searched "105.012 & 145.022" → literal match → 0 → "no listings".
+    const r = await runTurn("Compare the Speedmaster 105.012 and the 145.022 — and can I see listings?");
+    for (const t of r.toolCalls) {
+      if (t.name !== "search_listings") continue;
+      const q = String(t.input.query || "");
+      // a single search query must not carry BOTH references at once
+      expect(/105\.?012/.test(q) && /145\.?022/.test(q)).toBe(false);
+    }
+    for (const a of r.actions) {
+      if (a.type !== "show_listings") continue;
+      const q = String(a.payload?.query || "");
+      expect(/105\.?012/.test(q) && /145\.?022/.test(q)).toBe(false);
+    }
+    expect(r.rawText).not.toMatch(FALLBACK);
+  }, TIMEOUT);
 });
