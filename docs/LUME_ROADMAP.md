@@ -130,6 +130,12 @@ Most are **prompt-level** (live in `public/lume_system_prompt.txt`).
 ---
 
 ## Open questions
-- Where do the **collector-mentality guidance docs** live? (pillar 2 blocker)
+- Where do the **collector-mentality guidance docs** live? (pillar 2 blocker) — RESOLVED: they're in the editorial corpus (Screwdown Crown + others); pillar-2 work is classify, not ingest.
 - **Opinion vs fact** tagging — bake into the synthesis screening; what taxonomy?
 - Proactive nudges — surfaced *in* the bubble, or as app-level pulses too?
+
+## Backlog additions (2026-05-31, from real use)
+- **App-literacy / onboarding coaching (pillar 6 × pillar 3).** Lumé should teach *how to use the app* and proactively *compose* — e.g. "want me to set up a list with these notes, a few saved items, and this Snowflake-Submariner article?" Bundles create_list + add_to_list + save_note + read_more into a one-tap starter **dossier**. Onboarding + the dossier keystone, driven by Lumé.
+- **Keep Lumé's links IN-APP (B-51).** Listing links are inconsistent — some hit the /share surface, some go straight to the external dealer. Article links go straight to the source, so there's **no way to save them or see them in-app**. Need a consistent in-app surface for BOTH: route listings through the (being-improved) share/open surface, and build the **same in-app surface for ARTICLES** (read + save into a list, never bounce to the raw source). Pairs with B-37.
+- **Per-user response-depth tiers.** Depth is fixed (max_output 1024, MAX_TOOL_ROUNDS 6, Haiku-default/Opus-on-hard). Make these **per-user knobs** (via user_limits, like chat_cap) so owner / paid tier get deeper answers and free stays lean. Depth ≠ the daily message cap.
+- **Conversation memory / length.** Server truncates to the last MAX_HISTORY_MSGS=20 messages (~10 exchanges); beyond that early context silently drops (where "gets weird in a long chat" comes from). Fix path = the profile/memory store (pillar 4): summarise/persist rather than hard-truncate.
