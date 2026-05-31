@@ -69,10 +69,20 @@ THEMES = [
     "auction_results",     # specific auction wrap-up, hammer-price commentary
     "review",              # hands-on / wrist time / first impressions
     "news",                # new release announcement, brand news
+    # ── Collector mentality / coaching (LUME_ROADMAP pillar 2). These power
+    # Lumé's COACHING mode and stay behind the voice firewall: they describe the
+    # COLLECTOR's mindset, never how a specific watch should be described. Mostly
+    # opinion/essay, not fact. New → a one-shot --retag applies them corpus-wide.
+    "collecting_philosophy",  # why we collect, meaning/journey, developing taste, identity, psychology
+    "collector_mindset",      # buying discipline, patience, hype/FOMO, value mindset, regret, selling/letting-go
+    "life_lessons",           # personal growth / reflections drawn THROUGH watches
+    "community_ethics",       # collector community, etiquette, ethics, trust, dealer relationships
 ]
 
-# Meta JSON files for all 8 editorial corpus sources. Bodies are in
-# parallel `_bodies.json` files (loaded separately).
+# Meta JSON files for the editorial corpus sources. Bodies are in parallel
+# `_bodies.json` files (loaded separately). The bottom four were added with the
+# collector-mentality themes — they're the richest mentality sources (Screwdown
+# Crown, WOE) plus the big general feeds, previously untagged.
 SOURCE_META_PATHS = [
     "public/hairspring_finds.json",
     "public/bring_a_loupe.json",
@@ -82,6 +92,10 @@ SOURCE_META_PATHS = [
     "public/hodinkee_shop.json",
     "public/hodinkee_reference_points.json",
     "public/acollectedman_journal.json",
+    "public/screwdowncrown.json",
+    "public/woe_dispatch.json",
+    "public/christies_stories.json",
+    "public/fratello.json",
 ]
 
 
@@ -104,13 +118,18 @@ Available themes (you MUST use ONLY these — never invent new tags):
 - auction_results: Specific auction wrap-up / hammer-price commentary
 - review: Hands-on / wrist time / first impressions of a specific watch
 - news: New release announcement, brand news
+- collecting_philosophy: WHY we collect, the meaning/journey of collecting, developing taste, identity — the philosophy of collecting (NOT a watch's history)
+- collector_mindset: The collector's MINDSET — buying discipline, patience, dealing with hype/FOMO, a healthy value mindset, regret, selling and letting go
+- life_lessons: Personal growth or life reflections drawn THROUGH watches ("what collecting taught me about…")
+- community_ethics: The collector community, etiquette, ethics, trust, dealer relationships
 
 Rules:
 1. Pick 1-3 themes that BEST describe what the article is PRIMARILY about.
 2. Don't include themes that are only tangentially mentioned (e.g. a Daytona review that mentions Paul Newman in passing is `review` + `racing`, NOT `celebrity`).
-3. If no theme clearly applies, return an empty list.
-4. Return ONLY valid JSON in this exact shape: {{"themes": ["theme1", "theme2"]}}
-5. Never invent new themes. Pick from the list above.
+3. The four mentality themes (collecting_philosophy, collector_mindset, life_lessons, community_ethics) apply ONLY when the article is PRIMARILY about the collector's mindset/psychology — a watch history or review with one reflective line is NOT one of these.
+4. If no theme clearly applies, return an empty list.
+5. Return ONLY valid JSON in this exact shape: {{"themes": ["theme1", "theme2"]}}
+6. Never invent new themes. Pick from the list above.
 
 Valid themes: {", ".join(THEMES)}"""
 
