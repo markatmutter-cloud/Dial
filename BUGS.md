@@ -248,6 +248,17 @@ install/decision tails remaining.*
 
 ## Resolved
 
+### Lumé hardening — 2026-05-29 → 05-31 (full detail in each PR + the Open-section blocks below)
+- **B-39 / B-41 / B-42** — concierge bubble polish (visible input/close/title, thinking indicator, markdown+links, auto-grow composer, hide-after-action, icon) · #681–#699
+- **B-49** — Lumé blind to the article corpus + listings-first + thrashing → `search_articles` + knowledge-first prompt · #709
+- **B-53** — fabricated counts / "we have N" / shops on taste statements · #713/#714 (later: stop quoting counts at all)
+- **B-50** — stale service-worker cache served an old build → CACHE_VERSION bump · #712
+- **B-52** — "Share with Lumé" ⋯ row on every card (app→Lumé) · #717
+- **B-37** — heart + ⋯ (add-to-list/share/Share-with-Lumé) on Home article tiles · #718
+- **Lumé memory** — "remembers you" taste profile + reliable RPC write + Settings on/off/reset · #719/#721
+- **Lumé behaviour** — explore-not-shop, hedge (no "the only"/complete lists), exposed-code-leak strip · #720
+- *(Open-section copies of B-37/B-49/B-50/B-52/B-53 still carry their enriched detail + "Status: Fixed PR#" — physically pruned at next close; their status is accurate.)*
+
 ### B-36 — Hearted items scattered across Listings/Auctions/Sold · Fixed #638
 - A real-user test (Mark's wife) hearted an item and couldn't find it — hearts lived in
   three separate buckets with no "everything I saved" view. B-08's unified Watchlists
