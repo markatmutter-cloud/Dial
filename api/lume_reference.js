@@ -213,3 +213,26 @@ export function getReference(input) {
 
   return { index_matches: matches, synthesis };
 }
+
+// ── web search (Anthropic native server tool) ─────────────────────────
+// Lumé's reach BEYOND our corpus (the "ChatGPT found the JLC E2643, Lumé
+// couldn't" gap). The tool runs SERVER-SIDE inside Anthropic — it never hits
+// runTool; chat.js handles its pause_turn round-trips and harvests citations.
+// max_uses bounds cost per turn ($10/1k searches). Corpus-first usage +
+// always-cite is enforced in public/lume_system_prompt.txt. Pure data/string
+// helpers live here so jest can assert the wiring without loading the SDK.
+export const WEB_SEARCH_TOOL = { type: "web_search_20250305", name: "web_search", max_uses: 3 };
+
+// Harvest web-search citations (url + title) off a response's text blocks into
+// `sink`, deduped by url. Anthropic attaches them as `web_search_result_location`
+// entries on the `citations` array of each grounded text block.
+export function collectWebCitations(content, sink) {
+  for (const b of content || []) {
+    if (b.type !== "text" || !Array.isArray(b.citations)) continue;
+    for (const c of b.citations) {
+      const url = c && c.url;
+      if (!url || sink.some((x) => x.url === url)) continue;
+      sink.push({ url, title: c.title || url });
+    }
+  }
+}
