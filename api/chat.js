@@ -438,6 +438,7 @@ export default async function handler(req, res) {
   let inputTok = 0;
   let outputTok = 0;
   let finalText = "";
+  let actions = [];
   const convo = messages.map((m) => ({ role: m.role, content: m.content }));
 
   try {
@@ -482,29 +483,37 @@ export default async function handler(req, res) {
         .trim();
       break;
     }
-    if (!finalText) {
-      // The loop spent its whole round budget on tool calls without ever writing
-      // an answer (the "I hit my limit" dead-end Mark hit on a basic snowflake
-      // question). Force ONE more turn with NO tools so the model MUST answer
-      // from everything it just gathered.
+    // Strip any <actions> block FIRST, then check for PROSE. If none remains —
+    // either the loop spent its budget on tool calls, OR the model replied with
+    // ONLY an actions block / no prose (both produced the empty-answer dead-end
+    // Mark hit on the snowflake question) — force one more NO-TOOLS turn that must
+    // answer in prose. Nudge it explicitly so the heavy "ground everything in
+    // tools" prompt doesn't make it clam up with no tools available.
+    let ex = extractActions(finalText);
+    if (!ex.text) {
+      const nudge = "Answer now in plain prose from what you've already gathered — do NOT call any tools, and do NOT reply with only an actions block.";
+      const lastMsg = convo[convo.length - 1];
+      if (lastMsg && lastMsg.role === "user" && Array.isArray(lastMsg.content)) {
+        lastMsg.content.push({ type: "text", text: nudge });
+      } else {
+        convo.push({ role: "user", content: nudge });
+      }
       const fp = { model, max_tokens: MAX_OUTPUT_TOKENS, system, messages: convo };
       if (model === MODEL_SMART) fp.thinking = { type: "disabled" };
       const fr = await anthropic.messages.create(fp);
       const fu = fr.usage || {};
       inputTok += (fu.input_tokens || 0) + (fu.cache_read_input_tokens || 0) + (fu.cache_creation_input_tokens || 0);
       outputTok += fu.output_tokens || 0;
-      finalText = fr.content.filter((b) => b.type === "text").map((b) => b.text).join("\n").trim();
+      ex = extractActions(fr.content.filter((b) => b.type === "text").map((b) => b.text).join("\n").trim());
     }
+    finalText = ex.text;
+    actions = ex.actions;
   } catch (e) {
     // Don't refund the quota message — a failed attempt still counts (cheap
     // backstop against retry-spam); surface a clean error.
     res.status(502).json({ error: "model_error", message: e.message });
     return;
   }
-
-  // Pull out any structured actions Lumé appended; strip them from the text.
-  let actions = [];
-  ({ text: finalText, actions } = extractActions(finalText));
 
   if (!finalText) {
     finalText = "I hit my limit working that one out — try asking a bit more narrowly.";

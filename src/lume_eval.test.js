@@ -91,15 +91,24 @@ async function runTurn(userText, ctx = { hearted_count: 0, saved_search_count: 0
     raw = resp.content.filter((b) => b.type === "text").map((b) => b.text).join("\n").trim();
     break;
   }
-  if (!raw) {
-    // Mirror chat.js: loop exhausted on tool calls → force one no-tools answer.
+  // Mirror chat.js: strip actions FIRST; if no prose remains (exhausted OR
+  // actions-only reply), force one no-tools prose turn with an explicit nudge.
+  let ex = E.extractActions(raw);
+  if (!ex.text) {
+    const nudge = "Answer now in plain prose from what you've already gathered — do NOT call any tools, and do NOT reply with only an actions block.";
+    const lastMsg = convo[convo.length - 1];
+    if (lastMsg && lastMsg.role === "user" && Array.isArray(lastMsg.content)) {
+      lastMsg.content.push({ type: "text", text: nudge });
+    } else {
+      convo.push({ role: "user", content: nudge });
+    }
     const fp = { model, max_tokens: 1024, system, messages: convo };
     if (model === E.MODEL_SMART) fp.thinking = { type: "disabled" };
     const fr = await client.messages.create(fp);
     raw = fr.content.filter((b) => b.type === "text").map((b) => b.text).join("\n").trim();
+    ex = E.extractActions(raw);
   }
-  const { text, actions } = E.extractActions(raw);
-  return { finalText: text, rawText: raw, toolCalls, actions };
+  return { finalText: ex.text, rawText: raw, toolCalls, actions: ex.actions };
 }
 
 // Attribute words the search CAN'T filter — must never appear in a query.
