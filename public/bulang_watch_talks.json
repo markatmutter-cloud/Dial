@@ -84,7 +84,7 @@
     "sub_model": null,
     "themes": [
       "celebrity",
-      "reference_profile"
+      "auction_results"
     ],
     "title": "A Cartier Hollywood Love Story",
     "updated_at": "2025-09-17",
@@ -151,7 +151,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "brand_history"
+      "collecting_philosophy",
+      "community_ethics"
     ],
     "title": "A Man and His Watch - An Interview with Matt Hranek",
     "updated_at": "2025-09-17",
@@ -196,8 +197,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "auction_results",
-      "market_commentary"
+      "market_commentary",
+      "auction_results"
     ],
     "title": "A Passion for Stainless Steel Chronograph Watches",
     "updated_at": "2025-09-17",
@@ -220,7 +221,8 @@
     "sub_model": null,
     "themes": [
       "reference_profile",
-      "racing"
+      "racing",
+      "complications"
     ],
     "title": "A Split Second with Eberhard",
     "updated_at": "2025-09-17",
@@ -243,7 +245,8 @@
     "sub_model": null,
     "themes": [
       "military",
-      "vintage_care"
+      "vintage_care",
+      "reference_profile"
     ],
     "title": "A Tale of Two Original Owner Tudor Marine Nationale Submariners",
     "updated_at": "2025-09-17",
@@ -266,7 +269,6 @@
     "sub_model": null,
     "themes": [
       "aviation",
-      "brand_history",
       "celebrity"
     ],
     "title": "Admiral Byrd’s special Longines Weems sidereal timepiece…",
@@ -313,7 +315,8 @@
     "sub_model": "Oyster Prince Submariner",
     "themes": [
       "military",
-      "reference_profile"
+      "reference_profile",
+      "vintage_care"
     ],
     "title": "An Original Story of a Tudor 9401 Marine Nationale MN78 Submariner",
     "updated_at": "2025-09-17",
@@ -335,9 +338,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "space",
-      "brand_history",
-      "reference_profile"
+      "collecting_philosophy",
+      "life_lessons"
     ],
     "title": "Back to the Roots: An Omega Journey with Bernhard",
     "updated_at": "2025-09-17",
@@ -427,8 +429,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "reference_profile",
-      "brand_history"
+      "collecting_philosophy",
+      "reference_profile"
     ],
     "title": "Bernhard Bulang’s Love for the No-Date Sub… Join us!",
     "updated_at": "2025-09-17",
@@ -473,8 +475,7 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "news",
-      "diving"
+      "news"
     ],
     "title": "Blue Skies and Blue watches - Baselworld is Coming",
     "updated_at": "2025-09-17",
@@ -517,7 +518,9 @@
     "source": "bulang_watch_talks",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "community_ethics"
+    ],
     "title": "B&S Lounge Report - Anchors Away!",
     "updated_at": "2025-09-17",
     "url": "https://bulangandsons.com/blogs/watch-talks/bs-lounge-report-anchors-aweigh",
@@ -560,7 +563,9 @@
     "source": "bulang_watch_talks",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "news"
+    ],
     "title": "B&S Pop Up Lounge @ Düsseldorf watch fair",
     "updated_at": "2025-09-17",
     "url": "https://bulangandsons.com/blogs/watch-talks/bs-pop-lounge-dusseldorf-watch-market",
@@ -600,7 +605,9 @@
     "source": "bulang_watch_talks",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "collecting_philosophy"
+    ],
     "title": "Bulang and Sons Merry Wristmas",
     "updated_at": "2025-09-17",
     "url": "https://bulangandsons.com/blogs/watch-talks/bulang-and-sons-merry-wristmas",
@@ -621,8 +628,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "brand_history",
-      "diving"
+      "collecting_philosophy",
+      "community_ethics"
     ],
     "title": "Bulang Loves…Scurfa Watches",
     "updated_at": "2025-09-17",
@@ -689,7 +696,9 @@
     "source": "bulang_watch_talks",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "community_ethics"
+    ],
     "title": "We Buy Vintage Watches…",
     "updated_at": "2025-09-17",
     "url": "https://bulangandsons.com/blogs/watch-talks/buy-vintage-watches",
@@ -711,7 +720,8 @@
     "sub_model": null,
     "themes": [
       "reference_profile",
-      "design"
+      "design",
+      "brand_history"
     ],
     "title": "Spot On - The Cartier Tank Basculante",
     "updated_at": "2025-09-17",
@@ -733,7 +743,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "brand_history"
+      "collecting_philosophy",
+      "community_ethics"
     ],
     "title": "Conversation Time - Andrew H and his love for Pulsation",
     "updated_at": "2025-09-17",
@@ -754,7 +765,10 @@
     "source": "bulang_watch_talks",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "collector_mindset",
+      "community_ethics"
+    ],
     "title": "Conversation Time: Dan the Electric Watch Man",
     "updated_at": "2025-09-17",
     "url": "https://bulangandsons.com/blogs/watch-talks/conversation-time-dan-the-electric-watch-man",
@@ -775,8 +789,9 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "brand_history",
-      "design"
+      "collecting_philosophy",
+      "design",
+      "brand_history"
     ],
     "title": "Conversation Time: Mr G, The Genta Collector",
     "updated_at": "2025-09-17",
@@ -797,7 +812,9 @@
     "source": "bulang_watch_talks",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "community_ethics"
+    ],
     "title": "COOL CUSTOMERS – @bvc59",
     "updated_at": "2025-09-17",
     "url": "https://bulangandsons.com/blogs/watch-talks/cool-customers-bvc59",
@@ -818,8 +835,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "brand_history",
-      "market_commentary"
+      "community_ethics",
+      "collecting_philosophy"
     ],
     "title": "'Cool Customers' - @heuerautavia",
     "updated_at": "2025-09-17",
@@ -841,8 +858,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "reference_profile",
-      "complications"
+      "complications",
+      "design"
     ],
     "title": "Crossing Continents – The Chopard Quadruple Timezone Watch",
     "updated_at": "2025-09-17",
@@ -864,8 +881,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "diving",
-      "design"
+      "review",
+      "diving"
     ],
     "title": "Destro Diver - The Tudor Pelagos LHD",
     "updated_at": "2025-09-17",
@@ -888,8 +905,7 @@
     "sub_model": null,
     "themes": [
       "reference_profile",
-      "vintage_care",
-      "space"
+      "design"
     ],
     "title": "Double Trouble.. 2 1960s Omega Icons",
     "updated_at": "2025-09-17",
@@ -913,7 +929,8 @@
     "themes": [
       "reference_profile",
       "racing",
-      "celebrity"
+      "celebrity",
+      "brand_history"
     ],
     "title": "Enicar Sherpa Graph Mk1 Chronograph - Stirling Moss",
     "updated_at": "2025-09-17",
@@ -936,7 +953,7 @@
     "sub_model": null,
     "themes": [
       "reference_profile",
-      "design"
+      "complications"
     ],
     "title": "Spot On - Ernest Borel Mini Step Case Chronograph",
     "updated_at": "2025-09-17",
@@ -959,7 +976,7 @@
     "sub_model": null,
     "themes": [
       "vintage_care",
-      "reference_profile"
+      "collecting_philosophy"
     ],
     "title": "Found As Is - An Original Owner Tudor Submariner",
     "updated_at": "2025-09-17",
@@ -1098,8 +1115,8 @@
     "sub_model": null,
     "themes": [
       "reference_profile",
-      "brand_history",
-      "design"
+      "design",
+      "brand_history"
     ],
     "title": "In Deep – The Hamilton Ventura",
     "updated_at": "2025-09-17",
@@ -1122,7 +1139,7 @@
     "sub_model": null,
     "themes": [
       "military",
-      "reference_profile"
+      "brand_history"
     ],
     "title": "The Heuer Bundeswehr 1550SG Chronographs – More Than A Famous Strap",
     "updated_at": "2025-09-17",
@@ -1164,7 +1181,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "military"
+      "military",
+      "community_ethics"
     ],
     "title": "Issued 3 Meeting - A Celebration of Tool watches and Friendships",
     "updated_at": "2025-09-17",
@@ -1187,7 +1205,7 @@
     "sub_model": null,
     "themes": [
       "news",
-      "reference_profile"
+      "brand_history"
     ],
     "title": "It's Back - The New Rolex Daytona Baselworld 2016",
     "updated_at": "2025-09-17",
@@ -1208,7 +1226,9 @@
     "source": "bulang_watch_talks",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "collecting_philosophy"
+    ],
     "title": "Just because we love it...",
     "updated_at": "2025-09-17",
     "url": "https://bulangandsons.com/blogs/watch-talks/just-because-we-love-it",
@@ -1229,7 +1249,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "military"
+      "community_ethics",
+      "collecting_philosophy"
     ],
     "title": "London Issued Watches Meeting 2014",
     "updated_at": "2025-09-17",
@@ -1250,7 +1271,9 @@
     "source": "bulang_watch_talks",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "collecting_philosophy"
+    ],
     "title": "Merry Wristmas 2020 from Bulang and Sons",
     "updated_at": "2025-09-17",
     "url": "https://bulangandsons.com/blogs/watch-talks/merry-wristmas-2020-from-bulang-and-sons",
@@ -1270,7 +1293,9 @@
     "source": "bulang_watch_talks",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "community_ethics"
+    ],
     "title": "Merry Wristmas from Bulang and Sons",
     "updated_at": "2025-09-17",
     "url": "https://bulangandsons.com/blogs/watch-talks/merry-wristmas-from-bulang-and-sons",
@@ -1291,7 +1316,7 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "brand_history"
+      "community_ethics"
     ],
     "title": "Modest and Sophisticated: Nomos Club Meeting at Bulang and Sons",
     "updated_at": "2025-09-17",
@@ -1313,7 +1338,7 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "reference_profile",
+      "collecting_philosophy",
       "brand_history"
     ],
     "title": "Omega Journey Chapter 2 - My Sports Watch Trilogy",
@@ -1336,7 +1361,7 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "brand_history",
+      "reference_profile",
       "design"
     ],
     "title": "Omega Journey Chapter 3 - Tonight’s Main Fight: Ultraman vs. Snoopy",
@@ -1359,8 +1384,9 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "diving",
-      "review"
+      "reference_profile",
+      "design",
+      "diving"
     ],
     "title": "One Watch, Five Days, Five Ways - the Seiko 62MAS",
     "updated_at": "2025-09-17",
@@ -1382,7 +1408,6 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "brand_history",
       "news"
     ],
     "title": "The Original Clock and Roll Story...",
@@ -1406,7 +1431,7 @@
     "sub_model": null,
     "themes": [
       "reference_profile",
-      "vintage_care"
+      "collecting_philosophy"
     ],
     "title": "An Original Owner Rolex Explorer Gilt 1016",
     "updated_at": "2025-09-17",
@@ -1428,8 +1453,8 @@
     "source_type": "editorial_blog",
     "sub_model": "Oyster Prince Submariner",
     "themes": [
-      "reference_profile",
-      "vintage_care"
+      "vintage_care",
+      "collecting_philosophy"
     ],
     "title": "The ORIGINAL OWNER Tudor Submariner Black Snowflake 7021",
     "updated_at": "2025-09-17",
@@ -1452,7 +1477,8 @@
     "sub_model": null,
     "themes": [
       "market_commentary",
-      "brand_history"
+      "brand_history",
+      "design"
     ],
     "title": "The Three Omegas",
     "updated_at": "2025-09-17",
@@ -1474,7 +1500,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "design"
+      "life_lessons",
+      "collecting_philosophy"
     ],
     "title": "Passion Talk 02 - My 'I love my Dad' watch",
     "updated_at": "2025-09-17",
@@ -1496,8 +1523,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "brand_history",
-      "vintage_care"
+      "collecting_philosophy",
+      "life_lessons"
     ],
     "title": "Passion Talk 01 - My Grail Tudor MN",
     "updated_at": "2025-09-17",
@@ -1519,7 +1546,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "vintage_care"
+      "vintage_care",
+      "collecting_philosophy"
     ],
     "title": "Passiontalk - Watches with Charisma",
     "updated_at": "2025-09-17",
@@ -1631,7 +1659,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "review"
+      "collecting_philosophy",
+      "community_ethics"
     ],
     "title": "Repost Revolution Watch - Desert Island Dials with Bernhard Bulang",
     "updated_at": "2025-09-17",
@@ -1654,7 +1683,7 @@
     "sub_model": null,
     "themes": [
       "reference_profile",
-      "vintage_care"
+      "collecting_philosophy"
     ],
     "title": "Rolex 5513 Submariner Love",
     "updated_at": "2025-09-17",
@@ -1677,7 +1706,7 @@
     "sub_model": null,
     "themes": [
       "reference_profile",
-      "brand_history"
+      "design"
     ],
     "title": "Spot On - Rolex 6352 'Pre-Explorer' Ovettone",
     "updated_at": "2025-09-17",
@@ -1815,7 +1844,7 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "news"
+      "community_ethics"
     ],
     "title": "Rolliefest 2023 in New York: Join the Excitement of This Incredible Watch Gathering",
     "updated_at": "2025-09-17",
@@ -1837,8 +1866,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "brand_history",
-      "vintage_care"
+      "community_ethics",
+      "collecting_philosophy"
     ],
     "title": "Ross Povey in the House...",
     "updated_at": "2025-09-17",
@@ -1861,7 +1890,7 @@
     "sub_model": null,
     "themes": [
       "reference_profile",
-      "design"
+      "vintage_care"
     ],
     "title": "Spot On - The School Watch Chronograph",
     "updated_at": "2025-09-17",
@@ -1883,8 +1912,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "design",
-      "vintage_care"
+      "collecting_philosophy",
+      "design"
     ],
     "title": "Shades of Salmon",
     "updated_at": "2025-09-17",
@@ -1906,8 +1935,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "design",
-      "vintage_care"
+      "collecting_philosophy",
+      "design"
     ],
     "title": "Shades of Salmon",
     "updated_at": "2025-09-17",
@@ -1930,7 +1959,7 @@
     "sub_model": null,
     "themes": [
       "space",
-      "reference_profile"
+      "review"
     ],
     "title": "SPOT ON: The Omega Silver Snoopy Award Speedmaster",
     "updated_at": "2025-09-17",
@@ -1975,7 +2004,6 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "reference_profile",
       "brand_history",
       "design"
     ],
@@ -2001,7 +2029,7 @@
     "themes": [
       "reference_profile",
       "military",
-      "design"
+      "brand_history"
     ],
     "title": "Snowy Celebration – 50 Years of Tudor’s Iconic Hands",
     "updated_at": "2025-09-17",
@@ -2047,8 +2075,8 @@
     "sub_model": null,
     "themes": [
       "reference_profile",
-      "diving",
-      "military"
+      "military",
+      "diving"
     ],
     "title": "The South Pacific Rolex 5513",
     "updated_at": "2025-09-17",
@@ -2117,7 +2145,8 @@
     "sub_model": null,
     "themes": [
       "reference_profile",
-      "brand_history"
+      "brand_history",
+      "design"
     ],
     "title": "Spot On - A Large Measure - The Rolex 8029",
     "updated_at": "2025-09-17",
@@ -2257,7 +2286,7 @@
     "sub_model": null,
     "themes": [
       "reference_profile",
-      "design"
+      "collecting_philosophy"
     ],
     "title": "Spot On -The Patek Philippe Ellipse d'Or",
     "updated_at": "2025-09-17",
@@ -2303,7 +2332,7 @@
     "sub_model": "Oyster Prince Submariner",
     "themes": [
       "vintage_care",
-      "reference_profile"
+      "collecting_philosophy"
     ],
     "title": "SPOT ON - The Untouched Tudor Submariner 7928",
     "updated_at": "2025-09-17",
@@ -2415,7 +2444,7 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "racing",
+      "news",
       "brand_history"
     ],
     "title": "The B&S Tudor Ducati Moto GP trip",
@@ -2439,7 +2468,7 @@
     "sub_model": "“Home Plate” / “Big Block”",
     "themes": [
       "reference_profile",
-      "design"
+      "brand_history"
     ],
     "title": "Spot on - TUDOR 7169 MONTE CARLO",
     "updated_at": "2025-09-17",
@@ -2461,8 +2490,9 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "reference_profile",
-      "aviation"
+      "celebrity",
+      "aviation",
+      "reference_profile"
     ],
     "title": "The Dare Devil Inventor’s Longines Sommatore 13ZN – An Original Owner Watch Story",
     "updated_at": "2025-09-17",
@@ -2484,7 +2514,7 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "vintage_care",
+      "collecting_philosophy",
       "brand_history"
     ],
     "title": "The Gift of Time – Rolex Presentation Watches",
@@ -2508,7 +2538,7 @@
     "sub_model": null,
     "themes": [
       "reference_profile",
-      "celebrity"
+      "collecting_philosophy"
     ],
     "title": "The Grail Gold GMT-Master, a unqiue Khanjar 1675/8",
     "updated_at": "2026-04-17",
@@ -2530,8 +2560,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "vintage_care",
-      "design"
+      "collecting_philosophy",
+      "life_lessons"
     ],
     "title": "The Journey of Acquiring a Great Watch",
     "updated_at": "2025-09-17",
@@ -2553,8 +2583,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "review",
-      "brand_history"
+      "collecting_philosophy",
+      "life_lessons"
     ],
     "title": "The King of the Oysters...",
     "updated_at": "2025-09-17",
@@ -2600,7 +2630,8 @@
     "sub_model": null,
     "themes": [
       "reference_profile",
-      "vintage_care"
+      "vintage_care",
+      "community_ethics"
     ],
     "title": "The Mk1 Maxi 5513 Rolex Submariner",
     "updated_at": "2025-09-17",
@@ -2645,8 +2676,7 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "review",
-      "design"
+      "review"
     ],
     "title": "The NEW Tudor Heritage Blue Black Bay Review",
     "updated_at": "2025-09-17",
@@ -2668,8 +2698,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "review",
-      "design"
+      "news",
+      "review"
     ],
     "title": "The New Tudor Pelagos - How Big, How Blue, How Beautiful...",
     "updated_at": "2025-09-17",
@@ -2759,8 +2789,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "space",
-      "reference_profile"
+      "reference_profile",
+      "space"
     ],
     "title": "The Omega Speedmaster Apollo Soyuz 145.022  1975",
     "updated_at": "2025-09-17",
@@ -2783,7 +2813,7 @@
     "sub_model": "Cosmograph",
     "themes": [
       "reference_profile",
-      "racing"
+      "design"
     ],
     "title": "The Porcelain Dial Rolex 16520 Zenith Daytona",
     "updated_at": "2025-09-17",
@@ -2806,7 +2836,8 @@
     "sub_model": null,
     "themes": [
       "reference_profile",
-      "brand_history"
+      "brand_history",
+      "design"
     ],
     "title": "The Rolex Ovettone – Where It All Began",
     "updated_at": "2025-09-17",
@@ -2828,8 +2859,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "review",
-      "news"
+      "news",
+      "review"
     ],
     "title": "Review - The Rolex Oyster Perpetual’s Stella Moment",
     "updated_at": "2025-09-17",
@@ -2851,7 +2882,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "brand_history"
+      "community_ethics",
+      "collecting_philosophy"
     ],
     "title": "The Rolex Passion Meeting 2015",
     "updated_at": "2025-09-17",
@@ -2874,7 +2906,7 @@
     "sub_model": null,
     "themes": [
       "reference_profile",
-      "brand_history"
+      "vintage_care"
     ],
     "title": "The Rolex Submariner Reference 5508",
     "updated_at": "2025-09-17",
@@ -2896,8 +2928,8 @@
     "source_type": "editorial_blog",
     "sub_model": "Oyster Prince Submariner",
     "themes": [
-      "reference_profile",
-      "celebrity"
+      "celebrity",
+      "reference_profile"
     ],
     "title": "The Thunderball Tudor Submariner 7928",
     "updated_at": "2025-09-17",
@@ -2943,8 +2975,7 @@
     "sub_model": "Oyster Prince Submariner",
     "themes": [
       "reference_profile",
-      "vintage_care",
-      "market_commentary"
+      "brand_history"
     ],
     "title": "Spot On - Tudor Submariner 7928 - The Exclamation Dot Era",
     "updated_at": "2025-09-17",
@@ -2991,6 +3022,7 @@
     "sub_model": "Oyster Prince Submariner",
     "themes": [
       "reference_profile",
+      "brand_history",
       "auction_results"
     ],
     "title": "The Unique Tudor Heritage Black Bay ONE Reference 7923/001",
@@ -3061,7 +3093,7 @@
     "sub_model": null,
     "themes": [
       "reference_profile",
-      "design"
+      "collecting_philosophy"
     ],
     "title": "The White Gold Rolex Datejust",
     "updated_at": "2025-09-17",
@@ -3083,7 +3115,7 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "reference_profile",
+      "collecting_philosophy",
       "brand_history"
     ],
     "title": "There is So Much Still to Discover",
@@ -3154,7 +3186,8 @@
     "sub_model": null,
     "themes": [
       "reference_profile",
-      "vintage_care"
+      "vintage_care",
+      "collector_mindset"
     ],
     "title": "Throw Back Thursday - The Rolex 6200 Submariner from Original Owner...",
     "updated_at": "2025-09-17",
@@ -3176,8 +3209,7 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "reference_profile",
-      "vintage_care",
+      "collecting_philosophy",
       "design"
     ],
     "title": "Throw back Thursday - The Golden Era of Gilt Dial Rolex",
@@ -3224,7 +3256,8 @@
     "sub_model": null,
     "themes": [
       "reference_profile",
-      "military"
+      "military",
+      "vintage_care"
     ],
     "title": "Throw Back Thursday - UAE Rolex GMT Master...",
     "updated_at": "2025-09-17",
@@ -3316,7 +3349,8 @@
     "sub_model": null,
     "themes": [
       "reference_profile",
-      "brand_history"
+      "brand_history",
+      "design"
     ],
     "title": "The Tudor Big Block",
     "updated_at": "2025-09-17",
@@ -3339,8 +3373,8 @@
     "sub_model": null,
     "themes": [
       "reference_profile",
-      "brand_history",
-      "design"
+      "design",
+      "brand_history"
     ],
     "title": "The Tudor Black Bay Bronze - A Golden Era...",
     "updated_at": "2025-09-17",
@@ -3386,7 +3420,7 @@
     "sub_model": null,
     "themes": [
       "review",
-      "complications"
+      "news"
     ],
     "title": "Tudor Black Bay GMT Review",
     "updated_at": "2025-09-17",
@@ -3431,7 +3465,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "review"
+      "review",
+      "design"
     ],
     "title": "Bulang Loves - The Tudor Heritage Black Bay 36",
     "updated_at": "2025-09-17",
@@ -3501,8 +3536,8 @@
     "sub_model": null,
     "themes": [
       "reference_profile",
-      "military",
-      "vintage_care"
+      "vintage_care",
+      "military"
     ],
     "title": "Tudor MN Blue Snowflake Party",
     "updated_at": "2025-09-17",
@@ -3548,8 +3583,8 @@
     "sub_model": null,
     "themes": [
       "reference_profile",
-      "brand_history",
-      "design"
+      "design",
+      "brand_history"
     ],
     "title": "Tudor Snowflakes",
     "updated_at": "2025-09-17",
@@ -3571,8 +3606,8 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "reference_profile",
-      "design"
+      "collecting_philosophy",
+      "life_lessons"
     ],
     "title": "A Father and Son Tudor Submariner Curated Package",
     "updated_at": "2025-09-17",
@@ -3594,8 +3629,7 @@
     "source_type": "editorial_blog",
     "sub_model": null,
     "themes": [
-      "news",
-      "design"
+      "news"
     ],
     "title": "Tudor x Bucherer - The Black Bay Bronze Blue Edition",
     "updated_at": "2025-09-17",
@@ -3618,7 +3652,8 @@
     "sub_model": null,
     "themes": [
       "reference_profile",
-      "military"
+      "military",
+      "market_commentary"
     ],
     "title": "Tudor’s Prized MilSub – The Black MN74",
     "updated_at": "2025-09-17",
@@ -3664,8 +3699,8 @@
     "sub_model": null,
     "themes": [
       "reference_profile",
-      "racing",
-      "design"
+      "design",
+      "collecting_philosophy"
     ],
     "title": "Vintage Heuer Carrera 2447N Love",
     "updated_at": "2025-09-17",
