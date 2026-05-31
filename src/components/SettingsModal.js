@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { modalBackdrop, modalShell, modalCloseButton, modalTitleRow, modalTitle, inputBase, actionButton } from "../styles";
+import { LumeMemorySettings } from "./LumeMemorySettings";
 
 // Settings — cross-device user preferences (currency) plus per-device
 // display chrome (theme, column count) and the About entry. Theme +
@@ -173,6 +174,8 @@ export function SettingsModal({
             </div>
           </>
         )}
+
+        <LumeMemorySettings />
 
         <div style={{ height: "0.5px", background: "var(--border)", margin: "20px 0 0" }} />
         <button onClick={() => { onClose(); setAboutModalOpen(true); }} style={{
