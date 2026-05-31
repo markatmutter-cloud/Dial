@@ -3,6 +3,8 @@ import { createPortal } from "react-dom";
 import { Card } from "./Card";
 import CardStrip from "./CardStrip";
 import CardShell from "./CardShell";
+import { articleAsListing } from "./EditorialView";
+import { askLumeAbout } from "./LumeBus";
 import { SearchIcon, TabIcon } from "./icons";
 import { MoonPhaseIndicator } from "./MoonPhaseIndicator";
 
@@ -1084,13 +1086,26 @@ export function HomeTab(props) {
               <button onClick={goToArticles} style={{ background: "transparent", border: "0.5px solid var(--border)", borderRadius: 18, padding: "6px 14px", fontFamily: "inherit", fontSize: 13, fontWeight: 500, color: "var(--text1)", cursor: "pointer" }}>View all →</button>
             )}
           </div>
-          <CardStrip items={homeRecentArticles} isMobile={isMobile} renderCard={a => (
-            <CardShell href={a.url} aspect="square" bodyPadding="10px 12px 12px"
-              image={a.image ? { src: a.image, alt: "" } : null}
-              level2={<div style={{ fontSize: 10, fontWeight: 600, color: "var(--text3)", textTransform: "uppercase", letterSpacing: 0.4, marginBottom: 4 }}>{(a._source && a._source.label) || a.source || ""}</div>}
-              level1={<div style={{ fontSize: 12, fontWeight: 500, color: "var(--text1)", lineHeight: 1.3, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{a.title}</div>}
-            />
-          )} />
+          <CardStrip items={homeRecentArticles} isMobile={isMobile} renderCard={a => {
+            // B-37: give Home article tiles the same heart + ⋯ actions as listing
+            // cards (project the article to a listing so the watchlist/collection
+            // wiring works), incl. "Share with Lumé". CardShell's action buttons
+            // preventDefault+stopPropagation so they don't follow the article href.
+            const al = articleAsListing(a);
+            return (
+              <CardShell href={a.url} aspect="square" bodyPadding="10px 12px 12px"
+                image={a.image ? { src: a.image, alt: "" } : null}
+                level2={<div style={{ fontSize: 10, fontWeight: 600, color: "var(--text3)", textTransform: "uppercase", letterSpacing: 0.4, marginBottom: 4 }}>{(a._source && a._source.label) || a.source || ""}</div>}
+                level1={<div style={{ fontSize: 12, fontWeight: 500, color: "var(--text1)", lineHeight: 1.3, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{a.title}</div>}
+                heart={al && handleWish ? { wished: !!(watchlist && watchlist[al.id]), onToggle: () => handleWish(al) } : null}
+                menu={al ? {
+                  onAddToCollection: openCollectionPicker ? () => openCollectionPicker(al) : null,
+                  onShare: onShare ? () => onShare(al) : null,
+                  extraMenuItems: [{ label: "Share with Lumé", onClick: () => askLumeAbout(al) }],
+                } : null}
+              />
+            );
+          }} />
         </section>
       )}
       {homeRecentSold?.length > 0 && (
