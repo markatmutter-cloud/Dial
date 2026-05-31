@@ -30,6 +30,7 @@ import {
   readPublicText,
   norm as _norm,
   getReference,
+  searchArticles,
 } from "./lume_reference.js";
 
 // ── config ───────────────────────────────────────────────────────────
@@ -129,6 +130,20 @@ const TOOLS = [
         model_line: { type: "string", description: "e.g. Submariner" },
         reference: { type: "string", description: "e.g. 5513" },
         query: { type: "string", description: "free-text fallback" },
+      },
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "search_articles",
+    description:
+      "Search OUR editorial article corpus — collector magazines, dealer journals, and deep-dive write-ups (Hodinkee Bring-a-Loupe, A Collected Man, Fratello, Bulang, OnTheDash, Screwdown Crown, WOE, Christie's, Rolex Magazine). This is your KNOWLEDGE about watches: use it to ANSWER questions about a watch / brand / model / reference / collecting topic (what it is, its history, variants, quirks, what to look for) — it covers brands and models FAR beyond the curated reference index (e.g. Enicar, niche or independent makers). Reach for this BEFORE concluding you don't know something. Returns matching articles with a relevant snippet and the source URL to cite.",
+    input_schema: {
+      type: "object",
+      properties: {
+        query: { type: "string", description: "free-text — brand, model, reference, or topic (e.g. 'Enicar Sherpa Super Jet date')" },
+        brand: { type: "string" },
+        limit: { type: "number", description: "max results (default 5, cap 8)" },
       },
       additionalProperties: false,
     },
@@ -282,6 +297,7 @@ async function runTool(name, input, sb) {
     if (name === "search_listings") return toolSearchListings(input || {});
     if (name === "get_auction_state") return toolGetAuctionState(input || {});
     if (name === "get_reference") return getReference(input || {});
+    if (name === "search_articles") return searchArticles(input || {});
     return { error: `unknown tool: ${name}` };
   } catch (e) {
     return { error: `tool ${name} failed: ${e.message}` };
