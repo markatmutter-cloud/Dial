@@ -552,7 +552,7 @@ export default async function handler(req, res) {
   // Lumé memory: occasionally refresh the user's taste profile from the exchange.
   // Gated (~every couple of exchanges, after the 3rd) + cheap Haiku → bounded cost.
   // Best-effort; never block the response. (enabled=false → skip entirely.)
-  if (profileEnabled && messages.length >= 5 && (messages.length - 1) % 4 === 0) {
+  if (profileEnabled && messages.length >= 3 && messages.length % 4 === 3) {
     try {
       const convoText = [
         ...messages.map((m) => `${m.role}: ${typeof m.content === "string" ? m.content : JSON.stringify(m.content).slice(0, 200)}`),
@@ -568,10 +568,9 @@ export default async function handler(req, res) {
       const m = txt.match(/\{[\s\S]*\}/);
       const updated = m ? JSON.parse(m[0]) : null;
       if (updated && typeof updated === "object" && !Array.isArray(updated)) {
-        await sb.from("ai_user_profile").upsert(
-          { user_id: userId, profile: updated, enabled: true, updated_at: new Date().toISOString() },
-          { onConflict: "user_id" }
-        );
+        // Via the SECURITY DEFINER RPC — a direct authenticated upsert is silently
+        // rejected on this project regardless of RLS (the documented gotcha).
+        await sb.rpc("upsert_ai_profile", { p_profile: updated });
       }
     } catch {}
   }
