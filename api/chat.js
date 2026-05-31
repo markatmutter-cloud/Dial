@@ -31,6 +31,8 @@ import {
   norm as _norm,
   getReference,
   searchArticles,
+  WEB_SEARCH_TOOL,
+  collectWebCitations,
 } from "./lume_reference.js";
 
 // ── config ───────────────────────────────────────────────────────────
@@ -39,6 +41,8 @@ const MODEL_SMART = "claude-opus-4-8";   // routed-to for compare / why / recomm
 const MAX_OUTPUT_TOKENS = 1024;
 const MAX_TOOL_ROUNDS = 6;               // bound the agentic loop (cost backstop)
 const MAX_HISTORY_MSGS = 20;             // server-side history truncation
+// WEB_SEARCH_TOOL + collectWebCitations live in lume_reference.js (the pure,
+// SDK-free half) so jest can assert the wiring without loading the SDK.
 
 const SUPABASE_URL =
   process.env.REACT_APP_SUPABASE_URL || process.env.SUPABASE_URL;
@@ -464,11 +468,16 @@ export default async function handler(req, res) {
   const tools = TOOLS.map((t, i) =>
     i === TOOLS.length - 1 ? { ...t, cache_control: { type: "ephemeral" } } : t
   );
+  // Web search appended AFTER the cache breakpoint: its def is tiny + static, not
+  // worth shifting the warm tools+system cache prefix. Handled server-side by
+  // Anthropic — surfaces as pause_turn / web_search_tool_result, never runTool.
+  tools.push(WEB_SEARCH_TOOL);
 
   let inputTok = 0;
   let outputTok = 0;
   let finalText = "";
   let actions = [];
+  const webCitations = []; // {url,title} harvested off web-search text blocks
   const convo = messages.map((m) => ({ role: m.role, content: m.content }));
 
   try {
@@ -489,6 +498,16 @@ export default async function handler(req, res) {
       const u = resp.usage || {};
       inputTok += (u.input_tokens || 0) + (u.cache_read_input_tokens || 0) + (u.cache_creation_input_tokens || 0);
       outputTok += u.output_tokens || 0;
+      collectWebCitations(resp.content, webCitations);
+
+      if (resp.stop_reason === "pause_turn") {
+        // Server-side web search needs another round-trip to finish the turn —
+        // re-send with the assistant's partial content (incl. the resolved
+        // web_search_tool_result blocks) and let it continue. Counts toward
+        // MAX_TOOL_ROUNDS so a runaway search loop still terminates.
+        convo.push({ role: "assistant", content: resp.content });
+        continue;
+      }
 
       if (resp.stop_reason === "tool_use") {
         convo.push({ role: "assistant", content: resp.content });
@@ -538,6 +557,15 @@ export default async function handler(req, res) {
     }
     finalText = ex.text;
     actions = ex.actions;
+    // If Lumé reached the web, append a compact deduped Sources footer for any
+    // cited URL it didn't already inline. ChatBubbleHost renders markdown links,
+    // so these stay tappable — and honour the "always cite" grounding contract.
+    if (webCitations.length && finalText) {
+      const cites = webCitations.filter((c) => !finalText.includes(c.url)).slice(0, 5);
+      if (cites.length) {
+        finalText += "\n\nSources:\n" + cites.map((c) => `- [${c.title}](${c.url})`).join("\n");
+      }
+    }
   } catch (e) {
     // Don't refund the quota message — a failed attempt still counts (cheap
     // backstop against retry-spam); surface a clean error.
@@ -592,6 +620,7 @@ function safeJson(s) {
 // rather than a drifting copy. Not used by the handler; harmless to Vercel
 // (the default export is still the handler).
 export const __evalInternals = {
-  SYSTEM_PROMPT, TOOLS, toolSearchListings, toolGetAuctionState,
+  SYSTEM_PROMPT, TOOLS, WEB_SEARCH_TOOL, collectWebCitations,
+  toolSearchListings, toolGetAuctionState,
   chooseModel, extractActions, MAX_TOOL_ROUNDS, MODEL_FAST, MODEL_SMART,
 };
