@@ -321,6 +321,14 @@ within each section roughly last.
 - **2026-05-31 — Share with Lumé + article actions (#717/#718).** B-52: a built-in "Share with Lumé" ⋯
   row on every card (LumeBus, app→Lumé) opens the bubble seeded with that listing. B-37: heart + ⋯
   (add-to-list/share/Share-with-Lumé) on Home article tiles via articleAsListing.
+- **2026-05-31 — Lumé remembers you (#719/#721).** `ai_user_profile` table (RLS own-row, `enabled` switch)
+  — an evolving per-user taste profile loaded into chat context (durable across sessions + survives the
+  20-msg history truncation = fixes long-chat forgetfulness), refreshed by a cheap gated Haiku pass. Write
+  via SECURITY DEFINER RPC (direct authenticated upserts are rejected on this project). Settings →
+  "Lumé memory" panel: view / on-off / reset.
+- **2026-05-31 — Lumé: explore-not-shop + hedge + leak fix (#720).** Stop driving to buy (journey not
+  checkout); never claim a complete list / superlative it can't ground ("three notable ones", not "the
+  only"); strip dangling `<actions>` so truncated replies can't leak raw code.
 
 ## UI & chrome (cross-cutting)
 

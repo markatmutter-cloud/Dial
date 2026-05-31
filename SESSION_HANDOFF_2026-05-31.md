@@ -14,35 +14,44 @@ mislabeled, never reply actions-only); **two empty-answer dead-ends fixed**
 (loop-exhaustion + actions-only); the **eval harness** (`src/lume_eval.test.js`,
 LUME_EVAL=1 workflow); **collector-mentality tagging live** on the essay sources;
 mobile full-screen chat + glowing-pip icon + SW stale-cache fix; **Share-with-Lumé**
-(B-52) + **article heart/⋯** (B-37).
+(B-52) + **article heart/⋯** (B-37); **Lumé remembers you** (ai_user_profile taste-memory
+store + reliable RPC write + Settings on/off/reset panel); **explore-not-shop + hedge +
+exposed-code-leak fixes**. Mentality tagging fully done on the 5 essay sources (383
+articles). **Mark authorised Claude to merge PRs** this session — merge on green only.
 
 ## Open / next (priority order)
 
-1. **B-47 — Lumé sees on-screen context** (last of the UI cluster). Filters live in
-   App.js React STATE (filterBrands/filterModels/filterSources/search/tab), NOT the
-   URL — so the app must publish them. **Do it hook-safely:** a small self-contained
-   `<LumeContextPublisher>` component App mounts next to the shell (props = the live
-   filters/tab/current item), with one useEffect → a `LumeContext` bus; ChatBubbleHost
-   reads it at send-time and includes a brief context note. Do NOT add a useEffect deep
-   in App.js after the early returns (React #310). Reuses B-52's seed plumbing (LumeBus).
-2. **Discovery eval** — the "find NEW issues" build: an LLM generates varied prompts →
-   Lumé runs → an LLM judge grades each against `LUME_UX_PRINCIPLES.md` + the
-   LUME_ROADMAP behavioural charter + BRAND.md, flagging off-plan replies. (Regression
-   scenarios already guard known fixes.)
-3. **Finish mentality tagging:** WOE re-running now; **bulang_watch_talks** still
-   0-mentality (topic-tagged but the retag was cancelled — re-fire it). Fire tagging
-   **sequentially** — the workflow's concurrency cancels parallel dispatches. The big
-   sources (fratello/rolex_magazine/hairspring/hodinkee_shop) are deliberately NOT
-   mentality-tagged (low yield, high cost). Then build the **coaching MODE** (pillar 2)
-   that uses the tags.
-4. **B-54** — Rolex Explorer 14270 mis-tagged "Submariner": 14270 is wrongly under
-   Submariner in `watch_references_index.json`. Fix the index + re-tag + check the
-   brand-resolution gap. Quick data fix.
-5. **B-45 attribute search** — the big one: enrich listings with facets (material/dial/
-   markers) so "gold / silver dial / no-numerals" becomes filterable. Recommender substrate.
-6. Then: **per-user depth tiers** · **profile/memory store (pillar 4)** · **recommender
-   (pillar 5)** · **proactive nudges (pillar 6)** · **app-onboarding/dossier coaching** ·
-   in-app article surface (B-51) · lexicon Phase 2 · About page · bot UI/UX polish.
+1. **In-app share links** (Mark keeps flagging this). Listing links Lumé gives go to the
+   external DEALER, and article links to the raw SOURCE — should both open the app's
+   `/share/<id>` surface so the user stays in-app + can save. Fix: make `search_listings`
+   return an in-app share URL per listing + tell Lumé to link to that (not the dealer url).
+   Check the share-id scheme (e.g. the-watch-list.app/share/f49153c5e1fa). Build an in-app
+   ARTICLE view too (B-51).
+2. **Index Tudor snowflake reference data** (the REAL accuracy fix). Lumé asserted "7021 is
+   the only dated snowflake" — wrong (9411 has a date, per its own linked source). The new
+   prompt HEDGES, but the durable fix is getting Tudor Submariner (snowflake) into the
+   reference index/synthesis (reference_sources/<slug> → corpus → reference_synthesis.py).
+3. **Lumé sees on-screen context** (last UI-cluster piece). Filters are App.js React STATE
+   (filterBrands/Models/Sources/search/tab), NOT the URL. **Hook-safe:** a self-contained
+   `<LumeContextPublisher>` App mounts next to the shell → a `LumeContext` bus; ChatBubbleHost
+   reads it at send-time. Do NOT add a hook deep in App.js after the early returns (#310).
+   Reuses B-52's LumeBus.
+4. **Coaching mode** — actually USE the 383 mentality-tagged articles: a "how to be a better
+   collector / the psychology" experience (pillar 2). search_articles returns `themes`.
+5. **Search by attributes (B-45)** — the big one Mark keeps hitting: enrich listings with
+   facets (material/dial colour/markers) so "gold / silver dial / no-numerals" is filterable.
+   Recommender substrate.
+6. **Discovery eval** — LLM-judge over generated prompts, graded vs LUME_UX_PRINCIPLES +
+   the charter + BRAND, to find NEW issues (regression scenarios already guard fixes).
+   NB current eval: **8/9 green**; 1 slip = attribute-in-query on wordy "advice" phrasing
+   (a quick prompt tighten).
+7. **Explorer-as-Submariner (B-54)** — 14270 wrongly filed under Submariner in
+   `watch_references_index.json`; fix the index + re-tag + the brand-resolution gap.
+8. **Cheap mentality top-up** — retag the 3 small sources (bring_a_loupe / onthedash /
+   hodinkee_reference, ~50¢) for more coaching coverage. Fire SEQUENTIALLY (concurrency
+   cancels parallel). Big sources stay un-tagged (low yield).
+9. Then: **recommender (pillar 5)** · **proactive nudges (pillar 6)** · **onboarding/dossier
+   coaching** · **per-user depth tiers** · lexicon Phase 2 · About page · bot UI/UX polish.
 
 ## Gotchas surfaced today
 - **index-corpus-topics commit step must keep its `git add` list in lockstep with
