@@ -5,7 +5,7 @@
  */
 import fs from "fs";
 import path from "path";
-import { WEB_SEARCH_TOOL, collectWebCitations } from "../api/lume_reference.js";
+import { WEB_SEARCH_TOOL, collectWebCitations, collectWebSearchQueries } from "../api/lume_reference.js";
 
 test("WEB_SEARCH_TOOL is the native server tool with a bounded max_uses", () => {
   expect(WEB_SEARCH_TOOL.type).toBe("web_search_20250305");
@@ -36,6 +36,26 @@ test("collectWebCitations is a no-op on empty / malformed content", () => {
   const sink = [];
   collectWebCitations(undefined, sink);
   collectWebCitations([{ type: "tool_use" }, { type: "text" }], sink);
+  expect(sink).toEqual([]);
+});
+
+test("collectWebSearchQueries pulls deduped web_search queries", () => {
+  const sink = [];
+  const content = [
+    { type: "server_tool_use", name: "web_search", input: { query: "tudor snowflake 9411 date" } },
+    { type: "server_tool_use", name: "web_search", input: { query: "tudor snowflake 9411 date" } }, // dup
+    { type: "server_tool_use", name: "web_search", input: { query: "JLC E2643 shark" } },
+    { type: "server_tool_use", name: "other_tool", input: { query: "ignored" } }, // not web_search
+    { type: "text", text: "not a tool use" },
+  ];
+  collectWebSearchQueries(content, sink);
+  expect(sink).toEqual(["tudor snowflake 9411 date", "JLC E2643 shark"]);
+});
+
+test("collectWebSearchQueries is a no-op on empty / malformed content", () => {
+  const sink = [];
+  collectWebSearchQueries(undefined, sink);
+  collectWebSearchQueries([{ type: "server_tool_use", name: "web_search" }], sink); // no input
   expect(sink).toEqual([]);
 });
 
