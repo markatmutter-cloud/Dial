@@ -2466,6 +2466,22 @@
         "270.0.54"
       ],
       "years": "270.8.54: 1990s–2006 · 250.8.86: 1997–2003 · 250.2.86: 1990s · 217.64.40: 2000s"
+    },
+    "Shark / Vogue Chronograph": {
+      "nicknames": [
+        "Shark Deep Sea",
+        "Shark",
+        "Vogue Chronograph",
+        "Deep Sea Chronograph",
+        "Great White Shark"
+      ],
+      "notes": "JLC’s late-1960s sport/dive chronograph, sold under two market names for one reference (E2643). Defining feature is the interchangeable-bezel system, letting the watch read as a diver, telemeter chronograph, or world-time travel watch — a genuine bridge watch between the dive, travel and Valjoux-72 chronograph worlds. Movement is cited variously as Valjoux 72, cal. 726, or JLC Cal. 13 VZH (same column-wheel family). Watch-outs: “extra-complication” LeCoultre chronographs (added GMT, triple-date, 24-hour) are a known fake pattern (WatchProSite); the white 24-hour bezel is debated; completeness (box + spare bezels + guarantee + extract) matters strongly. Reference page authored from a verified research dossier (see `docs/reference_research/jlc_shark_vogue_e2643.md` + `src/data/referencePages/jlcSharkVogue_e2643.js`). For listing matching: dial signature (LeCoultre vs Jaeger-LeCoultre), fitted bezel and any spares, movement calibre, and case sharpness on the big lugs.",
+      "refs": [
+        "E2643",
+        "2643",
+        "2643"
+      ],
+      "years": "c. 1968–1971"
     }
   },
   "Laurent Ferrier": {

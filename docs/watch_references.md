@@ -661,6 +661,15 @@ A structured Markdown reference index for a vintage and collectible watch listin
 - **Common nicknames**: “Triple Crown” (E859 — three crowns), “Polaris Memovox” (the original divers’ alarm), “Mariner” (modern Mariner Memovox)
 - **Notes**: The vintage Polaris E859 (1965–71, total production ~1714 pieces) is one of the most celebrated vintage divers — a Memovox alarm in an oversized 42mm Ervin Piquerez super-compressor case, with the alarm engineered to be audible underwater. Modern Polaris was launched in 2018 with the Memovox Q9008470 leading a sport-luxury collection. The 2022 Polaris Date Q9028180 in 42mm with lacquered dial replaced earlier 41mm refs. Listing-critical: vintage E859 must show original three crossed-hatch crowns, intact lume on inner bezel and dial, 16-hole caseback resonator, and dial signed “Jaeger-LeCoultre” (Europe) or “LeCoultre” (US). Modern listings should specify Memovox vs. Date vs. Chronograph and bracelet option.
 
+### Model line: Shark / Vogue Chronograph
+
+- **Refs**: `E2643`, `E 2643`, `2643`
+- **Years**: c. 1968–1971
+- **Designer / movement**: Valjoux-based manual chronograph — Valjoux 72 / later cal. 726, JLC designation Cal. 13 VZH (Valjoux R72), column-wheel, 18,000–21,600 vph, ~120m WR
+- **Key identifiers**: Large (~40–40.5mm) angular steel case with thick Type-XX-adjacent lugs and pump pushers; reverse-panda dial (rare all-black variant) with inner tachymeter scale; gridded/hashed crown (Polaris lineage); system of interchangeable bezels — 60-minute/diving, telemeter, and world-time/24-hour; dial signed “LeCoultre” (US market) or “Jaeger-LeCoultre” (Europe).
+- **Common nicknames**: “Shark Deep Sea” / “Shark” (US market), “Vogue Chronograph” / “Deep Sea Chronograph” (Europe), “Great White Shark” (rare white 24-hour bezel variant)
+- **Notes**: JLC’s late-1960s sport/dive chronograph, sold under two market names for one reference (E2643). Defining feature is the interchangeable-bezel system, letting the watch read as a diver, telemeter chronograph, or world-time travel watch — a genuine bridge watch between the dive, travel and Valjoux-72 chronograph worlds. Movement is cited variously as Valjoux 72, cal. 726, or JLC Cal. 13 VZH (same column-wheel family). Watch-outs: “extra-complication” LeCoultre chronographs (added GMT, triple-date, 24-hour) are a known fake pattern (WatchProSite); the white 24-hour bezel is debated; completeness (box + spare bezels + guarantee + extract) matters strongly. Reference page authored from a verified research dossier (see `docs/reference_research/jlc_shark_vogue_e2643.md` + `src/data/referencePages/jlcSharkVogue_e2643.js`). For listing matching: dial signature (LeCoultre vs Jaeger-LeCoultre), fitted bezel and any spares, movement calibre, and case sharpness on the big lugs.
+
 ### Model line: Master Control / Master series
 
 - **Refs**: `Q1548530` (Master Ultra Thin), `Q1238420` (Master Ultra Thin Moon), `Q1558420` (Master Control Date), `Q4148420` (Master Control Chronograph), `Q1418470` (Master Geographic), `Q1428421` (Master Calendar), `Q1368420` (Master Compressor — different sub-line), `Q1558530` (Master Control Memovox)
