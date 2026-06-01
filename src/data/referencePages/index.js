@@ -11,11 +11,13 @@
 // the tree is derived from this registry. See docs/REFERENCE_STRUCTURE_PLAN.md.
 
 import rolexSubmariner5512_5513 from "./rolexSubmariner_5512_5513";
+import jlcSharkVogue_e2643 from "./jlcSharkVogue_e2643";
 import omegaSeamaster300_165024 from "./omegaSeamaster300_165024";
 import omegaRailmaster_ck2914 from "./omegaRailmaster_ck2914";
 
 export const REFERENCE_NODES = [
   rolexSubmariner5512_5513,
+  jlcSharkVogue_e2643,
   omegaSeamaster300_165024,
   omegaRailmaster_ck2914,
 ];
