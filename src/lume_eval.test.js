@@ -13,6 +13,13 @@
  * LUME_EVAL=1 — via the tag-... no, via .github/workflows/lume-eval.yml, which
  * sets the key + flag in CI. Use it as a regression gate before/after prompt edits.
  */
+// Pure rubric/answer-key (no SDK) — safe to import even on a skipped run.
+import {
+  JUDGE_MODEL, JUDGE_SYSTEM, buildJudgeUser, parseJudgeResult,
+  GROUNDING_SYSTEM, buildGroundingUser, parseGroundingResult,
+} from "./lume_eval_rubric";
+import { ANSWER_KEY } from "./lume_eval_answer_key";
+
 const RUN = process.env.LUME_EVAL === "1";
 const suite = RUN ? describe : describe.skip;
 const TIMEOUT = 120000;
@@ -118,6 +125,33 @@ const PLUMBING = /not (yet )?(in|within) (our|the)[^.]{0,25}(index|corpus|covera
 const FALLBACK = /hit my limit working that one out/i;
 const names = (r) => r.toolCalls.map((t) => t.name);
 
+// ── LLM-judge helpers (charter conformance + grounding) ───────────────
+// Score a reply against the charter rubric (semantic, not regex). Uses the
+// cheap JUDGE_MODEL. Returns the parsed {scores, failures, ok}.
+async function judge(userText, reply) {
+  await load();
+  const client = new Anthropic();
+  const resp = await client.messages.create({
+    model: JUDGE_MODEL, max_tokens: 700,
+    system: [{ type: "text", text: JUDGE_SYSTEM }],
+    messages: [{ role: "user", content: buildJudgeUser(userText, reply) }],
+  });
+  const txt = resp.content.filter((b) => b.type === "text").map((b) => b.text).join("\n");
+  return parseJudgeResult(txt);
+}
+// Focused grounding check: does the reply CONTRADICT a verified fact?
+async function judgeGrounding(fact, question, reply) {
+  await load();
+  const client = new Anthropic();
+  const resp = await client.messages.create({
+    model: JUDGE_MODEL, max_tokens: 300,
+    system: [{ type: "text", text: GROUNDING_SYSTEM }],
+    messages: [{ role: "user", content: buildGroundingUser(fact, question, reply) }],
+  });
+  const txt = resp.content.filter((b) => b.type === "text").map((b) => b.text).join("\n");
+  return parseGroundingResult(txt);
+}
+
 suite("Lumé eval — live behaviour (LUME_EVAL=1)", () => {
   test("Enicar: reaches the article corpus, no plumbing-talk", async () => {
     const r = await runTurn("Tell me about the Enicar Sherpa Super Jet — does it have a date window?");
@@ -189,4 +223,39 @@ suite("Lumé eval — live behaviour (LUME_EVAL=1)", () => {
     }
     expect(r.rawText).not.toMatch(FALLBACK);
   }, TIMEOUT);
+});
+
+// Semantic charter conformance — the LLM-judge scores each reply against the
+// rubric (grounded / no-plumbing / no-hierarchy / defers / not-our-stock /
+// in-scope / next-step / cited / voice). Catches violations the regex asserts
+// above can't phrase. A critical-dim failure fails the test (with the note).
+suite("Lumé eval — charter conformance (LLM-judge)", () => {
+  const cases = [
+    "Tell me about the Rolex Submariner 5513.",         // knowledge + voice + next-step
+    "I really like gold watches.",                       // taste → engage, not 'we have N'
+    "What models does the Tudor Submariner snowflake include?", // grounding + no dead-end
+    "Can you recommend a watch for me?",                 // cold-start rapport + a real next step
+  ];
+  for (const prompt of cases) {
+    test(`charter: "${prompt.slice(0, 38)}…"`, async () => {
+      const r = await runTurn(prompt);
+      const v = await judge(prompt, r.finalText || r.rawText);
+      if (!v.ok) console.error(`Charter failures for "${prompt}":`, JSON.stringify(v.failures, null, 2));
+      expect(v.failures).toEqual([]);
+    }, TIMEOUT);
+  }
+});
+
+// Grounding answer-key — ask each verified-fact question, confirm the reply does
+// NOT contradict the fact (silence is fine; a wrong claim fails). The verified
+// guides are the answer key; grow ANSWER_KEY as guides are authored.
+suite("Lumé eval — grounding answer-key (no contradictions)", () => {
+  for (const a of ANSWER_KEY) {
+    test(`grounding: ${a.id}`, async () => {
+      const r = await runTurn(a.question);
+      const g = await judgeGrounding(a.fact, a.question, r.finalText || r.rawText);
+      if (g.contradicts) console.error(`Grounding contradiction (${a.id}): ${g.note}`);
+      expect(g.contradicts).toBe(false);
+    }, TIMEOUT);
+  }
 });
