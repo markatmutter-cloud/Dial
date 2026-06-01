@@ -659,9 +659,9 @@ export function DesktopShell(props) {
         const showFullFilterRow =
           (tab === "listings" && showListingsFilterRow) ||
           inListsDrillIn ||
-          (tab === "watchlist" && watchTopTab !== "searches" &&
-            watchTopTab !== "my-collection" && watchTopTab !== "wishlist" &&
-            watchTopTab !== "lists" && watchTopTab !== "challenges");
+          // Lists tab: the filter row belongs to the Hearted surface only
+          // (2026-06-01). Lists / Searches / Shared are not filterable grids.
+          (tab === "watchlist" && watchTopTab === "hearted");
         // Full filter row carries search + chips + sort. Tabs without
         // an applicable chip set fall through to a slim search-only
         // row so the search stays at the same vertical position

@@ -58,7 +58,7 @@ export function buildMockShellProps(overrides = {}) {
     user: { id: "test-user", email: "test@example.com" },
     visibleBrands: ["Rolex", "Omega"],
     visibleSources: ["Wind Vintage", "Menta"],
-    watchTopTab: "listings",
+    watchTopTab: "hearted",
     watchlist: {},
 
     // Setters / handlers — all noops by default
