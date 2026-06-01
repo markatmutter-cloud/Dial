@@ -166,7 +166,10 @@ export function ReferencePage({
     <div style={{ background: "var(--bg)", paddingBottom: isMobile ? 60 : 48 }}>
       {/* HERO */}
       <div style={{ position: "relative", width: "100%", height: isMobile ? 320 : 480, overflow: "hidden" }}>
-        <img src={imgSrc(node.hero.img)} alt={`${node.brand} ${node.modelLine} ${node.group}`} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+        {/* Hero is a full-width banner — request it at 1600px (vs imgSrc's 720
+            default) so it's sharp on wide/retina screens. wsrv's `we` flag means
+            no upscaling, so smaller-source heroes are still safe. */}
+        <img src={imgSrc(node.hero.img, 1600)} alt={`${node.brand} ${node.modelLine} ${node.group}`} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.74) 0%, rgba(0,0,0,0.18) 48%, rgba(0,0,0,0.05) 100%)" }} />
         <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, padding: isMobile ? "0 16px 20px" : "0 20px 34px" }}>
           <div style={{ maxWidth: MAXW, margin: "0 auto" }}>
