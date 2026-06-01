@@ -43,6 +43,14 @@ jobs:
       - name: Install deps
         run: npm install --no-audit --no-fund
       - name: Run Lumé eval
+        # INFORMATIONAL, not a hard block. Lumé is nondeterministic, so a binary
+        # pass/fail gate flakes run-to-run even with N-sampling (borderline scenarios
+        # ~60-70% pass). continue-on-error surfaces the run + findings WITHOUT
+        # red-blocking the PR (matches this repo's scraper continue-on-error rule).
+        # The real signal is the per-scenario pass-RATE trend (scorecard, planned),
+        # reviewed by a human — not a single green/red. Read the log/console for the
+        # judge notes + grounding contradictions each run produces.
+        continue-on-error: true
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           LUME_EVAL: "1"

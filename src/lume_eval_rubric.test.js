@@ -6,8 +6,11 @@
 import {
   RUBRIC, JUDGE_THRESHOLD, buildJudgeUser, parseJudgeResult,
   buildGroundingUser, parseGroundingResult,
+  groundingSource, groundedInKnowledge, ledWithListings, RETRIEVAL_HIERARCHY,
 } from "./lume_eval_rubric";
 import { ANSWER_KEY } from "./lume_eval_answer_key";
+
+const calls = (...names) => names.map((name) => ({ name }));
 
 const fullScore = (n) =>
   JSON.stringify(Object.fromEntries(RUBRIC.map((d) => [d.key, { score: n, note: "x" }])));
@@ -69,6 +72,30 @@ test("parseGroundingResult reads the contradiction flag", () => {
   expect(parseGroundingResult('{"contradicts":false}').contradicts).toBe(false);
   expect(parseGroundingResult("garbage").contradicts).toBe(false); // default safe
   expect(buildGroundingUser("FACT", "Q", "REPLY")).toContain("FACT");
+});
+
+test("groundingSource picks the highest-priority source per the hierarchy", () => {
+  // get_reference wins even when listings were also searched
+  expect(groundingSource(calls("search_listings", "get_reference"))).toBe("reference");
+  expect(groundingSource(calls("search_articles", "search_listings"))).toBe("articles");
+  expect(groundingSource(calls("get_auction_state", "search_listings"))).toBe("auctions");
+  expect(groundingSource(calls("search_listings"))).toBe("listings");
+  // free-recall / non-knowledge tools only → none
+  expect(groundingSource(calls("get_user_context"))).toBe("none");
+  expect(groundingSource([])).toBe("none");
+  expect(groundingSource(undefined)).toBe("none");
+});
+
+test("groundedInKnowledge / ledWithListings classify the learning-prompt bar", () => {
+  expect(groundedInKnowledge(calls("get_reference", "search_listings"))).toBe(true);
+  expect(groundedInKnowledge(calls("search_articles"))).toBe(true);
+  expect(groundedInKnowledge(calls("search_listings"))).toBe(false);
+  expect(groundedInKnowledge(calls("get_user_context"))).toBe(false); // free-recall
+  // ledWithListings = listings reached but NO knowledge source (the E2643 anti-pattern)
+  expect(ledWithListings(calls("search_listings"))).toBe(true);
+  expect(ledWithListings(calls("get_reference", "search_listings"))).toBe(false);
+  expect(ledWithListings(calls("get_user_context"))).toBe(false);
+  expect(RETRIEVAL_HIERARCHY.indexOf("reference")).toBeLessThan(RETRIEVAL_HIERARCHY.indexOf("listings"));
 });
 
 test("ANSWER_KEY entries are well-formed and uniquely id'd", () => {

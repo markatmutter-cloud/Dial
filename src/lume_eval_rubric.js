@@ -91,3 +91,42 @@ export function parseGroundingResult(text) {
   const obj = extractJson(text) || {};
   return { contradicts: obj.contradicts === true, note: String(obj.note || "") };
 }
+
+// ── retrieval-source assertion (groundwork for the retrieval-hierarchy phase) ──
+// The desired hierarchy for a LEARNING/reference prompt: the watch's own reference
+// guide should win, listings should NOT outrank it, and free-recall is last resort.
+// These helpers read the eval's toolCalls so scenarios can assert WHICH source Lumé
+// grounded in — e.g. "tell me about X" must reach `reference`, not lead with
+// `listings` or answer from `none` (free-recall). The next phase wires the actual
+// hierarchy in api/chat.js; this is the test hook that proves it.
+export const RETRIEVAL_HIERARCHY = ["reference", "articles", "auctions", "listings"];
+
+// Map a tool name to its retrieval-source bucket (null = not a grounding source).
+function sourceOf(name) {
+  if (name === "get_reference") return "reference";
+  if (name === "search_articles") return "articles";
+  if (name === "get_auction_state") return "auctions";
+  if (name === "search_listings") return "listings";
+  return null; // get_user_context / web_search / unknown → not a knowledge source
+}
+
+// The single highest-priority source Lumé grounded in this turn (per the hierarchy),
+// or "none" if it answered from free-recall / no knowledge tool.
+export function groundingSource(toolCalls) {
+  const used = new Set((toolCalls || []).map((t) => sourceOf(t && t.name)).filter(Boolean));
+  for (const s of RETRIEVAL_HIERARCHY) if (used.has(s)) return s;
+  return "none";
+}
+
+// True if Lumé reached a KNOWLEDGE source (reference guide or articles) rather than
+// leading with listings or answering from free-recall — the bar for a learning prompt.
+export function groundedInKnowledge(toolCalls) {
+  const s = groundingSource(toolCalls);
+  return s === "reference" || s === "articles";
+}
+
+// True if Lumé led with listings WITHOUT reaching a knowledge source first — the
+// anti-pattern for a learning/reference prompt (the E2643 "led with a Falco listing").
+export function ledWithListings(toolCalls) {
+  return groundingSource(toolCalls) === "listings";
+}

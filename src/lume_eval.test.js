@@ -17,6 +17,7 @@
 import {
   JUDGE_MODEL, JUDGE_SYSTEM, buildJudgeUser, parseJudgeResult,
   GROUNDING_SYSTEM, buildGroundingUser, parseGroundingResult,
+  groundedInKnowledge,
 } from "./lume_eval_rubric";
 import { ANSWER_KEY } from "./lume_eval_answer_key";
 
@@ -192,7 +193,9 @@ suite("Lumé eval — live behaviour (LUME_EVAL=1)", () => {
 
   evalTest("Watch question leads with knowledge, not listings", async () => {
     const r = await runTurn("Does the Rolex GMT-Master 1675 have a date window?");
-    expect(names(r).some((n) => n === "get_reference" || n === "search_articles")).toBe(true);
+    // Retrieval-source assertion: a learning prompt must ground in a KNOWLEDGE
+    // source (reference guide / articles), not lead with listings or free-recall.
+    expect(groundedInKnowledge(r.toolCalls)).toBe(true);
     expect(r.finalText.length).toBeGreaterThan(0);
   });
 
