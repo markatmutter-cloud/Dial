@@ -599,13 +599,22 @@ export function CollectionsTab({
   // automatically via currentWatchTopTab.
   let body;
   if (subTab === "hearted") {
-    // The Lists tab's default landing — the user's hearted watches in the
-    // standard grid, with the shared filter bar + group-by (None/Dealer/
-    // Brand). Self-contained component (its own hooks) to keep this
-    // dispatch render-only and #310-safe.
+    // The Lists tab's default landing — hearted watches in the standard grid
+    // (filter bar + group-by None/Dealer/Brand), with a type filter to the
+    // saved Articles + Sales bookmark sections (Phase 2a — restores what the
+    // old "Saved" band carried). Self-contained component (its own hooks) so
+    // this dispatch stays render-only and #310-safe. Saved articles derive
+    // from the watchlist (kind==='article'); sales come via props.
+    const heartedArticles = Object.values(watchlist || {})
+      .filter(v => v && v.kind === "article")
+      .sort((a, b) => String(b.savedAt || "").localeCompare(String(a.savedAt || "")));
     body = (
       <HeartedView
         items={watchItems}
+        articles={heartedArticles}
+        auctions={savedAuctions || []}
+        onOpenSale={onOpenSale}
+        onToggleSaveAuction={onToggleSaveAuction}
         isMobile={isMobile}
         gridStyle={gridStyle}
         compact={compact}
