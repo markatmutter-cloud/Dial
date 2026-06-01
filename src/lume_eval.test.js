@@ -251,6 +251,7 @@ suite("Lumé eval — live behaviour (LUME_EVAL=1)", () => {
 // green = "no NEW issue". Un-skip these as that phase fixes the grounding/retrieval.
 const DEFERRED_CHARTER = new Set([
   "What models does the Tudor Submariner snowflake include?", // ungrounded free-recall (snowflake not in corpus)
+  "Tell me about the Rolex Submariner 5513.",                 // free-recalls uncited prices/calibres/figures (grounded:2) — the headline "tell me about X" bug; retrieval must gate the answer
 ]);
 const DEFERRED_GROUNDING = new Set([
   "e2643-signature", // says LeCoultre sig = "earlier production" (temporal); it's US-market (geographic)
