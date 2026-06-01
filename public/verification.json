@@ -1,16 +1,16 @@
 {
-  "date": "2026-05-31",
-  "updated_at": "2026-05-31T21:32:56+00:00",
+  "date": "2026-06-01",
+  "updated_at": "2026-06-01T07:28:09+00:00",
   "alerts": [],
   "counts": {
-    "Wind Vintage": 107,
+    "Wind Vintage": 106,
     "Tropical Watch": 100,
     "Menta Watches": 39,
     "Collectors Corner NY": 56,
     "Falco Watches": 92,
     "Grey & Patina": 49,
-    "Oliver & Clarke": 87,
-    "Craft & Tailored": 64,
+    "Oliver & Clarke": 86,
+    "Craft & Tailored": 63,
     "Watch Brothers London": 15,
     "MVV Watches": 42,
     "DB1983": 25,
@@ -30,7 +30,7 @@
     "Shuck the Oyster": 131,
     "Central Watch": 179,
     "European Watch": 17,
-    "Vintage Watch Collective": 33,
+    "Vintage Watch Collective": 32,
     "Vision Vintage Watches": 34,
     "Watchurbia": 7,
     "Maunder Watches": 86,
@@ -45,6 +45,6 @@
     "Watch Center": 275,
     "eBay": 25
   },
-  "total_listings": 3602,
+  "total_listings": 3598,
   "sources_tracked": 41
 }
