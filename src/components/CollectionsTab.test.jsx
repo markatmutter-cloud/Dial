@@ -161,9 +161,10 @@ describe("CollectionsTab render-without-crash", () => {
       heartedItem("c", "Omega", "Menta", "2026-05-30T00:00:00Z"),
     ];
     render(<CollectionsTab {...buildProps({ collectionsSubTab: "hearted", watchItems: items })} />);
-    // Largest group (Wind Vintage ×2) leads; both dealer headers present.
-    expect(screen.getByText("Wind Vintage")).toBeInTheDocument();
-    expect(screen.getByText("Menta")).toBeInTheDocument();
+    // Largest group (Wind Vintage ×2) leads; both dealer groups render.
+    // (Dealer names also appear inside cards, so assert >= 1, not exactly 1.)
+    expect(screen.getAllByText("Wind Vintage").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Menta").length).toBeGreaterThan(0);
     try { localStorage.removeItem("dial_hearted_group_by"); } catch {}
   });
 
