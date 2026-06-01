@@ -10,6 +10,28 @@ of the **knowledge-gap loop**: Lumé's web search surfaces what our corpus can't
 answer → you research it → you enrich the reference here → Lumé can now answer it
 from the moat.
 
+## What to enrich next — the gap backlog
+
+You don't have to guess what to author. Every turn where Lumé reaches the open web
+is logged to `public.lume_knowledge_gaps` (question · the search queries it ran ·
+the URLs it cited · whether it tried the corpus first). That's a **demand-ranked
+backlog**: the topics real users ask that our corpus can't answer — with the
+research URLs already gathered. Read it (admin / MCP) with:
+
+```sql
+-- recent gaps
+select created_at, question, queries, corpus_tried
+from public.lume_knowledge_gaps order by created_at desc limit 50;
+
+-- rough demand ranking: which search terms recur most
+select jsonb_array_elements_text(queries) as query, count(*) as n
+from public.lume_knowledge_gaps group by 1 order by n desc limit 30;
+```
+
+A recurring gap → author/enrich that reference (steps below); the cited URLs in
+the row are your starting source list. Once it's in the corpus, Lumé stops needing
+the web for it and the gap stops recurring — the loop closes.
+
 ## The three homes a source can live in
 
 A source can feed up to three places, and **Lumé reaches each differently** — so

@@ -33,6 +33,7 @@ import {
   searchArticles,
   WEB_SEARCH_TOOL,
   collectWebCitations,
+  collectWebSearchQueries,
 } from "./lume_reference.js";
 
 // ── config ───────────────────────────────────────────────────────────
@@ -478,6 +479,8 @@ export default async function handler(req, res) {
   let finalText = "";
   let actions = [];
   const webCitations = []; // {url,title} harvested off web-search text blocks
+  const webQueries = [];   // the search strings Lumé issued (knowledge-gap log)
+  let corpusTried = false; // did it call get_reference/search_articles this turn?
   const convo = messages.map((m) => ({ role: m.role, content: m.content }));
 
   try {
@@ -499,6 +502,7 @@ export default async function handler(req, res) {
       inputTok += (u.input_tokens || 0) + (u.cache_read_input_tokens || 0) + (u.cache_creation_input_tokens || 0);
       outputTok += u.output_tokens || 0;
       collectWebCitations(resp.content, webCitations);
+      collectWebSearchQueries(resp.content, webQueries);
 
       if (resp.stop_reason === "pause_turn") {
         // Server-side web search needs another round-trip to finish the turn —
@@ -514,6 +518,9 @@ export default async function handler(req, res) {
         const toolUses = resp.content.filter((b) => b.type === "tool_use");
         const toolResults = [];
         for (const tu of toolUses) {
+          // Web is last-resort, so a corpus knowledge-tool call this turn means
+          // "our corpus was tried first" — recorded on the gap log.
+          if (tu.name === "get_reference" || tu.name === "search_articles") corpusTried = true;
           const result = await runTool(tu.name, tu.input, sb);
           toolResults.push({
             type: "tool_result",
@@ -607,6 +614,25 @@ export default async function handler(req, res) {
   try {
     await sb.rpc("log_chat_tokens", { p_input: inputTok, p_output: outputTok, p_model: model });
   } catch {}
+
+  // 6) Knowledge-gap log (best-effort): if Lumé reached the web this turn, our
+  // corpus couldn't answer it — record the gap (question + queries + cited URLs)
+  // as the demand signal for which reference guide/article to author next.
+  if (webQueries.length || webCitations.length) {
+    try {
+      const lastUser = [...messages].reverse().find((m) => m.role === "user");
+      const question = lastUser
+        ? (typeof lastUser.content === "string" ? lastUser.content : JSON.stringify(lastUser.content)).slice(0, 2000)
+        : null;
+      await sb.rpc("log_knowledge_gap", {
+        p_question: question,
+        p_queries: webQueries,
+        p_results: webCitations,
+        p_corpus_tried: corpusTried,
+        p_model: model,
+      });
+    } catch {}
+  }
 
   res.status(200).json({ reply: finalText, actions, model });
 }

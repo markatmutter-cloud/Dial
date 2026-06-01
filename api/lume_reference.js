@@ -236,3 +236,14 @@ export function collectWebCitations(content, sink) {
     }
   }
 }
+
+// Harvest the search strings Lumé issued to the web_search server tool into
+// `sink` (deduped). They arrive as `server_tool_use` blocks with name
+// "web_search" and an input.query. Feeds the knowledge-gap log.
+export function collectWebSearchQueries(content, sink) {
+  for (const b of content || []) {
+    if (b.type !== "server_tool_use" || b.name !== "web_search") continue;
+    const q = b.input && b.input.query;
+    if (typeof q === "string" && q && !sink.includes(q)) sink.push(q);
+  }
+}
