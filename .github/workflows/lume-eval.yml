@@ -9,10 +9,25 @@ name: Lumé eval (live behaviour)
 # workflow sets the flag + the ANTHROPIC_API_KEY secret. Costs ~$0.30-0.80/run
 # (a few Opus/Haiku turns). A failing scenario fails the run = regression gate.
 #
-# Trigger: Actions tab → "Lumé eval (live behaviour)" → Run workflow.
+# Triggers:
+#  - Manual: Actions tab → "Lumé eval (live behaviour)" → Run workflow.
+#  - AUTO-GATE: any PR touching the prompt / tools / eval files runs it (so a
+#    behaviour-changing edit can't ship without the regression + judge net). It
+#    reports pass/fail as a PR check; merges aren't hard-blocked (no branch
+#    protection) so a flaky run is informational, not a wall. Costs ~$1-2/run.
+#    (Phase 2 will add a scheduled discovery sweep here.)
 
 on:
   workflow_dispatch:
+  pull_request:
+    paths:
+      - "public/lume_system_prompt.txt"
+      - "api/chat.js"
+      - "api/lume_reference.js"
+      - "src/lume_eval.test.js"
+      - "src/lume_eval_rubric.js"
+      - "src/lume_eval_answer_key.js"
+      - ".github/workflows/lume-eval.yml"
 
 permissions:
   contents: read
@@ -28,6 +43,14 @@ jobs:
       - name: Install deps
         run: npm install --no-audit --no-fund
       - name: Run Lumé eval
+        # INFORMATIONAL, not a hard block. Lumé is nondeterministic, so a binary
+        # pass/fail gate flakes run-to-run even with N-sampling (borderline scenarios
+        # ~60-70% pass). continue-on-error surfaces the run + findings WITHOUT
+        # red-blocking the PR (matches this repo's scraper continue-on-error rule).
+        # The real signal is the per-scenario pass-RATE trend (scorecard, planned),
+        # reviewed by a human — not a single green/red. Read the log/console for the
+        # judge notes + grounding contradictions each run produces.
+        continue-on-error: true
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           LUME_EVAL: "1"
