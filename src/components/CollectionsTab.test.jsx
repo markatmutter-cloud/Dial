@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { CollectionsTab } from "./CollectionsTab";
 
 // Render-without-crash smoke tests for CollectionsTab + its sub-views
@@ -166,6 +166,22 @@ describe("CollectionsTab render-without-crash", () => {
     expect(screen.getAllByText("Wind Vintage").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Menta").length).toBeGreaterThan(0);
     try { localStorage.removeItem("dial_hearted_group_by"); } catch {}
+  });
+
+  test("Hearted sub-tab surfaces saved Articles as a type section", () => {
+    const articleSnap = {
+      id: "art1", kind: "article", url: "https://example.com/a", img: "",
+      title: "Why the Seamaster matters", article: { source_label: "Bring a Loupe" },
+    };
+    render(<CollectionsTab {...buildProps({
+      collectionsSubTab: "hearted",
+      watchItems: [],
+      watchlist: { art1: articleSnap },
+    })} />);
+    // Type filter shows Articles; switching to it renders the saved article.
+    const articlesBtn = screen.getByRole("button", { name: /Articles/ });
+    fireEvent.click(articlesBtn);
+    expect(screen.getByText("Why the Seamaster matters")).toBeInTheDocument();
   });
 
   test("Searches sub-tab renders without throwing", () => {
