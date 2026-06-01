@@ -91,6 +91,7 @@ function buildProps(overrides = {}) {
     collectionsSubTab: "my-collection",
     setCollectionsSubTab: noop,
     tabResetTick: 0,
+    activeFiltersStripJSX: null,
     // B-08 unified Watchlists landing props (searches section + Watchbox
     // hero). ListsView guards/defaults each; pass them so the "Lists
     // sub-tab" test exercises the real prop set.
@@ -131,6 +132,51 @@ describe("CollectionsTab render-without-crash", () => {
   test("Challenges sub-tab renders without throwing", () => {
     expect(() => {
       render(<CollectionsTab {...buildProps({ collectionsSubTab: "challenges" })} />);
+    }).not.toThrow();
+  });
+
+  // 2026-06-01 Lists redesign — the four new sub-tabs.
+  const heartedItem = (id, brand, source, savedAt) => ({
+    id, brand, source, savedAt,
+    ref: "1675", model: brand, title: `${brand} ${id}`,
+    price: 10000, priceUSD: 10000, savedPrice: 10000, savedPriceUSD: 10000,
+    currency: "USD", url: `https://example.com/${id}`, img: "",
+  });
+
+  test("Hearted sub-tab (default landing) renders without throwing", () => {
+    const items = [
+      heartedItem("a", "Rolex", "Wind Vintage", "2026-06-01T00:00:00Z"),
+      heartedItem("b", "Omega", "Menta", "2026-05-30T00:00:00Z"),
+    ];
+    expect(() => {
+      render(<CollectionsTab {...buildProps({ collectionsSubTab: "hearted", watchItems: items })} />);
+    }).not.toThrow();
+  });
+
+  test("Hearted sub-tab grouped by dealer shows group headers (buildGroups)", () => {
+    try { localStorage.setItem("dial_hearted_group_by", "dealer"); } catch {}
+    const items = [
+      heartedItem("a", "Rolex", "Wind Vintage", "2026-06-01T00:00:00Z"),
+      heartedItem("b", "Rolex", "Wind Vintage", "2026-05-31T00:00:00Z"),
+      heartedItem("c", "Omega", "Menta", "2026-05-30T00:00:00Z"),
+    ];
+    render(<CollectionsTab {...buildProps({ collectionsSubTab: "hearted", watchItems: items })} />);
+    // Largest group (Wind Vintage ×2) leads; both dealer groups render.
+    // (Dealer names also appear inside cards, so assert >= 1, not exactly 1.)
+    expect(screen.getAllByText("Wind Vintage").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Menta").length).toBeGreaterThan(0);
+    try { localStorage.removeItem("dial_hearted_group_by"); } catch {}
+  });
+
+  test("Searches sub-tab renders without throwing", () => {
+    expect(() => {
+      render(<CollectionsTab {...buildProps({ collectionsSubTab: "searches" })} />);
+    }).not.toThrow();
+  });
+
+  test("Shared sub-tab renders without throwing", () => {
+    expect(() => {
+      render(<CollectionsTab {...buildProps({ collectionsSubTab: "shared" })} />);
     }).not.toThrow();
   });
 

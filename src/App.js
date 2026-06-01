@@ -367,14 +367,14 @@ export default function Watchlist() {
   // the same sub-tab key. The render dispatch downstream (in shellProps)
   // picks WatchlistTab for the watchlist-style subs and CollectionsTab
   // for the collections-style subs.
-  const SUB_VALUES_WATCHLIST = ["listings", "auctions", "sold", "searches"];
-  // PR 2026-05-22: "challenges" moved from Watchlists to Collecting.
-  // Kept in SUB_VALUES_COLLECTIONS for the moment so the internal
-  // CollectionsTab routing (challenges → ChallengesView) still
-  // dispatches; legacy `?tab=watchlist&sub=challenges` URLs get
-  // redirected to `?tab=references&sub=challenges` on init.
-  const SUB_VALUES_COLLECTIONS = ["my-collection", "wishlist", "lists", "challenges"];
-  const SUB_VALUES = [...SUB_VALUES_WATCHLIST, ...SUB_VALUES_COLLECTIONS];
+  // 2026-06-01 Lists redesign: the Lists tab is sub-tabbed and LANDS ON
+  // HEARTED by default. Four real sub-tabs, all rendered through
+  // CollectionsTab (the WatchlistTab fork is retired for this tab).
+  const SUB_VALUES = ["hearted", "lists", "searches", "shared"];
+  // Back-compat alias — the savedContentJSX dispatch + tabResetTick guard
+  // reference this name. All four sub-tabs now route to CollectionsTab, so
+  // SUB_VALUES_COLLECTIONS === SUB_VALUES.
+  const SUB_VALUES_COLLECTIONS = SUB_VALUES;
   // Bundle 2A.2b (2026-05-08) — the three hearted sub-tabs
   // (listings/auctions/sold) collapse under a single "Saved" pill in
   // the strip, with an internal Listings/Auctions/Sold toggle below.
@@ -382,21 +382,14 @@ export default function Watchlist() {
   // existing share URLs + localStorage prefs.
   const SAVED_HEARTED_SUBS = ["listings", "auctions", "sold"];
   const [watchTopTab, setWatchTopTab] = useState(() => {
-    // "my-collection" left the Watchlists sub-tab strip on 2026-05-14
-    // when My Watches moved to the avatar dropdown as Watchbox. If a
-    // user's stored watchTopTab still holds the old value, coerce to
-    // the new default ("lists") so they aren't stuck on a sub-tab
-    // with no visible pill. Legacy URL redirects handle the tab=watchlist
-    // + sub=my-collection case separately in the setTab init.
+    // Map any legacy/unknown sub-tab value to the new four-key set.
+    // Used for the URL `?sub=` deep-link (so old shared links resolve);
+    // legacy hearted/collections subs collapse to the Hearted landing.
     const normalize = (v) => {
-      // B-08 (2026-05-27): the Watchlists tab is now ONE unified
-      // screen (no sub-tabs). Every legacy sub-tab value collapses to
-      // "lists" so old URLs + stored prefs land on the single landing.
-      // (sub=challenges still redirects to the Collecting tab via the
-      // setTab init above; this only governs watchTopTab.)
-      if (["calendar", "listings", "auctions", "sold", "searches",
-           "my-collection", "wishlist", "challenges"].includes(v)) return "lists";
-      return v;
+      if (SUB_VALUES.includes(v)) return v;
+      if (v === "challenges") return "lists";
+      // listings/auctions/sold/calendar/my-collection/wishlist/etc.
+      return "hearted";
     };
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
@@ -408,28 +401,11 @@ export default function Watchlist() {
         if (SUB_VALUES.includes(sub)) return sub;
       }
     }
-    try {
-      // Prefer the unified `dial_watch_top_tab` key; only fall back to
-      // the legacy `dial_collections_sub_tab` if the unified key is
-      // missing (true first-time-after-collapse migration). Without
-      // this preference order, a user who navigates from Lists →
-      // Saved listings within a session and refreshes would get
-      // bounced back to Lists by the legacy read.
-      const v = normalize(localStorage.getItem("dial_watch_top_tab"));
-      // 2026-05-08 IA pass: hearted sub-tabs (listings/auctions/sold)
-      // are no longer pills in the strip. A user whose localStorage
-      // still holds one would land on a hidden surface with no
-      // navigation back. Coerce stale localStorage of those values
-      // to the new default "lists". URL params still win — old
-      // shared `?sub=listings` links still render the hearted grid
-      // for back-compat.
-      if (SUB_VALUES.includes(v) && !["listings", "auctions", "sold"].includes(v)) return v;
-      const collectionsLegacy = normalize(localStorage.getItem("dial_collections_sub_tab"));
-      if (SUB_VALUES_COLLECTIONS.includes(collectionsLegacy)) return collectionsLegacy;
-      // Default landing changed 2026-05-08: "lists" is the first
-      // pill in the new Watchlists strip.
-      return "lists";
-    } catch { return "lists"; }
+    // No localStorage restore: the Lists tab always OPENS on Hearted
+    // (Mark 2026-06-01 — "land here when going to lists"). In-session
+    // sub-tab choices live in React state; a fresh load resets to Hearted.
+    // (`dial_watch_top_tab` is still written below — harmless, not read.)
+    return "hearted";
   });
   useEffect(() => {
     try { localStorage.setItem("dial_watch_top_tab", watchTopTab); } catch {}
@@ -496,7 +472,6 @@ export default function Watchlist() {
   // localStorage `dial_collections_sub_tab` reads still work as a
   // legacy read in the watchTopTab init above; writes now go to
   // `dial_watch_top_tab`.
-  const COLLECTIONS_SUB_VALUES = SUB_VALUES_COLLECTIONS;
   const collectionsSubTab = watchTopTab;
   const setCollectionsSubTab = setWatchTopTab;
   // Collecting (internal `references`) tab sub-tabs (2026-05-18).
@@ -678,18 +653,17 @@ export default function Watchlist() {
     else params.set("tab", INTERNAL_TAB_TO_URL[tab] || tab);
     if (tab === "listings" && listingsSubTab !== "live") {
       params.set("sub", listingsSubTab);
-    } else if (tab === "watchlist" && watchTopTab !== "lists") {
+    } else if (tab === "watchlist" && watchTopTab !== "hearted") {
       params.set("sub", watchTopTab);
     } else if (tab === "references" && referencesSubTab !== "editorial") {
       params.set("sub", referencesSubTab);
     } else {
       params.delete("sub");
     }
-    // `col` is the drill-in id for the Lists sub-tab inside Saved.
-    // CollectionsTab itself owns the push when the user drills in;
-    // App.js strips it whenever the active sub-tab isn't a
-    // collections-style sub.
-    if (tab !== "watchlist" || !SUB_VALUES_COLLECTIONS.includes(watchTopTab)) {
+    // `col` is the drill-in id for the Lists sub-tab. Only the "lists"
+    // sub-tab owns a drill-in; CollectionsTab pushes `col` when the user
+    // drills in, App.js strips it on every other tab/sub-tab.
+    if (tab !== "watchlist" || watchTopTab !== "lists") {
       params.delete("col");
     }
     const qs = params.toString();
@@ -746,9 +720,9 @@ export default function Watchlist() {
       if (nextTab === "listings") {
         setListingsSubTab(LISTINGS_SUB_VALUES.includes(sub) ? sub : "live");
       } else if (nextTab === "watchlist") {
-        // B-08: the Watchlists tab is one unified screen — every legacy
-        // ?sub value lands on the single landing, so pin to "lists".
-        setWatchTopTab("lists");
+        // Lists is sub-tabbed again (2026-06-01): restore the sub-tab
+        // from ?sub, defaulting to the Hearted landing.
+        setWatchTopTab(SUB_VALUES.includes(sub) ? sub : "hearted");
       } else if (nextTab === "references") {
         setReferencesSubTab(REFERENCES_SUB_VALUES.includes(sub) ? sub : "editorial");
       }
@@ -1110,7 +1084,7 @@ export default function Watchlist() {
     // tapping Watchlists from another tab. Now lands on Lists.
     // On cross-main-tab navigation, reset the destination tab's sub-tab to its first value — do NOT restore from localStorage (Mark spec: clicking a tab loads the first sub-tab).
     if (newTab === "listings") setListingsSubTab("live");
-    else if (newTab === "watchlist") setWatchTopTab("lists");
+    else if (newTab === "watchlist") setWatchTopTab("hearted");
     else if (newTab === "references") setReferencesSubTab("editorial");
     setTab(newTab);
   };
@@ -3310,11 +3284,18 @@ export default function Watchlist() {
             {userName}
           </div>
 
-          {/* Utilities — Sign out sits right under the name now that
-              Watchbox (moved to the Lists tab) + About (already in the
-              top nav on every page) were removed from this menu
-              (Mark 2026-05-28). Admin Site stats stays. */}
+          {/* Utilities. Watchbox is re-added here 2026-06-01 (eBay "My
+              eBay" model — the second door to the owned/wishlist/sold
+              vault, alongside its anchor on the Lists tab). About lives
+              in the top nav; admin Site stats stays. */}
           <div style={{ marginTop: 8 }}>
+            <button onClick={() => { setShowUserMenu(false); setTab("watchbox"); setPage(1); }}
+              style={{ display: "block", width: "100%", textAlign: "left",
+                      padding: "8px 8px", border: "none", background: "transparent",
+                      color: "var(--text1)", cursor: "pointer", fontFamily: "inherit",
+                      fontSize: 13, fontWeight: 500, borderRadius: 6 }}>
+              My Watchbox
+            </button>
             <button onClick={() => { setShowUserMenu(false); signOut(); }}
               style={{ display: "block", width: "100%", textAlign: "left",
                       padding: "8px 8px", border: "none", background: "transparent",
@@ -4148,7 +4129,7 @@ export default function Watchlist() {
       homeRecentlyHearted={homeRecentlyHearted}
       // B-08: Watchlists is one unified screen; saved hearts live in
       // the "Saved" band there. Land on the unified landing ("lists").
-      goToSavedHearts={() => { setTab("watchlist"); setWatchTopTab("lists"); setPage(1); }}
+      goToSavedHearts={() => { setTab("watchlist"); setWatchTopTab("hearted"); setPage(1); }}
       // Dealer typeahead — popover under the search bar suggests
       // matching dealer names when the user starts typing. Clicking
       // a dealer routes to Listings filtered by that source.
@@ -4306,6 +4287,10 @@ export default function Watchlist() {
       // searchEditor.id === "new", so add/edit reuse it directly.
       isMobile={isMobile}
       goToWatchbox={() => { setTab("watchbox"); setPage(1); }}
+      // The shared active-filters strip (chips + Clear all) — rendered at
+      // the top of the Hearted surface so Lists gets the same clear/save
+      // filter affordances as Watches (closes B-48 for this surface).
+      activeFiltersStripJSX={activeFiltersStripJSX}
       savedSearchStats={savedSearchStats}
       searchEditor={searchEditor}
       setSearchEditor={setSearchEditor}
@@ -4392,14 +4377,25 @@ export default function Watchlist() {
   // ending-soonest default sort. Const + shellProps wiring removed
   // in the same cleanup pass.)
 
-  // Watchlist sub-tab strip RETIRED in B-08 (2026-05-27). The
-  // Watchlists tab is now ONE unified single-scroll screen (Watchbox
-  // hero · Your lists · Saved · Saved searches · Shared) rendered by
-  // CollectionsTab/ListsView — no Lists/Searches pills. Kept as a null
-  // const so the shells' `watchSubTabsJSX` slot stays wired (both
-  // shells already null-guard it). The contextual "+ New search" /
-  // "+ Start a list" actions now live inline in the landing's bands.
-  const watchSubTabsJSX = null;
+  // Lists sub-tab strip REBUILT 2026-06-01. The Lists tab is sub-tabbed
+  // again — Hearted (default landing) · Lists · Searches · Shared — using
+  // the shared SubTabBar so it's pixel-identical to the Listings /
+  // Collecting strips. Lands on Hearted: the #1 fix (one tap to your
+  // hearted watches, was two). All four route through CollectionsTab.
+  const watchSubTabsJSX = tab !== "watchlist" ? null : (
+    <SubTabBar
+      ariaLabel="Lists views"
+      tabs={[["hearted", "Hearted"], ["lists", "Lists"], ["searches", "Searches"], ["shared", "Shared"]]}
+      activeKey={watchTopTab}
+      onSelect={(key) => { setWatchTopTab(key); setDrawerOpen(false); setPage(1); }}
+      isMobile={isMobile}
+      onOlive={isMobile}
+      containerStyle={{
+        background: isMobile ? "var(--brand-olive)" : "var(--bg)",
+        borderBottom: isMobile ? "none" : "0.5px solid var(--border)",
+      }}
+    />
+  );
 
   // Internal Listings/Auctions/Sold toggle for the Saved tab.
   // Bundle 2A.2b — the three hearted views still exist as separate

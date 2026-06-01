@@ -90,9 +90,9 @@ export function MobileShell(props) {
   const noFilterableList =
     tab === "home" ||
     (tab === "listings" && listingsSubTab === "calendar") ||
-    (tab === "watchlist" && watchTopTab === "searches") ||
-    (tab === "watchlist" && (watchTopTab === "my-collection" || watchTopTab === "wishlist" || watchTopTab === "challenges")) ||
-    (tab === "watchlist" && watchTopTab === "lists" && !inListsDrillIn) ||
+    // Lists tab: only the Hearted surface (and a drilled-in list) is a
+    // filterable grid. Lists-landing / Searches / Shared have no filter row.
+    (tab === "watchlist" && watchTopTab !== "hearted" && !inListsDrillIn) ||
     tab === "references" ||
     tab === "admin";
 
