@@ -14,6 +14,52 @@ Companion docs: **[LUME_UX_PRINCIPLES.md](LUME_UX_PRINCIPLES.md)** (the design b
 
 ---
 
+## State of Lumé — resume brief (2026-06-01)
+
+*Read this first when picking Lumé back up (it was parked to work on the Lists tab UI).*
+
+**What we've built (and how it fits the tool).** Lumé is the AI spine of The Watch List —
+a *grounded* concierge of OUR corpus, not a general watch oracle. It now: answers from
+the curated reference index + deep-dive syntheses (`get_reference`), the 13k-article
+editorial corpus (`search_articles`), live/sold/auction listings, and the user's own
+saved data; takes in-app actions (show/open/read/add/save); remembers an evolving taste
+profile (`ai_user_profile`); and — new this session — reaches the open **web** when our
+corpus is thin (corpus-first, cited), logging every such reach to **`lume_knowledge_gaps`**
+as a demand signal for what to author next. The moat is the **verified reference guides**
+(Submariner, JLC E2643) + grounding — NOT the base model's knowledge.
+
+**Where we got to.** A real **eval harness** (Phase 1, PR #728): auto-gates prompt/tool
+PRs, an LLM-judge scores replies against the charter rubric, a grounding answer-key catches
+factual errors, N-sampling de-flakes, and a retrieval-source helper is ready to assert the
+hierarchy. It **already caught real bugs** (see below).
+
+**How it fits the ChatGPT-conversation model (Mark, 2026-06-01).** Lumé is a vintage-watch
+**collecting GUIDE**, not a shopping assistant — it helps users learn references, develop
+taste, follow rabbit holes, and decide what's worth watching, *whether or not they buy*.
+Listings are examples, never the centre. The honest diagnosis: where ChatGPT "reads better"
+today, it's because it writes an *unconstrained essay from free-recall* — exactly what we
+DON'T want (free-recall is the trust-killer). Lumé's gaps are **plumbing, not intelligence**:
+it doesn't reliably retrieve our own guide, so it leads with a listing or free-recalls. Fix
+retrieval and Lumé is fluent AND grounded AND in-app actionable — which beats the essay.
+
+**The behavioral target (what "good" looks like).**
+- *Sees the right material:* for a learning prompt, grounds in the **reference guide first**
+  (retrieval hierarchy: guide → notes → auctions → articles → listings → web; listings must
+  NOT outrank guides). `groundingSource()` is the test hook for this.
+- *Responds as a guide:* leads with the watch + collector context + the "why it matters"
+  thesis; offers reading/comparing/rabbit-holes over a buying funnel; ends with a real next
+  step. Never exposes machinery (corpus/library/indexing) or **fabricates user history**.
+- *Stays accurate:* every hard fact from a tool; if unknown, humble ("I don't have enough
+  depth on that yet") — never confident free-recall.
+
+**Open findings the eval flagged (deferred to the product-behavior phase →
+[[project_lume_product_behavior_phase]]):** "tell me about X" → ungrounded free-recall
+(5513 fabricated "2024 Rolex figures"); E2643 LeCoultre-signature stated as temporal not
+US-market; Tudor-snowflake free-recall; fabricated user history. **Next-fix priority = the
+retrieval hierarchy.** Full eval strategy + budget: `~/.claude/plans/radiant-exploring-pillow.md`.
+
+---
+
 ## North star
 
 Lumé gets a collector **into the rabbit hole they want to go down**, and helps them

@@ -213,6 +213,14 @@ within each section roughly last.
   guide: story, marks, variants, live/auction/sold sliders, connections,
   debated, further reading; LLM synthesis wired in; sticky scroll-spy wayfinding
   + section-header tier + guided learning journey.
+- **2026-06-01 — JLC E2643 verified reference guide (#723).** First VERIFIED,
+  source-authored node (hand-built from a research dossier cross-checked against
+  dealer/auction/forum sources — NOT scraped/synthesised): Shark/Vogue naming,
+  Valjoux 72/726, bezel system, marks, variants, all bridge refs; index entry +
+  regenerated `watch_references_index.json`. The authored-not-scraped moat.
+- **2026-06-01 — Reference-enrichment runbook + helper (#724).** `docs/REFERENCE_ENRICHMENT.md`
+  (the 3 homes a source lives in → guide/corpus/synthesis; 7-step add process) +
+  `scripts/add_reference_sources.py` (dedup + stub-append source URLs to a node's manifest).
 - **2026-04-29 — Watch size comparison.** Two case dimensions →
   preview + print-to-scale on US Letter via React Portal pattern.
 - **2026-05-XX — Curated link aggregator (Collecting > Links).**
@@ -329,6 +337,12 @@ within each section roughly last.
 - **2026-05-31 — Lumé: explore-not-shop + hedge + leak fix (#720).** Stop driving to buy (journey not
   checkout); never claim a complete list / superlative it can't ground ("three notable ones", not "the
   only"); strip dangling `<actions>` so truncated replies can't leak raw code.
+- **2026-06-01 — Lumé web search (#722).** Anthropic native `web_search` server tool, corpus-FIRST
+  (last resort for knowledge only, never inventory), always cited (auto Sources footer), `max_uses` 3 —
+  Lumé's reach beyond our library and the knowledge-gap SENSOR.
+- **2026-06-01 — Lumé "always suggest a next step" + config ledger (#725).** Prompt rule: every reply
+  ends with a concrete next step from a REAL capability. `docs/LUME_CONFIG_REQUESTS.md` = the running
+  ledger of Mark's behavioral/config requests (date · request · where encoded · status).
 
 ## UI & chrome (cross-cutting)
 
