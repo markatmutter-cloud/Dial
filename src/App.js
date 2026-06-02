@@ -1093,6 +1093,9 @@ export default function Watchlist() {
     if (newTab === "listings") setListingsSubTab("live");
     else if (newTab === "watchlist") setWatchTopTab("hearted");
     else if (newTab === "references") setReferencesSubTab("editorial");
+    // Returning to Auctions later should start from the base page, not the
+    // catalog you'd drilled into — clear the sale filter on tab nav (Mark).
+    setFilterSaleUrls([]);
     setTab(newTab);
   };
 
