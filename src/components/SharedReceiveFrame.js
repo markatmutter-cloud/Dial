@@ -75,7 +75,9 @@ export function SharedReceiveFrame({
         display: "grid", gridTemplateColumns: "1fr", alignItems: "stretch",
       }}>
         <style>{`
-          .srf-hero { aspect-ratio: 16 / 10; position: relative; background: var(--surface); }
+          /* min-height floor guarantees a visible image box even if a browser
+             computes aspect-ratio to 0 for an all-absolutely-positioned hero. */
+          .srf-hero { aspect-ratio: 16 / 10; position: relative; background: var(--surface); min-height: 240px; }
           .srf-body { min-width: 0; }
           /* Two columns only when there's genuine room. The image column gets a
              real minimum (300px) so a long title can't squeeze it to nothing —
