@@ -2136,6 +2136,19 @@ export default function Watchlist() {
   }, [setFilterBrands, setFilterSources, setFilterModels, setFilterHearted,
       setFilterSaleUrls, setTab, setListingsSubTab]);
 
+  // B-55 (Mark 2026-06-02): the single-catalog filter (filterSaleUrls) is an
+  // auctions/sold CONTEXT. Leaving it — switching to the Live sub-tab, or off
+  // the Listings tab entirely (e.g. tapping Watches) — must drop it, or the
+  // destination grid keeps filtering by a sale whose lots don't live there and
+  // shows "Nothing matches". Opening a catalog sets tab=listings + sub=auctions/
+  // sold in the same pass, so this never fires mid-open.
+  useEffect(() => {
+    if (!filterSaleUrls.length) return;
+    const inCatalogContext = tab === "listings"
+      && (listingsSubTab === "auctions" || listingsSubTab === "sold");
+    if (!inCatalogContext) setFilterSaleUrls([]);
+  }, [tab, listingsSubTab, filterSaleUrls.length, setFilterSaleUrls]);
+
   // Auction auto-list workflow (Review / Add-to-list) retired
   // 2026-05-26 with the screening collapse: auctions open the in-app
   // pre-filtered grid via handleOpenSale (Phase 1A), no bespoke list.
