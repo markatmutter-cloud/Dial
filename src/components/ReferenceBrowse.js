@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { ReferencePage } from "./ReferencePage";
 import { Breadcrumb } from "./Breadcrumb";
+import { PageHeader } from "./PageHeader";
 import { editorialHeading, editorialProse, innerToggleButton, inputBase, FONT_SERIF } from "../styles";
 import { imgSrc } from "../utils";
 import {
@@ -122,10 +123,12 @@ export function ReferenceBrowse(props) {
     });
 
   return (
-    <div style={{ paddingTop: 4 }}>
-      {/* No bespoke H1 / explainer here (Mark 2026-06-01) — the "Reference
-          guides" sub-tab already labels the surface, matching Articles/Lists
-          which lead straight into their filter bar + content. */}
+    <div style={{ paddingTop: 0 }}>
+      {/* Consistent bleed-bar page header (Mark #6, 2026-06-01) — same
+          PageHeader every named surface uses. */}
+      <PageHeader isMobile={isMobile} title="Reference guides"
+        meta={`${REFERENCE_NODES.length} ${REFERENCE_NODES.length === 1 ? "guide" : "guides"}`} />
+      <div style={{ height: isMobile ? 16 : 20 }} />
       {/* Search + brand filter */}
       <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 18 }}>
         <input
