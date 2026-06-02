@@ -61,6 +61,7 @@ export function MobileShell(props) {
     referencesSubTabsJSX,
     trackNewItemModalJSX, watchSubTabsJSX, watchHeartedToggleJSX, collectionsSubTabsJSX, watchlistTabJSX,
     saleContextHeaderJSX,
+    savedHeaderJSX,
     watchboxTabJSX,
     referencesTabJSX, collectionsTabJSX,
     lotMigrationBannerJSX,
@@ -539,12 +540,16 @@ export function MobileShell(props) {
             sees a clean first-impression page. */}
         {!anyShareActive && (
           <div style={{ padding: `${tab === "watchlist" ? 0 : 12}px 16px 32px` }}>
-            {/* Catalog header scrolls here (Mark 2026-06-02), bleeding to the
-                screen edges past the body's 16px padding; the filter pills stay
-                pinned in the sticky chrome above. Null unless in one catalog. */}
-            {!searchAllActive && saleContextHeaderJSX && (
-              <div style={{ marginLeft: -16, marginRight: -16 }}>{saleContextHeaderJSX}</div>
-            )}
+            {/* Collapsing header (Mark 2026-06-02): the catalog title — or the
+                "Saved" title on the hearted surface — scrolls here, bleeding to
+                the screen edges past the body's 16px padding, while the filter
+                pills stay pinned in the sticky chrome above. */}
+            {(() => {
+              if (searchAllActive) return null;
+              const h = saleContextHeaderJSX
+                || (tab === "watchlist" && watchTopTab === "hearted" ? savedHeaderJSX : null);
+              return h ? <div style={{ marginLeft: -16, marginRight: -16 }}>{h}</div> : null;
+            })()}
             {/* identityBandJSX moved into the sticky chrome stack
                 2026-05-21 (PR_Y4) — sits between sub-tabs and the
                 search row up there. Scroll content starts clean. */}

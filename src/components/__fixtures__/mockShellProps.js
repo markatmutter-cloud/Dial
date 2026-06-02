@@ -131,6 +131,7 @@ export function buildMockShellProps(overrides = {}) {
     sectionHeadingStyle: { fontSize: 11, fontWeight: 600 },
     settingsModalJSX: null,
     shareReceiverJSX: null,
+    savedHeaderJSX: null,
     statusSegmentJSX: null,
     trackNewItemModalJSX: null,
     // B-08: the Watchlists sub-tab strip was retired (the tab is one

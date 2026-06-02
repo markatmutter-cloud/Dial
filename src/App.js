@@ -3766,6 +3766,23 @@ export default function Watchlist() {
     );
   })() : null;
 
+  // Saved-tab scrolling header (Mark 2026-06-02). On the Saved (hearted)
+  // surface the title scrolls away while the filter bar pins — same collapsing
+  // pattern as the catalog. The shell renders this in the scroll pane above the
+  // sticky filter, so the title must live here (a shell slot), not in
+  // HeartedView. Count mirrors HeartedView's savedTotal exactly (hearted
+  // watches + hearted articles + hearted guides) so the number always matches.
+  const savedHeaderCount = watchItems.length
+    + Object.values(watchlist || {}).filter(v => v && v.kind === "article").length
+    + Object.values(watchlist || {}).filter(v => v && v.kind === "reference").length;
+  const savedHeaderJSX = (
+    <PageHeader
+      isMobile={isMobile}
+      title="Saved"
+      meta={savedHeaderCount ? `${savedHeaderCount} ${savedHeaderCount === 1 ? "item" : "items"}` : null}
+    />
+  );
+
   const listingsGridJSX = (
     <>
       {activeFiltersStripJSX}
@@ -4790,6 +4807,7 @@ export default function Watchlist() {
     referencesSubTabsJSX,
     trackNewItemModalJSX, watchSubTabsJSX, watchHeartedToggleJSX, collectionsSubTabsJSX,
     saleContextHeaderJSX,
+    savedHeaderJSX,
     // Bundle 2A.2: shells render `watchlistTabJSX` for the Saved
     // tab — the value is now the dispatched content (Watchlist or
     // Collections style) computed by `savedContentJSX`.
