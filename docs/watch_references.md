@@ -248,7 +248,7 @@ A structured Markdown reference index for a vintage and collectible watch listin
 
 ### Model line: Oysterquartz Datejust
 
-- **Refs**: `17000`, `17013`, `17014`, `69173`, `69178`
+- **Refs**: `17000`, `17013`, `17014`
 - **Years**: 1977–2001
 - **Designer / movement**: Rolex · Cal. 5035 (quartz), Cal. 5055 (date/day quartz)
 - **Key identifiers**: Angular integrated bracelet (unlike any other Rolex — the bracelet flows into the case without visible lugs); brushed angular case sides; integrated “Presidential-style” link bracelet with H-links; sapphire crystal; 36mm (mens) or 26mm (ladies). 17000 = steel, 17013 = steel/gold, 17014 = gold.
@@ -472,7 +472,7 @@ A structured Markdown reference index for a vintage and collectible watch listin
 
 ### Model line: Autavia (vintage)
 
-- **Refs**: `2446 1st Exec.`, `3646 1st Exec.`, `2446 2nd Exec.`, `2446 3rd Exec.`, `3646 3rd Exec.`, `2446 Tachy`, `3646 Tachy`, `2446 GMT`, `2446C GMT`, `2446C`, `7863C Dato`, `1163`, `1163 GMT`,  `1163V` (“Viceroy”), `11630`, `11630 GMT`, `73363`, `73463`, `73663`, `1563`, `110.503`, `110.633`, `Autavia 11063 Diver 100`
+- **Refs**: `2446 1st Exec.`, `3646 1st Exec.`, `2446 2nd Exec.`, `2446 3rd Exec.`, `3646 3rd Exec.`, `2446 Tachy`, `3646 Tachy`, `2446 GMT`, `2446C GMT`, `2446C`, `7863C Dato`, `1163`, `1163 GMT`,  `1163V` (“Viceroy”), `11630`, `11630 GMT`, `73363`, `73663`, `1563`, `110.503`, `110.633`, `Autavia 11063 Diver 100`
 - **Years**: 1962–1985
 - **Designer / movement**: Jack Heuer · Valjoux 72 (2446/3646), Valjoux 7730/7733/7734 (later manual), Caliber 11 / 12 (1163/11630), Lemania 5100 (110.633)
 - **Key identifiers**: Rotating bezel (60-minute or 12-hour or GMT); screw-back round case (1st–3rd exec.) or “C-case” cushion (2446C+); three-register or two-register dial; left-crown Cal. 11 on automatic 1163.
@@ -774,7 +774,7 @@ A structured Markdown reference index for a vintage and collectible watch listin
 
 ### Model line: Portugieser / Portuguese
 
-- **Refs**: `IW325` (vintage 1939 oversize ref. 325), `IW5441` (Portugieser Jubilee 1993), `IW5454` (Minute Repeater), `IW5441-01`, `IW371445` / `IW371446` (Chrono Classic), `IW3714` (Chrono Classic Cal. 7750), `IW3716` (Chrono Rattrapante), `IW5004` (n/a — that’s Big Pilot), `IW5021` (Perpetual 7-day), `IW5023` (Sidérale Scafusia), `IW5446` (Hand-Wound Eight Days), `IW5447`, `IW5102` (Yacht Club Chronograph), `IW5716` (Portugieser Perpetual Calendar), `IW358303`, `IW358304` (Chrono modern), `IW390503`, `IW358301` (Portugieser Chrono in-house 69355)
+- **Refs**: `IW325` (vintage 1939 oversize ref. 325), `IW5441` (Portugieser Jubilee 1993), `IW5454` (Minute Repeater), `IW5441-01`, `IW371445` / `IW371446` (Chrono Classic), `IW3714` (Chrono Classic Cal. 7750), `IW3716` (Chrono Rattrapante), `IW5021` (Perpetual 7-day), `IW5023` (Sidérale Scafusia), `IW5446` (Hand-Wound Eight Days), `IW5447`, `IW5102` (Yacht Club Chronograph), `IW5716` (Portugieser Perpetual Calendar), `IW358303`, `IW358304` (Chrono modern), `IW390503`, `IW358301` (Portugieser Chrono in-house 69355)
 - **Years**: 1939–present
 - **Designer / movement**: IWC (originally a Portuguese-merchant special order for marine chronometer-accurate wristwatch) · Cal. 74 (vintage manual pocket movement in wristwatch case), Cal. 982 (vintage), Cal. 51010 (7-day Pellaton), Cal. 79350 (Valjoux 7750-based chrono), Cal. 69355 (in-house chrono 2020+), Cal. 52615 (Perpetual Calendar 7-day)
 - **Key identifiers**: Large round case (42–44.2mm) with leaf hands, Arabic numerals, railway minute track, applied logo. The chrono Classic has subdials at 6 and 12 (signature layout); Perpetual Calendar has four subdials and double moonphase (Northern + Southern); ultra-thin profile.
@@ -1009,7 +1009,7 @@ A structured Markdown reference index for a vintage and collectible watch listin
 
 ### Model line: Calatrava
 
-- **Refs**: `96` (vintage 1932 original, 31mm), `570` (vintage 35.5mm), `2526` (first automatic Patek, 1953), `3520`, `3796`, `5119`, `5120`, `5196`, `5227` (3796 successor with hinged caseback), `5296`, `5116`, `5153`, `5226G` (Calatrava 40mm 2022), `5226G-001`, `5236P` (in-line perpetual calendar), `6119` (Calatrava 39mm 2022 — hobnail bezel), `6119G`, `6119R`, `6007A` (Calatrava 40th anniversary Manufacture)
+- **Refs**: `96` (vintage 1932 original, 31mm), `570` (vintage 35.5mm), `2526` (first automatic Patek, 1953), `3520`, `3796`, `5119`, `5120`, `5196`, `5227` (3796 successor with hinged caseback), `5296`, `5116`, `5153`, `5226G` (Calatrava 40mm 2022), `5226G-001`, `6119` (Calatrava 39mm 2022 — hobnail bezel), `6119G`, `6119R`, `6007A` (Calatrava 40th anniversary Manufacture)
 - **Years**: 1932–present
 - **Designer / movement**: Inspired by Bauhaus / David Penney’s reading of Patek’s house style · Cal. 215 PS, Cal. 240 PS (micro-rotor), Cal. 12-600 AT (2526 — first auto), Cal. 324 S C, Cal. 30-255 PS (6119 — new manual 2022), Cal. 31-260 PS QL (5236P)
 - **Key identifiers**: Round dress case (31–40mm); slim profile; small seconds (most refs) or central seconds (5227, 6007); hobnail Clous de Paris bezel on 6119 and Officer-style 5227 hinged caseback; sapphire caseback (modern); leaf or dauphine hands.
@@ -1125,7 +1125,7 @@ A structured Markdown reference index for a vintage and collectible watch listin
 
 ### Model line: Lange 1
 
-- **Refs**: `101.001` (Lange 1 platinum 1994 launch), `101.002` (yellow gold), `101.021` (platinum, dial-side update), `101.022` (pink gold), `101.025` (Honeygold), `101.027` (yellow gold), `101.030` (white gold), `101.032`, `101.033`, `101.039` (pink gold black dial), `101.050` (Lange 1 Time Zone), `116.025` (Time Zone), `117.025` (Lange 1 25th Anniversary), `191.039`, `191.032` (Lange 1 Daymatic), `191.020`, `192.025` (Soirée), `233.026`, `709.025` (Saxonia base — separate model), `233.025` (Lange 1 Tourbillon Perpetual Calendar Handwerkskunst), `722.025` (Lange 1 Perpetual Calendar)
+- **Refs**: `101.001` (Lange 1 platinum 1994 launch), `101.002` (yellow gold), `101.021` (platinum, dial-side update), `101.022` (pink gold), `101.025` (Honeygold), `101.027` (yellow gold), `101.030` (white gold), `101.032`, `101.033`, `101.039` (pink gold black dial), `101.050` (Lange 1 Time Zone), `116.025` (Time Zone), `117.025` (Lange 1 25th Anniversary), `191.039`, `191.032` (Lange 1 Daymatic), `191.020`, `192.025` (Soirée), `709.025` (Saxonia base — separate model), `233.025` (Lange 1 Tourbillon Perpetual Calendar Handwerkskunst), `722.025` (Lange 1 Perpetual Calendar)
 - **Years**: 1994–present (Lange 1 launched at A. Lange & Söhne’s 1994 brand resurrection)
 - **Designer / movement**: Günter Blümlein (CEO), Reinhard Meis, Walter Lange · Cal. L901.0 (first generation, 1994–2015), Cal. L121.1 (second generation, 2015+ — same architecture, new escape wheel and balance)
 - **Key identifiers**: Asymmetric off-center dial layout with separate hour/minute, small seconds with reserve, large outsize date “Grossdatum” at top-right (the brand’s signature complication), and 72-hour power reserve indicator. Distinctive case profile (38.5mm first gen, 38.5mm gen 2 with subtly revised proportions); German silver three-quarter plate movement with hand-engraved balance cock and gold chatons (always visible through sapphire caseback).
@@ -1179,7 +1179,7 @@ A structured Markdown reference index for a vintage and collectible watch listin
 
 ### Model line: Richard Lange
 
-- **Refs**: `232.026` (Richard Lange — 3-hand symmetric), `232.032`, `252.025` (Richard Lange Pour Le Mérite — fusée-and-chain), `260.025` (RL Perpetual Calendar Terraluna), `260.032`, `261.026` (Richard Lange Jumping Seconds), `261.025`, `216.026` (RL Tourbillon Pour Le Mérite), `760.025` / `760.032` (Tourbillon Pour Le Mérite)
+- **Refs**: `232.026` (Richard Lange — 3-hand symmetric), `232.032`, `252.025` (Richard Lange Pour Le Mérite — fusée-and-chain), `260.025` (RL Perpetual Calendar Terraluna), `260.032`, `261.026` (Richard Lange Jumping Seconds), `261.025`, `760.025` / `760.032` (Tourbillon Pour Le Mérite)
 - **Years**: 2006–present
 - **Designer / movement**: A. Lange & Söhne · Cal. L041.2 (RL 3-hand), Cal. L044.1 (RL Pour Le Mérite — fusée and chain), Cal. L094.1 (Jumping Seconds), Cal. L096.1 (Tourbillon PLM)
 - **Key identifiers**: Symmetric dial with hours/minutes centered and small seconds (3 sub-dial regulator layout on some variants); chronometer-style observation watch aesthetic; named for Richard Lange (F.A. Lange’s son); 38.5–40.5mm round case; usually no date.
@@ -1304,7 +1304,7 @@ A structured Markdown reference index for a vintage and collectible watch listin
 
 ### Model line: Aero-Compax
 
-- **Refs**: `22409`, `222291`, `222102/2`, `882104` (later)
+- **Refs**: `222291`, `222102/2`, `882104` (later)
 - **Years**: 1940s–1960s
 - **Designer / movement**: Universal Genève · Cal. 285/287
 - **Key identifiers**: Three-register chronograph + additional central time-zone hand controlled by independent crown at 8 or 9 o’clock; pilot/aviation aesthetic; usually 36mm round case with Arabic numerals.
