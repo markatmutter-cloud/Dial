@@ -487,8 +487,8 @@ def progressive_normalizations(ref: str):
             yield candidate
 
 
-def match_against_index(text: str, ref_index: dict):
-    """Try each candidate token; return first index hit as a dict:
+def match_against_index(text: str, ref_index: dict, brand: str | None = None):
+    """Try each candidate token; return the first index hit as a dict:
         {brand, model_line, model, sub_model, raw_ref}
     or None on no match.
 
@@ -500,19 +500,41 @@ def match_against_index(text: str, ref_index: dict):
 
     For each token, tries progressive normalizations (full → variant
     → base) and stops at the first match.
+
+    Brand-aware token selection (B-54, 2026-06-02): when a known
+    `brand` is supplied, a token that resolves ONLY to other brands is
+    skipped, and scanning continues to later tokens. This stops a
+    leading year that collides with another brand's reference from
+    shadowing the real same-brand ref — e.g. "1991 Rolex Explorer
+    14270" where "1991" is Cartier Panthère ref 1991: without this, the
+    year matched first, the cross-pollination guard in merge.py then
+    rejected the whole hit, and 14270 was never tried (model_line came
+    back empty). With a brand hint we skip the Cartier token and match
+    14270 as Rolex. When `brand` is None, behaviour is unchanged (first
+    hit wins) — the many editorial callers pass no brand.
     """
     for tok in candidate_tokens(text):
         for norm in progressive_normalizations(tok):
-            if norm in ref_index:
-                brand, model_line, raw_ref = ref_index[norm][0]
-                model, sub_model = derive_model_sub_model(brand, model_line)
-                return {
-                    "brand": brand,
-                    "model_line": model_line,
-                    "model": model,
-                    "sub_model": sub_model,
-                    "raw_ref": raw_ref,
-                }
+            if norm not in ref_index:
+                continue
+            entries = ref_index[norm]
+            if brand:
+                chosen = next((e for e in entries if e[0] == brand), None)
+                if chosen is None:
+                    # Token resolves only to other brand(s) — ignore it
+                    # and keep scanning for a same-brand ref.
+                    continue
+            else:
+                chosen = entries[0]
+            hit_brand, model_line, raw_ref = chosen
+            model, sub_model = derive_model_sub_model(hit_brand, model_line)
+            return {
+                "brand": hit_brand,
+                "model_line": model_line,
+                "model": model,
+                "sub_model": sub_model,
+                "raw_ref": raw_ref,
+            }
     return None
 
 
@@ -685,8 +707,9 @@ def match_or_extract(
     while keeping the signal-quality distinction explicit via
     `source`.
     """
-    # Layer 1 — full index match.
-    hit = match_against_index(text, ref_index)
+    # Layer 1 — full index match (brand-aware: skips cross-brand token
+    # collisions like a leading year so the real same-brand ref wins).
+    hit = match_against_index(text, ref_index, brand=brand)
     if hit:
         return {
             "brand": hit["brand"],

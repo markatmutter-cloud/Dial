@@ -105,7 +105,7 @@ A structured Markdown reference index for a vintage and collectible watch listin
 
 ### Model line: Submariner
 
-- **Refs**: `6204`, `6205`, `6200`, `6536`, `6538`, `5508`, `5510`, `5512`, `5513`, `5514`, `1680`, `1680/8`, `5513/5512 Maxi`, `14060`, `14060M`, `16800`, `168000`, `16610`, `16610LV`, `14270` (n/a—Explorer), `114060`, `116610LN`, `116610LV`, `116618LN`, `116619LB`, `124060`, `126610LN`, `126610LV`, `126613LN`, `126613LB`, `126618LN`, `126619LB`
+- **Refs**: `6204`, `6205`, `6200`, `6536`, `6538`, `5508`, `5510`, `5512`, `5513`, `5514`, `1680`, `1680/8`, `5513/5512 Maxi`, `14060`, `14060M`, `16800`, `168000`, `16610`, `16610LV`, `114060`, `116610LN`, `116610LV`, `116618LN`, `116619LB`, `124060`, `126610LN`, `126610LV`, `126613LN`, `126613LB`, `126618LN`, `126619LB`
 - **Years**: 1953–present
 - **Designer / movement**: René-Paul Jeanneret (concept) · Cal. A296 / 1030 (early), 1530 / 1560 / 1570 (1960s–80s), 3035 / 3135 (1988–2020), 3230 / 3235 (2020+ no-date and date)
 - **Key identifiers**: Oyster case, unidirectional 60-min dive bezel, Mercedes hands, screw-down crown, 100m–300m depth rating; ceramic Cerachrom bezel from 2010 (LN/LV); date Cyclops on dated refs; Maxi dial = fat lume plots on later 5513s; “Square Crown Guards” on early 5512/5513.
@@ -150,8 +150,11 @@ A structured Markdown reference index for a vintage and collectible watch listin
 
 ### Model line: Explorer / Explorer II
 
-- **Refs (Explorer)**: `6098`, `6150`, `6298`, `6350`, `6610`, `1016`, `14270`, `114270`, `214270`, `124270`, `224270`
-- **Refs (Explorer II)**: `1655`, `16550`, `16570`, `216570`, `226570`, `226570 polar`
+<!-- Explorer + Explorer II refs MUST live on one `**Refs**:` line: the parser
+     only recognises the literal `**Refs**:` key and OVERWRITES on a second one,
+     so split/qualified labels ("Refs (Explorer)") were silently dropped — which
+     is why 14270 was orphaned and got mis-parked under Submariner (B-54). -->
+- **Refs**: `6098`, `6150`, `6298`, `6350`, `6610`, `1016`, `14270`, `114270`, `214270`, `124270`, `224270`, `1655`, `16550`, `16570`, `216570`, `226570`, `226570 polar`
 - **Years**: 1953–present (Explorer); 1971–present (Explorer II)
 - **Designer / movement**: Inspired by 1953 Everest expedition · Cal. 1030, 1560, 1570 (1016); 3000/3130/3132 (14270/114270/214270); 3230 (124270); 3187/3285 (216570/226570)
 - **Key identifiers**: Explorer = 3/6/9 dial, no date, Mercedes hands, smooth bezel, 36mm vintage / 39mm 214270 / 36mm 124270 / 40mm 224270. Explorer II = fixed 24-hour bezel, additional 24-hour hand, date with Cyclops; “Polar” white dial; orange GMT hand on 1655 and 216570/226570.
