@@ -149,8 +149,10 @@ export function ShareReceiver({
           <style>{`
             .sr-card-img { aspect-ratio: 16 / 10; }
             @media (min-width: 880px) {
-              .sr-card { grid-template-columns: 1.25fr 1fr !important; }
-              .sr-card-img { aspect-ratio: auto !important; height: 100%; min-height: 360px; }
+              .sr-card { grid-template-columns: 1.2fr 1fr !important; }
+              /* Hero depth scales with the viewport so the card fills the
+                 page instead of letterboxing (Mark 2026-06-01). */
+              .sr-card-img { aspect-ratio: auto !important; height: 100%; min-height: clamp(420px, 64vh, 660px); }
             }
           `}</style>
           {/* [B] Hero */}
