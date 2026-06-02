@@ -1,34 +1,22 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { fmt, imgSrc, priceIn, FX_RATES_USD_PER, CURRENCY_SYM } from "../utils";
+import { fmt, imgSrc, priceIn, FX_RATES_USD_PER } from "../utils";
 
-// Self-contained share-receive surface. All hooks live INSIDE this
-// component — App.js mounts it unconditionally and its hook count
-// stays unchanged. v2 (commit e8521a2, reverted as 4734c28) added 3
-// hooks to App.js's already-large hook list and tripped React error
-// #310 ("rendered more hooks than during the previous render") in
-// production. Isolation here makes that whole class of bug
-// impossible: ShareReceiver's hooks only count against
-// ShareReceiver's instance.
+// Share-receive surface for a single shared LISTING — the first-impression
+// surface a recipient (often signed-out, often new) lands on from a shared
+// link. Self-contained: all hooks live INSIDE this component so App.js's hook
+// count never changes (React #310 — see the v2 regression history).
 //
-// 2026-05-06 redesign: when share intent is active, this component
-// renders a FULL-WIDTH FOCUSED LANDING SURFACE rather than a small
-// banner+thumbnail above the regular feed. Mark's framing: this is
-// the first-impression for first-time recipients who follow a share
-// link, and it needs to feel intentional, not like the listing got
-// dropped onto an unrelated browse page. App.js mirrors the active
-// state via setShareActive so the shell can hide the regular tab
-// content while the landing surface is up.
+// 2026-06-01 register shift (Mark): this is the unified share/library surface's
+// first type. The surface is now SELF-EXPLANATORY FROM ITS ACTIONS — no
+// instructional paragraphs, no "First time on Watchlist?" onboarding panel, no
+// "sign in only if…" reassurance. One attribution line ("X shared a watch with
+// you") + the artifact + a consistent action bar (View on dealer · Save ·
+// Add to list · Share) + quiet no-dead-end nav cues. Signed-out is beautiful
+// and ungated (every public verb works); sign-in is offered once, folded into
+// Save, never as a nag. The shared FRAME + the other five object types
+// (catalog/list/article/guide/challenge) extract from this in Phase 6b.
 //
-// Layout:
-//   Desktop  → two-column inside the focused card: left = image
-//              (full-bleed square), right = title/brand/ref/price/
-//              dealer + Save/Dismiss + onboarding text.
-//   Mobile   → stacked: image, then details, then CTAs.
-// Below the main card, three anchor CTAs orient first-time users:
-// "Browse all listings", "Go to your list", "About Watchlist".
-//
-// Returns null when no share intent — zero render cost in the
-// common path.
+// Returns null when no share intent — zero render cost in the common path.
 
 export function ShareReceiver({
   items,
@@ -39,51 +27,27 @@ export function ShareReceiver({
   isAuthConfigured,
   signInWithGoogle,
   primaryCurrency,
-  // App.js mirrors share-active state so the shell can swap the
-  // regular feed out for the focused landing surface. Without this,
-  // the share card renders alongside the feed which Mark flagged as
-  // unintentional-feeling.
   setShareActive,
-  // Telemetry (Epic 8). Optional. Click-on-shared-listing is the
-  // engagement signal worth capturing here; view tracking is skipped
-  // because the receiver is a single-card banner (not a feed scroll).
   onClickListing,
-  // Navigation hooks for the orientation CTAs at the bottom.
   setTab,
-  // App.js increments this when the user explicitly navigates away
-  // via main-nav (Watchlist logo, top tabs). We watch it and clear
-  // our intent state. Mark D5 (2026-05-06).
   resetTick,
-  // Lumé open_watch: App bumps openTick (with openListingId set) to open
-  // the focused surface for a specific item post-mount — without a reload
-  // or URL params. Mirrors resetTick's external-trigger mechanism.
   openTick,
   openListingId,
+  // 2026-06-01: the action bar's new verbs. openCollectionPicker → "Add to
+  // list" (signed-in); handleShare → "Share" (onward share).
+  openCollectionPicker,
+  handleShare,
 }) {
   const [shareIntent, setShareIntent] = useState(null);
   const [busy, setBusy] = useState(false);
-  // imgFailed state moved to FocusedShareCard (where it's actually
-  // used) on 2026-05-22 — was declared here orphaned since PR #408,
-  // causing a "Can't find variable: imgFailed" ReferenceError every
-  // time a recipient opened the share-receive surface. Scope was
-  // wrong but the bug shipped because nothing in the test suite
-  // mounts FocusedShareCard with shareIntent populated.
+  const [imgFailed, setImgFailed] = useState(false);
 
-  // Parse URL on mount. useEffect (not useState lazy init) so the
-  // first render is always shareIntent=null — no fights with
-  // strict-mode double-mount or pre-mount weirdness.
   useEffect(() => {
     if (typeof window === "undefined") return;
     try {
       const params = new URLSearchParams(window.location.search);
       if (params.get("shared") !== "1") return;
       const id = params.get("listing");
-      // Sender attribution (Mark spec 2026-05-21). Sender name comes
-      // through as `?from=<name>` from handleShare in App.js. Falls
-      // back silently to "Someone" if the link doesn't include it
-      // (anonymous share, or pre-2026-05-21 link). XSS-safe by virtue
-      // of React's text-node escaping — we never inject the value as
-      // markup, only render it as a string child.
       const fromName = params.get("from") || "";
       if (id) setShareIntent({ id, from: fromName });
     } catch (e) {
@@ -91,28 +55,18 @@ export function ShareReceiver({
     }
   }, []);
 
-  // Mirror to parent. ShareReceiver is the source of truth for
-  // share-active state; the shell needs to know to hide the regular
-  // feed underneath.
   useEffect(() => {
-    if (typeof setShareActive === "function") {
-      setShareActive(!!shareIntent);
-    }
+    if (typeof setShareActive === "function") setShareActive(!!shareIntent);
   }, [shareIntent, setShareActive]);
 
-  // External escape — bumped by App.js when the user clicks a main
-  // nav target. Clear our intent so the next render returns null.
   useEffect(() => {
-    if (resetTick && resetTick > 0) {
-      setShareIntent(null);
-    }
+    if (resetTick && resetTick > 0) setShareIntent(null);
   }, [resetTick]);
 
-  // External open — bumped by App when Lumé's open_watch action fires.
-  // Opens the focused surface for the given item id, no reload / URL change.
   useEffect(() => {
     if (openTick && openTick > 0 && openListingId) {
       setShareIntent({ id: openListingId, from: "" });
+      setImgFailed(false);
     }
   }, [openTick, openListingId]);
 
@@ -139,9 +93,7 @@ export function ShareReceiver({
       if (watchlist && !watchlist[sharedItem.id] && typeof toggleWatchlist === "function") {
         toggleWatchlist(sharedItem);
       }
-      if (typeof addToSharedInbox === "function") {
-        await addToSharedInbox(sharedItem);
-      }
+      if (typeof addToSharedInbox === "function") await addToSharedInbox(sharedItem);
     } catch (e) {
       console.warn("share save failed", e);
     }
@@ -149,497 +101,160 @@ export function ShareReceiver({
     clearIntent();
   }, [sharedItem, user, watchlist, toggleWatchlist, addToSharedInbox, clearIntent]);
 
-  const onDismiss = useCallback(async () => {
-    if (sharedItem && user) {
-      setBusy(true);
-      try {
-        if (typeof addToSharedInbox === "function") {
-          await addToSharedInbox(sharedItem);
-        }
-      } catch (e) {
-        console.warn("share dismiss failed", e);
-      }
-      setBusy(false);
-    }
-    clearIntent();
-  }, [sharedItem, user, addToSharedInbox, clearIntent]);
-
-  // Early-out: no surface until items are loaded. We don't render
-  // anything until items.length > 0 so the lookup memo above always
-  // returns a real value (or null because the id legitimately doesn't
-  // match), never null-because-still-loading.
   if (!shareIntent) return null;
   if (!Array.isArray(items) || items.length === 0) return null;
 
   const isAlreadySaved = sharedItem && watchlist && !!watchlist[sharedItem.id];
+  const sender = (shareIntent.from || "").trim();
 
-  // Price formatting mirrors Card's logic — show user's primary
-  // currency primary, native price secondary if it differs.
   const fmtPriceLine = (item) => {
     if (!item || !item.priceUSD || !item.price) return "";
     const native = item.currency || "USD";
     const primary = primaryCurrency || "USD";
-    const primaryAmt = primary === "USD"
-      ? item.priceUSD
-      : priceIn(item.priceUSD, "USD", primary, FX_RATES_USD_PER);
+    const primaryAmt = primary === "USD" ? item.priceUSD : priceIn(item.priceUSD, "USD", primary, FX_RATES_USD_PER);
     if (!primaryAmt) return fmt(item.price, native);
     if (native === primary) return fmt(item.price, native);
     return `${fmt(primaryAmt, primary)} · ${fmt(item.price, native)}`;
   };
 
-  const onClickAnchor = (tab) => {
-    clearIntent();
-    if (typeof setTab === "function") setTab(tab);
-  };
+  const goBrowse = () => { clearIntent(); if (typeof setTab === "function") setTab("listings"); };
+  const goLists = () => { clearIntent(); if (typeof setTab === "function") setTab("watchlist"); };
 
   return (
-    <div style={{
-      // Take over the parent content area. Bottom padding sized to
-      // clear the mobile bottom tab bar (~80px tall). maxWidth bumped
-      // 1320 → 1600 so on wider screens the focused card actually
-      // uses the available room instead of sitting in a centred well.
-      padding: "16px 16px 110px",
-      maxWidth: 1600,
-      margin: "0 auto",
-      width: "100%",
-    }}>
-      {/* Compact onboarding header — h1 alone carries the context.
-          Earlier iterations had a "Shared with you" pill chip beside
-          the heading; Mark dropped it 2026-05-06 because the h1
-          already says the same thing and the chip ate vertical room
-          on mobile. */}
-      <h1 style={{
-        fontSize: 18, fontWeight: 600,
-        color: "var(--text1)", margin: "0 0 14px", lineHeight: 1.3,
-      }}>
-        {shareIntent && shareIntent.from
-          ? `${shareIntent.from} thought you'd want to see this.`
-          : "A watch worth a look."}
-      </h1>
+    <div style={{ padding: "16px 16px 110px", maxWidth: 1100, margin: "0 auto", width: "100%" }}>
+      {/* [A] Attribution — sender + what was shared. The one line of chrome
+          copy; no explanatory paragraph. */}
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+        <span aria-hidden style={{
+          flexShrink: 0, width: 28, height: 28, borderRadius: 999,
+          background: "var(--brand-olive-tint-12)", color: "var(--brand-olive-ink)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: 13, fontWeight: 700,
+        }}>{sender ? sender.charAt(0).toUpperCase() : "♡"}</span>
+        <span style={{
+          fontSize: 11, fontWeight: 600, letterSpacing: "0.06em",
+          textTransform: "uppercase", color: "var(--text2)",
+        }}>{sender ? `${sender} shared a watch with you` : "Shared with you"}</span>
+      </div>
 
       {sharedItem ? (
-        <div className="share-receiver-wide-grid" style={{
-          display: "grid",
-          gridTemplateColumns: "minmax(0, 1fr)",
-          gap: 16,
-          alignItems: "stretch",
+        <div style={{
+          borderRadius: 12, overflow: "hidden", border: "0.5px solid var(--border)",
+          background: "var(--card-bg)", boxShadow: "var(--shadow-modal)",
         }}>
-          <style>{`
-            @media (min-width: 1100px) {
-              .share-receiver-wide-grid {
-                grid-template-columns: minmax(0, 1.6fr) minmax(280px, 1fr) !important;
-              }
-            }
-          `}</style>
-          <FocusedShareCard
-            item={sharedItem}
-            isAlreadySaved={!!isAlreadySaved}
-            user={user}
-            busy={busy}
-            isAuthConfigured={isAuthConfigured}
-            signInWithGoogle={signInWithGoogle}
-            onSave={onSave}
-            onDismiss={onDismiss}
-            onClickListing={onClickListing}
-            fmtPriceLine={fmtPriceLine}
-          />
-          <OrientationAnchors
-            signedIn={!!user}
-            onClickAnchor={onClickAnchor}
-            onSignIn={isAuthConfigured ? signInWithGoogle : undefined}
-            signInCopy="Sign in to save this listing, follow searches, and build your watchlist."
-          />
+          {/* [B] Hero */}
+          <a href={sharedItem.url} target="_blank" rel="noopener noreferrer"
+            onClick={() => { if (onClickListing) onClickListing(sharedItem); }}
+            style={{ position: "relative", display: "block", aspectRatio: "16 / 10", background: "var(--surface)" }}
+            title={`Open ${sharedItem.source} listing`}>
+            {sharedItem.img && !imgFailed ? (
+              <img src={imgSrc(sharedItem.img)} alt={sharedItem.ref || sharedItem.title || "shared watch"}
+                onError={() => setImgFailed(true)} loading="eager"
+                style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+            ) : (
+              <div style={{
+                position: "absolute", inset: 0, display: "flex", flexDirection: "column",
+                alignItems: "center", justifyContent: "center", gap: 6,
+                color: "var(--text3)", fontSize: 13, padding: 16, textAlign: "center",
+              }}>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" />
+                </svg>
+                <span>Open on {sharedItem.source} to see it</span>
+              </div>
+            )}
+            {sharedItem.sold && (
+              <span style={{
+                position: "absolute", top: 12, right: 12, background: "rgba(0,0,0,0.7)", color: "#fff",
+                fontSize: 11, fontWeight: 700, letterSpacing: "0.05em", padding: "4px 8px",
+                borderRadius: 4, textTransform: "uppercase",
+              }}>Sold</span>
+            )}
+          </a>
+
+          {/* Title + identity */}
+          <div style={{ padding: "16px 18px 4px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 12, flexWrap: "wrap" }}>
+              <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--text2)" }}>
+                {sharedItem.source || ""}
+              </span>
+              {sharedItem.brand && <span style={{ fontSize: 12, color: "var(--text2)" }}>{sharedItem.brand}</span>}
+            </div>
+            <h2 style={{ fontSize: 19, fontWeight: 700, color: "var(--text1)", margin: "6px 0 0", lineHeight: 1.2 }}>
+              {sharedItem.ref || sharedItem.title || "Watch"}
+            </h2>
+            {(sharedItem.price || sharedItem.priceUSD) ? (
+              <div style={{ fontSize: 17, fontWeight: 600, color: "var(--text1)", marginTop: 4 }}>
+                {fmtPriceLine(sharedItem) || (sharedItem.price ? fmt(sharedItem.price, sharedItem.currency || "USD") : "")}
+              </div>
+            ) : null}
+          </div>
+
+          {/* [C] Action bar — consistent verbs, self-explanatory. One olive
+              primary (the dealer view); the rest subtle. */}
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", padding: "12px 18px 18px" }}>
+            <a href={sharedItem.url} target="_blank" rel="noopener noreferrer"
+              onClick={() => { if (onClickListing) onClickListing(sharedItem); }}
+              style={{ ...primaryBtnStyle, textDecoration: "none", display: "inline-flex", alignItems: "center" }}>
+              View on {sharedItem.source || "dealer"} →
+            </a>
+            {user ? (
+              <>
+                <button onClick={onSave} disabled={busy || isAlreadySaved}
+                  style={{ ...subtleBtnStyle, opacity: (busy || isAlreadySaved) ? 0.6 : 1, cursor: busy ? "wait" : (isAlreadySaved ? "default" : "pointer") }}>
+                  {isAlreadySaved ? "♥ Saved" : (busy ? "Saving…" : "♡ Save")}
+                </button>
+                {openCollectionPicker && (
+                  <button onClick={() => openCollectionPicker(sharedItem)} style={subtleBtnStyle}>Add to list</button>
+                )}
+              </>
+            ) : (
+              isAuthConfigured && signInWithGoogle && (
+                <button onClick={signInWithGoogle} style={subtleBtnStyle}>Sign in to save</button>
+              )
+            )}
+            {handleShare && (
+              <button onClick={() => handleShare(sharedItem)} style={subtleBtnStyle}>Share</button>
+            )}
+          </div>
         </div>
       ) : (
+        // Shared item not in the live feed (dealer pulled it / scrolled off).
+        // Still no dead end — offer the way into the app.
         <div style={{
-          padding: "32px 24px", borderRadius: 12,
-          border: "0.5px solid var(--border)", background: "var(--card-bg)",
-          // Light-mode lift: --card-bg is #fff (same as page) in light
-          // mode, so without a shadow the card has no tone shift. The
-          // shadow disappears against #000 in dark mode (no harm).
-          boxShadow: "var(--shadow-modal)",
-          fontSize: 14, color: "var(--text2)", lineHeight: 1.6,
-          maxWidth: 720,
+          padding: "28px 22px", borderRadius: 12, border: "0.5px solid var(--border)",
+          background: "var(--card-bg)", boxShadow: "var(--shadow-modal)", maxWidth: 560,
         }}>
-          The shared listing isn't in the feed right now — the dealer may have removed it, or
-          it has scrolled off the active list. Browse the rest of Watchlist below.
-          <div style={{ marginTop: 14 }}>
-            <button onClick={() => onClickAnchor("listings")} style={anchorBtnStyle}>
-              Browse all listings →
-            </button>
+          <div style={{ fontSize: 15, fontWeight: 600, color: "var(--text1)", marginBottom: 6 }}>
+            This listing isn't available right now
           </div>
+          <div style={{ fontSize: 13, color: "var(--text2)", lineHeight: 1.5, marginBottom: 14 }}>
+            The dealer may have removed it. The rest of Watchlist is here.
+          </div>
+          <button onClick={goBrowse} style={primaryBtnStyle}>Browse Watchlist →</button>
         </div>
       )}
-    </div>
-  );
-}
 
-// ── FocusedShareCard ───────────────────────────────────────────────
-// The two-column landing surface. Left = image. Right = details +
-// save / dismiss / dealer link. Stacks on mobile via the gridTemplate
-// switch at the breakpoint.
-function FocusedShareCard({
-  item,
-  isAlreadySaved,
-  user,
-  busy,
-  isAuthConfigured,
-  signInWithGoogle,
-  onSave,
-  onDismiss,
-  onClickListing,
-  fmtPriceLine,
-}) {
-  // Image-load failure flag. The dealer's image URL can 404 between
-  // scrape and share-open (sold listing, dealer cleared inventory).
-  // Hotfix 2026-05-22 — was in ShareReceiver's scope (PR #408)
-  // which threw ReferenceError at render time. State belongs in
-  // the component that consumes it.
-  const [imgFailed, setImgFailed] = useState(false);
-  return (
-    <div style={{
-      display: "grid",
-      // Two columns ≥720px, single column below. Right pane has a
-      // fixed minimum so the CTAs don't crush at narrow desktop.
-      gridTemplateColumns: "minmax(0, 1fr)",
-      gap: 0,
-      borderRadius: 12,
-      overflow: "hidden",
-      border: "0.5px solid var(--border)",
-      background: "var(--card-bg)",
-      // Light-mode lift: --card-bg is #fff (same as page bg) in
-      // light mode, so without a shadow the card has no tone shift.
-      // Shadow disappears against #000 in dark mode (no harm).
-      boxShadow: "var(--shadow-modal)",
-    }}
-    className="share-receiver-focused-card"
-    >
-      <style>{`
-        /* Mobile-first defaults are tight so action buttons sit
-           above the fold on a typical phone (~670px viewport).
-           Both desktop expansions kick in together at 720px. */
-        .share-receiver-focused-card .share-receiver-image-pane {
-          aspect-ratio: 16 / 10;
-        }
-        .share-receiver-focused-card .share-receiver-details-pane {
-          padding: 14px 14px 16px;
-          gap: 9px;
-        }
-        .share-receiver-focused-card .share-receiver-action-hint {
-          display: none;
-        }
-        .share-receiver-focused-card .share-receiver-spacer {
-          display: none;
-        }
-        @media (min-width: 720px) {
-          .share-receiver-focused-card {
-            grid-template-columns: 1fr 1fr !important;
-          }
-          .share-receiver-focused-card .share-receiver-image-pane {
-            aspect-ratio: 4 / 3;
-          }
-          .share-receiver-focused-card .share-receiver-details-pane {
-            padding: 24px 22px;
-            gap: 14px;
-          }
-          .share-receiver-focused-card .share-receiver-action-hint {
-            display: block;
-          }
-          .share-receiver-focused-card .share-receiver-spacer {
-            display: block;
-          }
-        }
-      `}</style>
-
-      {/* Image pane */}
-      <a
-        href={item.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={() => { if (onClickListing) onClickListing(item); }}
-        className="share-receiver-image-pane"
-        style={{
-          position: "relative",
-          display: "block",
-          // aspect-ratio handled by CSS class so the mobile (16:10)
-          // and desktop (4:3) values can swap at the breakpoint.
-          background: "var(--surface)",
-          textDecoration: "none",
-        }}
-        title={`Open ${item.source} listing in a new tab`}
-      >
-        {item.img && !imgFailed ? (
-          <img
-            src={imgSrc(item.img)}
-            alt={item.ref || item.title || "shared watch"}
-            onError={() => setImgFailed(true)}
-            style={{
-              position: "absolute", inset: 0,
-              width: "100%", height: "100%",
-              objectFit: "cover", display: "block",
-            }}
-            loading="eager"
-          />
-        ) : (
-          // Two paths land here:
-          //   1. item.img is empty (sold listing where the dealer
-          //      pulled the image, or a snapshot that never had one).
-          //   2. Image load failed at runtime (dealer URL 404'd between
-          //      the time the listing was scraped and the recipient
-          //      opened the share). Without the onError fallback above,
-          //      this case left the pane visually empty with the dealer
-          //      link still active — Mark report 2026-05-21.
-          <div style={{
-            position: "absolute", inset: 0,
-            display: "flex", flexDirection: "column",
-            alignItems: "center", justifyContent: "center", gap: 6,
-            color: "var(--text3)", fontSize: 13,
-            padding: 16, textAlign: "center",
-          }}>
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" strokeWidth="1.5"
-              strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <rect x="3" y="3" width="18" height="18" rx="2" />
-              <circle cx="8.5" cy="8.5" r="1.5" />
-              <path d="M21 15l-5-5L5 21" />
-            </svg>
-            <span>Image unavailable</span>
-            <span style={{ fontSize: 11 }}>Open on {item.source} to see the listing.</span>
-          </div>
-        )}
-        {item.sold && (
-          <span style={{
-            position: "absolute", top: 12, right: 12,
-            background: "rgba(0,0,0,0.7)", color: "#fff",
-            fontSize: 11, fontWeight: 700, letterSpacing: "0.05em",
-            padding: "4px 8px", borderRadius: 4,
-            textTransform: "uppercase",
-          }}>Sold</span>
-        )}
-      </a>
-
-      {/* Details pane — padding + gap handled by CSS class so they
-          can tighten on mobile and expand on desktop. */}
-      <div className="share-receiver-details-pane" style={{
-        display: "flex", flexDirection: "column",
-        minWidth: 0,
-      }}>
-        {/* Source + brand */}
-        <div style={{
-          display: "flex", justifyContent: "space-between", alignItems: "baseline",
-          gap: 12, flexWrap: "wrap",
-        }}>
-          <span style={{
-            fontSize: 11, fontWeight: 600, letterSpacing: "0.06em",
-            textTransform: "uppercase", color: "var(--text2)",
-          }}>{item.source || ""}</span>
-          {item.brand && (
-            <span style={{
-              fontSize: 12, color: "var(--text2)",
-            }}>{item.brand}</span>
-          )}
-        </div>
-
-        {/* Title */}
-        <h2 style={{
-          fontSize: 18, fontWeight: 600,
-          color: "var(--text1)", margin: 0, lineHeight: 1.3,
-        }}>
-          {item.ref || item.title || "Watch"}
-        </h2>
-
-        {/* Price */}
-        {(item.price || item.priceUSD) ? (
-          <div style={{ fontSize: 18, fontWeight: 600, color: "var(--text1)" }}>
-            {fmtPriceLine(item) || (item.price ? fmt(item.price, item.currency || "USD") : "")}
-          </div>
-        ) : null}
-
-        {/* Dealer link */}
-        <a
-          href={item.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={() => { if (onClickListing) onClickListing(item); }}
-          style={{
-            fontSize: 13, color: "var(--text2)",
-            textDecoration: "underline",
-            wordBreak: "break-word",
-          }}
-        >
-          Open on {item.source || "dealer site"} →
-        </a>
-
-        {/* Spacer pushes actions to the bottom of the pane on
-            desktop. Hidden on mobile (CSS class) so the actions
-            sit immediately under the dealer link and stay above
-            the fold on phone viewports. */}
-        <div className="share-receiver-spacer" style={{ flex: 1, minHeight: 12 }} />
-
-        {/* Action buttons */}
-        <div style={{
-          display: "flex", gap: 10, flexWrap: "wrap",
-        }}>
-          {user ? (
-            <>
-              <button
-                onClick={onSave}
-                disabled={busy || isAlreadySaved}
-                style={{
-                  ...primaryBtnStyle,
-                  opacity: (busy || isAlreadySaved) ? 0.6 : 1,
-                  cursor: busy ? "wait" : (isAlreadySaved ? "default" : "pointer"),
-                }}
-              >
-                {isAlreadySaved ? "Already saved" : (busy ? "Saving…" : "Save to my list")}
-              </button>
-              <button onClick={onDismiss} disabled={busy} style={secondaryBtnStyle}>
-                Dismiss
-              </button>
-            </>
-          ) : (
-            <>
-              {isAuthConfigured && signInWithGoogle && (
-                <button onClick={signInWithGoogle} style={primaryBtnStyle}>
-                  Sign in to save
-                </button>
-              )}
-              <button onClick={onDismiss} style={secondaryBtnStyle}>
-                Just browse
-              </button>
-            </>
-          )}
-        </div>
-
-        <div className="share-receiver-action-hint" style={{
-          fontSize: 12, color: "var(--text3)", lineHeight: 1.5, marginTop: 4,
-        }}>
-          {user
-            ? <>Save lands in your hearted list and a <strong style={{ color: "var(--text2)" }}>Shared with me</strong> inbox so it doesn't get lost.</>
-            : <>The dealer link is public — sign in only if you want to keep this for later.</>
-          }
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ── OrientationAnchors ─────────────────────────────────────────────
-// First-time-visitor onboarding. Lives in the right column on wide
-// desktop (≥1100px), beside the focused share card; stacks below
-// the card on narrower / mobile. Stacked-button layout reads well
-// in either column orientation — no internal flex-wrap needed.
-function OrientationAnchors({ signedIn, onClickAnchor, onSignIn, signInCopy }) {
-  const showSignIn = !signedIn && onSignIn;
-  return (
-    <div style={{
-      borderRadius: 12,
-      border: "0.5px solid var(--border)",
-      background: "var(--card-bg)",
-      boxShadow: "var(--shadow-modal)",
-      display: "flex", flexDirection: "column",
-      minHeight: 0,
-      overflow: "hidden",
-    }}>
-      {showSignIn && (
-        <div style={{
-          padding: "20px 20px 16px",
-          borderBottom: "0.5px solid var(--border)",
-          background: "var(--surface)",
-        }}>
-          <div style={{
-            fontSize: 10, fontWeight: 600,
-            textTransform: "uppercase", letterSpacing: "0.06em",
-            color: "var(--text3)", marginBottom: 8,
-          }}>
-            Sign in
-          </div>
-          <p style={{
-            margin: "0 0 14px", fontSize: 13, color: "var(--text2)",
-            lineHeight: 1.5,
-          }}>
-            {signInCopy || (
-              <>Sign in to save listings, follow searches, and build your watchlist.</>
-            )}
-          </p>
-          <button onClick={onSignIn} style={primaryBtnStyle}>
-            Sign in to Watchlist →
-          </button>
-        </div>
-      )}
-      <div style={{ padding: "20px 20px 16px" }}>
-        <div style={{
-          fontSize: 10, fontWeight: 600,
-          textTransform: "uppercase", letterSpacing: "0.06em",
-          color: "var(--text3)", marginBottom: 8,
-        }}>
-          First time on Watchlist?
-        </div>
-        <p style={{
-          margin: "0 0 14px", fontSize: 13, color: "var(--text2)",
-          lineHeight: 1.5,
-        }}>
-          <span style={{ fontStyle: "italic", color: "var(--text1)" }}>
-            For people who watch vintage watches.
-          </span>{" "}
-          Search, save, and follow listings from across the vintage
-          watch world.
-        </p>
-        <div style={{
-          display: "flex", flexDirection: "column", gap: 8,
-        }}>
-          <button onClick={() => onClickAnchor("listings")} style={anchorBtnStyle}>
-            Browse all listings →
-          </button>
-          {signedIn && (
-            <button onClick={() => onClickAnchor("watchlist")} style={anchorBtnStyle}>
-              Go to your saved list →
-            </button>
-          )}
-          <button onClick={() => onClickAnchor("references")} style={anchorBtnStyle}>
-            Learn (tools + links) →
-          </button>
-        </div>
+      {/* [E] Navigation cues — quiet, no dead end. */}
+      <div style={{ display: "flex", gap: 18, flexWrap: "wrap", marginTop: 16 }}>
+        <button onClick={goBrowse} style={navCueStyle}>Browse Watchlist →</button>
+        {user && <button onClick={goLists} style={navCueStyle}>Your lists →</button>}
       </div>
     </div>
   );
 }
 
 const primaryBtnStyle = {
-  border: "none",
-  // PR 2026-05-22: olive primary CTA — matches the site-wide primary
-  // CTA olive treatment (styles.js actionButton primary variant).
-  // "Save to my list" was inline-styled brand-blue so it escaped the
-  // earlier sweep.
-  background: "var(--brand-olive)",
-  color: "#fff",
-  padding: "10px 20px",
-  borderRadius: 8,
-  fontFamily: "inherit",
-  fontSize: 14,
-  fontWeight: 500,
-  cursor: "pointer",
+  border: "none", background: "var(--brand-olive)", color: "#fff",
+  padding: "10px 18px", borderRadius: 8, fontFamily: "inherit",
+  fontSize: 14, fontWeight: 600, cursor: "pointer",
 };
-
-const secondaryBtnStyle = {
-  border: "0.5px solid var(--border)",
-  background: "transparent",
-  color: "var(--text2)",
-  padding: "10px 20px",
-  borderRadius: 8,
-  fontFamily: "inherit",
-  fontSize: 14,
-  cursor: "pointer",
+const subtleBtnStyle = {
+  border: "0.5px solid var(--border)", background: "var(--surface)", color: "var(--text1)",
+  padding: "10px 16px", borderRadius: 8, fontFamily: "inherit", fontSize: 14, fontWeight: 500, cursor: "pointer",
 };
-
-const anchorBtnStyle = {
-  border: "0.5px solid var(--border)",
-  background: "var(--surface)",
-  color: "var(--text1)",
-  padding: "8px 14px",
-  borderRadius: 8,
-  fontFamily: "inherit",
-  fontSize: 13,
-  cursor: "pointer",
-  textAlign: "left",
+const navCueStyle = {
+  border: "none", background: "transparent", color: "var(--text2)",
+  padding: 0, fontFamily: "inherit", fontSize: 13, cursor: "pointer",
 };

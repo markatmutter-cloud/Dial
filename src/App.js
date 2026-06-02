@@ -4599,6 +4599,9 @@ export default function Watchlist() {
       // focused surface for a specific item in-app, no reload.
       openTick={shareOpenTick}
       openListingId={shareOpenId}
+      // Action-bar verbs (2026-06-01): Add to list + Share onward.
+      openCollectionPicker={user ? openCollectionPicker : undefined}
+      handleShare={handleShare}
     />
   );
 
