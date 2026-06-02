@@ -22,12 +22,6 @@ import {
 // Self-contained nav (its own ?ref URL param) so it adds NO hooks to App.js's
 // top level (React #310 safety).
 
-const purpose = {
-  fontSize: 13,
-  color: "var(--text2)",
-  lineHeight: 1.5,
-  margin: "0 0 16px",
-};
 const comingBadge = {
   fontSize: 10,
   fontWeight: 600,
@@ -127,12 +121,9 @@ export function ReferenceBrowse(props) {
 
   return (
     <div style={{ paddingTop: 4 }}>
-      <H1>Reference guides</H1>
-      <p style={purpose}>
-        Deep-dive guides to individual watch references — what they are, how to
-        look at them, and the market around them.
-      </p>
-
+      {/* No bespoke H1 / explainer here (Mark 2026-06-01) — the "Reference
+          guides" sub-tab already labels the surface, matching Articles/Lists
+          which lead straight into their filter bar + content. */}
       {/* Search + brand filter */}
       <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 18 }}>
         <input
@@ -172,13 +163,6 @@ export function ReferenceBrowse(props) {
 }
 
 // ── Presentational helpers ────────────────────────────────────────
-function H1({ children }) {
-  return (
-    <h1 style={{ fontSize: 20, fontWeight: 600, color: "var(--text1)", margin: "0 0 10px" }}>
-      {children}
-    </h1>
-  );
-}
 
 // Article-style guide card: hero on top, brand·model kicker, serif reference name.
 function RefGuideCard({ node, isMobile, onClick }) {
