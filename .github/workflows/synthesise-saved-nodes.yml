@@ -43,6 +43,15 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # B-44: this workflow used to push its synthesis outputs straight to
+    # main with no test gate — on 2026-05-30 a new reference_synthesis_*.json
+    # invalidated jest + pytest cases and turned main red with no warning.
+    # Now it (1) runs both suites on the generated files and (2) opens a PR
+    # instead of pushing to main. contents:write pushes the branch;
+    # pull-requests:write lets `gh pr create` open the PR.
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -87,7 +96,32 @@ jobs:
         if: ${{ steps.slugs.outputs.list != '' && github.event.inputs.dry_run != 'yes' }}
         run: python reference_digest.py ${{ steps.slugs.outputs.list }}
 
-      - name: Commit + push outputs
+      # B-44 gate: run BOTH suites on the freshly-generated files BEFORE we
+      # commit anything. The 2026-05-30 breakage was a synthesis OUTPUT file
+      # invalidating tests, so this must run after the stages, on the outputs.
+      # If either suite fails, the job fails here and nothing is committed —
+      # main can't go red. (We run the tests in-workflow rather than rely on
+      # the PR's CI because a PR opened with the default GITHUB_TOKEN does NOT
+      # trigger tests.yml — GitHub suppresses workflow-triggered pull_request
+      # events to prevent recursion.)
+      - name: Set up Node (test gate)
+        if: steps.slugs.outputs.list != ''
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run test gate (pytest + jest) on generated outputs
+        if: steps.slugs.outputs.list != ''
+        run: |
+          pip install -r requirements-dev.txt
+          pytest
+          npm install
+          npm run test:ci
+
+      - name: Commit + open PR
+        if: steps.slugs.outputs.list != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -99,10 +133,13 @@ jobs:
             echo "No changes — nothing to commit."
             exit 0
           fi
-          git commit -m "Synthesise saved-watch nodes (max_nodes=${{ github.event.inputs.max_nodes }}) $(date -u '+%Y-%m-%d %H:%M UTC')"
-          for i in 1 2 3; do
-            if git push; then exit 0; fi
-            git pull --rebase
-            sleep 5
-          done
-          exit 1
+          STAMP="$(date -u '+%Y-%m-%d %H:%M UTC')"
+          BRANCH="saved-node-synthesis/${{ github.run_id }}"
+          git checkout -b "$BRANCH"
+          git commit -m "Synthesise saved-watch nodes (max_nodes=${{ github.event.inputs.max_nodes }}) $STAMP"
+          git push -u origin "$BRANCH"
+          gh pr create \
+            --base main \
+            --head "$BRANCH" \
+            --title "Synthesise saved-watch nodes ($STAMP)" \
+            --body "Automated saved-node synthesis fan-out (max_nodes=\`${{ github.event.inputs.max_nodes }}\`). pytest + jest already passed in-workflow against these files (B-44 gate). Review the digests under \`docs/reference_synthesis_*.md\`, then merge."
