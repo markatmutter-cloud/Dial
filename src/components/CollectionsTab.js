@@ -2433,7 +2433,7 @@ function ListsView({
           {/* SAVED SALES — hearted auction catalogs, as cards (Mark: a section
               in Lists, not under Saved). Tap opens the sale's lots. */}
           {savedAuctions && savedAuctions.length > 0 && (
-            <WLBand id="sales" kicker="Saved sales" isMobile={isMobile}>
+            <WLBand id="sales" kicker="Saved auctions" isMobile={isMobile}>
               <WLCardGrid isMobile={isMobile}>
                 {savedAuctions.map(a => (
                   <WLListCard key={a.url}

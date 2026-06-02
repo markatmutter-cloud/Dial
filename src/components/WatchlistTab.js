@@ -186,7 +186,7 @@ export function WatchlistTab(props) {
     },
     auctions: {
       heading: "Sign in to follow auctions",
-      blurb: "Heart any auction-house lot from the Listings feed, or paste an eBay URL with + Track eBay item, to follow it through to hammer. Bids, estimates, and end times stay current as the sale unfolds.",
+      blurb: "Heart any auction-house lot from the Listings feed, or paste an eBay URL with + Track eBay item, to follow it through to hammer. Bids, estimates, and end times stay current as the auction unfolds.",
     },
     sold: {
       heading: "Sign in to track what sold",
