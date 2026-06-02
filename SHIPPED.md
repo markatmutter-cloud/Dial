@@ -310,6 +310,23 @@ within each section roughly last.
   shortcut in the top-right, white-outline icon matching Home, fills red on hover; Home
   **"×"** overlay retired (admin Hide is the single curation tool); duplicate signed-out
   "About" removed; filter bar left-aligned + reset-to-base on Auctions return.
+- **2026-06-02 — Shared-list two-mode surface (#760/#761).** Recipient reskinned onto
+  `SharedReceiveFrame` (cover-card preview, no read-only grid) with two clearly-labelled
+  outcomes; sender share sheet relabelled **Send a copy** / **Collaborate**.
+- **2026-06-02 — Collapsing header pattern (#762/#764/#771).** Title scrolls away while the
+  filter bar pins — shipped on the auction catalog, the Saved tab, and the Reference guides +
+  Articles sub-tabs (one pattern, four surfaces).
+- **2026-06-02 — Auction catalog Share → in-app link (#765).** Share emits `?catalog=…` →
+  new `CatalogReceiver` (unified frame) instead of the dead-end auction-house URL; added a
+  "→ Auction house" link by the header.
+- **2026-06-02 — Auctions copy + Add-to-list + B-55 (#766/#767/#768).** Desktop "Auction
+  Calendar" label + "sales"→"auctions" consistency; Add-to-list **Done** in a sticky header
+  (no scroll-to-commit); leaving a catalog for Watches/Listings resets the sale filter.
+- **2026-06-02 — Standard-library card grid (#769).** One shared `cardGridStyle` → article =
+  reference-guide = list cards (same size).
+- **2026-06-02 — Saved grouping dropped (#770).** The Brand/Source group pills (briefly added
+  #763) were redundant with the Source/Brand filters — removed (−186 lines); Saved is a flat
+  newest-first grid.
 
 ### Lumé — the AI spine (Epic 9 / Phase A)
 
