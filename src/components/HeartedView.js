@@ -22,6 +22,7 @@ import { Card } from "./Card";
 import CardShell from "./CardShell";
 import { EmptyState } from "./EmptyState";
 import SubTabBar from "./SubTabBar";
+import { PageHeader } from "./PageHeader";
 import { innerToggleButton } from "../styles";
 
 const GROUP_BY_KEY = "dial_hearted_group_by";
@@ -194,8 +195,12 @@ export default function HeartedView({
   const hasAnything = items.length || articles.length || guides.length;
 
   // ── render ── (all hooks above this line)
+  const savedTotal = items.length + articles.length + guides.length;
   return (
     <div style={{ paddingTop: 0, paddingBottom: isMobile ? 220 : 160 }}>
+      <PageHeader isMobile={isMobile} title="Saved"
+        meta={savedTotal ? `${savedTotal} ${savedTotal === 1 ? "item" : "items"}` : null} />
+      <div style={{ paddingTop: isMobile ? 14 : 18 }} />
       {/* Type filter — only when there's more than one type to switch between. */}
       {typeOptions.length > 1 && (
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap", padding: "8px 0 12px" }}>

@@ -61,6 +61,7 @@ import { DesktopShell } from "./components/DesktopShell";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { ConfirmHost } from "./components/ConfirmModal";
 import { ChatBubbleHost } from "./components/ChatBubbleHost";
+import { PageHeader } from "./components/PageHeader";
 import { registerActionHandlers } from "./components/ActionBus";
 // IdentityBand import retired 2026-05-22 — component file still in
 // the repo for git history, no current call site.
@@ -3715,69 +3716,33 @@ export default function Watchlist() {
   ) ? (() => {
     const sale = salesByUrl.get(effectiveSaleUrls[0]);
     const saved = savedAuctionUrlSet.has(sale.url);
+    const shareCatalog = async () => {
+      try {
+        if (typeof navigator !== "undefined" && navigator.share) {
+          await navigator.share({ title: sale.title || "Auction catalog", url: sale.url });
+        } else if (typeof navigator !== "undefined" && navigator.clipboard) {
+          await navigator.clipboard.writeText(sale.url);
+        }
+      } catch {}
+    };
+    const eyebrow = `${sale.house}${sale.location ? ` · ${sale.location}` : ""}${fmtSaleDateRange(sale) ? ` · ${fmtSaleDateRange(sale)}` : ""}`;
+    const actions = [];
+    if (user) actions.push({
+      label: saved ? "Saved" : "Save catalog", active: saved,
+      icon: <span style={{ color: saved ? "var(--heart)" : "var(--text2)" }}>{saved ? "♥" : "♡"}</span>,
+      onClick: () => toggleSavedAuction(sale.url),
+    });
+    if (sale.url) actions.push({ label: "Share", onClick: shareCatalog });
     return (
-      <div style={{
-        borderBottom: "0.5px solid var(--border)", background: "var(--bg)",
-        padding: isMobile ? "10px 14px 13px" : "14px 20px 16px",
-      }}>
-        <button onClick={() => setFilterSaleUrls([])}
-          title="Show all lots" aria-label="Exit auction"
-          style={{
-            display: "inline-flex", alignItems: "center", gap: 5, marginBottom: 8,
-            padding: 0, border: "none", background: "transparent", cursor: "pointer",
-            fontFamily: "inherit", fontSize: 12.5, fontWeight: 600, color: "var(--text2)",
-          }}>← Exit Auction</button>
-        <div style={{
-          fontSize: 11, fontWeight: 600, letterSpacing: "0.1em",
-          textTransform: "uppercase", color: "var(--brand-olive-text)",
-        }}>
-          {sale.house}{sale.location ? ` · ${sale.location}` : ""}{fmtSaleDateRange(sale) ? ` · ${fmtSaleDateRange(sale)}` : ""}
-        </div>
-        <div style={{
-          fontSize: isMobile ? 23 : 28, fontWeight: 700, color: "var(--text1)",
-          lineHeight: 1.12, marginTop: 5, letterSpacing: "-0.01em",
-        }}>{sale.title}</div>
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 9 }}>
-          <span style={{ fontSize: 13, color: "var(--text2)" }}>{allFiltered.length} lots</span>
-          {user && (
-            <button onClick={() => toggleSavedAuction(sale.url)}
-              aria-label={saved ? "Saved — tap to remove" : "Save this catalog"}
-              style={{
-                display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer",
-                fontFamily: "inherit", fontSize: 12.5, fontWeight: 600, padding: "5px 12px",
-                borderRadius: 999, border: "0.5px solid var(--border)",
-                background: saved ? "var(--brand-olive-tint-12)" : "var(--surface)",
-                color: saved ? "var(--brand-olive-ink)" : "var(--text1)",
-              }}>
-              <span style={{ color: saved ? "var(--heart)" : "var(--text2)" }}>{saved ? "♥" : "♡"}</span>
-              {saved ? "Saved" : "Save catalog"}
-            </button>
-          )}
-          {/* Share the catalog (Mark 2026-06-01 — there was nowhere to share a
-              sale, only save). Public action; no collaboration. Shares the
-              sale's page via the OS sheet, or copies the link on desktop. */}
-          {sale.url && (
-            <button onClick={async () => {
-              try {
-                if (typeof navigator !== "undefined" && navigator.share) {
-                  await navigator.share({ title: sale.title || "Auction catalog", url: sale.url });
-                } else if (typeof navigator !== "undefined" && navigator.clipboard) {
-                  await navigator.clipboard.writeText(sale.url);
-                }
-              } catch {}
-            }}
-              aria-label="Share this catalog"
-              style={{
-                display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer",
-                fontFamily: "inherit", fontSize: 12.5, fontWeight: 600, padding: "5px 12px",
-                borderRadius: 999, border: "0.5px solid var(--border)",
-                background: "var(--surface)", color: "var(--text1)",
-              }}>
-              Share
-            </button>
-          )}
-        </div>
-      </div>
+      <PageHeader
+        isMobile={isMobile}
+        onExit={() => setFilterSaleUrls([])}
+        exitLabel="Exit auction"
+        eyebrow={eyebrow}
+        title={sale.title}
+        meta={`${allFiltered.length} lots`}
+        actions={actions}
+      />
     );
   })() : null;
 

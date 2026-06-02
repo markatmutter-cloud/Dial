@@ -13,6 +13,7 @@ import { ListReviewMode } from "./ListReviewMode";
 import { articleAsListing } from "./EditorialView";
 import CardShell from "./CardShell";
 import HeartedView from "./HeartedView";
+import { PageHeader } from "./PageHeader";
 import { DossierBlocks } from "./DossierBlocks";
 import { fmtUSD, matchesSearch, imgSrc } from "../utils";
 import { actionButton, signInButton, FONT_SERIF } from "../styles";
@@ -355,44 +356,9 @@ function WLCardGrid({ isMobile, children }) {
   );
 }
 
-// Watchbox = the owned/wishlist/sold VAULT — a system surface, not a user
-// list. It gets a distinct full-width "vault" banner (filled --surface +
-// hairline + radius + olive icon-disc) so it reads categorically different
-// from the borderless, page-floating user-list cards below it. Anchors the
-// top of the Lists sub-tab; also reachable from the top-right account menu.
-function WLWatchboxVault({ counts, onOpen }) {
-  const stats = [
-    counts.owned ? `${counts.owned} owned` : null,
-    counts.wishlist ? `${counts.wishlist} wishlist` : null,
-    counts.sold ? `${counts.sold} sold` : null,
-  ].filter(Boolean).join(" · ") || "Your owned, wishlist & sold watches";
-  return (
-    <button onClick={onOpen} aria-label="Open my Watchbox" style={{
-      display: "flex", alignItems: "center", gap: 14, width: "100%",
-      textAlign: "left", cursor: "pointer", fontFamily: "inherit",
-      background: "var(--surface)", border: "0.5px solid var(--border)",
-      borderRadius: 12, padding: "14px 16px",
-    }}>
-      <span aria-hidden style={{
-        flexShrink: 0, width: 44, height: 44, borderRadius: 999,
-        background: "var(--brand-olive-tint-12)", color: "var(--brand-olive-ink)",
-        display: "flex", alignItems: "center", justifyContent: "center",
-      }}>
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="3" y="5" width="18" height="14" rx="2" />
-          <path d="M3 10h18" /><circle cx="12" cy="14.5" r="1.6" />
-        </svg>
-      </span>
-      <span style={{ flex: 1, minWidth: 0 }}>
-        <span style={{ display: "block", fontSize: 16, fontWeight: 700, color: "var(--text1)" }}>Watchbox</span>
-        <span style={{ display: "block", fontSize: 12.5, color: "var(--text3)", marginTop: 2,
-          overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{stats}</span>
-      </span>
-      <span style={{ flexShrink: 0, fontSize: 12.5, fontWeight: 600, color: "var(--brand-olive-text)" }}>View →</span>
-    </button>
-  );
-}
+// (WLWatchboxVault retired 2026-06-01 — the Watchbox anchor card "looked out of
+// place vs the list cards" (Mark); it's now a Watchbox action on the Lists
+// PageHeader. Still reachable from the top-right account menu.)
 
 // (WLSavedStrip retired — the Saved band now renders through the shared
 // CardStrip + standard Card, so hearted cards are standard size and match
@@ -773,11 +739,6 @@ export function CollectionsTab({
         // B-08 unified landing: Watchbox hero anchor + searches section.
         isMobile={isMobile}
         goToWatchbox={goToWatchbox}
-        watchboxCounts={{
-          owned: hardOwned ? (itemsByColl[hardOwned.id] || []).length : 0,
-          wishlist: hardWishlist ? (itemsByColl[hardWishlist.id] || []).length : 0,
-          sold: hardSold ? (itemsByColl[hardSold.id] || []).length : 0,
-        }}
         savedSearchStats={savedSearchStats}
         searchEditor={searchEditor}
         setSearchEditor={setSearchEditor}
@@ -1659,7 +1620,6 @@ function ListsView({
   // B-08 unified landing — Watchbox hero + searches section + covers.
   isMobile,
   goToWatchbox,
-  watchboxCounts = { owned: 0, wishlist: 0, sold: 0 },
   savedSearchStats = [],
   startAddSearch,
   startEditSearch,
@@ -2404,13 +2364,7 @@ function ListsView({
   // on 2026-06-01. Saved articles/auctions remain reachable via their
   // drill-in resolver below; Phase 2 re-surfaces them as typed bookmark
   // sections. The section-nav scroll-spy retired with the single scroll.)
-  const wlHeaderBtn = {
-    flexShrink: 0, cursor: "pointer", fontFamily: "inherit",
-    fontSize: 12.5, fontWeight: 600, letterSpacing: "0.02em",
-    padding: "6px 12px", borderRadius: 999,
-    border: "0.5px solid var(--text2)", background: "transparent",
-    color: "var(--text2)", display: "inline-flex", alignItems: "center", gap: 4, lineHeight: 1,
-  };
+  // (wlHeaderBtn retired 2026-06-01 — section actions moved into PageHeader.)
 
   // (renderListRow + the ListRow row family retired in B-08 — the
   // landing now renders cover-image cards, not icon+text rows. Rename/
@@ -2418,19 +2372,23 @@ function ListsView({
   // savedRow/articles/auctions still drive the `selected` drill-in.)
 
   return (
-    <div style={{ paddingTop: isMobile ? 12 : 16, paddingBottom: isMobile ? 220 : 160 }}>
+    <div style={{ paddingTop: 0, paddingBottom: isMobile ? 220 : 160 }}>
       {/* LISTS — a sectioned page (Mark 2026-06-01): Watchbox vault anchor →
           Your lists → Shared with you → Saved sales. Shared + Sales are card
           sections here now (the separate "Shared" sub-tab + the Hearted "Sales"
           type were retired in favour of these). */}
       {section === "lists" && (
         <>
-          {user && goToWatchbox && (
-            <div style={{ marginBottom: isMobile ? 20 : 24 }}>
-              <WLWatchboxVault counts={watchboxCounts} onOpen={goToWatchbox} />
-            </div>
-          )}
-          <WLBand id="lists" kicker="Your lists" isMobile={isMobile}>
+          <PageHeader isMobile={isMobile} title="Lists"
+            meta={`${ownedByRecency.length} ${ownedByRecency.length === 1 ? "list" : "lists"}`}
+            actions={(user && goToWatchbox) ? [{
+              label: "Watchbox", onClick: goToWatchbox,
+              icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="5" width="18" height="14" rx="2" /><path d="M3 10h18" /><circle cx="12" cy="14.5" r="1.6" />
+              </svg>,
+            }] : []} />
+          <div style={{ paddingTop: isMobile ? 16 : 20 }}>
             <WLCardGrid isMobile={isMobile}>
               {ownedByRecency.map(c => (
                 <WLListCard key={c.id}
@@ -2451,7 +2409,6 @@ function ListsView({
               ))}
               <WLStartCard isMobile={isMobile} onClick={startCreateCollection} />
             </WLCardGrid>
-          </WLBand>
 
           {/* SHARED WITH YOU — collaborator lists + the shared-listings inbox. */}
           {sharedRows.length > 0 && (
@@ -2490,35 +2447,38 @@ function ListsView({
               </WLCardGrid>
             </WLBand>
           )}
+          </div>
         </>
       )}
 
       {/* SEARCHES — saved searches, tap to re-run on Listings. */}
       {section === "searches" && (
-        <WLBand id="searches" kicker="Saved searches" isMobile={isMobile}
-          action={startAddSearch
-            ? <button onClick={startAddSearch} style={wlHeaderBtn}>+ New search</button>
-            : null}>
-          {savedSearchStats && savedSearchStats.length > 0 ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {savedSearchStats.map(s => (
-                <WLSearchCard key={s.id} search={s}
-                  onRun={() => runSearch && runSearch(s)}
-                  onEdit={startEditSearch ? () => startEditSearch(s) : null}
-                  onRemove={removeSearch ? async () => {
-                    if (await confirm({
-                      title: "Delete search?",
-                      message: `"${s.label}" will be removed.`,
-                      confirmLabel: "Delete", tone: "danger",
-                    })) removeSearch(s.id);
-                  } : null} />
-              ))}
-            </div>
-          ) : (
-            <EmptyState icon="🔍" heading="No saved searches yet" size="compact"
-              blurb="Search Listings, then tap the heart by the search bar to save it. Saved searches re-run across every dealer — jump straight back to them here." />
-          )}
-        </WLBand>
+        <>
+          <PageHeader isMobile={isMobile} title="Searches"
+            meta={savedSearchStats ? `${savedSearchStats.length} saved` : null}
+            actions={startAddSearch ? [{ label: "+ New search", onClick: startAddSearch }] : []} />
+          <div style={{ paddingTop: isMobile ? 16 : 20 }}>
+            {savedSearchStats && savedSearchStats.length > 0 ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {savedSearchStats.map(s => (
+                  <WLSearchCard key={s.id} search={s}
+                    onRun={() => runSearch && runSearch(s)}
+                    onEdit={startEditSearch ? () => startEditSearch(s) : null}
+                    onRemove={removeSearch ? async () => {
+                      if (await confirm({
+                        title: "Delete search?",
+                        message: `"${s.label}" will be removed.`,
+                        confirmLabel: "Delete", tone: "danger",
+                      })) removeSearch(s.id);
+                    } : null} />
+                ))}
+              </div>
+            ) : (
+              <EmptyState icon="🔍" heading="No saved searches yet" size="compact"
+                blurb="Search Listings, then tap the heart by the search bar to save it. Saved searches re-run across every dealer — jump straight back to them here." />
+            )}
+          </div>
+        </>
       )}
 
     </div>
