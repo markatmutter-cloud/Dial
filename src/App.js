@@ -4811,7 +4811,7 @@ export default function Watchlist() {
         ? <MobileShell {...shellProps} />
         : <DesktopShell {...shellProps} />}
       <ConfirmHost />
-      <ChatBubbleHost />
+      <ChatBubbleHost suppressLauncher={shareActive || listShareActive || challengeShareActive} />
     </ErrorBoundary>
   );
 }

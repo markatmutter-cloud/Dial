@@ -91,7 +91,12 @@ const MicIcon = ({ size = 18 }) => (
   </svg>
 );
 
-export function ChatBubbleHost() {
+export function ChatBubbleHost({ suppressLauncher = false }) {
+  // suppressLauncher hides the floating launcher on the share-receive surfaces
+  // (Mark 2026-06-01): there, the generic "Ask me" would open a blank chat with
+  // no idea what's on screen — misleading. Those surfaces use the SEEDED
+  // "Ask Lumé about this" (askLumeAbout(item)) instead. The opener stays
+  // registered, so that seeded entry still opens the bubble.
   const { user, signInWithGoogle } = useAuth();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -296,7 +301,9 @@ export function ChatBubbleHost() {
   let node;
 
   if (!open) {
-    // Closed: the "Ask me" callout (until first open) + the speech-bubble launcher.
+    // Closed: hide the launcher on share surfaces (seeded Ask-Lumé is used
+    // there instead); otherwise the "Ask me" callout + speech-bubble launcher.
+    if (suppressLauncher) return null;
     node = (
       <div style={{ ...FIXED, display: "flex", alignItems: "center", gap: 10 }}>
         {!hasOpened && (
