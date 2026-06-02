@@ -491,7 +491,10 @@ export default function Watchlist() {
   // (Mark spec, "while at it, move the challenge tab from watchlist
   // to collecting"). Challenges sits as a Collecting sub-tab
   // alongside Editorial / Size compare / Links.
-  const REFERENCES_SUB_VALUES = ["editorial", "references", "challenges", "size", "links"];
+  // "tools" bundles size-comparison + links + challenges (Mark 2026-06-01).
+  // Legacy values stay valid so old deep-links resolve; ReferencesTab routes
+  // them into the Tools view and the strip highlights Tools.
+  const REFERENCES_SUB_VALUES = ["editorial", "references", "tools", "challenges", "size", "links"];
   const [referencesSubTab, setReferencesSubTab] = useState(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
@@ -4002,12 +4005,10 @@ export default function Watchlist() {
       ariaLabel="Collecting views"
       tabs={[
         ["editorial",  "Articles"],
-        ["references", "References"],
-        ["challenges", "Challenges"],
-        ["size",       "Size comparison"],
-        ["links",      "Links"],
+        ["references", "Reference guides"],
+        ["tools",      "Tools"],
       ]}
-      activeKey={referencesSubTab}
+      activeKey={["size", "links", "challenges"].includes(referencesSubTab) ? "tools" : referencesSubTab}
       onSelect={(key) => setReferencesSubTab(key)}
       isMobile={isMobile}
       onOlive={isMobile}

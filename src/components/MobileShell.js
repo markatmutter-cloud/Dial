@@ -268,7 +268,7 @@ export function MobileShell(props) {
         {!anyShareActive && saleContextHeaderJSX}
         {tab !== "watchlist"
           && !(tab === "listings" && listingsSubTab === "calendar")
-          && !(tab === "references" && (referencesSubTab === "size" || referencesSubTab === "links"))
+          && !(tab === "references" && referencesSubTab !== "editorial")
           && (
         <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 16px 4px", borderBottom: "0.5px solid var(--border)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, background: "transparent", border: "0.5px solid var(--border)", borderRadius: 10, padding: "8px 12px", flex: 1, minWidth: 0 }}>

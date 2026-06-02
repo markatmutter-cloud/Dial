@@ -1,9 +1,38 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { SizeCompare } from "./SizeCompare";
 import { Links } from "./Links";
 import { EditorialView } from "./EditorialView";
 import { ChallengesView } from "./ChallengesView";
 import { ReferenceBrowse } from "./ReferenceBrowse";
+import { innerToggleButton } from "../styles";
+
+// Tools — bundles the utility surfaces (size comparison · links · challenges)
+// under one Collecting sub-tab (Mark 2026-06-01), with an inner toggle to pick
+// between them. Own useState (component-level, #310-safe).
+function ToolsView({ initialTool = "size", challengeProps }) {
+  const [tool, setTool] = useState(["size", "links", "challenges"].includes(initialTool) ? initialTool : "size");
+  const OPTS = [
+    { key: "size", label: "Size comparison" },
+    { key: "links", label: "Links" },
+    { key: "challenges", label: "Challenges" },
+  ];
+  return (
+    <div style={{ paddingTop: 4 }}>
+      <div style={{ display: "flex", gap: 6, flexWrap: "wrap", padding: "4px 0 14px" }}>
+        {OPTS.map((o) => (
+          <button key={o.key} onClick={() => setTool(o.key)} style={innerToggleButton(tool === o.key)}>{o.label}</button>
+        ))}
+      </div>
+      {tool === "links" ? (
+        <Links allListings={challengeProps.allListings || []} onBack={null} />
+      ) : tool === "challenges" ? (
+        <ChallengesView {...challengeProps} />
+      ) : (
+        <SizeCompare onBack={null} />
+      )}
+    </div>
+  );
+}
 
 // Collecting tab (internal `tab="references"`, UI label "Collecting").
 // Restructured 2026-05-18 (Mark spec) from a resource-button list
@@ -83,35 +112,18 @@ export function ReferencesTab({
 
   // ── Sub-tab body dispatch ──────────────────────────────────────
   let body;
-  if (current === "size") {
+  if (current === "tools" || current === "size" || current === "links" || current === "challenges") {
+    // Tools section (Mark 2026-06-01): size comparison · links · challenges
+    // under one sub-tab. Legacy ?sub=size/links/challenges deep-links open
+    // Tools with that tool pre-selected.
     body = (
-      <div style={{ paddingTop: 4 }}>
-        <SizeCompare onBack={null} />
-      </div>
-    );
-  } else if (current === "links") {
-    body = (
-      <div style={{ paddingTop: 4 }}>
-        <Links allListings={allListings || []} onBack={null} />
-      </div>
-    );
-  } else if (current === "challenges") {
-    // PR 2026-05-22: Challenges moved here from Watchlists tab.
-    // Same component (ChallengesView) and same prop bag it
-    // consumed under CollectionsTab — just a different mount point.
-    body = (
-      <ChallengesView
-        user={user}
-        isAuthConfigured={isAuthConfigured}
-        signInWithGoogle={signInWithGoogle}
-        collectionsApi={collectionsApi}
-        allListings={allListings}
-        watchlist={watchlist}
-        hidden={hidden}
-        primaryCurrency={primaryCurrency}
-        handleShare={handleShare}
-        pendingChallengeDrillId={pendingChallengeDrillId}
-        clearPendingChallengeDrill={clearPendingChallengeDrill}
+      <ToolsView
+        initialTool={current}
+        challengeProps={{
+          user, isAuthConfigured, signInWithGoogle, collectionsApi,
+          allListings, watchlist, hidden, primaryCurrency, handleShare,
+          pendingChallengeDrillId, clearPendingChallengeDrill,
+        }}
       />
     );
   } else if (current === "references") {
