@@ -62,7 +62,7 @@ const JSON_DATA_FILES = [
   "listings", "listings_live", "listings_sold", "listings_desc",
   "auctions", "auctions_state", "auction_lots", "tracked_lots", "state",
   "manual_archive_lots", "manual_historical_listings", "bonhams_lots",
-  "loupethis_lots", "hairspring_finds", "hodinkee_shop",
+  "loupethis_lots", "hairspring_finds", "hodinkee_shop", "chrono24_lots",
 ];
 const JSON_DATA_RE = new RegExp(`/(${JSON_DATA_FILES.join("|")})\\.json$`, "i");
 
