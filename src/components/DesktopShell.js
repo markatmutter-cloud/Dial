@@ -52,6 +52,7 @@ export function DesktopShell(props) {
     goToSaved,
     MODELS, MODELS_SHOW, modelsExpanded, setModelsExpanded,
     watchTopTab, watchlist,
+    heartedGroupBy = "none", setHeartedGroupBy, heartedGroupDir = "desc", setHeartedGroupDir,
     // Setters / handlers
     handleWish, openFavPrompt, resetFilters,
     setAboutModalOpen, setActiveFilterPop, setBrandsExpanded,
@@ -426,6 +427,23 @@ export function DesktopShell(props) {
             }} style={{ ...pillBase(isPrice, { compact: true }), fontWeight: isPrice ? 600 : 500 }}>{label}</button>
           );
         })()}
+
+        {/* Group-by pills — Saved surface only (Mark 2026-06-02). Arrange the
+            hearted grid into Brand / Source sections ordered by group size; the
+            arrow flips most-first ↔ least-first, exactly like the Date/Price
+            sort pills. Replaces the old separate GROUP bar in HeartedView. */}
+        {tab === "watchlist" && watchTopTab === "hearted" && ["brand", "source"].map((key) => {
+          const active = heartedGroupBy === key;
+          const labelBase = key === "brand" ? "Brand" : "Source";
+          const text = active ? `${labelBase} ${heartedGroupDir === "asc" ? "↑" : "↓"}` : labelBase;
+          return (
+            <button key={key} onClick={() => {
+              if (!active) { setHeartedGroupBy && setHeartedGroupBy(key); setHeartedGroupDir && setHeartedGroupDir("desc"); }
+              else if (heartedGroupDir === "desc") setHeartedGroupDir && setHeartedGroupDir("asc");
+              else setHeartedGroupBy && setHeartedGroupBy("none");
+            }} style={{ ...pillBase(active, { compact: true }), fontWeight: active ? 600 : 500 }}>{text}</button>
+          );
+        })}
 
         {/* ♥ Saved-only filter pill */}
         {tab === "listings" && user && listingsSubTab !== "calendar" && (

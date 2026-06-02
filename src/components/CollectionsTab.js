@@ -458,6 +458,10 @@ export function CollectionsTab({
   // Shared active-filters strip (chips + Clear all), rendered atop the
   // Hearted surface so Lists gets the same affordances as Watches (B-48).
   activeFiltersStripJSX,
+  // Saved grouping (Mark 2026-06-02) — forwarded to HeartedView; the control
+  // lives in the shell's sort-pill cluster.
+  heartedGroupBy = "none",
+  heartedGroupDir = "desc",
   // After creating a list, drill into it (set by App.js). Consumed in ListsView.
   pendingOpenListId,
   clearPendingOpenList,
@@ -661,6 +665,8 @@ export function CollectionsTab({
         onClickListing={onClickListing}
         user={user}
         activeFiltersStripJSX={activeFiltersStripJSX}
+        groupBy={heartedGroupBy}
+        groupDir={heartedGroupDir}
       />
     );
   } else if (subTab === "my-collection" || subTab === "wishlist") {
