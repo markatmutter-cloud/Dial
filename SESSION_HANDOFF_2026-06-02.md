@@ -131,3 +131,40 @@ its own PR, all green + merged.
 - **No node/npm on this machine** (B-16) — can't run jest/CRA build locally; rely
   on CI + Vercel. The B-21 service-worker drift guard caught the missing
   `chrono24_lots.json` registration (fixed pre-merge).
+
+---
+
+# Addendum 2 — Plumbing safe-tier (#776–#778, all merged)
+
+Third session same day, off clean `main`. Plan-mode first; scoped the 5 Epic-B
+plumbing bugs into **safe** (workflows/scrapers/package.json, can't touch the
+front sessions) vs **risky** (B-22/B-34 — App.js code-split, collide with the
+Lumé UI session + need preview verify). Shipped the safe three; deferred the two.
+Plan: `~/.claude/plans/this-is-a-separate-velvety-cocoa.md`.
+
+- **B-20 scraper rename (#776).** `auctionlots_scraper.py` → `tracked_lots_scraper.py`.
+  A name-grep masked a 2nd importer (`auction_lots_scraper.py:55 from … import`) —
+  the `python -c "import …"` smoke check is what caught it. **Lesson: verify a
+  rename by importing, not just grepping** (a substring `-v` filter hid the file
+  that imports it).
+- **B-44 synth-workflow CI gate (#777).** Hybrid: run pytest+jest in-workflow on
+  the generated files (the gate) **and** open a PR not push-to-main (checkpoint).
+  **The reason both are needed = the GITHUB_TOKEN gotcha:** a PR opened with the
+  default `GITHUB_TOKEN` does NOT trigger `tests.yml` (GitHub suppresses
+  workflow-triggered `pull_request` events to stop recursion), so a PR alone runs
+  no CI. The in-workflow test run is the real gate — avoids needing a PAT secret.
+- **B-16 JS-lockfile generator (#778), rollout HELD.** Shipped the dormant
+  `generate-lockfile.yml` only. **Did NOT commit the lockfile** because that
+  auto-switches *Vercel* to `npm ci` — which would break any in-flight branch
+  that adds a JS dep. Held the dispatch until the front sessions merge.
+
+## ⚠️ Carry-forward action (B-16, when the front sessions have merged)
+On a quiet `main`: **dispatch `Generate JS lockfile`** → merge the lockfile PR →
+flip `tests.yml` jest job `npm install`→`npm ci` + add `cache: 'npm'`. Full
+procedure is in the workflow header comment. Until then the lockfile is absent
+and CI stays on `npm install` (unchanged).
+
+## Plumbing thread now (supersedes the "Open threads → Plumbing" line above)
+B-16/B-20/B-44 **done**. **Remaining: B-22** (code-split phase 2) **+ B-34**
+(lazy-load ReferencesTab subtree) — App.js, preview-verification-gated, collide
+with the Lumé UI session. Their own session **after** the front sessions merge.

@@ -80,6 +80,21 @@ within each section roughly last.
   fixed the curated index (Explorer refs were orphaned under a parser-invisible
   label; 14270 mis-parked under Submariner). Re-tags 29 rows on next scrape.
   Spun off B-57 (same-brand collision sweep).
+- **2026-06-02 — Scraper filename de-clash (B-20, #776).** Renamed
+  `auctionlots_scraper.py` → `tracked_lots_scraper.py` so it's no longer one
+  underscore from `auction_lots_scraper.py`; updated both importers + the
+  workflow + docs (the import that breaks if missed is `auction_lots_scraper.py`'s
+  `from … import`).
+- **2026-06-02 — CI gate on the Lumé synthesis workflow (B-44, #777).**
+  `synthesise-saved-nodes.yml` now runs pytest+jest on its generated outputs
+  (fails the run, commits nothing, if red) AND opens a PR instead of pushing to
+  main. Both needed: a PR opened by the default `GITHUB_TOKEN` doesn't trigger
+  `tests.yml`, so the in-workflow run is the real gate (no PAT).
+- **2026-06-02 — JS-lockfile generator shipped, rollout held (B-16, #778).**
+  Manual-only `generate-lockfile.yml` cloud-generates `package-lock.json` (no
+  local npm). NOT yet dispatched — committing the lockfile auto-switches Vercel
+  to `npm ci`, so it waits until the in-flight branches merge; then dispatch →
+  merge → flip `tests.yml` to `npm ci`. Procedure in the workflow header.
 
 ## Epic 1 — Sources
 
