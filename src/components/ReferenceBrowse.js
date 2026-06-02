@@ -1,28 +1,27 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { ReferencePage } from "./ReferencePage";
 import { Breadcrumb } from "./Breadcrumb";
-import { editorialHeading, editorialProse } from "../styles";
+import { editorialHeading, editorialProse, innerToggleButton, inputBase, FONT_SERIF } from "../styles";
+import { imgSrc } from "../utils";
 import {
-  buildReferenceTree,
+  REFERENCE_NODES,
   REFERENCE_NODES_BY_ID,
   isLiveNode,
+  referenceUpdatedAt,
 } from "../data/referencePages";
 
-// Reference browse surface (Collecting ▸ References). The navigable spine over
-// the reference nodes: References landing → Brand → Model line → Reference leaf,
-// with breadcrumbs. Self-contained nav (its own URL params: ref / rbrand /
-// rmodel) so it adds NO hooks to App.js's top level (React #310 safety). Live
-// nodes open the full ReferencePage; coming_soon stubs open a teaser with a
-// "subscribe to unlock" demand smoke test. See docs/REFERENCE_STRUCTURE_PLAN.md.
+// Reference browse surface (Collecting ▸ Reference guides).
+//
+// 2026-06-01 (Mark): while the corpus is small, the brand→model-line→reference
+// TREE was over-built — three taps to reach four guides. Flattened to a single
+// card grid (hero + reference name, like the Articles tab), newest-updated
+// first, with a search box + brand filter on top. The hierarchy returns when
+// the corpus grows. Live nodes open the full ReferencePage; coming_soon stubs
+// open a teaser with a "subscribe to unlock" demand smoke test.
+//
+// Self-contained nav (its own ?ref URL param) so it adds NO hooks to App.js's
+// top level (React #310 safety).
 
-const MY_PARAMS = ["ref", "rbrand", "rmodel"];
-
-const listGrid = { display: "flex", flexDirection: "column", gap: 8 };
-const tileGrid = {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
-  gap: 10,
-};
 const purpose = {
   fontSize: 13,
   color: "var(--text2)",
@@ -44,34 +43,24 @@ function viewFromSearch(search) {
   const p = new URLSearchParams(search || "");
   const ref = p.get("ref");
   if (ref) return { level: "node", nodeId: ref };
-  const brand = p.get("rbrand");
-  const modelLine = p.get("rmodel");
-  if (brand && modelLine) return { level: "model", brand, modelLine };
-  if (brand) return { level: "brand", brand };
   return { level: "home" };
 }
 
-// Build a URL from the CURRENT location, replacing only MY_PARAMS — preserves
-// the app's ?tab=/?sub= params so the References sub-tab stays selected.
+// Build a URL from the CURRENT location, replacing only the ?ref param —
+// preserves the app's ?tab=/?sub= params so the sub-tab stays selected.
 function urlForView(view) {
   const p = new URLSearchParams(window.location.search);
-  MY_PARAMS.forEach((k) => p.delete(k));
+  ["ref", "rbrand", "rmodel"].forEach((k) => p.delete(k));
   if (view.level === "node") p.set("ref", view.nodeId);
-  else if (view.level === "model") {
-    p.set("rbrand", view.brand);
-    p.set("rmodel", view.modelLine);
-  } else if (view.level === "brand") {
-    p.set("rbrand", view.brand);
-  }
   const qs = p.toString();
   return qs ? "?" + qs : window.location.pathname;
 }
 
 export function ReferenceBrowse(props) {
   const { isMobile } = props;
-  const [view, setView] = useState(() =>
-    viewFromSearch(window.location.search)
-  );
+  const [view, setView] = useState(() => viewFromSearch(window.location.search));
+  const [q, setQ] = useState("");
+  const [brand, setBrand] = useState(null);
 
   useEffect(() => {
     const onPop = () => setView(viewFromSearch(window.location.search));
@@ -79,29 +68,18 @@ export function ReferenceBrowse(props) {
     return () => window.removeEventListener("popstate", onPop);
   }, []);
 
-  // Drill-in pushes (browser-back walks the tree); see CLAUDE.md nav rules.
+  // Drill-in pushes (browser-back returns to the grid); see CLAUDE.md nav rules.
   const go = useCallback((next) => {
     window.history.pushState({}, "", urlForView(next));
     setView(next);
   }, []);
 
-  const tree = buildReferenceTree();
-
-  // ── Reference leaf ──────────────────────────────────────────────
+  // ── Reference leaf (full guide / coming-soon teaser) ────────────
   if (view.level === "node") {
     const node = REFERENCE_NODES_BY_ID[view.nodeId];
     if (!node) return <NotFound onHome={() => go({ level: "home" })} />;
     const crumbs = [
-      { label: "References", onClick: () => go({ level: "home" }) },
-      {
-        label: node.brand,
-        onClick: () => go({ level: "brand", brand: node.brand }),
-      },
-      {
-        label: node.modelLine,
-        onClick: () =>
-          go({ level: "model", brand: node.brand, modelLine: node.modelLine }),
-      },
+      { label: "Reference guides", onClick: () => go({ level: "home" }) },
       { label: node.group || (node.refs || []).join(" / ") },
     ];
     return (
@@ -130,100 +108,65 @@ export function ReferenceBrowse(props) {
     );
   }
 
-  // ── Model-line page ─────────────────────────────────────────────
-  if (view.level === "model") {
-    const brandEntry = tree.find((b) => b.brand === view.brand);
-    const lineEntry =
-      brandEntry &&
-      brandEntry.modelLines.find((l) => l.modelLine === view.modelLine);
-    const nodes = (lineEntry && lineEntry.nodes) || [];
-    return (
-      <div style={{ paddingTop: 4 }}>
-        <Breadcrumb
-          items={[
-            { label: "References", onClick: () => go({ level: "home" }) },
-            {
-              label: view.brand,
-              onClick: () => go({ level: "brand", brand: view.brand }),
-            },
-            { label: view.modelLine },
-          ]}
-        />
-        <H1>
-          {view.brand} {view.modelLine}
-        </H1>
-        <div style={listGrid}>
-          {nodes.map((n) => (
-            <ReferenceCard
-              key={n.id}
-              node={n}
-              onClick={() => go({ level: "node", nodeId: n.id })}
-            />
-          ))}
-        </div>
-      </div>
-    );
-  }
+  // ── Card landing (flat grid + search + brand filter) ────────────
+  const brands = [...new Set(REFERENCE_NODES.map((n) => n.brand).filter(Boolean))];
+  const ql = q.trim().toLowerCase();
+  const cards = REFERENCE_NODES
+    .filter((n) => !brand || n.brand === brand)
+    .filter((n) => {
+      if (!ql) return true;
+      const hay = [n.brand, n.modelLine, n.group, (n.refs || []).join(" "), n.definer]
+        .filter(Boolean).join(" ").toLowerCase();
+      return hay.includes(ql);
+    })
+    .sort((a, b) => {
+      const al = isLiveNode(a), bl = isLiveNode(b);
+      if (al !== bl) return al ? -1 : 1; // live guides first, coming-soon last
+      return referenceUpdatedAt(b).localeCompare(referenceUpdatedAt(a)); // newest updated first
+    });
 
-  // ── Brand page ──────────────────────────────────────────────────
-  if (view.level === "brand") {
-    const brandEntry = tree.find((b) => b.brand === view.brand);
-    const lines = (brandEntry && brandEntry.modelLines) || [];
-    return (
-      <div style={{ paddingTop: 4 }}>
-        <Breadcrumb
-          items={[
-            { label: "References", onClick: () => go({ level: "home" }) },
-            { label: view.brand },
-          ]}
-        />
-        <H1>{view.brand}</H1>
-        <div style={listGrid}>
-          {lines.map((l) => (
-            <RowCard
-              key={l.modelLine}
-              title={l.modelLine}
-              meta={`${l.nodes.length} reference${
-                l.nodes.length === 1 ? "" : "s"
-              }`}
-              onClick={() =>
-                go({
-                  level: "model",
-                  brand: view.brand,
-                  modelLine: l.modelLine,
-                })
-              }
-            />
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  // ── References landing (home) ───────────────────────────────────
   return (
     <div style={{ paddingTop: 4 }}>
-      <Breadcrumb items={[{ label: "References" }]} />
-      <H1>References</H1>
+      <H1>Reference guides</H1>
       <p style={purpose}>
         Deep-dive guides to individual watch references — what they are, how to
-        look at them, and the market around them. Start with a brand.
+        look at them, and the market around them.
       </p>
-      <div style={tileGrid}>
-        {tree.map((b) => {
-          const refCount = b.modelLines.reduce((a, l) => a + l.nodes.length, 0);
-          return (
-            <BrandTile
-              key={b.brand}
-              brand={b.brand}
-              meta={`${b.modelLines.length} model line${
-                b.modelLines.length === 1 ? "" : "s"
-              } · ${refCount} reference${refCount === 1 ? "" : "s"}`}
-              onClick={() => go({ level: "brand", brand: b.brand })}
-            />
-          );
-        })}
+
+      {/* Search + brand filter */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 18 }}>
+        <input
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="Search guides — brand, model, reference…"
+          autoCapitalize="none" autoCorrect="off" spellCheck={false}
+          style={{ ...inputBase, fontSize: 14 }}
+        />
+        {brands.length > 1 && (
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+            <button onClick={() => setBrand(null)} style={innerToggleButton(!brand)}>All</button>
+            {brands.map((b) => (
+              <button key={b} onClick={() => setBrand(b === brand ? null : b)}
+                style={innerToggleButton(brand === b)}>{b}</button>
+            ))}
+          </div>
+        )}
       </div>
+
+      {cards.length === 0 ? (
+        <p style={{ fontSize: 13, color: "var(--text3)" }}>No guides match your search.</p>
+      ) : (
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(280px, 1fr))",
+          gap: isMobile ? 16 : 24,
+        }}>
+          {cards.map((n) => (
+            <RefGuideCard key={n.id} node={n} isMobile={isMobile}
+              onClick={() => go({ level: "node", nodeId: n.id })} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -231,101 +174,51 @@ export function ReferenceBrowse(props) {
 // ── Presentational helpers ────────────────────────────────────────
 function H1({ children }) {
   return (
-    <h1
-      style={{
-        fontSize: 20,
-        fontWeight: 600,
-        color: "var(--text1)",
-        margin: "0 0 10px",
-      }}
-    >
+    <h1 style={{ fontSize: 20, fontWeight: 600, color: "var(--text1)", margin: "0 0 10px" }}>
       {children}
     </h1>
   );
 }
 
-function BrandTile({ brand, meta, onClick }) {
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        textAlign: "left",
-        cursor: "pointer",
-        fontFamily: "inherit",
-        background: "transparent",
-        border: "0.5px solid var(--border)",
-        borderRadius: 10,
-        padding: 14,
-        display: "flex",
-        flexDirection: "column",
-        gap: 6,
-      }}
-    >
-      <span style={{ fontSize: 15, fontWeight: 600, color: "var(--text1)" }}>
-        {brand}
-      </span>
-      <span style={{ fontSize: 12, color: "var(--text3)" }}>{meta}</span>
-      <span style={{ fontSize: 12, color: "var(--text2)", marginTop: 2 }}>
-        Browse →
-      </span>
-    </button>
-  );
-}
-
-function RowCard({ title, meta, onClick }) {
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        textAlign: "left",
-        cursor: "pointer",
-        fontFamily: "inherit",
-        background: "transparent",
-        border: "0.5px solid var(--border)",
-        borderRadius: 10,
-        padding: "12px 14px",
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        gap: 10,
-      }}
-    >
-      <span style={{ fontSize: 14, fontWeight: 600, color: "var(--text1)" }}>
-        {title}
-      </span>
-      <span style={{ fontSize: 12, color: "var(--text3)" }}>{meta} ›</span>
-    </button>
-  );
-}
-
-function ReferenceCard({ node, onClick }) {
+// Article-style guide card: hero on top, brand·model kicker, serif reference name.
+function RefGuideCard({ node, isMobile, onClick }) {
   const coming = !isLiveNode(node);
+  const title = node.group || (node.refs || []).join(" / ");
   return (
-    <button
-      onClick={onClick}
-      style={{
-        textAlign: "left",
-        cursor: "pointer",
-        fontFamily: "inherit",
-        background: "transparent",
-        border: "0.5px solid var(--border)",
-        borderRadius: 10,
-        padding: 14,
-        display: "flex",
-        flexDirection: "column",
-        gap: 6,
-      }}
-    >
-      <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <span style={{ fontSize: 15, fontWeight: 600, color: "var(--text1)" }}>
-          {node.group || (node.refs || []).join(" / ")}
-        </span>
-        {coming && <span style={comingBadge}>Coming soon</span>}
-      </span>
+    <button onClick={onClick} style={{
+      textAlign: "left", cursor: "pointer", fontFamily: "inherit",
+      background: "transparent", border: "none", padding: 0, display: "block",
+    }}>
+      <div style={{
+        position: "relative", width: "100%", aspectRatio: "16 / 10",
+        background: "var(--surface)", overflow: "hidden", borderRadius: 4, marginBottom: 10,
+      }}>
+        {node.hero && node.hero.img && (
+          <img src={imgSrc(node.hero.img)} alt="" loading="lazy"
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            onError={(e) => { e.currentTarget.style.visibility = "hidden"; }} />
+        )}
+        {coming && (
+          <span style={{
+            position: "absolute", top: 8, left: 8,
+            fontSize: 10, fontWeight: 600, letterSpacing: 0.4, textTransform: "uppercase",
+            color: "#fff", background: "rgba(0,0,0,0.5)", borderRadius: 999, padding: "2px 8px",
+          }}>Coming soon</span>
+        )}
+      </div>
+      <div style={{
+        fontSize: 10, fontWeight: 600, letterSpacing: "0.14em",
+        textTransform: "uppercase", color: "var(--text3)", marginBottom: 4,
+      }}>{[node.brand, node.modelLine].filter(Boolean).join(" · ")}</div>
+      <div style={{
+        fontFamily: FONT_SERIF, fontSize: isMobile ? 20 : 19, fontWeight: 500,
+        lineHeight: 1.2, color: "var(--text1)",
+      }}>{title}</div>
       {node.definer && (
-        <span style={{ fontSize: 12, color: "var(--text2)", lineHeight: 1.4 }}>
-          {node.definer}
-        </span>
+        <div style={{
+          fontSize: 12, color: "var(--text2)", lineHeight: 1.4, marginTop: 4,
+          display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
+        }}>{node.definer}</div>
       )}
     </button>
   );
@@ -347,53 +240,25 @@ function ComingSoon({ node }) {
         {node.definer ? ` · ${node.definer}` : ""}
       </div>
       {node.teaser && (
-        <p style={{ ...editorialProse(), color: "var(--text2)" }}>
-          {node.teaser}
-        </p>
+        <p style={{ ...editorialProse(), color: "var(--text2)" }}>{node.teaser}</p>
       )}
-      <div
-        style={{
-          marginTop: 16,
-          padding: 16,
-          border: "0.5px dashed var(--border)",
-          borderRadius: 10,
-        }}
-      >
-        <div
-          style={{
-            fontSize: 14,
-            fontWeight: 600,
-            color: "var(--text1)",
-            marginBottom: 6,
-          }}
-        >
+      <div style={{ marginTop: 16, padding: 16, border: "0.5px dashed var(--border)", borderRadius: 10 }}>
+        <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text1)", marginBottom: 6 }}>
           Full guide coming soon
         </div>
         <div style={{ fontSize: 13, color: "var(--text2)", marginBottom: 12 }}>
-          Want this reference guide unlocked sooner? Let us know you're
-          interested.
+          Want this reference guide unlocked sooner? Let us know you're interested.
         </div>
         {noted ? (
           <div style={{ fontSize: 13, color: "var(--text1)", fontWeight: 600 }}>
             ✓ Thanks — we'll let you know when it's live.
           </div>
         ) : (
-          <button
-            onClick={() => setNoted(true)}
-            style={{
-              cursor: "pointer",
-              fontFamily: "inherit",
-              fontSize: 13,
-              fontWeight: 600,
-              color: "#fff",
-              background: "var(--brand-olive, #4a5240)",
-              border: "none",
-              borderRadius: 8,
-              padding: "8px 14px",
-            }}
-          >
-            Subscribe to unlock
-          </button>
+          <button onClick={() => setNoted(true)} style={{
+            cursor: "pointer", fontFamily: "inherit", fontSize: 13, fontWeight: 600,
+            color: "#fff", background: "var(--brand-olive, #4a5240)", border: "none",
+            borderRadius: 8, padding: "8px 14px",
+          }}>Subscribe to unlock</button>
         )}
       </div>
     </div>
@@ -403,23 +268,11 @@ function ComingSoon({ node }) {
 function NotFound({ onHome }) {
   return (
     <div style={{ paddingTop: 4 }}>
-      <p style={{ fontSize: 14, color: "var(--text2)" }}>
-        That reference isn't available.
-      </p>
-      <button
-        onClick={onHome}
-        style={{
-          cursor: "pointer",
-          fontFamily: "inherit",
-          fontSize: 13,
-          color: "var(--text2)",
-          background: "none",
-          border: "none",
-          padding: 0,
-        }}
-      >
-        ← Back to references
-      </button>
+      <p style={{ fontSize: 14, color: "var(--text2)" }}>That reference isn't available.</p>
+      <button onClick={onHome} style={{
+        cursor: "pointer", fontFamily: "inherit", fontSize: 13, color: "var(--text2)",
+        background: "none", border: "none", padding: 0,
+      }}>← Back to reference guides</button>
     </div>
   );
 }
