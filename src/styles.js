@@ -57,6 +57,17 @@ export const editorialProse = ({ isMobile } = {}) => ({
   fontFamily: FONT_SERIF, fontSize: isMobile ? 16 : 17, lineHeight: 1.6,
 });
 
+// Shared content-card grid (Mark 2026-06-02 — "standard library for cards").
+// Articles · reference guides · list cards all render at ONE size through this
+// single track: auto-fill 280px columns (denser-by-width on desktop, single
+// column on mobile), modest gap. Use it instead of a per-surface grid so the
+// three card families stay the same size.
+export const cardGridStyle = ({ isMobile } = {}) => ({
+  display: "grid",
+  gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(280px, 1fr))",
+  gap: isMobile ? 16 : 24,
+});
+
 // ── PILLS ─────────────────────────────────────────────────────────────
 
 // Sort/filter pills in the sticky/filter rows. Inactive = transparent

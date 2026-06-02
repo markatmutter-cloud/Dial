@@ -16,7 +16,7 @@ import HeartedView from "./HeartedView";
 import { PageHeader } from "./PageHeader";
 import { DossierBlocks } from "./DossierBlocks";
 import { fmtUSD, matchesSearch, imgSrc } from "../utils";
-import { actionButton, signInButton, FONT_SERIF } from "../styles";
+import { actionButton, signInButton, FONT_SERIF, cardGridStyle } from "../styles";
 import { EmptyState } from "./EmptyState";
 import { Section } from "./Section";
 
@@ -343,15 +343,9 @@ function EmptyListOnboarding({ name, isMobile, goToTab }) {
 
 // Responsive card grid wrapper for the list cards.
 function WLCardGrid({ isMobile, children }) {
-  return (
-    <div style={{
-      display: "grid",
-      // Same track + gap as the reference-guide grid (minmax 280 / gap 16·24)
-      // so list cards and guide cards are the same size (Mark #2, 2026-06-02).
-      gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(280px, 1fr))",
-      gap: isMobile ? 16 : 24,
-    }}>{children}</div>
-  );
+  // Shared standard-library card grid — list cards, reference guides and
+  // article cards all render at one size (Mark 2026-06-02).
+  return <div style={cardGridStyle({ isMobile })}>{children}</div>;
 }
 
 // (WLWatchboxVault retired 2026-06-01 — the Watchbox anchor card "looked out of

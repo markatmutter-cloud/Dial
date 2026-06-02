@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { pillBase, inputBase, clearAllPill, editorialTitle } from "../styles";
+import { pillBase, inputBase, clearAllPill, editorialTitle, cardGridStyle } from "../styles";
 import { Chip } from "./Chip";
 import { FilterRow } from "./FilterRow";
 import { shortHash } from "../utils";
@@ -209,12 +209,9 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
   // Editorial intentionally stays sparser so the serif title + image
   // breathe. The shared gridStyle prop is ignored here in favour of
   // an editorial-specific grid with real gaps (no hairline background).
-  const effectiveCols = isMobile ? 1 : 3;
-  const articleGridStyle = {
-    display: "grid",
-    gridTemplateColumns: `repeat(${effectiveCols}, minmax(0, 1fr))`,
-    gap: isMobile ? 28 : 36,
-  };
+  // Standard-library card grid (Mark 2026-06-02): article cards now render at
+  // the SAME size as reference-guide + list cards (was a sparser fixed 3-col).
+  const articleGridStyle = cardGridStyle({ isMobile });
 
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
