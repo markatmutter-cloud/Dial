@@ -31,6 +31,7 @@ export function DesktopShell(props) {
     maxPriceText, minPriceText,
     filterHearted, search, signInPromptOpen, signInWithGoogle, sort,
     tab, user, visibleBrands, visibleSources, visibleModels,
+    goToSaved,
     MODELS, MODELS_SHOW, modelsExpanded, setModelsExpanded,
     watchTopTab, watchlist,
     // Setters / handlers
@@ -622,6 +623,16 @@ export function DesktopShell(props) {
             font 12 → 13, weight 500 (matches tabPill inactive), drop
             the 0.04em letter-spacing so chrome reads as one type
             family across wordmark / tabs / About / auth pill. */}
+        {/* Subtle red-heart link to Saved — "reach Saved from anywhere"
+            (Mark 2026-06-02). Signed-in only; small, not a loud red. */}
+        {user && goToSaved && (
+          <button onClick={goToSaved} aria-label="My saved" title="My saved"
+            style={{ background: "none", border: "none", cursor: "pointer",
+                    padding: "6px 6px", fontFamily: "inherit", fontSize: 15,
+                    lineHeight: 1, color: "var(--heart)", flexShrink: 0 }}>
+            ♥
+          </button>
+        )}
         <button onClick={() => setAboutModalOpen(true)}
           style={{ background: "none", border: "none", cursor: "pointer",
                   padding: "6px 8px", fontFamily: "inherit", fontSize: 13,

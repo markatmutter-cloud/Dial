@@ -64,6 +64,7 @@ export function buildMockShellProps(overrides = {}) {
 
     // Setters / handlers — all noops by default
     handleWish: noop,
+    goToSaved: noop,
     openFavPrompt: noop,
     onOpenCalendar: noop,
     resetFilters: noop,
