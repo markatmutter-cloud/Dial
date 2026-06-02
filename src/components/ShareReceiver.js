@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { fmt, imgSrc, priceIn, FX_RATES_USD_PER } from "../utils";
 import { SharedReceiveFrame } from "./SharedReceiveFrame";
-import { askLumeAbout } from "./LumeBus";
 
 // Share-receive adapter for a single shared LISTING. Owns the URL parse + data
 // lookup + save logic (all hooks live INSIDE this component so App.js's hook
@@ -28,6 +27,10 @@ export function ShareReceiver({
   openListingId,
   openCollectionPicker,
   handleShare,
+  // Report the active shared item up so the floating Lumé launcher can open
+  // SEEDED with it (Mark 2026-06-01 — "Ask Lumé" pops out of the floating icon
+  // on shared listings, not a button on the card).
+  onSeedItem,
 }) {
   const [shareIntent, setShareIntent] = useState(null);
   const [busy, setBusy] = useState(false);
@@ -91,6 +94,13 @@ export function ShareReceiver({
     setBusy(false);
     clearIntent();
   }, [sharedItem, user, watchlist, toggleWatchlist, addToSharedInbox, clearIntent]);
+
+  // Tell App which item the floating Lumé launcher should seed with (null when
+  // no share surface is active). Cleared on unmount.
+  useEffect(() => {
+    if (typeof onSeedItem === "function") onSeedItem(sharedItem || null);
+    return () => { if (typeof onSeedItem === "function") onSeedItem(null); };
+  }, [sharedItem, onSeedItem]);
 
   if (!shareIntent) return null;
   if (!Array.isArray(items) || items.length === 0) return null;
@@ -210,7 +220,6 @@ export function ShareReceiver({
       onSignIn={(!user && isAuthConfigured && signInWithGoogle) ? signInWithGoogle : null}
       onAddToList={(user && openCollectionPicker) ? () => openCollectionPicker(sharedItem) : null}
       onShare={handleShare ? () => handleShare(sharedItem) : null}
-      askLume={() => askLumeAbout(sharedItem)}
       busy={busy}
     />
   );

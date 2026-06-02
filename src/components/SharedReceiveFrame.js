@@ -22,7 +22,6 @@ import React from "react";
 //   onAddToList  () => void | null      — signed-in only
 //   onShare      () => void | null
 //   extraActions [{ label, onClick }]   — item-specific slot (e.g. catalog "Remind me")
-//   askLume      () => void | null      — "Ask Lumé about this" (seeded; 6c)
 //   navCues      [{ label, onClick }]   — no-dead-end cues
 //   busy         bool
 //
@@ -43,7 +42,6 @@ export function SharedReceiveFrame({
   onAddToList,
   onShare,
   extraActions = [],
-  askLume,
   navCues = [],
   busy = false,
 }) {
@@ -119,7 +117,9 @@ export function SharedReceiveFrame({
               <button key={a.label} onClick={a.onClick} style={subtleBtn}>{a.label}</button>
             ))}
             {onShare && <button onClick={onShare} style={subtleBtn}>Share</button>}
-            {askLume && <button onClick={askLume} style={lumeBtn}>Ask Lumé</button>}
+            {/* "Ask Lumé" is NOT a button here (Mark 2026-06-01) — the floating
+                Lumé launcher stays on the surface and pops out an "Ask Lumé"
+                callout, opening seeded with this item (see ChatBubbleHost). */}
           </div>
         </div>
       </div>
@@ -144,10 +144,6 @@ const primaryBtn = {
 const subtleBtn = {
   border: "0.5px solid var(--border)", background: "var(--surface)", color: "var(--text1)",
   padding: "10px 16px", borderRadius: 8, fontFamily: "inherit", fontSize: 14, fontWeight: 500, cursor: "pointer",
-};
-const lumeBtn = {
-  border: "0.5px solid var(--brand-olive-ink)", background: "transparent", color: "var(--brand-olive-ink)",
-  padding: "10px 16px", borderRadius: 8, fontFamily: "inherit", fontSize: 14, fontWeight: 600, cursor: "pointer",
 };
 const navCueStyle = {
   border: "none", background: "transparent", color: "var(--text2)",

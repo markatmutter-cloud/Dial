@@ -91,12 +91,11 @@ const MicIcon = ({ size = 18 }) => (
   </svg>
 );
 
-export function ChatBubbleHost({ suppressLauncher = false }) {
-  // suppressLauncher hides the floating launcher on the share-receive surfaces
-  // (Mark 2026-06-01): there, the generic "Ask me" would open a blank chat with
-  // no idea what's on screen — misleading. Those surfaces use the SEEDED
-  // "Ask Lumé about this" (askLumeAbout(item)) instead. The opener stays
-  // registered, so that seeded entry still opens the bubble.
+export function ChatBubbleHost({ seedItem = null }) {
+  // seedItem (Mark 2026-06-01): on the share-receive surfaces the floating
+  // launcher STAYS, but it pops out an "Ask Lumé" callout and opens SEEDED with
+  // the shared item (so the chat is about what's on screen, not blank). Off the
+  // share surfaces seedItem is null and the launcher opens a normal chat.
   const { user, signInWithGoogle } = useAuth();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -301,22 +300,24 @@ export function ChatBubbleHost({ suppressLauncher = false }) {
   let node;
 
   if (!open) {
-    // Closed: hide the launcher on share surfaces (seeded Ask-Lumé is used
-    // there instead); otherwise the "Ask me" callout + speech-bubble launcher.
-    if (suppressLauncher) return null;
+    // Tapping the launcher (or the callout) opens SEEDED when there's a
+    // shared item on screen, else a normal chat. The callout reads "Ask Lumé"
+    // on a share surface (always shown there) or the first-run "Ask me" hint.
+    const openSeeded = () => { openChat(); if (seedItem && user) send(describeItem(seedItem)); };
+    const showCallout = !!seedItem || !hasOpened;
     node = (
       <div style={{ ...FIXED, display: "flex", alignItems: "center", gap: 10 }}>
-        {!hasOpened && (
-          <button onClick={openChat} style={{
+        {showCallout && (
+          <button onClick={openSeeded} style={{
             border: "none",
             background: "rgba(20,24,18,0.72)",
             WebkitBackdropFilter: "blur(6px)", backdropFilter: "blur(6px)",
             color: "#fff", borderRadius: 999, padding: "8px 12px",
             fontSize: 13, fontWeight: 500, cursor: "pointer", whiteSpace: "nowrap",
             boxShadow: "0 4px 14px rgba(0,0,0,0.25)",
-          }}>Ask me</button>
+          }}>{seedItem ? "Ask Lumé" : "Ask me"}</button>
         )}
-        <button onClick={openChat} aria-label={`Open ${NAME}`} style={launcherStyle}>
+        <button onClick={openSeeded} aria-label={`Open ${NAME}`} style={launcherStyle}>
           <LumeIcon size={44} style={{ display: "block" }} />
         </button>
       </div>
