@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { modalBackdrop, modalShell, modalCloseButton, modalTitleRow, modalTitle, inputBase } from "../styles";
+import { modalBackdrop, modalShell, modalTitleRow, modalTitle, inputBase } from "../styles";
 
 // Picker that opens when a user taps "Add to list..." in any Card's
 // "..." menu. Shows existing user-created lists (the shared-inbox is
@@ -85,20 +85,36 @@ export function CollectionPickerModal({
     close();
   };
 
+  // Done lives in a non-scrolling header (Mark 2026-06-02) — with a long list
+  // it used to sit below the fold, so committing meant scrolling all the way
+  // down. Header stays put; only the list scrolls. Done == close (toggles are
+  // live, so there's no separate commit), which also retires the redundant ×.
+  const doneBtn = (
+    <button onClick={close} disabled={busy} style={{
+      border: "none", background: "var(--brand-olive)", color: "#fff",
+      padding: "8px 18px", borderRadius: 10, cursor: busy ? "wait" : "pointer",
+      fontFamily: "inherit", fontSize: 14, fontWeight: 600, flexShrink: 0,
+    }}>Done</button>
+  );
+
   return (
     <div onClick={close} style={modalBackdrop}>
       <div onClick={e => e.stopPropagation()} style={{
-        ...modalShell, maxWidth: 420, maxHeight: "75vh", overflowY: "auto",
+        ...modalShell, maxWidth: 420, maxHeight: "75vh",
+        display: "flex", flexDirection: "column", overflow: "hidden",
       }}>
-        <div style={modalTitleRow}>
-          <div style={modalTitle}>Add to list</div>
-          <button onClick={close} aria-label="Close" style={modalCloseButton}>×</button>
-        </div>
-        <div style={{ fontSize: 12, color: "var(--text2)", marginBottom: 14,
-                      overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-          {target.brand} · {target.ref || target.title || target.id}
+        <div style={{ flexShrink: 0 }}>
+          <div style={modalTitleRow}>
+            <div style={modalTitle}>Add to list</div>
+            {doneBtn}
+          </div>
+          <div style={{ fontSize: 12, color: "var(--text2)", marginBottom: 14,
+                        overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            {target.brand} · {target.ref || target.title || target.id}
+          </div>
         </div>
 
+        <div style={{ flex: 1, overflowY: "auto", minHeight: 0 }}>
         {visible.length === 0 && !creating && (
           <div style={{ fontSize: 12, color: "var(--text3)", marginBottom: 12, lineHeight: 1.5 }}>
             No lists yet. Create one to get started.
@@ -190,21 +206,6 @@ export function CollectionPickerModal({
             fontFamily: "inherit", fontSize: 14, fontWeight: 500,
           }}>+ Create new list</button>
         )}
-
-        {/* Done footer — dismisses the modal after the user has
-            toggled list memberships. (The modal stays open after each
-            toggle so multiple lists can be adjusted in one pass.) */}
-        <div style={{
-          display: "flex", justifyContent: "flex-end",
-          marginTop: 14,
-          paddingTop: 14,
-          borderTop: "0.5px solid var(--border)",
-        }}>
-          <button onClick={close} disabled={busy} style={{
-            border: "none", background: "var(--brand-olive)", color: "#fff",
-            padding: "10px 20px", borderRadius: 10, cursor: "pointer",
-            fontFamily: "inherit", fontSize: 14, fontWeight: 500,
-          }}>Done</button>
         </div>
       </div>
     </div>
