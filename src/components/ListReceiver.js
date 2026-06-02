@@ -1,64 +1,56 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { supabase } from "../supabase";
-import { fmt, fmtUSD, imgSrc } from "../utils";
-import { signInButton as primaryBtnStyle } from "../styles";
+import { imgSrc } from "../utils";
+import { SharedReceiveFrame } from "./SharedReceiveFrame";
 
-// List-share v1 receive flow. Mirrors ChallengeReceiver / ShareReceiver
-// pattern — all hooks live INSIDE this component; App.js only mirrors a
-// one-bit `listShareActive` flag back up so the shell hides browse
-// chrome while the focused landing surface is up.
+// List-share receive flow — reskinned onto SharedReceiveFrame (Mark 2026-06-02)
+// so it shares the common chrome/language/layout with every other shared type.
+// All hooks live INSIDE this component; App.js only mirrors a one-bit
+// `listShareActive` flag back up so the shell hides browse chrome.
 //
-// URL pattern: `?list=<uuid>&shared=1`. The list is fetched via the
-// public read RPC `get_public_list`, which gates on type=null (regular
-// user list) and isn't system / shared-inbox. Drafts of system lists,
-// challenges, and the shared inbox itself return null silently — the
-// recipient sees a clean "not available" state instead of the data.
+// TWO-MODE model (Mark locked 2026-06-02): a shared list has two distinct
+// intents, and the destination follows the mode —
+//   • Send a copy   — a PLAIN link (`?list=<id>&shared=1`). Recipient takes
+//     their OWN independent, editable copy → lands in *Your lists*.
+//   • Collaborate    — a link with `?invite=<token>`. Recipient JOINS the
+//     in-sync list → lands in *Shared with you*.
+// The invite token is the proxy for the mode today; the sender-side
+// "Send a copy vs Collaborate" picker is the planned follow-up PR that makes
+// the choice explicit (it just sets/omits the token).
 //
-// Recipient surfaces:
-//   - Loading / error / loaded states
-//   - Read-only grid of items (listing-backed + manual entries)
-//   - Two CTAs: "Save a copy" (auth-required; creates a new list owned
-//     by the recipient with the same items) and "Just browse" (clears
-//     URL, drops the receiver, keeps the user on the listings tab).
-//
-// Cards render through a slim inline tile here rather than the full
-// Card component — recipient items are read-only, so we don't need the
-// heart / share / "..." menu wiring. This stays light AND avoids the
-// prop-drill needed to make full Cards behave on a foreign-data list.
+// Instead of a read-only grid, the recipient sees a list-cover CARD preview
+// (a collage of the first few covers) + the ONE clearly-labelled outcome for
+// the mode (a collaborate link also offers "Save a copy" as the alternate
+// outcome). Save/Join always land you INSIDE your Lists — never a separate
+// read-only surface.
 
 export function ListReceiver({
   user,
   isAuthConfigured,
   signInWithGoogle,
   collectionsApi,
-  // Main feed items — joined against `listingId` to render
-  // listing-backed rows. Manual rows carry their snapshot inline.
+  // Main feed items — joined against `listingId` to resolve cover images.
   items: feedItems,
-  primaryCurrency,
   // Mirror active state up so the shell hides browse chrome.
   setListShareActive,
-  // Navigation hooks for the "Just browse" + post-save flow.
+  // Navigation hooks for the "Just browse" + post-action flow.
   setTab,
   // App.js increments this when the user explicitly navigates away
   // via main nav — clear our intent state when it bumps.
   resetTick,
 }) {
   const [listId, setListId] = useState(null);
-  // Token-based invite acceptance (List Sharing v2.1). When the
-  // owner uses "Invite & share link", the URL carries `?invite=<id>`
-  // alongside `?list=<id>&shared=1`. The invite token is the secret
-  // that unlocks accept regardless of email match — solves the case
-  // where the invitee's Google account differs from what the owner
-  // typed.
+  // Token-based invite acceptance (List Sharing v2.1). When the owner shares a
+  // COLLABORATE link, the URL carries `?invite=<id>` — the secret that unlocks
+  // accept regardless of email match (handles a different Google account).
   const [inviteToken, setInviteToken] = useState(null);
+  const [fromName, setFromName] = useState("");
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [savedCopyId, setSavedCopyId] = useState(null);
-  // List Sharing v2 / slice 3 + 2.1: when the invitee opens the share
-  // link, we surface an inline "Accept invite" CTA. matchedInvite is
-  // populated either by token lookup (URL invite=) OR by email-matched
-  // pending-invites lookup (legacy path for links without token).
+  // Populated either by token lookup (URL invite=) OR by email-matched
+  // pending-invites lookup (legacy links without a token).
   const [matchedInvite, setMatchedInvite] = useState(null);
   const [acceptedInviteId, setAcceptedInviteId] = useState(null);
 
@@ -71,6 +63,8 @@ export function ListReceiver({
         setListId(params.get("list"));
         const tok = params.get("invite");
         if (tok) setInviteToken(tok);
+        const from = params.get("from");
+        if (from) setFromName(from);
       }
     } catch (e) {
       console.warn("list URL parse failed", e);
@@ -89,6 +83,7 @@ export function ListReceiver({
     if (resetTick && resetTick > 0) {
       setListId(null);
       setInviteToken(null);
+      setFromName("");
       setData(null);
       setError("");
       setSavedCopyId(null);
@@ -115,18 +110,9 @@ export function ListReceiver({
     return () => { cancelled = true; };
   }, [listId]);
 
-  // Receiver-side invite resolution. Two paths:
-  //
-  //   1. Token path (preferred, post-2026-05-08 share links):
-  //      `?invite=<id>` is in the URL. Look up the invite directly
-  //      and surface the accept CTA without requiring email match.
-  //
-  //   2. Email-match path (legacy links + a fallback): no token in
-  //      URL; check the signed-in user's pending invites and look
-  //      for one matching the URL list_id.
-  //
-  // Both paths populate matchedInvite with a normalised row shape:
-  //   { invite_id, collection_id, role, inviter_email, inviter_name }
+  // Receiver-side invite resolution. Token path (preferred) or email-match
+  // (legacy). Populates matchedInvite with a normalised row shape:
+  //   { invite_id, collection_id, role, inviter_email, inviter_name, via_token }
   useEffect(() => {
     if (!listId) { setMatchedInvite(null); return undefined; }
     let cancelled = false;
@@ -134,8 +120,7 @@ export function ListReceiver({
       collectionsApi.fetchInviteByToken(inviteToken).then(({ invite, error: invErr }) => {
         if (cancelled) return;
         if (invErr || !invite) { setMatchedInvite(null); return; }
-        // Token resolved but invite is for a different list — ignore
-        // (stale URL) so we don't surface a misleading CTA.
+        // Token resolved but invite is for a different list — ignore (stale URL).
         if (invite.collection_id !== listId) { setMatchedInvite(null); return; }
         if (invite.status !== 'pending') { setMatchedInvite(null); return; }
         setMatchedInvite({
@@ -144,8 +129,6 @@ export function ListReceiver({
           role: invite.role,
           inviter_email: invite.inviter_email,
           inviter_name: invite.inviter_name,
-          // flag so onAcceptInvite knows to call accept_invite_by_token
-          // instead of the email-gated accept_invite.
           via_token: true,
         });
       });
@@ -167,6 +150,7 @@ export function ListReceiver({
   const clearIntent = useCallback(() => {
     setListId(null);
     setInviteToken(null);
+    setFromName("");
     setData(null);
     setError("");
     setSavedCopyId(null);
@@ -175,6 +159,7 @@ export function ListReceiver({
       url.searchParams.delete("list");
       url.searchParams.delete("shared");
       url.searchParams.delete("invite");
+      url.searchParams.delete("from");
       window.history.replaceState({}, "", url.toString());
     } catch {}
   }, []);
@@ -184,14 +169,30 @@ export function ListReceiver({
     if (typeof setTab === "function") setTab("listings");
   }, [clearIntent, setTab]);
 
-  // Accept the matched invite, then drop the user into Saved > Lists
-  // drilled into the (now-shared) list. RLS expansion from slice 1
-  // means the list shows up in their normal Lists surface immediately
-  // after accept. Token-path invites use accept_invite_by_token (no
+  // Navigate INTO the user's Lists, drilled into a specific list — the
+  // single destination for both modes (copy → the new copy; collaborate →
+  // the now-shared list). RLS expansion means a joined list shows up under
+  // the recipient's normal Lists surface immediately.
+  const openListInLists = useCallback((id) => {
+    if (!id) return;
+    clearIntent();
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.set("tab", "watchlist");
+      url.searchParams.set("sub", "lists");
+      url.searchParams.set("col", id);
+      window.history.pushState({}, "", url.toString());
+      // Force the receivers to clear + the shells to re-derive.
+      window.dispatchEvent(new PopStateEvent("popstate"));
+    } catch {}
+  }, [clearIntent]);
+
+  // COLLABORATE: accept the matched invite → the synced list joins
+  // *Shared with you*. Token-path invites use accept_invite_by_token (no
   // email-match gate); legacy email-path invites use accept_invite.
   const onAcceptInvite = useCallback(async () => {
     if (!matchedInvite || !collectionsApi) return;
-    if (!user) return; // shouldn't be possible — CTA gated on user
+    if (!user) return; // CTA gated on user
     const fn = matchedInvite.via_token
       ? collectionsApi.acceptInviteByToken
       : collectionsApi.acceptInvite;
@@ -200,39 +201,14 @@ export function ListReceiver({
     setError("");
     const res = await fn(matchedInvite.invite_id);
     setBusy(false);
-    if (res?.error) {
-      setError(res.error);
-      return;
-    }
+    if (res?.error) { setError(res.error); return; }
     setAcceptedInviteId(matchedInvite.invite_id);
     setMatchedInvite(null);
   }, [matchedInvite, collectionsApi, user]);
 
-  const onOpenSharedList = useCallback(() => {
-    if (!listId) return;
-    clearIntent();
-    // Navigate to Saved > Lists with the col drill-in. App.js +
-    // CollectionsTab handle the URL → state derivation.
-    try {
-      const url = new URL(window.location.href);
-      url.searchParams.set("tab", "watchlist");
-      url.searchParams.set("sub", "lists");
-      url.searchParams.set("col", listId);
-      window.history.pushState({}, "", url.toString());
-      // Force the receivers to clear + the shells to re-derive.
-      window.dispatchEvent(new PopStateEvent("popstate"));
-    } catch {}
-  }, [listId, clearIntent]);
-
-  // (Decline-invite handler retired 2026-05-09 with the Collaborate /
-  // View only redesign. The legacy `decline_invite` RPC stays in
-  // place for any existing pending rows; the new flow doesn't
-  // surface a Decline action — recipients who don't want to join
-  // simply tap "View only" or close the page.)
-
-  // Save a copy — creates a new list owned by the recipient with the
-  // same items. Listing-backed rows are looked up against the public
-  // feed; manual entries are recreated through addManualItem.
+  // SEND A COPY: create a new list owned by the recipient with the same
+  // items → it lands in *Your lists*, fully editable. Listing-backed rows are
+  // looked up against the public feed; manual entries recreated via addManualItem.
   const onSaveCopy = useCallback(async () => {
     if (!user) return;
     if (!data || !collectionsApi) return;
@@ -282,237 +258,214 @@ export function ListReceiver({
 
   if (!listId) return null;
 
-  // ── Render branches ──────────────────────────────────────────
+  const sender = (fromName || matchedInvite?.inviter_name || matchedInvite?.inviter_email || "").trim();
 
-  // Loading.
+  // ── Loading (transient) ──────────────────────────────────────
   if (!data && !error) {
     return (
-      <div style={landingPaneStyle()}>
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "40px 16px 110px" }}>
         <p style={{ color: "var(--text2)", fontSize: 14 }}>Pulling the list…</p>
       </div>
     );
   }
-  // Error.
+
+  // ── Error — still no dead end (render through the frame) ──────
   if (error) {
     return (
-      <div style={landingPaneStyle()}>
-        <h2 style={headerStyle()}>List unavailable</h2>
-        <p style={{ fontSize: 14, color: "var(--text2)", lineHeight: 1.5, marginBottom: 18 }}>
-          {error}
-        </p>
-        <div style={{ display: "flex", gap: 8 }}>
-          <button onClick={onJustBrowse} style={primaryBtnStyle}>Browse Watchlist</button>
-        </div>
-      </div>
+      <SharedReceiveFrame
+        sender={sender}
+        typeLabel="list"
+        hero={unavailableHero("This list isn't available")}
+        identity={
+          <>
+            <h2 style={frameTitle}>This list isn't available</h2>
+            <div style={frameSub}>{error}</div>
+          </>
+        }
+        primaryCTA={{ label: "Browse Watchlist →", onClick: onJustBrowse }}
+        signedIn={!!user}
+      />
     );
   }
 
-  // Saved-copy success state.
-  if (savedCopyId) {
-    return (
-      <div style={landingPaneStyle()}>
-        <h2 style={headerStyle()}>Saved to your collections</h2>
-        <p style={{ fontSize: 14, color: "var(--text2)", lineHeight: 1.5, marginBottom: 18 }}>
-          A copy of <strong style={{ color: "var(--text1)" }}>{data.name}</strong> has been
-          added to your lists. Open it in Saved &gt; Lists to view, share, or edit.
-        </p>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          <button onClick={() => { clearIntent(); if (typeof setTab === "function") setTab("watchlist"); }}
-            style={primaryBtnStyle}>Open my lists →</button>
-          <button onClick={onJustBrowse} style={secondaryBtnStyle}>Keep browsing</button>
-        </div>
-      </div>
-    );
-  }
-
-  // Loaded — render items + CTAs.
   const items = data.items || [];
   const itemCount = items.length;
-  return (
-    <div style={landingPaneStyle()}>
-      <div style={{ marginBottom: 6, fontSize: 12, color: "var(--text3)", letterSpacing: "0.04em", textTransform: "uppercase", fontWeight: 600 }}>
-        {acceptedInviteId ? "Joined list" : matchedInvite ? "Invite to join" : "Shared list"}
-      </div>
-      <h2 style={headerStyle()}>{data.name}</h2>
-      <p style={{ fontSize: 13, color: "var(--text2)", marginBottom: 16 }}>
+  const covers = coverImages(items, feedItems);
+  const hero = coverHero(covers);
+
+  // ── Saved-a-copy success → into Your lists ───────────────────
+  if (savedCopyId) {
+    return (
+      <SharedReceiveFrame
+        sender={sender}
+        typeLabel="list"
+        hero={hero}
+        identity={
+          <>
+            <h2 style={frameTitle}>Saved to your lists</h2>
+            <div style={frameSub}>
+              A copy of <strong style={{ color: "var(--text1)" }}>{data.name}</strong> is now in
+              your lists — open it to browse, edit, or share.
+            </div>
+          </>
+        }
+        primaryCTA={{ label: "Open my lists →", onClick: () => openListInLists(savedCopyId) }}
+        signedIn={!!user}
+        navCues={[{ label: "Keep browsing", onClick: onJustBrowse }]}
+      />
+    );
+  }
+
+  // ── Joined a collaboration → into Shared with you ────────────
+  if (acceptedInviteId) {
+    return (
+      <SharedReceiveFrame
+        sender={sender}
+        typeLabel="list"
+        hero={hero}
+        identity={
+          <>
+            <h2 style={frameTitle}>You're in</h2>
+            <div style={frameSub}>
+              <strong style={{ color: "var(--text1)" }}>{data.name}</strong> now lives under
+              Lists ▸ Shared with you — anything either of you adds stays in sync.
+            </div>
+          </>
+        }
+        primaryCTA={{ label: "Open the shared list →", onClick: () => openListInLists(listId) }}
+        signedIn={!!user}
+        navCues={[{ label: "Keep browsing", onClick: onJustBrowse }]}
+      />
+    );
+  }
+
+  // ── Loaded — mode-aware, clearly-labelled outcome(s) ─────────
+  // Collaborate mode = a pending invite is matched (the link carried a token).
+  // Otherwise it's a Send-a-copy link.
+  const isCollab = !!matchedInvite;
+
+  const identity = (
+    <>
+      <h2 style={frameTitle}>{data.name}</h2>
+      <div style={frameSub}>
         {itemCount === 0
-          ? "Nothing in this list yet — the owner hasn't added any watches."
+          ? "Nothing in this list yet."
           : `${itemCount} watch${itemCount === 1 ? "" : "es"}`}
-      </p>
-
-      {/* Collaboration-link receiver banner (post-2026-05-09). When
-          the URL carries an `?invite=<id>` token (Mark sent a
-          "Collaboration Link"), the recipient gets a clear two-CTA
-          choice: Collaborate (sign in + accept the invite) or View
-          only (read the list as-is, no commitment). The legacy
-          email-match path also lands here when `matchedInvite` is
-          populated by the email-side fetch. Save a copy stays
-          available below as a tertiary option. */}
-      {matchedInvite && !acceptedInviteId && (
-        <div style={{
-          padding: "12px 14px", borderRadius: 10,
-          border: "1px solid var(--brand)",
-          background: "var(--brand-tint-08)",
-          marginBottom: 16,
-        }}>
-          <div style={{ fontSize: 13, color: "var(--text1)", marginBottom: 10, lineHeight: 1.5 }}>
-            <strong>{matchedInvite.inviter_name || matchedInvite.inviter_email}</strong> invited
-            you to collaborate on this list as a <strong>{matchedInvite.role}</strong>.
-            Collaborate so you can both add and remove watches in one shared list, or
-            view only to look without signing in.
-          </div>
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            {user ? (
-              <button onClick={onAcceptInvite} disabled={busy} style={primaryBtnStyle}>
-                {busy ? "Joining…" : "Collaborate"}
-              </button>
-            ) : isAuthConfigured ? (
-              <button onClick={signInWithGoogle} style={primaryBtnStyle}>
-                Collaborate (sign in)
-              </button>
-            ) : null}
-            {/* "View only" dismisses the CTA panel and leaves the
-                read-only items grid visible. Recipient can keep
-                browsing the shared list without any sign-in
-                commitment. */}
-            <button onClick={() => setMatchedInvite(null)} disabled={busy} style={secondaryBtnStyle}>
-              View only
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Post-accept success — drop them straight into the shared list. */}
-      {acceptedInviteId && (
-        <div style={{
-          padding: "12px 14px", borderRadius: 10,
-          border: "1px solid var(--brand)",
-          background: "var(--brand-tint-08)",
-          marginBottom: 16,
-        }}>
-          <div style={{ fontSize: 13, color: "var(--text1)", marginBottom: 8 }}>
-            You're in. The list now shows up under your Watchlists &gt; Lists.
-          </div>
-          <button onClick={onOpenSharedList} style={primaryBtnStyle}>
-            Open the shared list →
-          </button>
-        </div>
-      )}
-
-      {/* Tertiary CTAs — Save a copy + Just browse. Stay below the
-          collaborate panel so the primary collab/view-only choice is
-          the visual focus. Save a copy is for recipients who want a
-          private snapshot to edit on their own. */}
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 18 }}>
-        {user && !acceptedInviteId && (
-          <button onClick={onSaveCopy} disabled={busy} style={secondaryBtnStyle}>
-            {busy ? "Saving…" : "Save a copy to my lists"}
-          </button>
-        )}
-        {!user && isAuthConfigured && !matchedInvite && (
-          <button onClick={signInWithGoogle} style={primaryBtnStyle}>
-            Sign in to save a copy
-          </button>
-        )}
-        <button onClick={onJustBrowse} style={secondaryBtnStyle}>
-          Done
-        </button>
       </div>
+      {isCollab && (
+        <div style={{ fontSize: 12, color: "var(--text2)", marginTop: 8, lineHeight: 1.5 }}>
+          Invited to <strong style={{ color: "var(--text1)" }}>collaborate</strong> as a{" "}
+          {matchedInvite.role} — you'll both add and remove watches in one synced list.
+        </div>
+      )}
+    </>
+  );
 
-      {/* Items grid — slim inline tiles. Recipient view is read-only. */}
+  // Primary verb + optional secondary outcome, per mode.
+  let primaryCTA;
+  let extraActions = [];
+  if (isCollab) {
+    primaryCTA = user
+      ? { label: busy ? "Joining…" : "Collaborate", onClick: onAcceptInvite }
+      : (isAuthConfigured && signInWithGoogle
+          ? { label: "Collaborate (sign in)", onClick: signInWithGoogle }
+          : null);
+    // The alternate outcome stays clearly labelled: take your own copy instead.
+    if (user) extraActions = [{ label: busy ? "Saving…" : "Save a copy instead", onClick: onSaveCopy }];
+  } else {
+    primaryCTA = user
+      ? { label: busy ? "Saving…" : "Save a copy", onClick: onSaveCopy }
+      : (isAuthConfigured && signInWithGoogle
+          ? { label: "Sign in to save a copy", onClick: signInWithGoogle }
+          : null);
+  }
+
+  return (
+    <SharedReceiveFrame
+      sender={sender}
+      typeLabel="list"
+      hero={hero}
+      identity={identity}
+      primaryCTA={primaryCTA}
+      signedIn={!!user}
+      busy={busy}
+      extraActions={extraActions}
+      navCues={[{ label: "Just browse", onClick: onJustBrowse }]}
+    />
+  );
+}
+
+// ── Hero builders ─────────────────────────────────────────────
+
+// Up to four cover images for the list-cover collage. Listing-backed rows
+// resolve against the live feed; manual rows carry their own snapshot URL.
+function coverImages(items, feedItems) {
+  const out = [];
+  const feed = feedItems || [];
+  for (const it of items || []) {
+    if (out.length >= 4) break;
+    let img = null;
+    if (it.isManual) img = it.manualImageUrl;
+    else if (it.listingId) {
+      const l = feed.find(fi => fi.id === it.listingId);
+      img = l ? imgSrc(l.img) : null;
+    }
+    if (img) out.push(img);
+  }
+  return out;
+}
+
+// A list "cover" — one image fills, 2–4 tile into a collage, none → placeholder.
+function coverHero(covers) {
+  if (!covers || covers.length === 0) {
+    return (
       <div style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))",
-        gap: 10,
+        position: "absolute", inset: 0, display: "flex", flexDirection: "column",
+        alignItems: "center", justifyContent: "center", gap: 8,
+        color: "var(--text3)", fontSize: 13,
       }}>
-        {items.map(it => (
-          <ItemTile key={it.rowId} item={it} feedById={feedItems} primaryCurrency={primaryCurrency} />
-        ))}
+        <span style={{ fontSize: 30 }}>🗂</span>
+        <span>List preview</span>
       </div>
+    );
+  }
+  if (covers.length === 1) {
+    return (
+      <img src={covers[0]} alt="" loading="eager"
+        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
+    );
+  }
+  return (
+    <div style={{
+      position: "absolute", inset: 0, display: "grid", gap: 2,
+      gridTemplateColumns: "repeat(2, 1fr)",
+      gridAutoRows: covers.length <= 2 ? "100%" : "50%",
+    }}>
+      {covers.slice(0, 4).map((src, i) => (
+        <div key={i} style={{ overflow: "hidden", background: "var(--surface)" }}>
+          <img src={src} alt="" loading="eager"
+            style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+        </div>
+      ))}
     </div>
   );
 }
 
-// Slim read-only tile. Joins listing-backed rows against the feed by
-// listingId; falls back to manual snapshot for is_manual rows.
-function ItemTile({ item, feedById, primaryCurrency }) {
-  // feedById is the array of mainFeedItems; build a quick lookup.
-  // (Building per-tile is wasteful but cheap at typical list size.)
-  const listing = !item.isManual && item.listingId
-    ? (feedById || []).find(fi => fi.id === item.listingId)
-    : null;
-  const title = item.isManual
-    ? [item.manualBrand, item.manualModel].filter(Boolean).join(" ").trim() || "Untitled"
-    : (listing
-        ? `${listing.brand || ""}${listing.ref ? " · " + listing.ref : ""}`.trim() || listing.title || "Untitled"
-        : "Listing not in current feed");
-  const img = item.isManual
-    ? item.manualImageUrl
-    : (listing ? imgSrc(listing.img) : null);
-  const priceUSD = item.savedPriceUSD || item.savedPrice || (listing ? listing.priceUSD : null);
-  const priceCurrency = item.savedCurrency || (listing ? listing.currency : null);
-  const priceText = item.isManual && item.manualPricePaid
-    ? fmt(item.manualPricePaid, item.manualPriceCurrency || "USD")
-    : (priceUSD ? fmtUSD(priceUSD) : "");
-  const url = !item.isManual && listing ? listing.url : (item.manualSourceUrl || null);
-
+function unavailableHero(label) {
   return (
-    <a href={url || undefined} target={url ? "_blank" : undefined} rel="noopener noreferrer"
-      style={{
-        display: "block", textDecoration: "none", color: "inherit",
-        border: "0.5px solid var(--border)", borderRadius: 10,
-        background: "var(--card-bg)", overflow: "hidden",
-        cursor: url ? "pointer" : "default",
-      }}>
-      <div style={{
-        width: "100%", aspectRatio: "1/1", background: "var(--surface)",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        overflow: "hidden",
-      }}>
-        {img ? (
-          <img src={img} alt="" loading="lazy"
-            style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-        ) : (
-          <span style={{ fontSize: 28, color: "var(--text3)" }}>⌚</span>
-        )}
-      </div>
-      <div style={{ padding: "8px 10px" }}>
-        <div style={{
-          fontSize: 12, fontWeight: 500, color: "var(--text1)",
-          overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-          marginBottom: 2,
-        }}>{title}</div>
-        {priceText && (
-          <div style={{ fontSize: 12, color: "var(--text2)" }}>{priceText}</div>
-        )}
-      </div>
-    </a>
+    <div style={{
+      position: "absolute", inset: 0, display: "flex", alignItems: "center",
+      justifyContent: "center", padding: 24, textAlign: "center",
+      color: "var(--text3)", fontSize: 13,
+    }}>
+      <span>{label}</span>
+    </div>
   );
 }
 
-// ── Shared style helpers ──────────────────────────────────────
-
-function landingPaneStyle() {
-  return {
-    maxWidth: 1100,
-    margin: "0 auto",
-    padding: "24px 14px 110px",
-  };
-}
-
-function headerStyle() {
-  return {
-    fontSize: 22, fontWeight: 700, color: "var(--text1)",
-    margin: "0 0 4px", letterSpacing: "-0.3px",
-  };
-}
-
-// primaryBtnStyle now imported from styles.js as signInButton.
-// Local secondaryBtnStyle keeps the same geometry (10px 18px / radius 10)
-// for parity with the primary so the two read as a paired CTA group.
-const secondaryBtnStyle = {
-  border: "0.5px solid var(--border)", background: "transparent",
-  color: "var(--text2)",
-  padding: "10px 20px", borderRadius: 10,
-  cursor: "pointer", fontFamily: "inherit", fontSize: 14,
+const frameTitle = {
+  fontSize: 19, fontWeight: 700, color: "var(--text1)", margin: 0, lineHeight: 1.2,
+};
+const frameSub = {
+  fontSize: 13, color: "var(--text2)", lineHeight: 1.5, marginTop: 6,
 };
