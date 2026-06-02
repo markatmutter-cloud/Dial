@@ -7,54 +7,25 @@
 // actually have; Watches default):
 //   • Watches — the standard Watches grid (same Card + gridStyle), the shared
 //     filter bar (Clear-all / Save-search — closes B-48 for Lists), newest-
-//     added default, plus a group-by control: None · Dealer · Brand. Grouped
-//     view orders groups by size (Other last), items newest-first within, with
-//     a sticky quick-jump chip row when ≥2 groups.
+//     added default. (Brand/Source grouping was retired 2026-06-02 — redundant
+//     with the Source/Brand filters; Saved is a flat newest-first grid.)
 //   • Articles / Guides — hearted editorial + reference guides, via CardShell.
 //   (Saved auction sales moved to a "Saved sales" section on the Lists sub-tab.)
 //
-// Self-contained ON PURPOSE: its type/group-by/scroll-spy hooks live here, not
-// in CollectionsTab/ListsView, so they can't shift that component's hook
-// order (React #310). All hooks sit above the first early return.
+// Self-contained ON PURPOSE: its type-filter hook lives here, not in
+// CollectionsTab/ListsView, so it can't shift that component's hook order
+// (React #310). All hooks sit above the first early return.
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { Card } from "./Card";
 import CardShell from "./CardShell";
 import { EmptyState } from "./EmptyState";
-import SubTabBar from "./SubTabBar";
 import { innerToggleButton } from "../styles";
 
-const slugify = (s) =>
-  "hg-" + String(s || "other").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
-
-// Group hearted watches by brand or source, ordered by GROUP SIZE (Mark
-// 2026-06-02). `dir` flips the size order like a sort arrow: "desc" = most
-// listings first (Rolex leads), "asc" = least first. "Other" always trails.
-function buildGroups(items, groupBy, dir = "desc") {
-  if (groupBy !== "brand" && groupBy !== "source") return null;
-  const keyOf = groupBy === "source"
-    ? (it) => (it.source && it.source !== "—" ? it.source : "Other")
-    : (it) => (it.brand ? it.brand : "Other");
-  const map = new Map();
-  for (const it of items) {
-    const k = keyOf(it);
-    if (!map.has(k)) map.set(k, []);
-    map.get(k).push(it); // insertion order preserves the incoming savedAt-desc order
-  }
-  const groups = [...map.entries()].map(([label, list]) => ({
-    id: slugify(label), label, items: list,
-  }));
-  // By size (dir); "Other" bucket always last regardless of size; alpha tiebreak.
-  groups.sort((a, b) => {
-    const aOther = a.label === "Other", bOther = b.label === "Other";
-    if (aOther !== bOther) return aOther ? 1 : -1;
-    if (b.items.length !== a.items.length) {
-      return dir === "asc" ? a.items.length - b.items.length : b.items.length - a.items.length;
-    }
-    return a.label.localeCompare(b.label);
-  });
-  return groups;
-}
+// Grouping (by brand / source) was retired 2026-06-02 (Mark): it overlapped the
+// existing Brand/Source filters and added clutter for marginal value. Saved is a
+// flat newest-first grid + the shared filter bar (which already drills to any
+// brand or source).
 
 export default function HeartedView({
   items = [],          // hearted watches (no articles — App excludes kind==='article')
@@ -72,14 +43,8 @@ export default function HeartedView({
   onClickListing,
   user,
   activeFiltersStripJSX,
-  // Group control now lives in the shell's sort-pill cluster (Mark 2026-06-02);
-  // App owns the state and passes it down. "none" | "brand" | "source" + a
-  // size-order direction. Older builds kept this local to HeartedView.
-  groupBy = "none",
-  groupDir = "desc",
 }) {
   const [activeType, setActiveType] = useState("watches");
-  const [activeGroup, setActiveGroup] = useState(null);
 
   // Type options — only show a type you actually have (Watches always shows,
   // even at zero, since it's the surface's reason for being).
@@ -89,37 +54,6 @@ export default function HeartedView({
     { key: "guides", label: "Guides", n: guides.length },
   ].filter(o => o.key === "watches" || o.n > 0)), [items.length, articles.length, guides.length]);
   const type = typeOptions.some(o => o.key === activeType) ? activeType : "watches";
-
-  const groups = useMemo(
-    () => (type === "watches" ? buildGroups(items, groupBy, groupDir) : null),
-    [type, items, groupBy, groupDir]
-  );
-  const showQuickJump = !!groups && groups.length >= 2;
-
-  // Scroll-spy for the grouped quick-jump (no-op when ungrouped).
-  useEffect(() => {
-    if (!showQuickJump || typeof IntersectionObserver === "undefined") return;
-    const els = groups.map(g => document.getElementById(g.id)).filter(Boolean);
-    if (!els.length) return;
-    const obs = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter(e => e.isIntersecting)
-          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-        if (visible[0]) setActiveGroup(visible[0].target.id);
-      },
-      { rootMargin: "-60px 0px -70% 0px", threshold: 0 }
-    );
-    els.forEach(el => obs.observe(el));
-    return () => obs.disconnect();
-  }, [showQuickJump, groups]);
-
-  const jumpTo = (id) => {
-    setActiveGroup(id);
-    if (typeof document === "undefined") return;
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
 
   const renderCard = (item) => (
     <Card
@@ -220,54 +154,14 @@ export default function HeartedView({
               blurb="Heart a reference guide on the Collecting tab and it lands here." />
           : <div style={gridStyle}>{guides.map(renderGuide)}</div>
       ) : (
-        // type === "watches"
+        // type === "watches" — flat, newest-first grid (filter via the shared bar).
         <>
           {activeFiltersStripJSX}
-          {/* Group control retired here (Mark 2026-06-02) — grouping by brand /
-              source now lives in the shell's sort-pill cluster (Brand ↓ / Source
-              ↓), ordered by group size with the arrow. */}
-
-          {showQuickJump && (
-            <SubTabBar
-              ariaLabel="Jump to group"
-              tabs={groups.map(g => ({ key: g.id, label: `${g.label} ${g.items.length}` }))}
-              activeKey={activeGroup}
-              onSelect={jumpTo}
-              isMobile={isMobile}
-              containerStyle={{
-                // Scrolls with the content (NOT sticky) so it can't fight the
-                // pinned filter bar for top:0 on the collapsing Saved header
-                // (Mark 2026-06-02).
-                background: "var(--bg)", borderBottom: "0.5px solid var(--border)",
-                margin: "0 -2px 12px", padding: "0 2px",
-              }}
-            />
-          )}
-
           {items.length === 0 ? (
             <EmptyState icon="♡" heading="No hearted watches yet" size="compact"
               blurb="Tap the heart on any watch as you browse — it lands here." />
-          ) : !groups ? (
-            <div style={gridStyle}>{items.map(renderCard)}</div>
           ) : (
-            groups.map(g => (
-              <section key={g.id} id={g.id} style={{ scrollMarginTop: 70, marginTop: isMobile ? 22 : 28 }}>
-                <div style={{
-                  display: "flex", alignItems: "baseline", gap: 10,
-                  borderTop: "0.5px solid var(--border)",
-                  paddingTop: isMobile ? 12 : 14, marginBottom: isMobile ? 10 : 12,
-                }}>
-                  <span style={{
-                    flex: 1, minWidth: 0, fontSize: isMobile ? 15 : 16, fontWeight: 700,
-                    color: "var(--text1)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                  }}>{g.label}</span>
-                  <span style={{ flexShrink: 0, fontSize: 12.5, color: "var(--text3)", fontVariantNumeric: "tabular-nums" }}>
-                    {g.items.length}
-                  </span>
-                </div>
-                <div style={gridStyle}>{g.items.map(renderCard)}</div>
-              </section>
-            ))
+            <div style={gridStyle}>{items.map(renderCard)}</div>
           )}
         </>
       )}
