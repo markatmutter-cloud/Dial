@@ -835,6 +835,9 @@ export default function Watchlist() {
   // Hook lives at the TOP of App.js's hook list (before any early
   // returns) per CLAUDE.md "don't add hooks deep" guidance.
   const [shareActive, setShareActive] = useState(false);
+  // The shared item the floating Lumé launcher should open SEEDED with (set by
+  // ShareReceiver while a share surface is up; null otherwise). 2026-06-01.
+  const [lumeSeedItem, setLumeSeedItem] = useState(null);
   // Same one-bit mirror for Watch Challenges receive flow (v1.5).
   // Either of these flips the shell into "focused landing surface"
   // mode (regular browse chrome hidden).
@@ -4606,6 +4609,8 @@ export default function Watchlist() {
       // Action-bar verbs (2026-06-01): Add to list + Share onward.
       openCollectionPicker={user ? openCollectionPicker : undefined}
       handleShare={handleShare}
+      // Seed the floating Lumé launcher with the shared item (Mark 2026-06-01).
+      onSeedItem={setLumeSeedItem}
     />
   );
 
@@ -4815,7 +4820,7 @@ export default function Watchlist() {
         ? <MobileShell {...shellProps} />
         : <DesktopShell {...shellProps} />}
       <ConfirmHost />
-      <ChatBubbleHost suppressLauncher={shareActive || listShareActive || challengeShareActive} />
+      <ChatBubbleHost seedItem={lumeSeedItem} />
     </ErrorBoundary>
   );
 }
