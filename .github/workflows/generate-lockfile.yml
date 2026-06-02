@@ -1,0 +1,72 @@
+# Generate the JS lockfile (B-16). Mark has no local npm/node — all builds
+# are cloud — so package-lock.json can't be generated on the laptop. This
+# manual-only workflow generates it in CI and opens a PR with it.
+#
+# ── HOW TO ROLL OUT (sequenced to not disturb in-flight branches) ──────────
+# 1. Merge THIS workflow first (it's dormant until dispatched — disturbs
+#    nothing).
+# 2. **Wait until the other in-flight sessions/branches have merged**, THEN
+#    dispatch this workflow. Committing package-lock.json makes *Vercel*
+#    auto-switch to `npm ci` (it detects the lockfile on its own), so a branch
+#    that adds/changes a JS dependency without an updated lockfile would start
+#    failing its Vercel build. Land it on a quiet main.
+# 3. Merge the PR this opens (adds package-lock.json).
+# 4. Follow-up: switch `tests.yml`'s jest job from `npm install` → `npm ci`
+#    and add `cache: 'npm'` to its setup-node step (the cache hard-requires a
+#    lockfile — that's why it's currently disabled). Vercel needs no config
+#    change; it flips automatically once the lockfile is on main.
+#
+# AFTER ROLLOUT: any branch that adds/changes a JS dependency must ship an
+# updated package-lock.json. With no local npm, regenerate it by re-running
+# this workflow (it runs `npm install --package-lock-only`, which rewrites the
+# lockfile from the current package.json), or add the dep on a branch and
+# dispatch this against that branch.
+name: Generate JS lockfile
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Generate package-lock.json
+        # --package-lock-only writes the lockfile from package.json WITHOUT
+        # downloading node_modules — fast, and all we need to commit.
+        run: npm install --package-lock-only --no-audit --no-fund
+
+      - name: Commit + open PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package-lock.json
+          if git diff --staged --quiet; then
+            echo "No lockfile change — nothing to commit."
+            exit 0
+          fi
+          STAMP="$(date -u '+%Y-%m-%d %H:%M UTC')"
+          BRANCH="js-lockfile/${{ github.run_id }}"
+          git checkout -b "$BRANCH"
+          git commit -m "B-16: commit generated package-lock.json ($STAMP)"
+          git push -u origin "$BRANCH"
+          gh pr create \
+            --base main \
+            --head "$BRANCH" \
+            --title "B-16: commit JS lockfile (package-lock.json)" \
+            --body "Auto-generated \`package-lock.json\` via \`npm install --package-lock-only\` (Mark has no local npm). Merging this makes Vercel switch to \`npm ci\` automatically. Next step after merge: flip \`tests.yml\`'s jest job to \`npm ci\` + enable the npm cache. See B-16 / generate-lockfile.yml header."
