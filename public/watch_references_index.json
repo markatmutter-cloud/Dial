@@ -3544,7 +3544,25 @@
         "Albino"
       ],
       "notes": "The Explorer codified the simple, legible Rolex tool watch; the 1016 (1963–89) is the canonical reference, with five dial executions tracked by collectors (Mk1 gilt with chapter ring; Mk2 matte glossy transition; Mk3–5 matte). The Explorer II 1655 (1971–85) was conceived for spelunkers needing AM/PM differentiation — its orange “Freccione” hand and fixed 24h bezel make it the cult vintage GMT alternative. The 16550 (1985–89, white “Polar” or black) introduced the now-standard layout with independently jumping local hour; the 216570 (42mm, 2011) brought a “Maxi case” and revived the orange hand. The 124270 (2021, 36mm, Cal. 3230) returned the Explorer to its original size, while the 224270 (2023, 40mm) replaced 214270 for the larger-case audience. Cream/“creamy” patina on 1016 tritium plots and “spider” cracking on lacquer dials are valuation signals.",
-      "refs": [],
+      "refs": [
+        "6098",
+        "6150",
+        "6298",
+        "6350",
+        "6610",
+        "1016",
+        "14270",
+        "114270",
+        "214270",
+        "124270",
+        "224270",
+        "1655",
+        "16550",
+        "16570",
+        "216570",
+        "226570",
+        "226570"
+      ],
       "years": "1953–present (Explorer); 1971–present (Explorer II)"
     },
     "Explorer II (addition — ref 1655 dial variants)": {
@@ -3727,7 +3745,6 @@
         "168000",
         "16610",
         "16610LV",
-        "14270",
         "114060",
         "116610LN",
         "116610LV",
