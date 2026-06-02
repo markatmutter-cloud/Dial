@@ -3,6 +3,7 @@ import { Card } from "./Card";
 import CardShell from "./CardShell";
 import CardStrip from "./CardStrip";
 import { REFERENCE_NODES } from "../data/referencePages";
+import { articleAsListing } from "./EditorialView";
 import { pillBase } from "../styles";
 
 // Cross-tab search results — the "Search all" destination (PR_W v1,
@@ -508,6 +509,10 @@ export function SearchResultsView({
             items={s.items}
             onViewAll={s.onViewAll}
             isMobile={isMobile}
+            watchlist={watchlist}
+            handleWish={handleWish}
+            openCollectionPicker={openCollectionPicker}
+            handleShare={handleShare}
           />
         ) : s.kind === "reference" ? (
           <ReferenceStrip
@@ -547,7 +552,7 @@ export function SearchResultsView({
 // no price / heart / dealer-link. Tiles open the article URL in a
 // new tab. Capped at STRIP_MAX with a View all that lands on
 // Collecting > Editorial with the search query preserved.
-function ArticleStrip({ heading, count, items, onViewAll, isMobile }) {
+function ArticleStrip({ heading, count, items, onViewAll, isMobile, watchlist = {}, handleWish, openCollectionPicker, handleShare }) {
   const visible = items.slice(0, STRIP_MAX);
   return (
     <section style={{ padding: isMobile ? "16px 0" : "20px 0" }}>
@@ -578,20 +583,32 @@ function ArticleStrip({ heading, count, items, onViewAll, isMobile }) {
       {/* Card system S1+S3: article tiles render through the shared CardShell
           (square image, L2 source kicker, L1 title) inside the shared
           CardStrip — same look as before (B-12/B-13). */}
-      <CardStrip items={visible} isMobile={isMobile} renderCard={a => (
-        <CardShell
-          href={a.url}
-          aspect="square"
-          bodyPadding="10px 12px 12px"
-          image={a.image ? { src: a.image, alt: "" } : null}
-          level2={<div style={{ fontSize: 10, fontWeight: 600, color: "var(--text3)", textTransform: "uppercase", letterSpacing: 0.4, marginBottom: 4 }}>
-            {(a._source && a._source.label) || a.source || ""}
-          </div>}
-          level1={<div style={{ fontSize: 12, fontWeight: 500, color: "var(--text1)", lineHeight: 1.3, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
-            {a.title}
-          </div>}
-        />
-      )} />
+      <CardStrip items={visible} isMobile={isMobile} renderCard={a => {
+        // Standard card interface (Mark 2026-06-01): the search Articles row
+        // was missing heart + ⋯ — wire them like the saved-articles grid so
+        // you can save/share straight from results (B-37 consistency).
+        const asListing = articleAsListing(a);
+        const wished = !!(watchlist && asListing && watchlist[asListing.id]);
+        return (
+          <CardShell
+            href={a.url}
+            aspect="square"
+            bodyPadding="10px 12px 12px"
+            image={a.image ? { src: a.image, alt: "" } : null}
+            level2={<div style={{ fontSize: 10, fontWeight: 600, color: "var(--text3)", textTransform: "uppercase", letterSpacing: 0.4, marginBottom: 4 }}>
+              {(a._source && a._source.label) || a.source || ""}
+            </div>}
+            level1={<div style={{ fontSize: 12, fontWeight: 500, color: "var(--text1)", lineHeight: 1.3, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+              {a.title}
+            </div>}
+            heart={(asListing && handleWish) ? { wished, onToggle: () => handleWish(asListing) } : null}
+            menu={{
+              onAddToCollection: (openCollectionPicker && asListing) ? () => openCollectionPicker(asListing) : null,
+              onShare: (handleShare && asListing) ? () => handleShare(asListing) : null,
+            }}
+          />
+        );
+      }} />
     </section>
   );
 }
