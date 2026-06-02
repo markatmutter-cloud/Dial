@@ -1022,6 +1022,10 @@ export default function Watchlist() {
   // this; CollectionsTab forwards it to ChallengesView, which reads
   // it on mount and drills in.
   const [pendingChallengeDrillId, setPendingChallengeDrillId] = useState(null);
+  // After creating a list, drill straight into it (Mark 2026-06-01 — "land in
+  // the new list ready to add"). CollectionsTab → ListsView reads this and
+  // sets its drill-in, then clears it. Mirrors pendingChallengeDrillId.
+  const [pendingOpenListId, setPendingOpenListId] = useState(null);
 
   // Two-phase sign-in: every "Sign in" CTA in the app fires the
   // SignInPromptModal first (the explainer + Google button). Mark
@@ -4291,6 +4295,15 @@ export default function Watchlist() {
       // the top of the Hearted surface so Lists gets the same clear/save
       // filter affordances as Watches (closes B-48 for this surface).
       activeFiltersStripJSX={activeFiltersStripJSX}
+      pendingOpenListId={pendingOpenListId}
+      clearPendingOpenList={() => setPendingOpenListId(null)}
+      // Empty-list onboarding routes here to add watches/articles/guides.
+      goToTab={(t, sub) => {
+        setTab(t);
+        if (t === "listings") setListingsSubTab(sub || "live");
+        if (t === "references") setReferencesSubTab(sub || "editorial");
+        setPage(1);
+      }}
       savedSearchStats={savedSearchStats}
       searchEditor={searchEditor}
       setSearchEditor={setSearchEditor}
@@ -4472,6 +4485,12 @@ export default function Watchlist() {
       setEditing={setEditingCollection}
       createCollection={collectionsApi.createCollection}
       renameCollection={collectionsApi.renameCollection}
+      onCreated={(id) => {
+        setTab("watchlist");
+        setWatchTopTab("lists");
+        setPage(1);
+        setPendingOpenListId(id);
+      }}
     />
   );
   // Wrap addItemToCollection so the picker fires a list_add telemetry

@@ -10,7 +10,7 @@ import { modalBackdrop, modalShell, modalCloseButton, modalTitleRow, modalTitle,
 //   - { id: '<uuid>', name: 'Foo' } → rename flow (Save dispatches renameCollection)
 //
 // Both dispatchers come from useCollections via props.
-export function CollectionEditModal({ editing, setEditing, createCollection, renameCollection }) {
+export function CollectionEditModal({ editing, setEditing, createCollection, renameCollection, onCreated }) {
   const [name, setName] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -45,6 +45,8 @@ export function CollectionEditModal({ editing, setEditing, createCollection, ren
       return;
     }
     setEditing(null);
+    // Land the user INSIDE the new list, ready to add (Mark 2026-06-01).
+    if (isNew && res?.id && onCreated) onCreated(res.id);
   };
 
   return (

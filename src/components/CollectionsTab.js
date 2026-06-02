@@ -235,31 +235,36 @@ function WLListCard({ name, images, chips, shared, isMobile, onOpen, onRename, o
   const kicker = [...(chips || []), shared ? "shared" : null].filter(Boolean).join(" · ");
   const onKey = (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(); } };
   return (
-    <div style={{ position: "relative", height: "100%" }}>
+    <div style={{ position: "relative" }}>
       <div role="button" tabIndex={0} onClick={onOpen} onKeyDown={onKey} style={{
-        display: "flex", flexDirection: "column", textAlign: "left",
-        cursor: "pointer", fontFamily: "inherit", height: "100%",
+        display: "block", textAlign: "left", cursor: "pointer", fontFamily: "inherit",
       }}>
+        {/* Title ABOVE the cover (Mark 2026-06-01). A list name is the LABEL
+            of a container — like Pinterest boards / Are.na channels — not an
+            article headline, so it reads as a heading on top, not a caption
+            under a mosaic. Cover stays clean; the ⋯ sits on the title row. */}
+        <div style={{ paddingRight: (onRename || onDelete) ? 34 : 0, marginBottom: 10 }}>
+          {kicker && (
+            <div style={{
+              fontSize: 10, fontWeight: 600, letterSpacing: "0.14em",
+              textTransform: "uppercase", color: "var(--text3)", marginBottom: 4,
+            }}>{kicker}</div>
+          )}
+          <div style={{
+            fontFamily: WL_SERIF, fontSize: isMobile ? 21 : 20, fontWeight: 500,
+            lineHeight: 1.22, color: "var(--text1)",
+            display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
+          }}>{name}</div>
+        </div>
         <div style={{
           width: "100%", aspectRatio: "16 / 10", background: "var(--surface)",
-          overflow: "hidden", borderRadius: 4, marginBottom: 10,
+          overflow: "hidden", borderRadius: 4,
         }}>
           <WLCover images={images} />
         </div>
-        {kicker && (
-          <div style={{
-            fontSize: 10, fontWeight: 600, letterSpacing: "0.14em",
-            textTransform: "uppercase", color: "var(--text3)", marginBottom: 5,
-          }}>{kicker}</div>
-        )}
-        <div style={{
-          fontFamily: WL_SERIF, fontSize: isMobile ? 18 : 17, fontWeight: 500,
-          lineHeight: 1.2, color: "var(--text1)",
-          display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
-        }}>{name}</div>
       </div>
       {(onRename || onDelete) && (
-        <div style={{ position: "absolute", top: 8, right: 8 }}>
+        <div style={{ position: "absolute", top: 0, right: 0 }}>
           <WLCardMenu onRename={onRename} onDelete={onDelete} />
         </div>
       )}
@@ -274,7 +279,7 @@ function WLStartCard({ isMobile, onClick }) {
       cursor: "pointer", fontFamily: "inherit",
       border: "0.5px dashed var(--text3)", borderRadius: 12,
       background: "transparent", color: "var(--text2)",
-      minHeight: isMobile ? 116 + 64 : 144 + 70,
+      minHeight: isMobile ? 240 : 264,
       display: "flex", flexDirection: "column", alignItems: "center",
       justifyContent: "center", gap: 6, padding: 16, textAlign: "center",
     }}>
@@ -287,13 +292,65 @@ function WLStartCard({ isMobile, onClick }) {
   );
 }
 
+// Empty-list onboarding (Mark 2026-06-01): when you land in a fresh, own list,
+// don't dead-end with "nothing here" — set the mental model (a list is a
+// dossier: watches + writing + references + notes) and offer the four doors.
+// Three route you to where you add those (heart / add-to-list lives there);
+// notes happen in-place via DossierBlocks rendered below this.
+function EmptyListOnboarding({ name, isMobile, goToTab, onAddNote }) {
+  const rows = [
+    { icon: "♡", label: "Add a watch", help: "Heart a listing on the Watches tab to file it here.", go: () => goToTab && goToTab("listings", "live") },
+    { icon: "📰", label: "Add an article", help: "Save an article on the Collecting tab — it lands in this list.", go: () => goToTab && goToTab("references", "editorial") },
+    { icon: "📖", label: "Add a reference guide", help: "Pin a guide from Collecting to anchor the list.", go: () => goToTab && goToTab("references", "references") },
+    { icon: "✎", label: "Add a note", help: "Jot a thought, a question, a spec to check — right here.", go: onAddNote, inPlace: true },
+  ];
+  return (
+    <div style={{ padding: isMobile ? "8px 0 4px" : "10px 0 6px" }}>
+      <div style={{
+        fontSize: 10, fontWeight: 600, letterSpacing: "0.14em",
+        textTransform: "uppercase", color: "var(--text3)", marginBottom: 6,
+      }}>Your new list</div>
+      <div style={{ fontFamily: WL_SERIF, fontSize: isMobile ? 22 : 24, fontWeight: 500, color: "var(--text1)", margin: "0 0 8px" }}>
+        {name || "Untitled list"}
+      </div>
+      <div style={{ fontSize: 13.5, color: "var(--text2)", lineHeight: 1.55, maxWidth: 460, marginBottom: 18 }}>
+        A list collects what you're tracking on one watch or idea — the watches, the
+        writing, the references, and your own notes. Start with whatever you have.
+      </div>
+      <div style={{ border: "0.5px solid var(--border)", borderRadius: 12, overflow: "hidden", maxWidth: 520 }}>
+        {rows.map((r, i) => (
+          <button key={r.label} onClick={r.go} style={{
+            display: "flex", alignItems: "center", gap: 12, width: "100%", textAlign: "left",
+            cursor: "pointer", fontFamily: "inherit", background: "transparent",
+            border: "none", borderTop: i ? "0.5px solid var(--border)" : "none", padding: "13px 14px",
+          }}>
+            <span aria-hidden style={{
+              flexShrink: 0, width: 34, height: 34, borderRadius: 999,
+              background: "var(--brand-olive-tint-12)", color: "var(--brand-olive-ink)",
+              display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15,
+            }}>{r.icon}</span>
+            <span style={{ flex: 1, minWidth: 0 }}>
+              <span style={{ display: "block", fontSize: 14, fontWeight: 600, color: "var(--text1)" }}>{r.label}</span>
+              <span style={{ display: "block", fontSize: 12, color: "var(--text3)", marginTop: 1 }}>{r.help}</span>
+            </span>
+            <span style={{ flexShrink: 0, color: "var(--text3)", fontSize: 16 }}>{r.inPlace ? "＋" : "›"}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // Responsive card grid wrapper for the list cards.
 function WLCardGrid({ isMobile, children }) {
   return (
     <div style={{
       display: "grid",
-      gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(auto-fill, minmax(212px, 1fr))",
-      gap: isMobile ? 12 : 16,
+      // Bigger, article-scale covers (Mark 2026-06-01): single column on
+      // mobile so the serif title + cover can breathe; ~300px tracks on
+      // desktop (was 212) — article-card weight, still an index.
+      gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(300px, 1fr))",
+      gap: isMobile ? 16 : 24,
     }}>{children}</div>
   );
 }
@@ -437,6 +494,11 @@ export function CollectionsTab({
   // Shared active-filters strip (chips + Clear all), rendered atop the
   // Hearted surface so Lists gets the same affordances as Watches (B-48).
   activeFiltersStripJSX,
+  // After creating a list, drill into it (set by App.js). Consumed in ListsView.
+  pendingOpenListId,
+  clearPendingOpenList,
+  // Tab nav for the empty-list onboarding (watch→Watches, article/guide→Collecting).
+  goToTab,
 }) {
   // Sub-tab routing: the parent owns the state but if for some reason
   // it isn't passed (smoke tests, signed-out flows), fall back to a
@@ -550,6 +612,14 @@ export function CollectionsTab({
       setCollectionsSubTab("challenges");
     }
   }, [pendingChallengeDrillId, setCollectionsSubTab]);
+
+  // Just-created list → switch to the Lists sub-tab so ListsView mounts and
+  // reads pendingOpenListId to drill straight in (Mark 2026-06-01).
+  useEffect(() => {
+    if (pendingOpenListId && setCollectionsSubTab) {
+      setCollectionsSubTab("lists");
+    }
+  }, [pendingOpenListId, setCollectionsSubTab]);
 
   if (!user) {
     return (
@@ -671,6 +741,9 @@ export function CollectionsTab({
     body = (
       <ListsView
         section={subTab}
+        pendingOpenListId={pendingOpenListId}
+        clearPendingOpenList={clearPendingOpenList}
+        goToTab={goToTab}
         user={user}
         allListings={allListings}
         cols={cols}
@@ -1554,6 +1627,9 @@ function ListsView({
   // "lists" (Watchbox vault + your lists) · "searches" · "shared". The
   // hearted "Saved" band moved to its own HeartedView sub-tab.
   section = "lists",
+  pendingOpenListId,
+  clearPendingOpenList,
+  goToTab,
   user,
   allListings = [],
   cols, itemsByColl, hiddenItems,
@@ -1612,6 +1688,13 @@ function ListsView({
   // Reset the toggle when switching between lists so a previous
   // session's filter doesn't carry over.
   useEffect(() => { setHeartedOnly(false); }, [selectedListId]);
+  // Drill straight into a just-created list (App → CollectionsTab → here).
+  useEffect(() => {
+    if (pendingOpenListId) {
+      setSelectedListId(pendingOpenListId);
+      if (clearPendingOpenList) clearPendingOpenList();
+    }
+  }, [pendingOpenListId, setSelectedListId, clearPendingOpenList]);
   // Screening v1.2 (2026-05-13). isWide drives inline-on-desktop
   // (vs fullscreen portal on mobile) for the screening surface.
   // screeningResetTick is incremented when the user resets their
@@ -2045,17 +2128,43 @@ function ListsView({
             screening overlay portals to body, so the grid still
             renders underneath (covered visually). */}
         {(reviewModeOpen && screensEnabled && isWide) ? null : items.length === 0 ? (
-          <EmptyState
-            icon={isHiddenColl ? "👁" : isSavedColl ? "♡" : "📂"}
-            heading={isHiddenColl ? "Nothing hidden"
-                    : isSavedColl ? "No saved watches yet"
-                    : "Empty list"}
-            blurb={isHiddenColl
-              ? "Listings you hide from the Available feed land here. Use the \"…\" menu on any card to unhide it."
-              : isSavedColl
-                ? "Browse the Listings tab and tap the heart on any item — it'll appear here with the price you saved at, even after the dealer takes the URL down."
-                : "Add watches via the \"…\" menu on any listing card → \"Add to list…\"."}
-          />
+          (isOwner && !isHiddenColl && !isSavedColl && !selected.isSharedInbox) ? (
+            // Own, freshly-empty list → onboarding (cold-open + four doors)
+            // with the notes block right below so notes are addable in-place.
+            <>
+              <EmptyListOnboarding
+                name={selected.name}
+                isMobile={isMobile}
+                goToTab={goToTab}
+                onAddNote={() => {
+                  if (typeof document === "undefined") return;
+                  const el = document.getElementById("list-notes");
+                  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                }}
+              />
+              <div id="list-notes" style={{ marginTop: 22 }}>
+                <DossierBlocks
+                  collectionId={selected.id}
+                  user={user}
+                  allListings={allListings}
+                  canEdit={isOwner}
+                  onClickListing={onClickListing}
+                />
+              </div>
+            </>
+          ) : (
+            <EmptyState
+              icon={isHiddenColl ? "👁" : isSavedColl ? "♡" : "📂"}
+              heading={isHiddenColl ? "Nothing hidden"
+                      : isSavedColl ? "No saved watches yet"
+                      : "Nothing shared yet"}
+              blurb={isHiddenColl
+                ? "Listings you hide from the Available feed land here. Use the \"…\" menu on any card to unhide it."
+                : isSavedColl
+                  ? "Browse the Listings tab and tap the heart on any item — it'll appear here with the price you saved at, even after the dealer takes the URL down."
+                  : "Lists other collectors share with you appear here."}
+            />
+          )
         ) : (
           (() => {
             // Per-item card render. Reactions retired 2026-05-26 —
