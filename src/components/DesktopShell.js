@@ -72,6 +72,7 @@ export function DesktopShell(props) {
     adminTabJSX, homeTabJSX, listingsGridJSX, listingsTabContentJSX, primaryCurrency, settingsModalJSX, shareReceiverJSX,
     challengeReceiverJSX,
     listReceiverJSX,
+    catalogReceiverJSX,
     listingsSubTabsJSX,
     referencesSubTabsJSX,
     trackNewItemModalJSX, watchSubTabsJSX, watchHeartedToggleJSX, collectionsSubTabsJSX, watchlistTabJSX,
@@ -86,9 +87,10 @@ export function DesktopShell(props) {
     shareActive,
     challengeShareActive,
     listShareActive,
+    catalogShareActive,
     colDrillInId,
   } = props;
-  const anyShareActive = shareActive || challengeShareActive || listShareActive;
+  const anyShareActive = shareActive || challengeShareActive || listShareActive || catalogShareActive;
   // True when we're drilled into a list (Watchlists > Lists > [list]).
   // Filter row is shown here so users can date-sort, narrow by source/
   // brand, etc. inside a long list — same UX as the Listings tab.
@@ -769,6 +771,8 @@ export function DesktopShell(props) {
           {challengeReceiverJSX}
           {/* List-share receive surface (v1, 2026-05-07). */}
           {listReceiverJSX}
+          {/* Auction-catalog share-receive surface (2026-06-02). */}
+          {catalogReceiverJSX}
           {/* Phase B2 lot-migration banner. */}
           {lotMigrationBannerJSX}
           {/* User-limit banner (Epic 3). Renders null below soft-warn
