@@ -96,10 +96,9 @@ export function ShareReceiver({
   if (!Array.isArray(items) || items.length === 0) return null;
 
   const sender = (shareIntent.from || "").trim();
+  // Nav cues under the card retired 2026-06-01 (Mark): the top tabs already
+  // navigate, so "Browse Watchlist / Your lists" read as redundant clutter.
   const goBrowse = () => { clearIntent(); if (typeof setTab === "function") setTab("listings"); };
-  const goLists = () => { clearIntent(); if (typeof setTab === "function") setTab("watchlist"); };
-  const navCues = [{ label: "Browse Watchlist →", onClick: goBrowse }];
-  if (user) navCues.push({ label: "Your lists →", onClick: goLists });
 
   // Shared listing not in the live feed (dealer pulled it / scrolled off).
   // Still no dead end — render through the frame with a "not available" hero.
@@ -129,7 +128,6 @@ export function ShareReceiver({
         }
         primaryCTA={{ label: "Browse Watchlist →", onClick: goBrowse }}
         signedIn={!!user}
-        navCues={navCues}
       />
     );
   }
@@ -179,11 +177,10 @@ export function ShareReceiver({
 
   const identity = (
     <>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 12, flexWrap: "wrap" }}>
-        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--text2)" }}>
-          {sharedItem.source || ""}
-        </span>
-        {sharedItem.brand && <span style={{ fontSize: 12, color: "var(--text2)" }}>{sharedItem.brand}</span>}
+      {/* Source kicker only — the brand was redundant with the title
+          ("Rolex" twice), Mark 2026-06-01. */}
+      <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--text2)" }}>
+        {sharedItem.source || ""}
       </div>
       <h2 style={{ fontSize: 19, fontWeight: 700, color: "var(--text1)", margin: "6px 0 0", lineHeight: 1.2 }}>
         {sharedItem.ref || sharedItem.title || "Watch"}
@@ -215,7 +212,6 @@ export function ShareReceiver({
       onShare={handleShare ? () => handleShare(sharedItem) : null}
       askLume={() => askLumeAbout(sharedItem)}
       busy={busy}
-      navCues={navCues}
     />
   );
 }
