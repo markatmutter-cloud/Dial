@@ -175,7 +175,11 @@ module.exports = function handler(req, res) {
   // surface. ShareReceiver parses ?listing=&shared=1 on mount and
   // takes over the content area. Preview bots stop after the head
   // and never see the redirect.
-  const redirectUrl = `${siteUrl}/?listing=${encodeURIComponent(id)}&shared=1`;
+  // Preserve the sender name through the redirect so the receive surface can
+  // show "X shared a watch with you" (it was dropped here → no name; Mark
+  // 2026-06-01).
+  const fromName = (req.query && req.query.from) ? `&from=${encodeURIComponent(req.query.from)}` : '';
+  const redirectUrl = `${siteUrl}/?listing=${encodeURIComponent(id)}&shared=1${fromName}`;
 
   // Canonical points at the SPA root so search engines don't index
   // /share/<id> as a separate page from the main app.
