@@ -36,7 +36,7 @@ same lot twice. RLS policies match the pattern used by `watchlist_items`,
 
 ## 2. Add GitHub Action secrets
 
-The cron-driven `auctionlots_scraper.py` needs to read tracked URLs from
+The cron-driven `tracked_lots_scraper.py` needs to read tracked URLs from
 Supabase using the service-role key (it bypasses RLS to see all users'
 URLs in one query). Add these two secrets to the repo at
 `Settings → Secrets and variables → Actions`:

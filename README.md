@@ -167,7 +167,7 @@ Every source is scraped with vanilla `requests` — no third-party scraping serv
 
 ### Tracked auction lots
 
-Auction-house lots flow into the feed via the comprehensive scrape and are saved by hearting them like any dealer card (Listings > Live auctions). The only lots that come in by URL are **eBay** items, via a paste-a-URL modal — there's no longer a standalone Auctions tab or a visible "+ Track" trigger (the modal infrastructure stays wired for re-adding one). `auctionlots_scraper.py` supports per-lot tracking for **Antiquorum, Christie's, Sotheby's, eBay**, pulling title, image, estimate, current bid, sold price, and end date.
+Auction-house lots flow into the feed via the comprehensive scrape and are saved by hearting them like any dealer card (Listings > Live auctions). The only lots that come in by URL are **eBay** items, via a paste-a-URL modal — there's no longer a standalone Auctions tab or a visible "+ Track" trigger (the modal infrastructure stays wired for re-adding one). `tracked_lots_scraper.py` supports per-lot tracking for **Antiquorum, Christie's, Sotheby's, eBay**, pulling title, image, estimate, current bid, sold price, and end date.
 
 ---
 

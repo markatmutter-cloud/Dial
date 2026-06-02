@@ -12,7 +12,7 @@ Currently supports Antiquorum live-auction lot pages only. Each lot
 page embeds a `viewVars = {...};` JSON blob that carries the full
 catalog data — no separate API call needed.
 
-Run: python3 auctionlots_scraper.py
+Run: python3 tracked_lots_scraper.py
 Env:
   SUPABASE_URL              — same as the frontend uses
   SUPABASE_SERVICE_KEY      — service-role key (read-only access to

@@ -70,7 +70,7 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-        run: python auctionlots_scraper.py
+        run: python tracked_lots_scraper.py
 
       - name: Set up Node (for watchlist image cache)
         # Node 22+ ships native WebSocket. supabase-js v2 boots a
