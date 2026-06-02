@@ -4408,7 +4408,7 @@ export default function Watchlist() {
   const watchSubTabsJSX = tab !== "watchlist" ? null : (
     <SubTabBar
       ariaLabel="Lists views"
-      tabs={[["hearted", "Hearted"], ["lists", "Lists"], ["searches", "Searches"], ["shared", "Shared"]]}
+      tabs={[["hearted", "♡ Saved"], ["lists", "Lists"], ["searches", "Searches"], ["shared", "Shared"]]}
       activeKey={watchTopTab}
       onSelect={(key) => { setWatchTopTab(key); setDrawerOpen(false); setPage(1); }}
       isMobile={isMobile}

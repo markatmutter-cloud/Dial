@@ -97,7 +97,9 @@ export function matchesSearch(item, query) {
   // HTML stripped via a quick regex — descriptions can carry <strong>
   // tags around field labels.
   const desc = ((item.description || "") + "").replace(/<[^>]+>/g, " ");
-  const haystack = `${item.brand || ""} ${item.ref || ""} ${item.title || ""} ${desc}`.toLowerCase();
+  // `source` included so a search matches the DEALER/house too (Mark
+  // 2026-06-01 — searching a dealer name on Saved/Listings should work).
+  const haystack = `${item.brand || ""} ${item.ref || ""} ${item.title || ""} ${item.source || ""} ${desc}`.toLowerCase();
   return tokens.every(t => haystack.includes(t));
 }
 
