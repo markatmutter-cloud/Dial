@@ -11,6 +11,10 @@ name: Scrape editorial corpus
 # Cadence: Sunday + Wednesday morning Pacific Time (16:00 UTC). The
 # main listings cron runs at 14/20/02 UTC; this slot avoids overlap.
 #
+# NB the LLM topic-tagger (index-corpus-topics.yml) runs SUNDAY-ONLY, so
+# Wednesday's freshly-scraped articles don't get their `themes` tags until the
+# following Sunday (deliberate, accepted lag — see that file's header).
+#
 # Scope (2026-05-19):
 # - bring_a_loupe_scraper.py    → public/bring_a_loupe.json
 #   (Hodinkee column, ~251 articles, sitemap-based URL discovery)

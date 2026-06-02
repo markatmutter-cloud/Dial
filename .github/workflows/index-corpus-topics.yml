@@ -9,10 +9,21 @@
 #   - First full corpus run: ~$9 (Haiku rates, 8,556 articles)
 #   - Weekly incremental: pennies (typically 5-50 new articles)
 #
-# Schedule fires Sunday 17:00 UTC — one hour after the editorial-
-# corpus scrape (Sunday 16:00 UTC) so the data layer is fresh by
-# the time we tag. Manual `workflow_dispatch` trigger exposes
-# limit / source / retag inputs for ad-hoc runs.
+# Schedule fires Sunday 17:00 UTC — one hour after the Sunday editorial-
+# corpus scrape (16:00 UTC) so the data layer is fresh by the time we tag.
+#
+# DELIBERATE CADENCE MISMATCH (2026-06-02): the editorial-corpus scrape now
+# also runs WEDNESDAY (scrape-editorial-corpus.yml: '0 16 * * 0,3'), but this
+# topic indexer stays Sunday-only. So articles scraped on Wednesday don't get
+# their LLM `themes` tags until the following Sunday's run (up to ~4-day lag).
+# That's accepted: `themes` aren't surfaced in the UI yet (recommender
+# substrate only — see RECOMMENDER_STRATEGY.md), the articles appear in
+# Editorial immediately regardless, and the indexer is idempotent so Sunday
+# sweeps up every still-untagged article. If themes become time-critical,
+# bump this cron to '0 17 * * 0,3' to match the scrape.
+#
+# Manual `workflow_dispatch` trigger exposes limit / source / retag inputs for
+# ad-hoc runs (e.g. to tag Wednesday's batch early).
 #
 # Secrets required: ANTHROPIC_API_KEY (Anthropic Console → API Keys).
 name: Index editorial corpus topics
