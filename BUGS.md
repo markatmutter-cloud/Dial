@@ -8,9 +8,13 @@ sessions so nothing gets lost in a screenshot folder or a rotating handoff.
 Mark drops a **`Bug:`** into *any* open session (no dedicated session needed —
 this file is the memory, not the conversation). Claude then:
 
-1. **Triages severity.** Break-now (white screen, broken core flow, can't
-   load) → fix immediately, abandon current tidy-up. Everything else →
-   logged here, work continues.
+1. **Triages kind, then severity.** First — is it a **defect** (something
+   broken / wrong / regressed) or a **capability gap / feature / design
+   thread** (something missing we'd *choose* to build)? **Defects + tech-debt
+   stay here.** **Feature-threads belong in [ROADMAP.md](ROADMAP.md)** under
+   their epic — that's direction, not a defect (see "Epic assignment" below).
+   Then severity: break-now (white screen, broken core flow, can't load) → fix
+   immediately, abandon current tidy-up. Everything else → logged, work continues.
 2. **Writes an *enriched* entry** — Claude's reconstruction (surface,
    component, likely cause, repro), not Mark's terse note. The point is that
    future-Claude's "B-07 still open" is something Mark can actually recognise.
@@ -35,6 +39,35 @@ Grouped by **epic** (see [docs/IA_REDESIGN.md](docs/IA_REDESIGN.md) Deliverable 
 so `/start` reads the backlog as coherent threads, not a flat list. **Clean-close
 rule:** a partial ship *closes* its item and opens **one** crisply-scoped
 follow-up — no vague "phase 2 open" tails.
+
+### Epic assignment (→ ROADMAP) — established 2026-06-02
+
+Every open item mapped to its **[ROADMAP.md](ROADMAP.md) epic** + kind. **Defects
++ tech-debt stay here** (BUGS = what's broken). **Feature-threads graduate into
+their ROADMAP epic** at the next NOW/NEXT pass (ROADMAP = what to build) — listed
+here until then so nothing's lost.
+
+| Bug | ROADMAP epic | Kind | Disposition |
+|---|---|---|---|
+| B-45 | **10 Lumé** (pillar 1/5) | capability gap | → graduate to Epic 10 |
+| B-46 | **10 Lumé** (charter) | capability gap | → graduate to Epic 10 |
+| B-47 | **10 Lumé** (pillar 3) | capability gap | → graduate to Epic 10 |
+| B-51 | **10 Lumé** (pillar 3) | feature | → graduate to Epic 10 |
+| B-56 | **9 IA/UX** (+brand) | feature thread | → graduate to Epic 9 |
+| B-14 | **9 IA/UX** (brand) | thread | folded into B-56 |
+| B-06 | **9 IA/UX** | design thread | shipped-ish → confirm/retire |
+| B-08 | **9 IA/UX** | design thread | shipped → retire |
+| B-57 | **0** (reference intelligence) | data quality | stays (defect) |
+| B-28 | **1** (sources) | content gap | stays (defect) |
+| B-31 | **9 IA/UX** | visual defect | stays (spot-check) |
+| B-16 | **0** (platform health) | tech-debt | stays |
+| B-22 | **0** (platform health) | tech-debt | stays |
+| B-34 | **0** (platform health) | tech-debt | stays |
+| B-27 | **0** (platform health) | maintenance | stays |
+
+*The ⓐ/ⓑ/ⓒ groupings below are the OLD (IA_REDESIGN) taxonomy — superseded by the
+table above; next session's NOW/NEXT pass migrates the "graduate" rows into ROADMAP
+and re-homes the rest under their numeric epic.*
 
 ### ⓐ Epic A — IA / UX Redesign
 *Design threads, not defects — this epic's working checklist. Also tracked outside

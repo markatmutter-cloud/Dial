@@ -421,7 +421,9 @@ tool.
 Serves **job #7** — and it's the project's most distinctive thinking, not a
 far-horizon stub. Strategy doc:
 [docs/RECOMMENDER_STRATEGY.md](docs/RECOMMENDER_STRATEGY.md). Read it before any
-recommender-adjacent work.
+recommender-adjacent work. **The recommender is Lumé pillar 5 (Epic 10)** — this
+epic holds the *substrate + strategy*; Epic 10 holds the *conversational surface*
+that wires it to journeys.
 
 **Three-layer model:** reference knowledge (the factual/relational base) →
 **collector mentality** (the missing middle — *why* someone is paying
@@ -526,6 +528,42 @@ is the clarity mechanism — not a nicety. **Planning = one experience, two door
 - **Phase 2** — dispatch layers + de-junk Collecting + tools shelf.
 - **Phase 3** — two-door planning + journey coach. The **RAG Q&A bot** and the
   **missed-it / discovery bot** are each their own dedicated session.
+
+## Epic 10: Lumé — the AI spine
+
+The AI concierge of OUR corpus (grounded, cite-or-don't), not a general watch
+oracle. **All AI work lives here** — recommender included (it's pillar 5; Epic 7
+holds the recommender *substrate/strategy*, this epic the *conversational
+surface*). Merged in 2026-06-02 so direction lives in ONE roadmap; the build
+detail, behavioral charter, and resume-brief stay in the build doc
+**[docs/LUME_ROADMAP.md](docs/LUME_ROADMAP.md)** (+ companions
+[LUME_UX_PRINCIPLES.md](docs/LUME_UX_PRINCIPLES.md),
+[RECOMMENDER_STRATEGY.md](docs/RECOMMENDER_STRATEGY.md)) — same pattern as
+Epic 9 → IA_REDESIGN.md.
+
+**North star:** get a collector into the rabbit hole they want, and help them
+fully understand a reference (articles · guides · real examples). It *augments*
+the collector — a companion, never an oracle that decides.
+
+**Six capability pillars** (KNOWS · DOES · KNOWS-YOU · TAKES-YOU · NUDGES):
+1. **Knowledge — references & watches.** Built: ref index + 7 model-line deep-dives + lexicon P1. Next: attribute-level knowledge (**B-45**), more synthesis nodes, fact-vs-opinion tagging per claim.
+2. **Knowledge — collector mentality.** Powers a *coaching mode only* — never bleeds into how a watch is described (intrinsic-voice firewall).
+3. **Action — deep-linking.** Built: 6 in-app actions. Next: map the full surface Lumé can drive; every offered button must be real (**B-47** see-the-screen context · **B-51** keep links in-app).
+4. **Personalization — profile/memory (THE SUBSTRATE).** A fluid, evolving taste profile + Settings view/edit/reset + per-chat incognito toggle. Pillars 2/5/6 only get good once this exists.
+5. **Discovery — recommender + rabbit holes.** Wire Lumé to the Epic 7 recommender and design the *journeys* (subsumes RECOMMENDER_STRATEGY.md).
+6. **Proactive — the nudge layer.** "You've been looking at a lot of X — want a list / this guide?" — **prompt, never force**; needs pillar 4 signals.
+
+**Charter (the trust floor):** hard facts come only from the corpus — never
+confabulate (**B-46**); be honest about a search limit but still coach, never
+dead-end; differentiate opinion from fact; friendly/adult/user-led with a hard
+floor against hateful content; epistemic humility as a feature.
+
+**State (2026-06-01):** v1 + Phase 2 + memory shipped; web-search gap-sensor
+live; an eval harness (#728) gates prompt/tool PRs. Frontier = attribute search
+(B-45) · grounding (B-46) · screen-context (B-47). Reframe as a collecting
+**GUIDE**, not a shopping assistant.
+
+**Open BUGS assigned here (graduate at the NOW/NEXT pass):** B-45, B-46, B-47, B-51.
 
 ## Explicitly NOT on the roadmap
 

@@ -1,10 +1,12 @@
-# Lumé Roadmap — the AI spine
+# Lumé — build & detail doc (the AI spine; ROADMAP Epic 10)
 
-**Scope decision (Mark, 2026-05-30):** *anything that uses AI lives in the Lumé
-roadmap.* The general **ROADMAP.md** owns the rest of the site (listings, look &
-feel, access control, scrapers). The recommender is **not** a separate track — it's
-a pillar of Lumé and [docs/RECOMMENDER_STRATEGY.md](RECOMMENDER_STRATEGY.md) is
-planned *within* this roadmap.
+**This is the build / detail doc for [ROADMAP.md](../ROADMAP.md) Epic 10 (Lumé).**
+Updated 2026-06-02 — Lumé is **no longer a separate roadmap**: its *direction +
+priority* now live in the one ROADMAP (as Epic 10), so the NOW/NEXT for AI sits
+beside everything else. This doc keeps the *depth* — the six pillars, behavioral
+charter, resume brief, and build sequence (same pattern as `IA_REDESIGN.md` →
+Epic 9). The recommender stays a pillar of Lumé (pillar 5), with
+[docs/RECOMMENDER_STRATEGY.md](RECOMMENDER_STRATEGY.md) its strategy detail.
 
 Companion docs: **[LUME_UX_PRINCIPLES.md](LUME_UX_PRINCIPLES.md)** (the design bible
 — 15 principles from the Stanford UX-for-AI course) · **RECOMMENDER_STRATEGY.md**
