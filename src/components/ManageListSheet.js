@@ -171,12 +171,11 @@ export function ManageListSheet({
 
   if (!open || !collection) return null;
 
-  // Two clearly-separated sections (Mark spec 2026-05-14): "Send
-  // view-only link" as a single primary CTA at the top, then
-  // "Collaborators" with the email invite form + roster below. The
-  // previous design had two competing buttons inside the invite form
-  // (View Only Link + Collaboration Link) which read as confusing —
-  // one is now its own top-level action, the other IS the invite.
+  // Two clearly-separated sections = the two share MODES (Mark 2026-06-02):
+  // "Send a copy" as a single primary CTA at the top (plain link → recipient
+  // saves their own editable copy), then "Collaborate" with the email invite
+  // form + roster (invite-token link → recipient joins the synced list). The
+  // labels mirror the recipient surface's two clearly-labelled outcomes.
   return (
     <div onClick={busy ? undefined : onClose} style={modalBackdrop}>
       <div onClick={e => e.stopPropagation()} style={{
@@ -188,8 +187,14 @@ export function ManageListSheet({
                   disabled={busy}>×</button>
         </div>
 
-        {/* Section 1 — Send view-only link. Single big CTA. */}
-        <Label>Send view-only link</Label>
+        {/* Two-mode share (Mark 2026-06-02). The sender's two sections mirror
+            the recipient's two clearly-labelled outcomes:
+              Section 1 "Send a copy"  → plain link → recipient saves their OWN
+                editable copy into Your lists.
+              Section 2 "Collaborate"  → invite-token link → recipient JOINS the
+                synced list under Shared with you. */}
+        {/* Section 1 — Send a copy. Single big CTA. */}
+        <Label>Send a copy</Label>
         <button onClick={copyShareUrl}
           disabled={busy}
           style={{
@@ -212,17 +217,18 @@ export function ManageListSheet({
           </svg>
           {shareCopyState === "copied-readonly" ? "Link copied to clipboard ✓"
            : shareCopyState === "shared-readonly" ? "Shared ✓"
-           : "Share view-only link"}
+           : "Share a copy of this list"}
         </button>
         <div style={{
           fontSize: 11, color: "var(--text3)",
           marginBottom: 22, lineHeight: 1.5,
         }}>
-          Anyone with the link can view the list. No sign-in needed.
+          Anyone with the link can preview it; they sign in to save their own
+          editable copy. Your list stays separate — changes don't sync.
         </div>
 
-        {/* Section 2 — Collaborators (invite form + roster). */}
-        <Label>Invite a collaborator</Label>
+        {/* Section 2 — Collaborate (invite form + roster). */}
+        <Label>Collaborate</Label>
         <div style={{
           padding: 12, borderRadius: 10,
           border: "0.5px solid var(--border)", background: "var(--card-bg)",
@@ -264,7 +270,8 @@ export function ManageListSheet({
              : "Send invite"}
           </button>
           <div style={{ fontSize: 11, color: "var(--text3)", marginTop: 8, lineHeight: 1.5 }}>
-            Editors can add and remove watches. Viewers see read-only.
+            You'll share one synced list — it shows up under their Lists ▸ Shared
+            with you. Editors add and remove watches; viewers see read-only.
           </div>
         </div>
 
