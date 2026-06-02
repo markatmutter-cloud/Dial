@@ -239,32 +239,29 @@ function WLListCard({ name, images, chips, shared, isMobile, onOpen, onRename, o
       <div role="button" tabIndex={0} onClick={onOpen} onKeyDown={onKey} style={{
         display: "block", textAlign: "left", cursor: "pointer", fontFamily: "inherit",
       }}>
-        {/* Title ABOVE the cover (Mark 2026-06-01). A list name is the LABEL
-            of a container — like Pinterest boards / Are.na channels — not an
-            article headline, so it reads as a heading on top, not a caption
-            under a mosaic. Cover stays clean; the ⋯ sits on the title row. */}
-        <div style={{ paddingRight: (onRename || onDelete) ? 34 : 0, marginBottom: 10 }}>
-          {kicker && (
-            <div style={{
-              fontSize: 10, fontWeight: 600, letterSpacing: "0.14em",
-              textTransform: "uppercase", color: "var(--text3)", marginBottom: 4,
-            }}>{kicker}</div>
-          )}
-          <div style={{
-            fontFamily: WL_SERIF, fontSize: isMobile ? 21 : 20, fontWeight: 500,
-            lineHeight: 1.22, color: "var(--text1)",
-            display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
-          }}>{name}</div>
-        </div>
+        {/* Title BELOW the cover — matches the reference-guide + article cards
+            so every card grid reads the same (Mark 2026-06-02; reverses the
+            earlier title-on-top, which was the lone exception). */}
         <div style={{
           width: "100%", aspectRatio: "16 / 10", background: "var(--surface)",
-          overflow: "hidden", borderRadius: 4,
+          overflow: "hidden", borderRadius: 4, marginBottom: 10,
         }}>
           <WLCover images={images} />
         </div>
+        {kicker && (
+          <div style={{
+            fontSize: 10, fontWeight: 600, letterSpacing: "0.14em",
+            textTransform: "uppercase", color: "var(--text3)", marginBottom: 4,
+          }}>{kicker}</div>
+        )}
+        <div style={{
+          fontFamily: WL_SERIF, fontSize: isMobile ? 20 : 19, fontWeight: 500,
+          lineHeight: 1.22, color: "var(--text1)",
+          display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
+        }}>{name}</div>
       </div>
       {(onRename || onDelete) && (
-        <div style={{ position: "absolute", top: 0, right: 0 }}>
+        <div style={{ position: "absolute", top: 8, right: 8 }}>
           <WLCardMenu onRename={onRename} onDelete={onDelete} />
         </div>
       )}
@@ -346,10 +343,9 @@ function WLCardGrid({ isMobile, children }) {
   return (
     <div style={{
       display: "grid",
-      // Bigger, article-scale covers (Mark 2026-06-01): single column on
-      // mobile so the serif title + cover can breathe; ~300px tracks on
-      // desktop (was 212) — article-card weight, still an index.
-      gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(300px, 1fr))",
+      // Same track + gap as the reference-guide grid (minmax 280 / gap 16·24)
+      // so list cards and guide cards are the same size (Mark #2, 2026-06-02).
+      gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(280px, 1fr))",
       gap: isMobile ? 16 : 24,
     }}>{children}</div>
   );
