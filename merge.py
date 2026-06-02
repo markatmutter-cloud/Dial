@@ -874,6 +874,7 @@ def process_listings():
         ('data/menta.csv',                'Menta Watches',         'USD'),
         ('data/collectorscorner.csv',     'Collectors Corner NY',  'USD'),
         ('data/falco.csv',                'Falco Watches',         'GBP'),
+        ('data/pascalkarp.csv',           'Pascal Karp',           'EUR'),
         ('data/greyandpatina.csv',        'Grey & Patina',         'USD'),
         ('data/oliverandclarke.csv',      'Oliver & Clarke',       'USD'),
         ('data/craftandtailored.csv',     'Craft & Tailored',      'USD'),
