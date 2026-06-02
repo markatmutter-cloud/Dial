@@ -184,6 +184,23 @@ describe("CollectionsTab render-without-crash", () => {
     expect(screen.getByText("Why the Seamaster matters")).toBeInTheDocument();
   });
 
+  test("Hearted sub-tab surfaces saved reference Guides as a type section", () => {
+    const guideSnap = {
+      id: "ref_rolex-submariner-5512-5513", kind: "reference",
+      url: "?tab=references&ref=rolex-submariner-5512-5513", img: "",
+      title: "Rolex Submariner 5513", brand: "Rolex", model_line: "Submariner",
+      reference: { group: "5512 / 5513" },
+    };
+    render(<CollectionsTab {...buildProps({
+      collectionsSubTab: "hearted",
+      watchItems: [],
+      watchlist: { "ref_rolex-submariner-5512-5513": guideSnap },
+    })} />);
+    const guidesBtn = screen.getByRole("button", { name: /Guides/ });
+    fireEvent.click(guidesBtn);
+    expect(screen.getByText("5512 / 5513")).toBeInTheDocument();
+  });
+
   test("Searches sub-tab renders without throwing", () => {
     expect(() => {
       render(<CollectionsTab {...buildProps({ collectionsSubTab: "searches" })} />);
