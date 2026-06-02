@@ -515,6 +515,11 @@ export function imgSrc(url, width = 720) {
     // reason its scraping runs on a residential host) — wsrv's fetcher gets a
     // 404, so serve Bonhams direct. Real visitors' browsers load it fine.
     if (u.hostname.endsWith("bonhams.com")) return url;
+    // Christie's now blocks wsrv's datacenter fetcher too — wsrv returns a 404
+    // "The requested URL timed out" while real browsers + a direct fetch get a
+    // 200, same situation as Bonhams. Serve christies.com images direct.
+    // (Mark 2026-06-02: every Christie's lot showed "IMAGE NOT AVAILABLE".)
+    if (u.hostname.endsWith("christies.com")) return url;
     // Tropical Watch's CloudFront images are already small at source (~240px),
     // so the resizer only recompresses them (visible grain) for no size win —
     // serve direct. (Mark 2026-05-28: TW is a most-browsed dealer; thumbnailing
@@ -524,7 +529,7 @@ export function imgSrc(url, width = 720) {
     // URLs and relative paths, which have no host wsrv could fetch.
     if (!u.hostname || (u.protocol !== "http:" && u.protocol !== "https:")) return url;
     // Every other host serves full-resolution images (Loupe This ~5MB each,
-    // Shopify, Squarespace, Cloudfront, Hairspring, Christie's …) with no
+    // Shopify, Squarespace, Cloudfront, Hairspring …) with no
     // URL-param resize of their own — ~97% of images users load and the
     // dominant page-weight + slowness lever. Route them through wsrv.nl, a free
     // resize CDN that fetches the origin itself, so it adds ZERO bandwidth or
