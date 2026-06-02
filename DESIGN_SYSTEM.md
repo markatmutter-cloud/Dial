@@ -144,6 +144,8 @@ single chrome accent (links/text-accents may still use `--brand`).
 | `signInButton` | Large primary CTA — sign-in buttons on signed-out gates and share-receive landings. One size class above actionButton |
 | `iconButton({ size, active })` | Round icon buttons (Filter, View, Clear in mobile top bar). Active = `SELECTED_FILL` |
 | `inputBase` | Form input style (text / number / select). Spread into `style={{ ...inputBase, ... }}` so callers can override fontSize / flex / marginBottom |
+| `cardGridStyle({ isMobile })` | **Shared content-card grid (2026-06-02)** — `auto-fill minmax(280px,1fr)` desktop / 1-col mobile, gap 24/16. Article cards · reference-guide cards · list cards ALL use it so the three families are one size. Don't hand-roll a content-card grid. |
+| `editorialTitle({ isMobile })` | Serif card/section title (magazine voice). Used by article + reference-guide cards |
 | `modalBackdrop` / `modalShell` / `modalCloseButton` / `modalTitleRow` / `modalTitle` | Modal primitives. AboutModal is the only documented exception (uses absolute-positioned close button — see comment in AboutModal.js line ~122) |
 
 ## 3. Reusable React components — `src/components/`
@@ -176,6 +178,8 @@ single chrome accent (links/text-accents may still use `--brand`).
 - **Need a confirm dialog?** `import { confirm } from "./ConfirmModal"`, then `await confirm({ title, message, confirmLabel, tone: "danger" })`. Never `window.confirm` — it breaks dark mode and reads as jarring against the rest of the UI.
 - **A sub-tab row (underline tabs)?** `<SubTabBar tabs activeKey onSelect>` — don't hand-roll the row or spread raw `tabPill`. Same component for real tab-switchers and jump-to-section nav; pass per-surface chrome (olive bg, sticky) via `containerStyle`. (The Reference page's pill chip-bar is a deliberately different look, not this.)
 - **New card, anywhere?** Render through `CardShell` (image + L1/L2/L3 slots + actions) — don't hand-roll a card frame or a second portal menu. Priced items go via `Card.js` (it keeps the price logic and fills the slots); articles fill the slots directly. **A horizontal row of cards?** `<CardStrip renderCard={…}>`. The editorial magazine `ArticleCard` is the one deliberate exception (its own floating/serif layout) — pending the design-uplift pass.
+- **A grid of content cards (articles / reference guides / lists)?** `style={cardGridStyle({ isMobile })}` — one shared track so all three families are the same size. Don't hand-roll `gridTemplateColumns`.
+- **A filterable surface with a title?** Use the **collapsing-header pattern** (Mark 2026-06-02): a normal-flow `PageHeader` title that scrolls away, above a `position:sticky; top:0` wrapper holding the search/filter that pins. Bleed the sticky wrapper to the pane edges with negative side margins equal to the scroll-pane padding (−20 desktop / −16 mobile). Live on Saved · catalog · Reference guides · Articles. **Low-facet filters** (few brands) = visible chips + one search box (simple); **high-facet** (Watches/Saved/Auctions, hundreds of values) = the dense expand-pill bar. Simple is the default; dense is the exception.
 
 ## Intentional drift (don't "fix")
 
