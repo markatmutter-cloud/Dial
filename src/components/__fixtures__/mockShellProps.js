@@ -61,10 +61,6 @@ export function buildMockShellProps(overrides = {}) {
     visibleSources: ["Wind Vintage", "Menta"],
     watchTopTab: "hearted",
     watchlist: {},
-    heartedGroupBy: "none",
-    heartedGroupDir: "desc",
-    setHeartedGroupBy: noop,
-    setHeartedGroupDir: noop,
 
     // Setters / handlers — all noops by default
     handleWish: noop,

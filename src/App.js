@@ -419,25 +419,8 @@ export default function Watchlist() {
     if (desktopMain) desktopMain.scrollTop = 0;
   }, [watchTopTab]);
 
-  // Saved-tab grouping (Mark 2026-06-02). The group control moved into the
-  // shell's sort-pill cluster (next to Date / Price), so the state is lifted
-  // here for the shells to render the pills and HeartedView to apply them.
-  // "none" | "brand" | "source"; `dir` orders groups by size (desc = most
-  // listings first). Reuses the old HeartedView localStorage key and migrates
-  // the retired "dealer" value → "source".
-  const HEARTED_GROUP_KEY = "dial_hearted_group_by";
-  const [heartedGroupBy, setHeartedGroupBy] = useState(() => {
-    try {
-      const v = localStorage.getItem(HEARTED_GROUP_KEY);
-      if (v === "brand" || v === "source") return v;
-      if (v === "dealer") return "source";
-      return "none";
-    } catch { return "none"; }
-  });
-  const [heartedGroupDir, setHeartedGroupDir] = useState("desc");
-  useEffect(() => {
-    try { localStorage.setItem(HEARTED_GROUP_KEY, heartedGroupBy); } catch {}
-  }, [heartedGroupBy]);
+  // (Saved-tab Brand/Source grouping retired 2026-06-02 — redundant with the
+  // Source/Brand filters; Saved is a flat newest-first grid.)
 
   // (lastHeartedSubRef retired 2026-05-09 — was the "remember which
   // hearted sub-tab the user came from when re-tapping the Saved
@@ -4350,10 +4333,6 @@ export default function Watchlist() {
       onClickListing={onClickListing}
       pendingChallengeDrillId={pendingChallengeDrillId}
       clearPendingChallengeDrill={() => setPendingChallengeDrillId(null)}
-      // Saved grouping (Mark 2026-06-02) — control lives in the shell sort
-      // cluster; HeartedView applies it.
-      heartedGroupBy={heartedGroupBy}
-      heartedGroupDir={heartedGroupDir}
       // B-08 unified Watchlists landing: searches + Watchbox now live
       // as sections on the one ListsView screen (no more Searches
       // sub-tab). Pass the same search-editor handles WatchlistTab got,
@@ -4816,8 +4795,6 @@ export default function Watchlist() {
     search, signInPromptOpen, signInWithGoogle, sort, sourcesExpanded, modelsExpanded, tab, user,
     visibleBrands, visibleSources, visibleModels,
     watchTopTab, watchlist,
-    // Saved grouping pills in the sort cluster (Mark 2026-06-02).
-    heartedGroupBy, setHeartedGroupBy, heartedGroupDir, setHeartedGroupDir,
     // Setters / handlers
     handleWish, openFavPrompt, resetFilters,
     // Top-right "reach Saved from anywhere" heart link (Mark 2026-06-02).
