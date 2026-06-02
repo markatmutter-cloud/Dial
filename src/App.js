@@ -114,6 +114,12 @@ const MANUAL_ARCHIVE_LOTS_URL = "/manual_archive_lots.json";
 // into their own file rather than auction_lots.json (which CI would
 // overwrite, dropping Bonhams active lots). Same shape; folded by URL key.
 const BONHAMS_LOTS_URL = "/bonhams_lots.json";
+// Chrono24 per-reference listings — Cloudflare blocks Chrono24 from CI, so
+// chrono24_lots_scraper.py runs on a residential host (curl-cffi Chrome
+// impersonation, same as Bonhams) and writes its own file. Deliberately
+// narrow: only specific references (the ones we have guides for). Folded into
+// the main Listings feed by URL; the reference-guide page filters to highlight.
+const CHRONO24_LOTS_URL = "/chrono24_lots.json";
 // Loupe This auction lots — populated by loupethis_scraper.py. Loupe
 // This is structurally a one-watch-per-auction marketplace (closer to
 // eBay than to catalog houses), so it doesn't fit auction_lots_scraper's
@@ -306,6 +312,8 @@ export default function Watchlist() {
   const [auctionLotsState, setAuctionLotsState] = useState({});
   const [manualArchiveLotsState, setManualArchiveLotsState] = useState({});
   const [bonhamsLotsState, setBonhamsLotsState] = useState({});
+  // Chrono24 per-reference listings — residential-scraped (see CHRONO24_LOTS_URL).
+  const [chrono24LotsState, setChrono24LotsState] = useState({});
   // Loupe This — one-watch-per-auction marketplace, scraped daily into
   // its own file. Same shape as auction_lots.json so it folds into the
   // same projection.
@@ -1436,6 +1444,12 @@ export default function Watchlist() {
         .then(r => r.ok ? r.json() : {})
         .then(d => setBonhamsLotsState(d && typeof d === "object" ? d : {}))
         .catch(() => {});
+      // Chrono24 per-reference listings — residential-scraped, listing-shaped
+      // projection below; folded into the main feed + reference filter.
+      fetch(CHRONO24_LOTS_URL, fetchOpts)
+        .then(r => r.ok ? r.json() : {})
+        .then(d => setChrono24LotsState(d && typeof d === "object" ? d : {}))
+        .catch(() => {});
       // Loupe This auction lots — independent scraper, same shape.
       fetch(LOUPETHIS_LOTS_URL, fetchOpts)
         .then(r => r.ok ? r.json() : {})
@@ -1941,12 +1955,46 @@ export default function Watchlist() {
     return arr;
   }, [hodinkeeShopState]);
 
+  // Chrono24 per-reference listings → listing-shaped projection. Same pattern
+  // as hairspringFindsItems / hodinkeeShopItems, but these are LIVE dealer
+  // listings (sold:false) so they land in the Available bucket. reference_no /
+  // model_line come from the scrape-time matcher so the reference-guide page's
+  // market filter highlights them. price_usd is the USD figure recorded at
+  // scrape time (Chrono24 serves USD to the residential scraper).
+  const chrono24Items = useMemo(() => {
+    const arr = [];
+    const records = chrono24LotsState || {};
+    for (const url of Object.keys(records)) {
+      const data = records[url];
+      if (!data) continue;
+      const price = Number(data.price_usd) || Number(data.price) || 0;
+      arr.push({
+        id: shortHash(url),
+        brand: (data.brand || "").trim() || "Other",
+        ref: data.title || "—",
+        price,
+        currency: data.currency || "USD",
+        priceUSD: price,
+        source: "Chrono24",
+        url,
+        img: data.image || "",
+        sold: false,
+        reference_no: data.reference_no || null,
+        model: data.model || null,
+        sub_model: data.sub_model || null,
+        model_line: data.model_line || null,
+        firstSeen: data.scraped_at || "",
+      });
+    }
+    return arr;
+  }, [chrono24LotsState]);
+
   const mainFeedItems = useMemo(() => {
     const hasAdminHide = adminHidden && adminHidden.size > 0;
     const filterAdminHidden = (it) => !adminHidden.has(it.id);
-    const merged = [...items, ...auctionLotItems, ...hairspringFindsItems, ...hodinkeeShopItems];
+    const merged = [...items, ...auctionLotItems, ...hairspringFindsItems, ...hodinkeeShopItems, ...chrono24Items];
     return hasAdminHide ? merged.filter(filterAdminHidden) : merged;
-  }, [items, auctionLotItems, hairspringFindsItems, hodinkeeShopItems, adminHidden]);
+  }, [items, auctionLotItems, hairspringFindsItems, hodinkeeShopItems, chrono24Items, adminHidden]);
 
   // Auction-catalog screener queue (Mark spec 2026-05-14): live,
   // non-hidden lots whose parent auction_url matches the selected
@@ -2148,9 +2196,9 @@ export default function Watchlist() {
   // mobile drawer's overflow chip).
   const DEALER_SOURCES = useMemo(
     () => [...new Set(
-      [...items, ...hairspringFindsItems, ...hodinkeeShopItems].map(i => i.source).filter(Boolean)
+      [...items, ...hairspringFindsItems, ...hodinkeeShopItems, ...chrono24Items].map(i => i.source).filter(Boolean)
     )].sort(),
-    [items, hairspringFindsItems, hodinkeeShopItems]
+    [items, hairspringFindsItems, hodinkeeShopItems, chrono24Items]
   );
   const AUCTION_SOURCES = useMemo(
     () => [...new Set(auctionLotItems.map(i => i.source).filter(s => s && s !== "—"))].sort(),
@@ -4243,7 +4291,12 @@ export default function Watchlist() {
       user={user}
       isAuthConfigured={isAuthConfigured}
       signInWithGoogle={triggerSignInPrompt}
-      allListings={items}
+      // Chrono24 per-reference listings are folded in here too so the
+      // reference-guide page's market filter highlights them, matching the
+      // main Listings feed (which includes them via mainFeedItems). Scoped to
+      // chrono24Items only — other projections aren't part of the reference
+      // filter today; broadening to mainFeedItems would be a separate call.
+      allListings={[...items, ...chrono24Items]}
       tabResetTick={tab === "references" ? tabResetTick : 0}
       subTab={referencesSubTab}
       setSubTab={setReferencesSubTab}

@@ -98,3 +98,37 @@ rm ~/Library/LaunchAgents/com.thewatchlist.bonhams-scrape.plist
   adds live-finale timing. To move hosts: clone there, install the plist, done.
 - `git push` uses the macOS keychain credential helper. If pushes fail from
   launchd, run the wrapper by hand once (step 3) to seed/allow the keychain item.
+
+---
+
+# Chrono24 per-reference scraper (residential, manual for now)
+
+Same reason as Bonhams: Chrono24 is Cloudflare-fronted, so CI (datacenter IPs)
+gets a 403 challenge — and even a residential *plain* request is blocked. Only
+**curl-cffi impersonating Chrome** from a residential IP gets through. So
+`chrono24_lots_scraper.py` runs from the laptop and writes its own
+`public/chrono24_lots.json` (the daily CI listings sweep never touches it).
+
+Unlike Bonhams it is **deliberately narrow** — it scrapes only the references in
+the `REFERENCES` list at the top of the script (the watches we have reference
+guides for), not all of Chrono24. The results fold into the main Listings feed
+by URL; the reference-guide page filters them by its `market` spec to highlight.
+
+The data path is robust: the search results page embeds a JSON-LD
+`AggregateOffer` block (one Offer per listing) — we parse that, not the HTML.
+Two URL details matter: `&dosearch=true` (without it the page is an empty JS
+landing) and the Chrome impersonation (without it, 403).
+
+## Operating it
+
+```bash
+cd ~/Documents/watchlist
+pip install -r requirements-auctions.txt        # curl-cffi (once)
+python3 chrono24_lots_scraper.py                 # writes public/chrono24_lots.json
+git add public/chrono24_lots.json && git commit -m "Refresh Chrono24 lots" && git push
+```
+
+To add a reference: append `{"brand": "...", "query": "..."}` to `REFERENCES`
+and re-run. No `launchd` agent yet — this is a manual refresh while we validate
+the one-reference test (JLC E2643). Promote to a `launchd` agent (mirror the
+Bonhams plist above) once we want it on a schedule.
