@@ -1,20 +1,12 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { fmt, imgSrc, priceIn, FX_RATES_USD_PER } from "../utils";
+import { SharedReceiveFrame } from "./SharedReceiveFrame";
 
-// Share-receive surface for a single shared LISTING — the first-impression
-// surface a recipient (often signed-out, often new) lands on from a shared
-// link. Self-contained: all hooks live INSIDE this component so App.js's hook
-// count never changes (React #310 — see the v2 regression history).
-//
-// 2026-06-01 register shift (Mark): this is the unified share/library surface's
-// first type. The surface is now SELF-EXPLANATORY FROM ITS ACTIONS — no
-// instructional paragraphs, no "First time on Watchlist?" onboarding panel, no
-// "sign in only if…" reassurance. One attribution line ("X shared a watch with
-// you") + the artifact + a consistent action bar (View on dealer · Save ·
-// Add to list · Share) + quiet no-dead-end nav cues. Signed-out is beautiful
-// and ungated (every public verb works); sign-in is offered once, folded into
-// Save, never as a nag. The shared FRAME + the other five object types
-// (catalog/list/article/guide/challenge) extract from this in Phase 6b.
+// Share-receive adapter for a single shared LISTING. Owns the URL parse + data
+// lookup + save logic (all hooks live INSIDE this component so App.js's hook
+// count never changes — React #310). It builds a listing descriptor and renders
+// the shared SharedReceiveFrame, which owns the common chrome/layout/action bar
+// (so a chrome change propagates to every shared type). 2026-06-01.
 //
 // Returns null when no share intent — zero render cost in the common path.
 
@@ -33,8 +25,6 @@ export function ShareReceiver({
   resetTick,
   openTick,
   openListingId,
-  // 2026-06-01: the action bar's new verbs. openCollectionPicker → "Add to
-  // list" (signed-in); handleShare → "Share" (onward share).
   openCollectionPicker,
   handleShare,
 }) {
@@ -104,9 +94,46 @@ export function ShareReceiver({
   if (!shareIntent) return null;
   if (!Array.isArray(items) || items.length === 0) return null;
 
-  const isAlreadySaved = sharedItem && watchlist && !!watchlist[sharedItem.id];
   const sender = (shareIntent.from || "").trim();
+  const goBrowse = () => { clearIntent(); if (typeof setTab === "function") setTab("listings"); };
+  const goLists = () => { clearIntent(); if (typeof setTab === "function") setTab("watchlist"); };
+  const navCues = [{ label: "Browse Watchlist →", onClick: goBrowse }];
+  if (user) navCues.push({ label: "Your lists →", onClick: goLists });
 
+  // Shared listing not in the live feed (dealer pulled it / scrolled off).
+  // Still no dead end — render through the frame with a "not available" hero.
+  if (!sharedItem) {
+    return (
+      <SharedReceiveFrame
+        sender={sender}
+        typeLabel="watch"
+        hero={
+          <div style={{
+            position: "absolute", inset: 0, display: "flex", flexDirection: "column",
+            alignItems: "center", justifyContent: "center", gap: 8, padding: 24,
+            textAlign: "center", color: "var(--text3)", fontSize: 13,
+          }}>
+            <span>This listing isn't available right now</span>
+          </div>
+        }
+        identity={
+          <>
+            <h2 style={{ fontSize: 18, fontWeight: 700, color: "var(--text1)", margin: 0, lineHeight: 1.25 }}>
+              This listing isn't available
+            </h2>
+            <div style={{ fontSize: 13, color: "var(--text2)", lineHeight: 1.5, marginTop: 6 }}>
+              The dealer may have removed it. The rest of Watchlist is here.
+            </div>
+          </>
+        }
+        primaryCTA={{ label: "Browse Watchlist →", onClick: goBrowse }}
+        signedIn={!!user}
+        navCues={navCues}
+      />
+    );
+  }
+
+  const isAlreadySaved = !!(watchlist && watchlist[sharedItem.id]);
   const fmtPriceLine = (item) => {
     if (!item || !item.priceUSD || !item.price) return "";
     const native = item.currency || "USD";
@@ -117,162 +144,76 @@ export function ShareReceiver({
     return `${fmt(primaryAmt, primary)} · ${fmt(item.price, native)}`;
   };
 
-  const goBrowse = () => { clearIntent(); if (typeof setTab === "function") setTab("listings"); };
-  const goLists = () => { clearIntent(); if (typeof setTab === "function") setTab("watchlist"); };
-
-  return (
-    <div style={{ padding: "16px 16px 110px", maxWidth: 1100, margin: "0 auto", width: "100%" }}>
-      {/* [A] Attribution — sender + what was shared. The one line of chrome
-          copy; no explanatory paragraph. */}
-      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-        <span aria-hidden style={{
-          flexShrink: 0, width: 28, height: 28, borderRadius: 999,
-          background: "var(--brand-olive-tint-12)", color: "var(--brand-olive-ink)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 13, fontWeight: 700,
-        }}>{sender ? sender.charAt(0).toUpperCase() : "♡"}</span>
-        <span style={{
-          fontSize: 11, fontWeight: 600, letterSpacing: "0.06em",
-          textTransform: "uppercase", color: "var(--text2)",
-        }}>{sender ? `${sender} shared a watch with you` : "Shared with you"}</span>
-      </div>
-
-      {sharedItem ? (
-        <div className="sr-card" style={{
-          borderRadius: 12, overflow: "hidden", border: "0.5px solid var(--border)",
-          background: "var(--card-bg)", boxShadow: "var(--shadow-modal)",
-          display: "grid", gridTemplateColumns: "1fr", alignItems: "stretch",
-        }}>
-          {/* Two columns on desktop (image left, details right) so the hero
-              uses the screen width instead of becoming a giant full-width
-              block you scroll past (Mark 2026-06-01). Mobile stays stacked. */}
-          <style>{`
-            .sr-card-img { aspect-ratio: 16 / 10; }
-            @media (min-width: 880px) {
-              .sr-card { grid-template-columns: 1.2fr 1fr !important; }
-              /* Hero depth scales with the viewport so the card fills the
-                 page instead of letterboxing (Mark 2026-06-01). */
-              .sr-card-img { aspect-ratio: auto !important; height: 100%; min-height: clamp(420px, 64vh, 660px); }
-            }
-          `}</style>
-          {/* [B] Hero */}
-          <a href={sharedItem.url} target="_blank" rel="noopener noreferrer"
-            onClick={() => { if (onClickListing) onClickListing(sharedItem); }}
-            className="sr-card-img"
-            style={{ position: "relative", display: "block", background: "var(--surface)" }}
-            title={`Open ${sharedItem.source} listing`}>
-            {sharedItem.img && !imgFailed ? (
-              <img src={imgSrc(sharedItem.img)} alt={sharedItem.ref || sharedItem.title || "shared watch"}
-                onError={() => setImgFailed(true)} loading="eager"
-                style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-            ) : (
-              <div style={{
-                position: "absolute", inset: 0, display: "flex", flexDirection: "column",
-                alignItems: "center", justifyContent: "center", gap: 6,
-                color: "var(--text3)", fontSize: 13, padding: 16, textAlign: "center",
-              }}>
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                  strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" />
-                </svg>
-                <span>Open on {sharedItem.source} to see it</span>
-              </div>
-            )}
-            {sharedItem.sold && (
-              <span style={{
-                position: "absolute", top: 12, right: 12, background: "rgba(0,0,0,0.7)", color: "#fff",
-                fontSize: 11, fontWeight: 700, letterSpacing: "0.05em", padding: "4px 8px",
-                borderRadius: 4, textTransform: "uppercase",
-              }}>Sold</span>
-            )}
-          </a>
-
-          {/* Right column (desktop) / below image (mobile): identity + actions,
-              vertically centred so it reads with the hero rather than below it. */}
-          <div className="sr-card-body" style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
-          {/* Title + identity */}
-          <div style={{ padding: "16px 18px 4px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 12, flexWrap: "wrap" }}>
-              <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--text2)" }}>
-                {sharedItem.source || ""}
-              </span>
-              {sharedItem.brand && <span style={{ fontSize: 12, color: "var(--text2)" }}>{sharedItem.brand}</span>}
-            </div>
-            <h2 style={{ fontSize: 19, fontWeight: 700, color: "var(--text1)", margin: "6px 0 0", lineHeight: 1.2 }}>
-              {sharedItem.ref || sharedItem.title || "Watch"}
-            </h2>
-            {(sharedItem.price || sharedItem.priceUSD) ? (
-              <div style={{ fontSize: 17, fontWeight: 600, color: "var(--text1)", marginTop: 4 }}>
-                {fmtPriceLine(sharedItem) || (sharedItem.price ? fmt(sharedItem.price, sharedItem.currency || "USD") : "")}
-              </div>
-            ) : null}
-          </div>
-
-          {/* [C] Action bar — consistent verbs, self-explanatory. One olive
-              primary (the dealer view); the rest subtle. */}
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", padding: "12px 18px 18px" }}>
-            <a href={sharedItem.url} target="_blank" rel="noopener noreferrer"
-              onClick={() => { if (onClickListing) onClickListing(sharedItem); }}
-              style={{ ...primaryBtnStyle, textDecoration: "none", display: "inline-flex", alignItems: "center" }}>
-              View on {sharedItem.source || "dealer"} →
-            </a>
-            {user ? (
-              <>
-                <button onClick={onSave} disabled={busy || isAlreadySaved}
-                  style={{ ...subtleBtnStyle, opacity: (busy || isAlreadySaved) ? 0.6 : 1, cursor: busy ? "wait" : (isAlreadySaved ? "default" : "pointer") }}>
-                  {isAlreadySaved ? "♥ Saved" : (busy ? "Saving…" : "♡ Save")}
-                </button>
-                {openCollectionPicker && (
-                  <button onClick={() => openCollectionPicker(sharedItem)} style={subtleBtnStyle}>Add to list</button>
-                )}
-              </>
-            ) : (
-              isAuthConfigured && signInWithGoogle && (
-                <button onClick={signInWithGoogle} style={subtleBtnStyle}>Sign in to save</button>
-              )
-            )}
-            {handleShare && (
-              <button onClick={() => handleShare(sharedItem)} style={subtleBtnStyle}>Share</button>
-            )}
-          </div>
-          </div>
-        </div>
+  const hero = (
+    <a href={sharedItem.url} target="_blank" rel="noopener noreferrer"
+      onClick={() => { if (onClickListing) onClickListing(sharedItem); }}
+      style={{ position: "absolute", inset: 0, display: "block" }}
+      title={`Open ${sharedItem.source} listing`}>
+      {sharedItem.img && !imgFailed ? (
+        <img src={imgSrc(sharedItem.img)} alt={sharedItem.ref || sharedItem.title || "shared watch"}
+          onError={() => setImgFailed(true)} loading="eager"
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
       ) : (
-        // Shared item not in the live feed (dealer pulled it / scrolled off).
-        // Still no dead end — offer the way into the app.
         <div style={{
-          padding: "28px 22px", borderRadius: 12, border: "0.5px solid var(--border)",
-          background: "var(--card-bg)", boxShadow: "var(--shadow-modal)", maxWidth: 560,
+          position: "absolute", inset: 0, display: "flex", flexDirection: "column",
+          alignItems: "center", justifyContent: "center", gap: 6,
+          color: "var(--text3)", fontSize: 13, padding: 16, textAlign: "center",
         }}>
-          <div style={{ fontSize: 15, fontWeight: 600, color: "var(--text1)", marginBottom: 6 }}>
-            This listing isn't available right now
-          </div>
-          <div style={{ fontSize: 13, color: "var(--text2)", lineHeight: 1.5, marginBottom: 14 }}>
-            The dealer may have removed it. The rest of Watchlist is here.
-          </div>
-          <button onClick={goBrowse} style={primaryBtnStyle}>Browse Watchlist →</button>
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" />
+          </svg>
+          <span>Open on {sharedItem.source} to see it</span>
         </div>
       )}
+      {sharedItem.sold && (
+        <span style={{
+          position: "absolute", top: 12, right: 12, background: "rgba(0,0,0,0.7)", color: "#fff",
+          fontSize: 11, fontWeight: 700, letterSpacing: "0.05em", padding: "4px 8px",
+          borderRadius: 4, textTransform: "uppercase",
+        }}>Sold</span>
+      )}
+    </a>
+  );
 
-      {/* [E] Navigation cues — quiet, no dead end. */}
-      <div style={{ display: "flex", gap: 18, flexWrap: "wrap", marginTop: 16 }}>
-        <button onClick={goBrowse} style={navCueStyle}>Browse Watchlist →</button>
-        {user && <button onClick={goLists} style={navCueStyle}>Your lists →</button>}
+  const identity = (
+    <>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 12, flexWrap: "wrap" }}>
+        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--text2)" }}>
+          {sharedItem.source || ""}
+        </span>
+        {sharedItem.brand && <span style={{ fontSize: 12, color: "var(--text2)" }}>{sharedItem.brand}</span>}
       </div>
-    </div>
+      <h2 style={{ fontSize: 19, fontWeight: 700, color: "var(--text1)", margin: "6px 0 0", lineHeight: 1.2 }}>
+        {sharedItem.ref || sharedItem.title || "Watch"}
+      </h2>
+      {(sharedItem.price || sharedItem.priceUSD) ? (
+        <div style={{ fontSize: 17, fontWeight: 600, color: "var(--text1)", marginTop: 4 }}>
+          {fmtPriceLine(sharedItem) || (sharedItem.price ? fmt(sharedItem.price, sharedItem.currency || "USD") : "")}
+        </div>
+      ) : null}
+    </>
+  );
+
+  return (
+    <SharedReceiveFrame
+      sender={sender}
+      typeLabel="watch"
+      hero={hero}
+      identity={identity}
+      primaryCTA={{
+        label: `View on ${sharedItem.source || "dealer"} →`,
+        href: sharedItem.url,
+        onClick: () => { if (onClickListing) onClickListing(sharedItem); },
+      }}
+      signedIn={!!user}
+      onSave={user ? onSave : null}
+      saved={isAlreadySaved}
+      onSignIn={(!user && isAuthConfigured && signInWithGoogle) ? signInWithGoogle : null}
+      onAddToList={(user && openCollectionPicker) ? () => openCollectionPicker(sharedItem) : null}
+      onShare={handleShare ? () => handleShare(sharedItem) : null}
+      busy={busy}
+      navCues={navCues}
+    />
   );
 }
-
-const primaryBtnStyle = {
-  border: "none", background: "var(--brand-olive)", color: "#fff",
-  padding: "10px 18px", borderRadius: 8, fontFamily: "inherit",
-  fontSize: 14, fontWeight: 600, cursor: "pointer",
-};
-const subtleBtnStyle = {
-  border: "0.5px solid var(--border)", background: "var(--surface)", color: "var(--text1)",
-  padding: "10px 16px", borderRadius: 8, fontFamily: "inherit", fontSize: 14, fontWeight: 500, cursor: "pointer",
-};
-const navCueStyle = {
-  border: "none", background: "transparent", color: "var(--text2)",
-  padding: 0, fontFamily: "inherit", fontSize: 13, cursor: "pointer",
-};
