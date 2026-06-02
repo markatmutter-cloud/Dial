@@ -53,6 +53,7 @@ export function DesktopShell(props) {
     MODELS, MODELS_SHOW, modelsExpanded, setModelsExpanded,
     watchTopTab, watchlist,
     heartedGroupBy = "none", setHeartedGroupBy, heartedGroupDir = "desc", setHeartedGroupDir,
+    savedHeaderJSX,
     // Setters / handlers
     handleWish, openFavPrompt, resetFilters,
     setAboutModalOpen, setActiveFilterPop, setBrandsExpanded,
@@ -104,15 +105,19 @@ export function DesktopShell(props) {
   // Calendar sub-tab has no filterable list — hide the row.
   const showListingsFilterRow = !(tab === "listings" && listingsSubTab === "calendar");
 
-  // Collapsing header for a single auction catalog (Mark 2026-06-02): inside
-  // ONE sale the catalog title scrolls away while the filter bar pins. We move
+  // Collapsing header (Mark 2026-06-02): on the auction catalog AND the Saved
+  // (hearted) surface the title scrolls away while the filter bar pins. We move
   // both INTO the scroll pane — title in normal flow (scrolls), filter in a
-  // sticky wrapper (pins). `saleContextHeaderJSX` is non-null only in a single
-  // catalog, and that grid is flat (no date dividers — App.js singleCatalog),
-  // so the sticky filter has nothing to fight at top:0. Non-catalog surfaces
-  // keep the filter in the fixed chrome above the pane (their date dividers
-  // stick cleanly below it).
-  const inCatalog = !anyShareActive && !searchAllActive && !!saleContextHeaderJSX;
+  // sticky wrapper (pins). Catalog title = saleContextHeaderJSX (its grid is
+  // flat, no dividers); Saved title = savedHeaderJSX. Other surfaces keep the
+  // filter in the fixed chrome above the pane (their date dividers stick
+  // cleanly below it). On Saved the grouped quick-jump bar scrolls rather than
+  // pinning, so it can't fight the sticky filter for top:0 (see HeartedView).
+  const isSavedHearted = tab === "watchlist" && watchTopTab === "hearted";
+  const collapsingHeader = (!anyShareActive && !searchAllActive)
+    ? (saleContextHeaderJSX || (isSavedHearted ? savedHeaderJSX : null))
+    : null;
+  const useCollapse = !!collapsingHeader;
 
   // (sidebarToggleJSX retired — desktop sidebar removed in the April '26
   // filter-consolidation pass; toggle const + render slot deleted in the
@@ -702,10 +707,10 @@ export function DesktopShell(props) {
           PR_W (2026-05-22): hidden when in cross-tab Search-all
           destination (SearchResultsView has its own header). */}
       {!anyShareActive && !searchAllActive && identityBandJSX}
-      {/* Catalog header + its filter bar moved INTO the scroll pane (Mark
-          2026-06-02) so the title scrolls away and the filter pins — see the
-          inCatalog block inside data-desktop-main below. Outside a catalog the
-          filter bar still renders here, in the fixed chrome above the pane. */}
+      {/* Catalog + Saved headers + their filter bar moved INTO the scroll pane
+          (Mark 2026-06-02) so the title scrolls away and the filter pins — see
+          the useCollapse block inside data-desktop-main below. On other surfaces
+          the filter bar still renders here, in the fixed chrome above the pane. */}
       {/* watchHeartedToggleJSX is embedded inside filterRowJSX below
           (2026-05-08 — Mark feedback) so the Listings/Auctions/Sold
           pills sit on the same line as Date/Price/$Min/Source/Brand
@@ -716,9 +721,10 @@ export function DesktopShell(props) {
           compat with the mock fixture. */}
       {(() => {
         if (anyShareActive || searchAllActive || tab === "home") return null;
-        // In a single catalog the filter bar renders INSIDE the pane (sticky,
-        // below the scrolling title) — see the inCatalog block below.
-        if (inCatalog) return null;
+        // On a collapsing-header surface (catalog / Saved) the filter bar
+        // renders INSIDE the pane (sticky, below the scrolling title) — see the
+        // useCollapse block below.
+        if (useCollapse) return null;
         const showFullFilterRow =
           (tab === "listings" && showListingsFilterRow) ||
           inListsDrillIn ||
@@ -773,15 +779,15 @@ export function DesktopShell(props) {
               recipient gets a clean first-impression page. */}
           {!anyShareActive && (
             <>
-              {/* Single-catalog collapsing header (Mark 2026-06-02): the sale
-                  title scrolls away in normal flow; the filter bar pins via a
-                  sticky wrapper at the top of the pane. Both bleed edge-to-edge
-                  (negative margins cancel the pane's 20px padding, mirroring
-                  EditorialView's sticky filter). The catalog grid is flat (no
-                  date dividers), so top:0 has nothing to collide with. */}
-              {inCatalog && (
+              {/* Collapsing header (Mark 2026-06-02): the title scrolls away in
+                  normal flow; the filter bar pins via a sticky wrapper at the
+                  top of the pane. Both bleed edge-to-edge (negative margins
+                  cancel the pane's 20px padding, mirroring EditorialView's
+                  sticky filter). Catalog grids are flat; on Saved the quick-jump
+                  bar scrolls (HeartedView) so nothing fights top:0. */}
+              {useCollapse && (
                 <>
-                  <div style={{ marginLeft: -20, marginRight: -20 }}>{saleContextHeaderJSX}</div>
+                  <div style={{ marginLeft: -20, marginRight: -20 }}>{collapsingHeader}</div>
                   <div style={{
                     position: "sticky", top: 0, zIndex: 15,
                     background: "var(--bg)",

@@ -22,7 +22,6 @@ import { Card } from "./Card";
 import CardShell from "./CardShell";
 import { EmptyState } from "./EmptyState";
 import SubTabBar from "./SubTabBar";
-import { PageHeader } from "./PageHeader";
 import { innerToggleButton } from "../styles";
 
 const slugify = (s) =>
@@ -188,12 +187,11 @@ export default function HeartedView({
   const hasAnything = items.length || articles.length || guides.length;
 
   // ── render ── (all hooks above this line)
-  const savedTotal = items.length + articles.length + guides.length;
+  // The "Saved" title now lives in the shell's scrolling-header slot
+  // (savedHeaderJSX) so it scrolls away above the pinned filter bar (Mark
+  // 2026-06-02 collapsing header). HeartedView starts at the type filter.
   return (
-    <div style={{ paddingTop: 0, paddingBottom: isMobile ? 220 : 160 }}>
-      <PageHeader isMobile={isMobile} title="Saved"
-        meta={savedTotal ? `${savedTotal} ${savedTotal === 1 ? "item" : "items"}` : null} />
-      <div style={{ paddingTop: isMobile ? 14 : 18 }} />
+    <div style={{ paddingTop: isMobile ? 6 : 8, paddingBottom: isMobile ? 220 : 160 }}>
       {/* Type filter — only when there's more than one type to switch between. */}
       {typeOptions.length > 1 && (
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap", padding: "8px 0 12px" }}>
@@ -237,7 +235,9 @@ export default function HeartedView({
               onSelect={jumpTo}
               isMobile={isMobile}
               containerStyle={{
-                position: "sticky", top: 0, zIndex: 12,
+                // Scrolls with the content (NOT sticky) so it can't fight the
+                // pinned filter bar for top:0 on the collapsing Saved header
+                // (Mark 2026-06-02).
                 background: "var(--bg)", borderBottom: "0.5px solid var(--border)",
                 margin: "0 -2px 12px", padding: "0 2px",
               }}
