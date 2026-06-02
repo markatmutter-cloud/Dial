@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { ReferencePage } from "./ReferencePage";
 import { Breadcrumb } from "./Breadcrumb";
 import { PageHeader } from "./PageHeader";
-import { editorialHeading, editorialProse, innerToggleButton, inputBase, FONT_SERIF } from "../styles";
+import { editorialHeading, editorialProse, editorialTitle, innerToggleButton, inputBase, cardGridStyle } from "../styles";
 import { imgSrc } from "../utils";
 import {
   REFERENCE_NODES,
@@ -152,11 +152,7 @@ export function ReferenceBrowse(props) {
       {cards.length === 0 ? (
         <p style={{ fontSize: 13, color: "var(--text3)" }}>No guides match your search.</p>
       ) : (
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(280px, 1fr))",
-          gap: isMobile ? 16 : 24,
-        }}>
+        <div style={cardGridStyle({ isMobile })}>
           {cards.map((n) => (
             <RefGuideCard key={n.id} node={n} isMobile={isMobile}
               onClick={() => go({ level: "node", nodeId: n.id })}
@@ -201,7 +197,7 @@ function RefGuideCard({ node, isMobile, onClick, watchlist, handleWish, openColl
       }}>
         <div style={{
           position: "relative", width: "100%", aspectRatio: "16 / 10",
-          background: "var(--surface)", overflow: "hidden", borderRadius: 4, marginBottom: 10,
+          background: "var(--surface)", overflow: "hidden", marginBottom: 12,
         }}>
           {node.hero && node.hero.img && (
             <img src={imgSrc(node.hero.img)} alt="" loading="lazy"
@@ -220,10 +216,7 @@ function RefGuideCard({ node, isMobile, onClick, watchlist, handleWish, openColl
           fontSize: 10, fontWeight: 600, letterSpacing: "0.14em",
           textTransform: "uppercase", color: "var(--text3)", marginBottom: 4,
         }}>{[node.brand, node.modelLine].filter(Boolean).join(" · ")}</div>
-        <div style={{
-          fontFamily: FONT_SERIF, fontSize: isMobile ? 20 : 19, fontWeight: 500,
-          lineHeight: 1.2, color: "var(--text1)",
-        }}>{title}</div>
+        <div style={{ ...editorialTitle({ isMobile }), color: "var(--text1)" }}>{title}</div>
         {node.definer && (
           <div style={{
             fontSize: 12, color: "var(--text2)", lineHeight: 1.4, marginTop: 4,
