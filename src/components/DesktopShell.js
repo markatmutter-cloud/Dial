@@ -268,17 +268,19 @@ export function DesktopShell(props) {
           so search visibly jumped position when switching sub-tabs (Mark
           2026-05-28). On Live it's a hidden, inert placeholder that only
           reserves space (visibility:hidden, removed from a11y + tab order). */}
-      {tab === "listings" && (() => {
-        const showCal = (listingsSubTab === "auctions" || listingsSubTab === "sold") && !!onOpenCalendar;
+      {/* Calendar pill renders ONLY on Auctions/Sold now. The old
+          visibility:hidden placeholder on Live reserved space and left a
+          gap before Source so the row looked unfinished/misaligned (Mark
+          2026-06-01) — alignment wins over the minor search-shift the
+          placeholder was preventing. */}
+      {tab === "listings" && (listingsSubTab === "auctions" || listingsSubTab === "sold") && !!onOpenCalendar && (() => {
         return (
-          <button onClick={showCal ? onOpenCalendar : undefined}
-            aria-hidden={!showCal} tabIndex={showCal ? 0 : -1}
-            title={showCal ? "Browse the auction calendar" : undefined}
+          <button onClick={onOpenCalendar}
+            title="Browse the auction calendar"
             style={{
               ...dtPill(false),
               display: "inline-flex", alignItems: "center", gap: 6, flexShrink: 0,
               whiteSpace: "nowrap",
-              ...(showCal ? null : { visibility: "hidden", pointerEvents: "none" }),
             }}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
               strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
