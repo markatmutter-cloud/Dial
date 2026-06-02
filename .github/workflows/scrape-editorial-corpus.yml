@@ -2,12 +2,14 @@ name: Scrape editorial corpus
 
 # Low-frequency cron for editorial-corpus scrapers. These sources
 # publish 1-2 articles/week at most; daily scraping would just burn
-# requests against unchanged content. Weekly is the right cadence
+# requests against unchanged content. Twice-weekly is the cadence
 # for new-article discovery + the rolling 30-day re-fetch pass that
-# catches author edits to existing articles.
+# catches author edits to existing articles — it surfaces newly
+# published pieces sooner (fresher article rotation on the site)
+# without scraping unchanged content daily.
 #
-# Cadence: Sunday morning Pacific Time (16:00 UTC). The main
-# listings cron runs at 14/20/02 UTC; this slot avoids overlap.
+# Cadence: Sunday + Wednesday morning Pacific Time (16:00 UTC). The
+# main listings cron runs at 14/20/02 UTC; this slot avoids overlap.
 #
 # Scope (2026-05-19):
 # - bring_a_loupe_scraper.py    → public/bring_a_loupe.json
@@ -51,7 +53,7 @@ name: Scrape editorial corpus
 
 on:
   schedule:
-    - cron: '0 16 * * 0'   # 8am PST / 9am PDT Sunday
+    - cron: '0 16 * * 0,3'   # 8am PST / 9am PDT Sunday + Wednesday
   workflow_dispatch:
 
 concurrency:
