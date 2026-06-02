@@ -3762,6 +3762,29 @@ export default function Watchlist() {
               {saved ? "Saved" : "Save catalog"}
             </button>
           )}
+          {/* Share the catalog (Mark 2026-06-01 — there was nowhere to share a
+              sale, only save). Public action; no collaboration. Shares the
+              sale's page via the OS sheet, or copies the link on desktop. */}
+          {sale.url && (
+            <button onClick={async () => {
+              try {
+                if (typeof navigator !== "undefined" && navigator.share) {
+                  await navigator.share({ title: sale.title || "Auction catalog", url: sale.url });
+                } else if (typeof navigator !== "undefined" && navigator.clipboard) {
+                  await navigator.clipboard.writeText(sale.url);
+                }
+              } catch {}
+            }}
+              aria-label="Share this catalog"
+              style={{
+                display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer",
+                fontFamily: "inherit", fontSize: 12.5, fontWeight: 600, padding: "5px 12px",
+                borderRadius: 999, border: "0.5px solid var(--border)",
+                background: "var(--surface)", color: "var(--text1)",
+              }}>
+              Share
+            </button>
+          )}
         </div>
       </div>
     );
