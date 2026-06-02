@@ -63,3 +63,30 @@ export function buildReferenceTree(nodes = REFERENCE_NODES) {
   });
   return brands;
 }
+
+// Project a reference node into the listing-shaped object the save/heart
+// machinery stores (mirrors articleAsListing). `kind:"reference"` discriminates
+// it in the watchlist; the stable id is derived from node.id. Lets a reference
+// guide be hearted / added-to-list from where it's read, and resurfaced as the
+// "Guides" type on the Hearted surface (Phase 2b, closes B-37). The url is an
+// in-app deep link so opening a saved guide stays in the app.
+export function referenceAsListing(node) {
+  if (!node || !node.id) return null;
+  const refLabel = node.group || (node.refs && node.refs.join(" / ")) || "";
+  return {
+    id: `ref_${node.id}`,
+    url: `?tab=references&ref=${node.id}`,
+    img: (node.hero && node.hero.img) || null,
+    ref: refLabel,
+    title: [node.brand, node.modelLine, refLabel].filter(Boolean).join(" ").trim(),
+    brand: node.brand || "",
+    model: node.modelLine || null,
+    model_line: node.modelLine || null,
+    reference_no: refLabel || null,
+    kind: "reference",
+    reference: { nodeId: node.id, group: refLabel, definer: node.definer || "" },
+    sold: false,
+    price: null,
+    currency: null,
+  };
+}

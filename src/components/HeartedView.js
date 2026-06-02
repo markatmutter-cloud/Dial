@@ -65,6 +65,7 @@ function buildGroups(items, groupBy) {
 export default function HeartedView({
   items = [],          // hearted watches (no articles — App excludes kind==='article')
   articles = [],       // hearted articles (stored article-as-listing snapshots)
+  guides = [],         // hearted reference guides (kind==='reference' snapshots)
   auctions = [],       // hearted auction sales
   onOpenSale,
   onToggleSaveAuction,
@@ -99,8 +100,9 @@ export default function HeartedView({
   const typeOptions = useMemo(() => ([
     { key: "watches", label: "Watches", n: items.length },
     { key: "articles", label: "Articles", n: articles.length },
+    { key: "guides", label: "Guides", n: guides.length },
     { key: "sales", label: "Sales", n: auctions.length },
-  ].filter(o => o.key === "watches" || o.n > 0)), [items.length, articles.length, auctions.length]);
+  ].filter(o => o.key === "watches" || o.n > 0)), [items.length, articles.length, guides.length, auctions.length]);
   const type = typeOptions.some(o => o.key === activeType) ? activeType : "watches";
 
   const groups = useMemo(
@@ -172,6 +174,28 @@ export default function HeartedView({
     />
   );
 
+  // Hearted reference guide → CardShell with the guide's hero + reference name.
+  // href is the in-app deep link (?tab=references&ref=…), so it opens the guide.
+  const renderGuide = (snap) => (
+    <CardShell
+      key={snap.id}
+      href={snap.url}
+      aspect="square"
+      image={snap.img ? { src: snap.img, alt: "" } : null}
+      level2={<div style={{ fontSize: 10, fontWeight: 600, color: "var(--text3)", textTransform: "uppercase", letterSpacing: 0.4, marginBottom: 4 }}>
+        {[snap.brand, snap.model_line].filter(Boolean).join(" · ")}
+      </div>}
+      level1={<div style={{ fontSize: 12, fontWeight: 500, color: "var(--text1)", lineHeight: 1.3, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+        {(snap.reference && snap.reference.group) || snap.ref || snap.title || "Reference guide"}
+      </div>}
+      heart={handleWish ? { wished: !!watchlist[snap.id], onToggle: () => handleWish(snap) } : null}
+      menu={{
+        onAddToCollection: (openCollectionPicker && user) ? () => openCollectionPicker(snap) : null,
+        onShare: handleShare ? () => handleShare(snap) : null,
+      }}
+    />
+  );
+
   // Hearted auction sale → image tile; tap opens its lots.
   const renderSale = (a) => {
     const isLive = a.status === "live";
@@ -225,7 +249,7 @@ export default function HeartedView({
     );
   };
 
-  const hasAnything = items.length || articles.length || auctions.length;
+  const hasAnything = items.length || articles.length || guides.length || auctions.length;
 
   // ── render ── (all hooks above this line)
   return (
@@ -252,6 +276,11 @@ export default function HeartedView({
           ? <EmptyState icon="📰" heading="No saved articles yet" size="compact"
               blurb="Heart an article on the Articles tab and it lands here." />
           : <div style={gridStyle}>{articles.map(renderArticle)}</div>
+      ) : type === "guides" ? (
+        guides.length === 0
+          ? <EmptyState icon="📖" heading="No saved guides yet" size="compact"
+              blurb="Heart a reference guide on the Collecting tab and it lands here." />
+          : <div style={gridStyle}>{guides.map(renderGuide)}</div>
       ) : type === "sales" ? (
         auctions.length === 0
           ? <EmptyState icon="🔨" heading="No saved sales yet" size="compact"

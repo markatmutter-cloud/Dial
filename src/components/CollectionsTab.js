@@ -605,13 +605,16 @@ export function CollectionsTab({
     // old "Saved" band carried). Self-contained component (its own hooks) so
     // this dispatch stays render-only and #310-safe. Saved articles derive
     // from the watchlist (kind==='article'); sales come via props.
+    const byRecency = (a, b) => String(b.savedAt || "").localeCompare(String(a.savedAt || ""));
     const heartedArticles = Object.values(watchlist || {})
-      .filter(v => v && v.kind === "article")
-      .sort((a, b) => String(b.savedAt || "").localeCompare(String(a.savedAt || "")));
+      .filter(v => v && v.kind === "article").sort(byRecency);
+    const heartedGuides = Object.values(watchlist || {})
+      .filter(v => v && v.kind === "reference").sort(byRecency);
     body = (
       <HeartedView
         items={watchItems}
         articles={heartedArticles}
+        guides={heartedGuides}
         auctions={savedAuctions || []}
         onOpenSale={onOpenSale}
         onToggleSaveAuction={onToggleSaveAuction}

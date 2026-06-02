@@ -20,6 +20,7 @@ import CardStrip from "./CardStrip";
 import { Card } from "./Card";
 import { imgSrc } from "../utils";
 import { innerToggleButton, FONT_SERIF, editorialDisplay, editorialHeading } from "../styles";
+import { referenceAsListing } from "../data/referencePages";
 
 const SERIF = FONT_SERIF;
 const MAXW = 1080;
@@ -182,6 +183,43 @@ export function ReferencePage({
           <a href={node.hero.creditUrl} target="_blank" rel="noopener noreferrer" style={{ position: "absolute", right: 10, top: 10, fontSize: 10, color: "rgba(255,255,255,0.66)", textDecoration: "none", background: "rgba(0,0,0,0.32)", padding: "3px 8px", borderRadius: 999 }}>Photo · {node.hero.credit} ↗</a>
         )}
       </div>
+
+      {/* SAVE THIS GUIDE — heart + add-to-list at the point of reading (B-37).
+          Routes through the same handlers as listings/articles; the guide is
+          projected to a kind:"reference" listing snapshot. */}
+      {(handleWish || openCollectionPicker) && (() => {
+        const asListing = referenceAsListing(node);
+        if (!asListing) return null;
+        const wished = !!(watchlist && watchlist[asListing.id]);
+        return shell(
+          <div style={{ display: "flex", alignItems: "center", gap: 8, padding: isMobile ? "12px 0 2px" : "14px 0 2px" }}>
+            {handleWish && (
+              <button onClick={() => handleWish(asListing)}
+                aria-label={wished ? "Saved — tap to remove" : "Save this guide"}
+                style={{
+                  display: "inline-flex", alignItems: "center", gap: 7, cursor: "pointer",
+                  fontFamily: "inherit", fontSize: 13, fontWeight: 600, padding: "7px 14px",
+                  borderRadius: 999, border: "0.5px solid var(--border)",
+                  background: wished ? "var(--brand-olive-tint-12)" : "var(--surface)",
+                  color: wished ? "var(--brand-olive-ink)" : "var(--text1)",
+                }}>
+                <span style={{ color: wished ? "var(--heart)" : "var(--text2)" }}>{wished ? "♥" : "♡"}</span>
+                {wished ? "Saved" : "Save guide"}
+              </button>
+            )}
+            {openCollectionPicker && user && (
+              <button onClick={() => openCollectionPicker(asListing)}
+                style={{
+                  cursor: "pointer", fontFamily: "inherit", fontSize: 13, fontWeight: 600,
+                  padding: "7px 14px", borderRadius: 999, border: "0.5px solid var(--border)",
+                  background: "var(--surface)", color: "var(--text1)",
+                }}>
+                Add to list…
+              </button>
+            )}
+          </div>
+        );
+      })()}
 
       {/* STICKY SCROLL-SPY NAV — where am I + jump */}
       <nav style={{ position: "sticky", top: 0, zIndex: 20, background: "var(--bg)", borderBottom: "0.5px solid var(--border)" }}>
