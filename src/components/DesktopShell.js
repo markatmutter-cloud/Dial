@@ -54,6 +54,7 @@ export function DesktopShell(props) {
     listingsSubTabsJSX,
     referencesSubTabsJSX,
     trackNewItemModalJSX, watchSubTabsJSX, watchHeartedToggleJSX, collectionsSubTabsJSX, watchlistTabJSX,
+    saleContextHeaderJSX,
     watchboxTabJSX,
     referencesTabJSX, collectionsTabJSX,
     lotMigrationBannerJSX,
@@ -646,6 +647,9 @@ export function DesktopShell(props) {
           PR_W (2026-05-22): hidden when in cross-tab Search-all
           destination (SearchResultsView has its own header). */}
       {!anyShareActive && !searchAllActive && identityBandJSX}
+      {/* Catalog header sits ABOVE the filter bar — the sale frames the
+          filters (Mark 2026-06-01). Null unless inside one catalog. */}
+      {!anyShareActive && !searchAllActive && saleContextHeaderJSX}
       {/* watchHeartedToggleJSX is embedded inside filterRowJSX below
           (2026-05-08 — Mark feedback) so the Listings/Auctions/Sold
           pills sit on the same line as Date/Price/$Min/Source/Brand

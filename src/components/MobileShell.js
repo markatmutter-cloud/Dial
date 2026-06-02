@@ -59,6 +59,7 @@ export function MobileShell(props) {
     listingsSubTabsJSX,
     referencesSubTabsJSX,
     trackNewItemModalJSX, watchSubTabsJSX, watchHeartedToggleJSX, collectionsSubTabsJSX, watchlistTabJSX,
+    saleContextHeaderJSX,
     watchboxTabJSX,
     referencesTabJSX, collectionsTabJSX,
     lotMigrationBannerJSX,
@@ -262,6 +263,9 @@ export function MobileShell(props) {
               comparison or links"). Editorial keeps search (its
               filter strip has its own inline input on desktop;
               mobile uses the shell search row here). */}
+        {/* Catalog header ABOVE the filter/search row — the sale frames the
+            filters (Mark 2026-06-01). Null unless inside one catalog. */}
+        {!anyShareActive && saleContextHeaderJSX}
         {tab !== "watchlist"
           && !(tab === "listings" && listingsSubTab === "calendar")
           && !(tab === "references" && (referencesSubTab === "size" || referencesSubTab === "links"))

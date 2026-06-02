@@ -3700,59 +3700,69 @@ export default function Watchlist() {
       resetFilters={resetFilters}
     />
   );
+  // Catalog header — prominent, full-bleed, ABOVE the filter bar (Mark
+  // 2026-06-01). When you've drilled into one sale, the catalog IS the context
+  // the filters operate within, so it frames the grid rather than sitting in
+  // it as a card. Carries the exit, the sale's info hierarchy, the lot count,
+  // and a heart to save the whole catalog (→ Lists ▸ Hearted ▸ Sales).
+  const saleContextHeaderJSX = (
+    tab === "listings"
+    && (listingsSubTab === "auctions" || listingsSubTab === "sold")
+    && effectiveSaleUrls.length === 1
+    && salesByUrl.get(effectiveSaleUrls[0])
+  ) ? (() => {
+    const sale = salesByUrl.get(effectiveSaleUrls[0]);
+    const saved = savedAuctionUrlSet.has(sale.url);
+    return (
+      <div style={{
+        borderBottom: "0.5px solid var(--border)", background: "var(--bg)",
+        padding: isMobile ? "10px 14px 13px" : "14px 20px 16px",
+      }}>
+        <button onClick={() => setFilterSaleUrls([])}
+          title="Show all lots" aria-label="Exit auction"
+          style={{
+            display: "inline-flex", alignItems: "center", gap: 5, marginBottom: 8,
+            padding: 0, border: "none", background: "transparent", cursor: "pointer",
+            fontFamily: "inherit", fontSize: 12.5, fontWeight: 600, color: "var(--text2)",
+          }}>← Exit Auction</button>
+        <div style={{
+          fontSize: 11, fontWeight: 600, letterSpacing: "0.1em",
+          textTransform: "uppercase", color: "var(--brand-olive-text)",
+        }}>
+          {sale.house}{sale.location ? ` · ${sale.location}` : ""}{fmtSaleDateRange(sale) ? ` · ${fmtSaleDateRange(sale)}` : ""}
+        </div>
+        <div style={{
+          fontSize: isMobile ? 23 : 28, fontWeight: 700, color: "var(--text1)",
+          lineHeight: 1.12, marginTop: 5, letterSpacing: "-0.01em",
+        }}>{sale.title}</div>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 9 }}>
+          <span style={{ fontSize: 13, color: "var(--text2)" }}>{allFiltered.length} lots</span>
+          {user && (
+            <button onClick={() => toggleSavedAuction(sale.url)}
+              aria-label={saved ? "Saved — tap to remove" : "Save this catalog"}
+              style={{
+                display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer",
+                fontFamily: "inherit", fontSize: 12.5, fontWeight: 600, padding: "5px 12px",
+                borderRadius: 999, border: "0.5px solid var(--border)",
+                background: saved ? "var(--brand-olive-tint-12)" : "var(--surface)",
+                color: saved ? "var(--brand-olive-ink)" : "var(--text1)",
+              }}>
+              <span style={{ color: saved ? "var(--heart)" : "var(--text2)" }}>{saved ? "♥" : "♡"}</span>
+              {saved ? "Saved" : "Save catalog"}
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  })() : null;
+
   const listingsGridJSX = (
     <>
       {activeFiltersStripJSX}
-      {/* Sale-context header — shown only when the grid is pre-filtered
-          to ONE sale (clicked from the calendar). Replaces the retired
-          per-sale section dividers: house · title · date · lot count at
-          the top of that sale's filtered list (Mark spec 2026-05-26). */}
-      {(listingsSubTab === "auctions" || listingsSubTab === "sold")
-        && effectiveSaleUrls.length === 1
-        && salesByUrl.get(effectiveSaleUrls[0]) && (() => {
-        const sale = salesByUrl.get(effectiveSaleUrls[0]);
-        // Catalog-context card (Mark 2026-05-28): an olive-tinted bleed
-        // behind the title block so it reads as a distinct "you're inside
-        // one catalog" view, not just the auction grid. Holds the exit +
-        // the sale's info hierarchy. marginTop keeps it off the sticky
-        // filter bar (the grid sits flush otherwise — Mark).
-        return (
-          <div style={{
-            background: "var(--brand-olive-tint-12)", borderRadius: 14,
-            padding: "13px 16px 15px", marginTop: 12, marginBottom: 14,
-          }}>
-            {/* "Exit catalog" — the always-visible way out of a single-sale
-                view (2026-05-28). The only prior exit was the filter row's
-                "× Clear all", which on mobile sits at the end of an
-                overflow-scroll row and can scroll off-screen, stranding the
-                user. Lives in the card (not the chrome), so it's reachable on
-                both shells; clears only the sale filter. */}
-            <button onClick={() => setFilterSaleUrls([])}
-              title="Show all lots" aria-label="Exit auction"
-              style={{
-                display: "inline-flex", alignItems: "center", gap: 5, marginBottom: 9,
-                padding: 0, border: "none", outline: "none", background: "transparent",
-                cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap",
-                fontSize: 12.5, fontWeight: 600, letterSpacing: "0.01em", color: "var(--text2)",
-              }}>
-              ← Exit Auction
-            </button>
-            {/* Info hierarchy (Mark 2026-05-28): house · location · date
-                (eyebrow) → sale name (headline) → lot count. */}
-            <div style={{ fontSize: 11.5, color: "var(--text3)", fontWeight: 600, letterSpacing: "0.04em" }}>
-              <span style={{ textTransform: "uppercase", letterSpacing: "0.08em" }}>{sale.house}</span>
-              {sale.location ? ` · ${sale.location}` : ""}
-              {fmtSaleDateRange(sale) ? ` · ${fmtSaleDateRange(sale)}` : ""}
-            </div>
-            <div style={{ fontSize: 21, fontWeight: 700, color: "var(--text1)", lineHeight: 1.18, marginTop: 4, letterSpacing: "-0.01em" }}>
-              {sale.title}
-            </div>
-            <div style={{ fontSize: 13, color: "var(--text2)", marginTop: 5 }}>
-              {allFiltered.length} lots
-            </div>
-          </div>
-        );
-      })()}
+      {/* (The sale-context header moved ABOVE the filter bar — see
+          `saleContextHeaderJSX`, rendered at the shell level — so the catalog
+          you're inside frames the filters, not sits among the results. Mark
+          2026-06-01.) */}
       {/* Grid wrapper drops `overflow: hidden` + `borderRadius` (was
           there to clip the hairline-gap background to rounded corners)
           so the DateDivider inside can `position: sticky` against the
@@ -4760,6 +4770,7 @@ export default function Watchlist() {
     listingsSubTabsJSX,
     referencesSubTabsJSX,
     trackNewItemModalJSX, watchSubTabsJSX, watchHeartedToggleJSX, collectionsSubTabsJSX,
+    saleContextHeaderJSX,
     // Bundle 2A.2: shells render `watchlistTabJSX` for the Saved
     // tab — the value is now the dispatched content (Watchlist or
     // Collections style) computed by `savedContentJSX`.

@@ -46,6 +46,7 @@ export function buildMockShellProps(overrides = {}) {
     referencesSubTab: "editorial",
     hasFilters: false,
     activeFiltersStripJSX: null,
+    saleContextHeaderJSX: null,
     hiddenItems: [],
     maxPriceText: "",
     minPriceText: "",
