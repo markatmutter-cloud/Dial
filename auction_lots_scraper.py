@@ -52,7 +52,7 @@ import requests
 # Reuse the per-lot detail scrapers and currency conversion from the
 # user-tracked-lot pipeline. Same data shape comes back, so the JSON
 # we emit is interchangeable with public/tracked_lots.json.
-from auctionlots_scraper import (
+from tracked_lots_scraper import (
     scrape_catalog_antiquorum_lot,
     scrape_phillips_lot,
     scrape_antiquorum_lot,
@@ -159,7 +159,7 @@ OUTPUT_JSON = "public/auction_lots.json"
 # specific lot tracked that the comprehensive enumeration won't reach
 # (historical sales, lots dropped from current sales, houses with
 # broken enumeration). Each URL is dispatched to the matching
-# scrape_<house>_lot function from auctionlots_scraper.py and merged
+# scrape_<house>_lot function from tracked_lots_scraper.py and merged
 # into the output alongside the comprehensive scrape. Long-term
 # replaced by an admin form (Phase D); short-term Mark edits the
 # JSON file directly via the GitHub web editor.
@@ -2095,7 +2095,7 @@ def _phillips_lot_to_record(lot, auction_title, auction_start, auction_end, sale
 def _brace_match_json(text, start):
     """Walk balanced braces from `start` and return the substring that
     forms the outer JSON object. Mirrors the same brace counter used
-    in auctionlots_scraper.scrape_christies_lot — embedded strings can
+    in tracked_lots_scraper.scrape_christies_lot — embedded strings can
     contain unbalanced } so a regex-only approach is too fragile.
     """
     depth = 0

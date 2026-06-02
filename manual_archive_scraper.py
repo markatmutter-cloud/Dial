@@ -23,7 +23,7 @@ Usage:
     python3 manual_archive_scraper.py --url URL   # scrape one sale ad-hoc
 
 Reuses auction_lots_scraper.enumerate_phillips for lot enumeration
-and auctionlots_scraper.scrape_phillips_lot for per-lot detail. The
+and tracked_lots_scraper.scrape_phillips_lot for per-lot detail. The
 per-sale 60-lot cap from auction_lots_scraper.PHILLIPS_LOTS_PER_SALE
 is overridden here — historical sales aren't time-pressured CI runs.
 """
@@ -40,7 +40,7 @@ import requests
 # per-lot fetchers. enumerate_phillips already pulls /detail/<slug>/<id>
 # tile paths off the auction page; the cap there is a soft CI guard.
 import auction_lots_scraper as als
-import auctionlots_scraper as al
+import tracked_lots_scraper as al
 
 OUTPUT_PATH = "public/manual_archive_lots.json"
 REGISTRY_PATH = "data/manual_archive_sales.json"
