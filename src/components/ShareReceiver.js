@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { fmt, imgSrc, priceIn, FX_RATES_USD_PER } from "../utils";
 import { SharedReceiveFrame } from "./SharedReceiveFrame";
+import { askLumeAbout } from "./LumeBus";
 
 // Share-receive adapter for a single shared LISTING. Owns the URL parse + data
 // lookup + save logic (all hooks live INSIDE this component so App.js's hook
@@ -212,6 +213,7 @@ export function ShareReceiver({
       onSignIn={(!user && isAuthConfigured && signInWithGoogle) ? signInWithGoogle : null}
       onAddToList={(user && openCollectionPicker) ? () => openCollectionPicker(sharedItem) : null}
       onShare={handleShare ? () => handleShare(sharedItem) : null}
+      askLume={() => askLumeAbout(sharedItem)}
       busy={busy}
       navCues={navCues}
     />
