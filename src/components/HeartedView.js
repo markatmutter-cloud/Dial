@@ -3,18 +3,15 @@
 // The #1 usability fix (2026-06-01): getting back to your hearted things used
 // to be two steps (open Lists → "See all"). Now it IS the landing.
 //
-// A TYPE filter sits at the top — Watches · Articles · Sales (only types you
-// actually have; Watches default). This restores the per-type bookmark view
-// the old single-scroll "Saved" band carried (Phase 2a), now as the Hearted
-// surface's primary control:
+// A TYPE filter sits at the top — Watches · Articles · Guides (only types you
+// actually have; Watches default):
 //   • Watches — the standard Watches grid (same Card + gridStyle), the shared
 //     filter bar (Clear-all / Save-search — closes B-48 for Lists), newest-
 //     added default, plus a group-by control: None · Dealer · Brand. Grouped
 //     view orders groups by size (Other last), items newest-first within, with
 //     a sticky quick-jump chip row when ≥2 groups.
-//   • Articles — hearted editorial, rendered via the shared CardShell (square,
-//     source kicker, title) so they line up like the saved-articles grid.
-//   • Sales — hearted auction sales as image tiles; tap opens the sale's lots.
+//   • Articles / Guides — hearted editorial + reference guides, via CardShell.
+//   (Saved auction sales moved to a "Saved sales" section on the Lists sub-tab.)
 //
 // Self-contained ON PURPOSE: its type/group-by/scroll-spy hooks live here, not
 // in CollectionsTab/ListsView, so they can't shift that component's hook
@@ -26,7 +23,6 @@ import CardShell from "./CardShell";
 import { EmptyState } from "./EmptyState";
 import SubTabBar from "./SubTabBar";
 import { innerToggleButton } from "../styles";
-import { imgSrc } from "../utils";
 
 const GROUP_BY_KEY = "dial_hearted_group_by";
 const GROUP_OPTS = [
@@ -66,9 +62,6 @@ export default function HeartedView({
   items = [],          // hearted watches (no articles — App excludes kind==='article')
   articles = [],       // hearted articles (stored article-as-listing snapshots)
   guides = [],         // hearted reference guides (kind==='reference' snapshots)
-  auctions = [],       // hearted auction sales
-  onOpenSale,
-  onToggleSaveAuction,
   isMobile,
   gridStyle,
   compact,
@@ -101,8 +94,7 @@ export default function HeartedView({
     { key: "watches", label: "Watches", n: items.length },
     { key: "articles", label: "Articles", n: articles.length },
     { key: "guides", label: "Guides", n: guides.length },
-    { key: "sales", label: "Sales", n: auctions.length },
-  ].filter(o => o.key === "watches" || o.n > 0)), [items.length, articles.length, guides.length, auctions.length]);
+  ].filter(o => o.key === "watches" || o.n > 0)), [items.length, articles.length, guides.length]);
   const type = typeOptions.some(o => o.key === activeType) ? activeType : "watches";
 
   const groups = useMemo(
@@ -196,60 +188,10 @@ export default function HeartedView({
     />
   );
 
-  // Hearted auction sale → image tile; tap opens its lots.
-  const renderSale = (a) => {
-    const isLive = a.status === "live";
-    const isClosed = a.status === "past";
-    return (
-      <div key={a.url} role="button"
-        onClick={() => onOpenSale && onOpenSale(a)}
-        style={{
-          display: "flex", flexDirection: "column",
-          border: "0.5px solid var(--border)", borderRadius: 12, overflow: "hidden",
-          background: "var(--card-bg)", cursor: onOpenSale ? "pointer" : "default",
-        }}>
-        <div style={{
-          position: "relative", aspectRatio: "1 / 1", background: "var(--surface)",
-          overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center",
-        }}>
-          {a._heroImg ? (
-            <img src={imgSrc(a._heroImg)} alt="" loading="lazy"
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              onError={(e) => { e.currentTarget.style.visibility = "hidden"; }} />
-          ) : (
-            <span style={{ fontSize: 11, color: "var(--text3)", letterSpacing: "0.14em",
-              textTransform: "uppercase", fontWeight: 600, textAlign: "center", padding: 8 }}>
-              {a.house || "Auction"}
-            </span>
-          )}
-          {(isLive || isClosed) && (
-            <span style={{
-              position: "absolute", top: 8, left: 8, fontSize: 10, fontWeight: 600, color: "#fff",
-              background: isLive ? "#c43" : "#666", borderRadius: 8, padding: "2px 8px", letterSpacing: "0.06em",
-            }}>{isLive ? "LIVE" : "CLOSED"}</span>
-          )}
-          {onToggleSaveAuction && (
-            <button onClick={(e) => { e.stopPropagation(); onToggleSaveAuction(a.url); }}
-              aria-label="Remove this auction from saved" title="Saved — tap to remove"
-              style={{
-                position: "absolute", top: 8, right: 8, width: 28, height: 28, borderRadius: 999,
-                border: "none", background: "rgba(0,0,0,0.45)", color: "#fff", cursor: "pointer",
-                fontSize: 14, lineHeight: 1, display: "flex", alignItems: "center", justifyContent: "center",
-              }}>♥</button>
-          )}
-        </div>
-        <div style={{ padding: "8px 10px 10px" }}>
-          <div style={{ fontSize: 12, color: "var(--text2)", lineHeight: 1.3,
-            display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
-            {a.title || a.name || a.house || "Auction"}
-          </div>
-          {a.dateLabel && <div style={{ fontSize: 11, color: "var(--text3)", marginTop: 3 }}>{a.dateLabel}</div>}
-        </div>
-      </div>
-    );
-  };
+  // (Hearted "Sales" type retired 2026-06-01 — saved auction catalogs now live
+  // as a "Saved sales" section on the Lists sub-tab, not here.)
 
-  const hasAnything = items.length || articles.length || guides.length || auctions.length;
+  const hasAnything = items.length || articles.length || guides.length;
 
   // ── render ── (all hooks above this line)
   return (
@@ -281,11 +223,6 @@ export default function HeartedView({
           ? <EmptyState icon="📖" heading="No saved guides yet" size="compact"
               blurb="Heart a reference guide on the Collecting tab and it lands here." />
           : <div style={gridStyle}>{guides.map(renderGuide)}</div>
-      ) : type === "sales" ? (
-        auctions.length === 0
-          ? <EmptyState icon="🔨" heading="No saved sales yet" size="compact"
-              blurb="Heart a sale on the Auctions calendar to keep an eye on it here." />
-          : <div style={gridStyle}>{auctions.map(renderSale)}</div>
       ) : (
         // type === "watches"
         <>

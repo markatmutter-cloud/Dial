@@ -370,7 +370,7 @@ export default function Watchlist() {
   // 2026-06-01 Lists redesign: the Lists tab is sub-tabbed and LANDS ON
   // HEARTED by default. Four real sub-tabs, all rendered through
   // CollectionsTab (the WatchlistTab fork is retired for this tab).
-  const SUB_VALUES = ["hearted", "lists", "searches", "shared"];
+  const SUB_VALUES = ["hearted", "lists", "searches"];
   // Back-compat alias — the savedContentJSX dispatch + tabResetTick guard
   // reference this name. All four sub-tabs now route to CollectionsTab, so
   // SUB_VALUES_COLLECTIONS === SUB_VALUES.
@@ -387,7 +387,8 @@ export default function Watchlist() {
     // legacy hearted/collections subs collapse to the Hearted landing.
     const normalize = (v) => {
       if (SUB_VALUES.includes(v)) return v;
-      if (v === "challenges") return "lists";
+      // "shared" is now a SECTION inside the Lists sub-tab, not its own tab.
+      if (v === "challenges" || v === "shared") return "lists";
       // listings/auctions/sold/calendar/my-collection/wishlist/etc.
       return "hearted";
     };
@@ -4415,7 +4416,7 @@ export default function Watchlist() {
   const watchSubTabsJSX = tab !== "watchlist" ? null : (
     <SubTabBar
       ariaLabel="Lists views"
-      tabs={[["hearted", "♡ Saved"], ["lists", "Lists"], ["searches", "Searches"], ["shared", "Shared"]]}
+      tabs={[["hearted", "♡ Saved"], ["lists", "Lists"], ["searches", "Searches"]]}
       activeKey={watchTopTab}
       onSelect={(key) => { setWatchTopTab(key); setDrawerOpen(false); setPage(1); }}
       isMobile={isMobile}

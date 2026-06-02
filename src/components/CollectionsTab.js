@@ -685,9 +685,6 @@ export function CollectionsTab({
         items={watchItems}
         articles={heartedArticles}
         guides={heartedGuides}
-        auctions={savedAuctions || []}
-        onOpenSale={onOpenSale}
-        onToggleSaveAuction={onToggleSaveAuction}
         isMobile={isMobile}
         gridStyle={gridStyle}
         compact={compact}
@@ -2422,7 +2419,10 @@ function ListsView({
 
   return (
     <div style={{ paddingTop: isMobile ? 12 : 16, paddingBottom: isMobile ? 220 : 160 }}>
-      {/* LISTS — Watchbox vault anchor + your lists (cover cards) + Start CTA. */}
+      {/* LISTS — a sectioned page (Mark 2026-06-01): Watchbox vault anchor →
+          Your lists → Shared with you → Saved sales. Shared + Sales are card
+          sections here now (the separate "Shared" sub-tab + the Hearted "Sales"
+          type were retired in favour of these). */}
       {section === "lists" && (
         <>
           {user && goToWatchbox && (
@@ -2430,26 +2430,66 @@ function ListsView({
               <WLWatchboxVault counts={watchboxCounts} onOpen={goToWatchbox} />
             </div>
           )}
-          <WLCardGrid isMobile={isMobile}>
-            {ownedByRecency.map(c => (
-              <WLListCard key={c.id}
-                name={c.name}
-                images={listCoverImages(c, itemsByColl[c.id])}
-                chips={listFlavour(itemsByColl[c.id])}
-                shared={sharedListIds.has(c.id)}
-                isMobile={isMobile}
-                onOpen={() => setSelectedListId(c.id)}
-                onRename={setEditingCollection ? () => setEditingCollection({ id: c.id, name: c.name }) : undefined}
-                onDelete={deleteCollection ? async () => {
-                  if (await confirm({
-                    title: "Delete list?",
-                    message: `"${c.name}" will be removed. Items inside aren't deleted from your watchlist — they're just unbundled from this list.`,
-                    confirmLabel: "Delete", tone: "danger",
-                  })) await deleteCollection(c.id);
-                } : undefined} />
-            ))}
-            <WLStartCard isMobile={isMobile} onClick={startCreateCollection} />
-          </WLCardGrid>
+          <WLBand id="lists" kicker="Your lists" isMobile={isMobile}>
+            <WLCardGrid isMobile={isMobile}>
+              {ownedByRecency.map(c => (
+                <WLListCard key={c.id}
+                  name={c.name}
+                  images={listCoverImages(c, itemsByColl[c.id])}
+                  chips={listFlavour(itemsByColl[c.id])}
+                  shared={sharedListIds.has(c.id)}
+                  isMobile={isMobile}
+                  onOpen={() => setSelectedListId(c.id)}
+                  onRename={setEditingCollection ? () => setEditingCollection({ id: c.id, name: c.name }) : undefined}
+                  onDelete={deleteCollection ? async () => {
+                    if (await confirm({
+                      title: "Delete list?",
+                      message: `"${c.name}" will be removed. Items inside aren't deleted from your watchlist — they're just unbundled from this list.`,
+                      confirmLabel: "Delete", tone: "danger",
+                    })) await deleteCollection(c.id);
+                  } : undefined} />
+              ))}
+              <WLStartCard isMobile={isMobile} onClick={startCreateCollection} />
+            </WLCardGrid>
+          </WLBand>
+
+          {/* SHARED WITH YOU — collaborator lists + the shared-listings inbox. */}
+          {sharedRows.length > 0 && (
+            <WLBand id="shared" kicker="Shared with you" isMobile={isMobile}>
+              <WLCardGrid isMobile={isMobile}>
+                {sharedRows.map(c => {
+                  const isInbox = c.isSharedInbox;
+                  const items = isInbox ? [] : (itemsByColl[c.id] || []);
+                  return (
+                    <WLListCard key={c.id}
+                      name={isInbox ? "Shared listings" : c.name}
+                      images={listCoverImages(c, items)}
+                      chips={isInbox ? [] : listFlavour(items)}
+                      shared
+                      isMobile={isMobile}
+                      onOpen={() => setSelectedListId(c.id)} />
+                  );
+                })}
+              </WLCardGrid>
+            </WLBand>
+          )}
+
+          {/* SAVED SALES — hearted auction catalogs, as cards (Mark: a section
+              in Lists, not under Saved). Tap opens the sale's lots. */}
+          {savedAuctions && savedAuctions.length > 0 && (
+            <WLBand id="sales" kicker="Saved sales" isMobile={isMobile}>
+              <WLCardGrid isMobile={isMobile}>
+                {savedAuctions.map(a => (
+                  <WLListCard key={a.url}
+                    name={a.title || a.name || a.house || "Auction"}
+                    images={[a._heroImg].filter(Boolean)}
+                    chips={[a.house, a.dateLabel].filter(Boolean)}
+                    isMobile={isMobile}
+                    onOpen={() => onOpenSale && onOpenSale(a)} />
+                ))}
+              </WLCardGrid>
+            </WLBand>
+          )}
         </>
       )}
 
@@ -2481,29 +2521,6 @@ function ListsView({
         </WLBand>
       )}
 
-      {/* SHARED WITH YOU — collaborator lists + the shared inbox. */}
-      {section === "shared" && (
-        sharedRows.length > 0 ? (
-          <WLCardGrid isMobile={isMobile}>
-            {sharedRows.map(c => {
-              const isInbox = c.isSharedInbox;
-              const items = isInbox ? [] : (itemsByColl[c.id] || []);
-              return (
-                <WLListCard key={c.id}
-                  name={isInbox ? "Shared listings" : c.name}
-                  images={listCoverImages(c, items)}
-                  chips={isInbox ? [] : listFlavour(items)}
-                  shared
-                  isMobile={isMobile}
-                  onOpen={() => setSelectedListId(c.id)} />
-              );
-            })}
-          </WLCardGrid>
-        ) : (
-          <EmptyState icon="👥" heading="Nothing shared with you yet" size="compact"
-            blurb="When someone shares a list or a listing with you, it lands here." />
-        )
-      )}
     </div>
   );
 }
