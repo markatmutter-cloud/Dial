@@ -636,7 +636,7 @@ function DeferUntilVisible({ children, minHeight = 320, rootMargin = "600px" }) 
   return <div ref={ref} aria-hidden style={{ minHeight }} />;
 }
 
-function SectionStrip({ heading, descriptor, items, onViewAll, onScreen, screenCount, isMobile, watchlist, hidden, handleWish, toggleHide, toggleHomeHide, primaryCurrency, onShare, onView, onClickListing, openCollectionPicker, isAdmin, user, compact, inverted, shellPad, priorityFirst }) {
+function SectionStrip({ heading, descriptor, items, onViewAll, onScreen, screenCount, isMobile, watchlist, hidden, handleWish, toggleHide, primaryCurrency, onShare, onView, onClickListing, openCollectionPicker, isAdmin, user, compact, inverted, shellPad, priorityFirst }) {
   if (!items || items.length === 0) return null;
   const slice = items.slice(0, isMobile ? CARDS_PER_SECTION_MOBILE : CARDS_PER_SECTION_DESKTOP);
   // Inverted bleed (phase 4c, 2026-05-11): one section gets a dark
@@ -750,25 +750,8 @@ function SectionStrip({ heading, descriptor, items, onViewAll, onScreen, screenC
               onAddToCollection={user ? openCollectionPicker : undefined}
               primaryCurrency={primaryCurrency}
               onShare={onShare} onView={onView} onClickListing={onClickListing} />
-            {isAdmin && toggleHomeHide && (
-              <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleHomeHide(item.id); }}
-                aria-label="Hide from Home"
-                title="Hide from Home (this page only)"
-                style={{
-                  position: "absolute", top: 6, left: 6, zIndex: 5,
-                  width: 26, height: 26, borderRadius: "50%",
-                  border: "none",
-                  background: "rgba(0,0,0,0.55)", color: "#fff",
-                  cursor: "pointer", fontFamily: "inherit",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  padding: 0,
-                }}>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
-              </button>
-            )}
+            {/* Home-only "×" overlay retired 2026-06-01 (Mark): admin Hide
+                ("Hide everywhere", in the ⋯ menu) is the single curation tool. */}
           </>
         )}
       />
@@ -925,7 +908,7 @@ export function HomeTab(props) {
     goToSavedLists, goToMyWatches, goToChallenges,
     openAbout, signInWithGoogle,
     isMobile,
-    watchlist, hidden, handleWish, toggleHide, toggleHomeHide, primaryCurrency,
+    watchlist, hidden, handleWish, toggleHide, primaryCurrency,
     onShare, onView, onClickListing, openCollectionPicker, isAdmin,
     user, compact,
     feedScreenerItemsCount, openFeedScreener,
@@ -1068,7 +1051,7 @@ export function HomeTab(props) {
         screenCount={feedScreenerItemsCount}
         isMobile={isMobile} shellPad={shellPad}
         watchlist={watchlist} hidden={hidden} handleWish={handleWish}
-        toggleHide={toggleHide} toggleHomeHide={toggleHomeHide} primaryCurrency={primaryCurrency}
+        toggleHide={toggleHide} primaryCurrency={primaryCurrency}
         onShare={onShare} onView={onView} onClickListing={onClickListing}
         openCollectionPicker={openCollectionPicker} isAdmin={isAdmin}
         user={user} compact={compact}
@@ -1116,7 +1099,7 @@ export function HomeTab(props) {
             onViewAll={goToRecentSold}
             isMobile={isMobile} shellPad={shellPad}
             watchlist={watchlist} hidden={hidden} handleWish={handleWish}
-            toggleHide={toggleHide} toggleHomeHide={toggleHomeHide} primaryCurrency={primaryCurrency}
+            toggleHide={toggleHide} primaryCurrency={primaryCurrency}
             onShare={onShare} onView={onView} onClickListing={onClickListing}
             openCollectionPicker={openCollectionPicker} isAdmin={isAdmin}
             user={user} compact={compact}
@@ -1135,7 +1118,7 @@ export function HomeTab(props) {
             onViewAll={goToSavedHearts}
             isMobile={isMobile} shellPad={shellPad}
             watchlist={watchlist} hidden={hidden} handleWish={handleWish}
-            toggleHide={toggleHide} toggleHomeHide={toggleHomeHide} primaryCurrency={primaryCurrency}
+            toggleHide={toggleHide} primaryCurrency={primaryCurrency}
             onShare={onShare} onView={onView} onClickListing={onClickListing}
             openCollectionPicker={openCollectionPicker} isAdmin={isAdmin}
             user={user} compact={compact}
@@ -1150,7 +1133,7 @@ export function HomeTab(props) {
             onViewAll={goToEndingNext}
             isMobile={isMobile} shellPad={shellPad}
             watchlist={watchlist} hidden={hidden} handleWish={handleWish}
-            toggleHide={toggleHide} toggleHomeHide={toggleHomeHide} primaryCurrency={primaryCurrency}
+            toggleHide={toggleHide} primaryCurrency={primaryCurrency}
             onShare={onShare} onView={onView} onClickListing={onClickListing}
             openCollectionPicker={openCollectionPicker} isAdmin={isAdmin}
             user={user} compact={compact}

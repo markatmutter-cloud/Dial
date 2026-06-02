@@ -803,7 +803,9 @@ export default function Watchlist() {
   // on Home cards writes here; the rest of the site reads through
   // hidden / adminHidden and is unaffected. See useHomeHidden for
   // the rationale.
-  const { ids: homeHidden, toggle: toggleHomeHide } = useHomeHidden();
+  // homeHidden still filters items previously hidden-from-home; the home "×"
+  // toggle was retired 2026-06-01 (Mark) — admin Hide is the single tool now.
+  const { ids: homeHidden } = useHomeHidden();
   // Recent-search history for the Home search bar. MRU-first array
   // of up to 6 strings, persisted in localStorage. addRecent fires
   // on Enter / target-pick / chip-tap from the dropdown.
@@ -4141,8 +4143,6 @@ export default function Watchlist() {
       openAbout={() => setAboutModalOpen(true)}
       signInWithGoogle={triggerSignInPrompt}
       // Admin × overlay on Home cards writes here (Home-only hide).
-      // Wired only for admin; HomeTab gates the overlay render too.
-      toggleHomeHide={isAdmin ? toggleHomeHide : undefined}
       // Signed-in user's most-recently hearted strip + View-all route.
       homeRecentlyHearted={homeRecentlyHearted}
       // B-08: Watchlists is one unified screen; saved hearts live in
