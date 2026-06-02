@@ -64,6 +64,19 @@ export function buildReferenceTree(nodes = REFERENCE_NODES) {
   return brands;
 }
 
+// Rough recency for the card ordering on the Reference-guides landing
+// (newest-updated first). A node may carry its own `updatedAt`; this map is
+// the fallback/source for now. Update when a guide is meaningfully revised.
+const REFERENCE_UPDATED_AT = {
+  "rolex-submariner-5512-5513": "2026-05-24",
+  "omega-seamaster-300-165024": "2026-05-29",
+  "omega-railmaster-ck2914": "2026-05-30",
+  "jlc-shark-vogue-e2643": "2026-05-31",
+};
+export function referenceUpdatedAt(node) {
+  return (node && (node.updatedAt || REFERENCE_UPDATED_AT[node.id])) || "";
+}
+
 // Project a reference node into the listing-shaped object the save/heart
 // machinery stores (mirrors articleAsListing). `kind:"reference"` discriminates
 // it in the watchlist; the stable id is derived from node.id. Lets a reference
