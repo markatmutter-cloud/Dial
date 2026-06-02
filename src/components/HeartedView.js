@@ -25,19 +25,15 @@ import SubTabBar from "./SubTabBar";
 import { PageHeader } from "./PageHeader";
 import { innerToggleButton } from "../styles";
 
-const GROUP_BY_KEY = "dial_hearted_group_by";
-const GROUP_OPTS = [
-  { key: "none", label: "None" },
-  { key: "dealer", label: "Dealer" },
-  { key: "brand", label: "Brand" },
-];
-
 const slugify = (s) =>
   "hg-" + String(s || "other").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 
-function buildGroups(items, groupBy) {
-  if (groupBy === "none") return null;
-  const keyOf = groupBy === "dealer"
+// Group hearted watches by brand or source, ordered by GROUP SIZE (Mark
+// 2026-06-02). `dir` flips the size order like a sort arrow: "desc" = most
+// listings first (Rolex leads), "asc" = least first. "Other" always trails.
+function buildGroups(items, groupBy, dir = "desc") {
+  if (groupBy !== "brand" && groupBy !== "source") return null;
+  const keyOf = groupBy === "source"
     ? (it) => (it.source && it.source !== "—" ? it.source : "Other")
     : (it) => (it.brand ? it.brand : "Other");
   const map = new Map();
@@ -49,11 +45,13 @@ function buildGroups(items, groupBy) {
   const groups = [...map.entries()].map(([label, list]) => ({
     id: slugify(label), label, items: list,
   }));
-  // size desc; "Other" bucket always last regardless of size; alpha tiebreak.
+  // By size (dir); "Other" bucket always last regardless of size; alpha tiebreak.
   groups.sort((a, b) => {
     const aOther = a.label === "Other", bOther = b.label === "Other";
     if (aOther !== bOther) return aOther ? 1 : -1;
-    if (b.items.length !== a.items.length) return b.items.length - a.items.length;
+    if (b.items.length !== a.items.length) {
+      return dir === "asc" ? a.items.length - b.items.length : b.items.length - a.items.length;
+    }
     return a.label.localeCompare(b.label);
   });
   return groups;
@@ -75,19 +73,14 @@ export default function HeartedView({
   onClickListing,
   user,
   activeFiltersStripJSX,
+  // Group control now lives in the shell's sort-pill cluster (Mark 2026-06-02);
+  // App owns the state and passes it down. "none" | "brand" | "source" + a
+  // size-order direction. Older builds kept this local to HeartedView.
+  groupBy = "none",
+  groupDir = "desc",
 }) {
-  const [groupBy, setGroupBy] = useState(() => {
-    try {
-      const v = localStorage.getItem(GROUP_BY_KEY);
-      return GROUP_OPTS.some(o => o.key === v) ? v : "none";
-    } catch { return "none"; }
-  });
   const [activeType, setActiveType] = useState("watches");
   const [activeGroup, setActiveGroup] = useState(null);
-
-  useEffect(() => {
-    try { localStorage.setItem(GROUP_BY_KEY, groupBy); } catch {}
-  }, [groupBy]);
 
   // Type options — only show a type you actually have (Watches always shows,
   // even at zero, since it's the surface's reason for being).
@@ -99,8 +92,8 @@ export default function HeartedView({
   const type = typeOptions.some(o => o.key === activeType) ? activeType : "watches";
 
   const groups = useMemo(
-    () => (type === "watches" ? buildGroups(items, groupBy) : null),
-    [type, items, groupBy]
+    () => (type === "watches" ? buildGroups(items, groupBy, groupDir) : null),
+    [type, items, groupBy, groupDir]
   );
   const showQuickJump = !!groups && groups.length >= 2;
 
@@ -232,18 +225,9 @@ export default function HeartedView({
         // type === "watches"
         <>
           {activeFiltersStripJSX}
-          {items.length > 0 && (
-            <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 6, padding: "4px 0 12px" }}>
-              <span style={{
-                fontSize: 11, fontWeight: 600, letterSpacing: "0.12em",
-                textTransform: "uppercase", color: "var(--text3)", marginRight: 4,
-              }}>Group</span>
-              {GROUP_OPTS.map(o => (
-                <button key={o.key} onClick={() => setGroupBy(o.key)}
-                  style={innerToggleButton(groupBy === o.key)}>{o.label}</button>
-              ))}
-            </div>
-          )}
+          {/* Group control retired here (Mark 2026-06-02) — grouping by brand /
+              source now lives in the shell's sort-pill cluster (Brand ↓ / Source
+              ↓), ordered by group size with the arrow. */}
 
           {showQuickJump && (
             <SubTabBar

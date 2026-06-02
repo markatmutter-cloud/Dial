@@ -33,6 +33,7 @@ export function MobileShell(props) {
     tab, user, visibleBrands, visibleSources, visibleModels,
     MODELS, MODELS_SHOW,
     watchTopTab, watchlist,
+    heartedGroupBy = "none", setHeartedGroupBy, heartedGroupDir = "desc", setHeartedGroupDir,
     // Setters / handlers
     handleWish, openFavPrompt, resetFilters,
     onOpenCalendar,
@@ -432,6 +433,21 @@ export function MobileShell(props) {
               }} style={pillBase(active)}>{label}</button>
             );
           })()}
+          {/* Group-by pills — Saved surface only (Mark 2026-06-02). Brand /
+              Source grouping ordered by group size; arrow flips most-first ↔
+              least-first, like the Date/Price pills. Replaces the GROUP bar. */}
+          {tab === "watchlist" && watchTopTab === "hearted" && ["brand", "source"].map((key) => {
+            const active = heartedGroupBy === key;
+            const labelBase = key === "brand" ? "Brand" : "Source";
+            const text = active ? `${labelBase} ${heartedGroupDir === "asc" ? "↑" : "↓"}` : labelBase;
+            return (
+              <button key={key} onClick={() => {
+                if (!active) { setHeartedGroupBy && setHeartedGroupBy(key); setHeartedGroupDir && setHeartedGroupDir("desc"); }
+                else if (heartedGroupDir === "desc") setHeartedGroupDir && setHeartedGroupDir("asc");
+                else setHeartedGroupBy && setHeartedGroupBy("none");
+              }} style={pillBase(active)}>{text}</button>
+            );
+          })}
           {/* Lot # pill retired 2026-05-07 (Mark feedback) — catalog
               ordering is now baked into the default Date sort via
               endingSoonComparator's lot_number tiebreaker. */}
