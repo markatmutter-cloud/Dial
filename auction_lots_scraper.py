@@ -222,15 +222,24 @@ def is_excluded_title(title):
 EXCLUDE_CATALOG_TITLES = [
     "Noble & Private Collections",   # Sotheby's L26035 — jewels/art, 245 lots
     "Espionage: Fact & Fiction",     # Bonhams 32384 — spy memorabilia
+    "Fine Jewelry",                  # Sotheby's L26050 — jewels (~6 watches in ~225 lots);
+                                     # recurring Sotheby's sale name, all non-watch
 ]
+# URL-slug blocklist — the calendar sometimes carries a MISLEADING title: the
+# Sotheby's L26050 jewels sale is cross-listed in the watches category with the
+# generic title "Fine Watches" but a `…/fine-jewelry-l26050` URL. Title alone
+# can't catch it, so also block by URL slug. (LOCKSTEP with merge.py.)
+EXCLUDE_CATALOG_URL_SLUGS = ["fine-jewelry", "jewels", "jewellery", "jewelry"]
 
 
-def is_excluded_catalog(title):
-    """True iff the SALE/catalog title is a blocklisted non-watch sale."""
-    if not title:
-        return False
-    t = title.lower()
-    return any(x.lower() in t for x in EXCLUDE_CATALOG_TITLES)
+def is_excluded_catalog(title, url=""):
+    """True iff the SALE/catalog is a blocklisted non-watch sale —
+    by title OR by URL slug (the calendar title can be misleading)."""
+    t = (title or "").lower()
+    if any(x.lower() in t for x in EXCLUDE_CATALOG_TITLES):
+        return True
+    u = (url or "").lower()
+    return any(x in u for x in EXCLUDE_CATALOG_URL_SLUGS)
 
 
 # ── Date window helper ───────────────────────────────────────────────────

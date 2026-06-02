@@ -1011,15 +1011,25 @@ def load_json(path, default):
 EXCLUDE_CATALOG_TITLES = [
     "Noble & Private Collections",   # Sotheby's L26035 — jewels/art, 245 lots
     "Espionage: Fact & Fiction",     # Bonhams 32384 — spy memorabilia
+    "Fine Jewelry",                  # Sotheby's L26050 — jewels (~6 watches in ~225 lots);
+                                     # recurring Sotheby's sale name, all non-watch
 ]
+# URL-slug blocklist — the calendar sometimes carries a MISLEADING title: the
+# Sotheby's L26050 jewels sale is cross-listed in the watches category with the
+# generic title "Fine Watches" but a `…/fine-jewelry-l26050` URL. Title alone
+# can't catch it, so also block by URL slug. Any path containing one of these is
+# a non-watch sale. (LOCKSTEP with auction_lots_scraper.py — keep in sync.)
+EXCLUDE_CATALOG_URL_SLUGS = ["fine-jewelry", "jewels", "jewellery", "jewelry"]
 
 
-def is_excluded_catalog(title):
-    """True iff the SALE/catalog title is a blocklisted non-watch sale."""
-    if not title:
-        return False
-    t = title.lower()
-    return any(x.lower() in t for x in EXCLUDE_CATALOG_TITLES)
+def is_excluded_catalog(title, url=""):
+    """True iff the SALE/catalog is a blocklisted non-watch sale —
+    by title OR by URL slug (the calendar title can be misleading)."""
+    t = (title or "").lower()
+    if any(x.lower() in t for x in EXCLUDE_CATALOG_TITLES):
+        return True
+    u = (url or "").lower()
+    return any(x in u for x in EXCLUDE_CATALOG_URL_SLUGS)
 
 
 def auction_id(house, date_start, title):
@@ -1109,7 +1119,7 @@ def process_auctions():
                 continue
             # Catalog-level exclusion: never let a blocklisted non-watch
             # sale into the registry (so it stops being refreshed/re-added).
-            if is_excluded_catalog(title):
+            if is_excluded_catalog(title, url):
                 continue
 
             aid = auction_id(house, date_start or title, title)
@@ -1171,7 +1181,7 @@ def process_auctions():
             continue
         # Catalog-level exclusion: don't emit a blocklisted non-watch sale
         # even if a stale registry entry persists from before the blocklist.
-        if is_excluded_catalog(title):
+        if is_excluded_catalog(title, entry.get('url') or entry.get('lastUrl') or ''):
             continue
         date_start = entry.get('dateStart') or ''
         date_end   = entry.get('dateEnd') or date_start
