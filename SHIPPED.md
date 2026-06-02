@@ -74,6 +74,12 @@ within each section roughly last.
   `SubTabIntro.js`; marked `useLastVisit.js` DORMANT (planned pulse consumer);
   kept Eyebrow/windvintage/ListReviewMode (finder mis-called them). Thread stays
   open as a recurring sweep (#678).
+- **2026-06-02 — Brand-aware reference matching + Explorer fix (B-54, #773).**
+  `match_against_index` now prefers a same-brand token, so a leading year that
+  collides with another brand's ref (1991→Cartier) can't shadow the real ref;
+  fixed the curated index (Explorer refs were orphaned under a parser-invisible
+  label; 14270 mis-parked under Submariner). Re-tags 29 rows on next scrape.
+  Spun off B-57 (same-brand collision sweep).
 
 ## Epic 1 — Sources
 
@@ -97,6 +103,13 @@ within each section roughly last.
   Server-rendered index walker (`requests`, no key), reachable from CI. Browse
   AI now fully removed from the project; sold-price history preserved via the
   URL-hash IDs (#586/#587).
+- **2026-06-02 — Pascal Karp (Brussels) dealer source (#772).** Shopify
+  `products.json` clone of the Falco pattern, EUR; brand left "Other" so
+  merge.py owns resolution (no "TAG Heuer"→"Heuer" override, no third brand list).
+- **2026-06-02 — Chrono24 per-reference scraper, residential (#775).** curl-cffi
+  Chrome impersonation (CI gets 403, like Bonhams), JSON-LD AggregateOffer parse;
+  narrow by design (JLC E2643 test), own `chrono24_lots.json` folded into Listings
+  + the reference-guide filter. Manual-run for now; launchd later.
 
 ## Epic 2 — Auction houses
 
@@ -225,6 +238,10 @@ within each section roughly last.
   preview + print-to-scale on US Letter via React Portal pattern.
 - **2026-05-XX — Curated link aggregator (Collecting > Links).**
   Dealers / References / Topics accordion sections.
+- **2026-06-02 — Editorial corpus scrape twice weekly (B-28, #774).** Cron
+  Sun→Sun+Wed for fresher article rotation. LLM topic-tagger stays Sunday-only
+  by design (Wed articles tag the following Sunday) — recorded in both workflow
+  headers; themes are recommender substrate, not UI-surfaced.
 
 ## Epic 6 — Collection mentality
 

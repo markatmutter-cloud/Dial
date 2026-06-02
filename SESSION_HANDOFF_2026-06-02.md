@@ -77,3 +77,57 @@ Mark's **laptop LaunchAgent** (`bonhams_lots.json` commits ~3×/day). BUGS updat
   to git though their content shipped. Safe to prune; awaiting Mark's ok.
 - Pre-existing untracked files (`The Watch List — what Mark built.md`,
   `docs/WATCH_LEXICON.md`) are not ours — leave them.
+
+---
+
+# Addendum — scraping / data session (#772–#775, all merged)
+
+A second session the same day, off clean `main`. Four independent branches, each
+its own PR, all green + merged.
+
+- **Pascal Karp dealer source (#772).** Brussels Shopify shop; clone of
+  `falco_scraper.py` → `pascalkarp_scraper.py` + one `merge.py` SOURCES line (EUR)
+  + a `scrape-listings.yml` step. Brand emitted as "Other" on purpose — merge.py's
+  `load_csv` re-derives from the title (its `detect_brand` orders Tag Heuer before
+  Heuer + has accent aliases), so a naive scraper guess can't override it. 74 live
+  listings.
+- **B-54 Explorer 14270 (#773) — deeper than reported.** TWO bugs: (1) the
+  `Explorer / Explorer II` model line stored refs under `**Refs (Explorer)**`, a
+  label `parse_index` ignores (only honours literal `**Refs**:`, and *overwrites*
+  on a 2nd) → the whole Explorer set was orphaned (`refs: []`); 14270 only matched
+  via a workaround entry under Submariner. (2) `match_against_index` was
+  brand-blind → a leading year colliding with another brand's ref (1991→Cartier
+  Panthère) won the first-token match, then merge's cross-pollination guard nulled
+  it. Fix: merge Explorer refs onto one `**Refs**:` line + remove from Submariner +
+  brand-aware token selection (optional `brand` arg; editorial callers unchanged).
+  `model_line` isn't persisted in state.json, so the next scrape re-tags all 29
+  affected rows. Regression test `tests/test_reference_match.py`. **Spun off B-57**
+  (same-brand ref-collision sweep — Patek 5236P, Cartier WJTA0001, IWC IW5004, …;
+  do NOT auto-edit, esp. Heuer Camaro/Carrera per Mark's standing note).
+- **Editorial corpus twice weekly (B-28, #774).** Cron `0 16 * * 0` → `0,3`.
+  **Deliberate cadence mismatch recorded** (Mark's call): the LLM topic-tagger
+  (`index-corpus-topics.yml`, Haiku) stays Sunday-only, so Wednesday's articles
+  get `themes` the following Sunday. Documented in both workflow headers.
+- **Chrono24 per-reference, residential (#775).** Feasibility proven live:
+  curl-cffi Chrome impersonation gets 200 where plain curl/`requests` get 403
+  (CI can't — datacenter IPs blocked, like Bonhams). Data via JSON-LD
+  `AggregateOffer` (not HTML); `&dosearch=true` is required or the page is an empty
+  JS landing. `chrono24_lots_scraper.py` is **narrow on purpose** (REFERENCES list,
+  seeded with JLC E2643) → own `public/chrono24_lots.json` → folded into
+  `mainFeedItems` (shows in Listings) + the references array (E2643 guide filters
+  it). **Laptop-manual for now** (no launchd yet); ops notes in
+  `scripts/RESIDENTIAL_SCRAPE_SETUP.md`.
+
+## Gotchas reinforced (this addendum)
+- **merge.py TRUSTS a scraper's known-brand value over its own title detection**
+  (`load_csv`). A new dealer scraper should emit "Other" unless it has *structured*
+  brand data better than the title — otherwise a naive substring guess overrides
+  merge's priority-ordered detection.
+- **The reference matcher's first-token-wins was the real "mislabel" engine.**
+  Years/short tokens that are another brand's ref shadow the real ref; the
+  brand-aware fix is the general cure (B-57 is the remaining same-brand residue).
+- **Chrono24 = Bonhams pattern, but JSON-LD not HTML.** curl-cffi + `&dosearch=true`
+  + parse the `AggregateOffer`. Residential only; `priceCurrency` is authoritative.
+- **No node/npm on this machine** (B-16) — can't run jest/CRA build locally; rely
+  on CI + Vercel. The B-21 service-worker drift guard caught the missing
+  `chrono24_lots.json` registration (fixed pre-merge).
