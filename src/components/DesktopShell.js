@@ -103,6 +103,16 @@ export function DesktopShell(props) {
   // Calendar sub-tab has no filterable list — hide the row.
   const showListingsFilterRow = !(tab === "listings" && listingsSubTab === "calendar");
 
+  // Collapsing header for a single auction catalog (Mark 2026-06-02): inside
+  // ONE sale the catalog title scrolls away while the filter bar pins. We move
+  // both INTO the scroll pane — title in normal flow (scrolls), filter in a
+  // sticky wrapper (pins). `saleContextHeaderJSX` is non-null only in a single
+  // catalog, and that grid is flat (no date dividers — App.js singleCatalog),
+  // so the sticky filter has nothing to fight at top:0. Non-catalog surfaces
+  // keep the filter in the fixed chrome above the pane (their date dividers
+  // stick cleanly below it).
+  const inCatalog = !anyShareActive && !searchAllActive && !!saleContextHeaderJSX;
+
   // (sidebarToggleJSX retired — desktop sidebar removed in the April '26
   // filter-consolidation pass; toggle const + render slot deleted in the
   // 2026-05-04 cleanup pass.)
@@ -674,9 +684,10 @@ export function DesktopShell(props) {
           PR_W (2026-05-22): hidden when in cross-tab Search-all
           destination (SearchResultsView has its own header). */}
       {!anyShareActive && !searchAllActive && identityBandJSX}
-      {/* Catalog header sits ABOVE the filter bar — the sale frames the
-          filters (Mark 2026-06-01). Null unless inside one catalog. */}
-      {!anyShareActive && !searchAllActive && saleContextHeaderJSX}
+      {/* Catalog header + its filter bar moved INTO the scroll pane (Mark
+          2026-06-02) so the title scrolls away and the filter pins — see the
+          inCatalog block inside data-desktop-main below. Outside a catalog the
+          filter bar still renders here, in the fixed chrome above the pane. */}
       {/* watchHeartedToggleJSX is embedded inside filterRowJSX below
           (2026-05-08 — Mark feedback) so the Listings/Auctions/Sold
           pills sit on the same line as Date/Price/$Min/Source/Brand
@@ -687,6 +698,9 @@ export function DesktopShell(props) {
           compat with the mock fixture. */}
       {(() => {
         if (anyShareActive || searchAllActive || tab === "home") return null;
+        // In a single catalog the filter bar renders INSIDE the pane (sticky,
+        // below the scrolling title) — see the inCatalog block below.
+        if (inCatalog) return null;
         const showFullFilterRow =
           (tab === "listings" && showListingsFilterRow) ||
           inListsDrillIn ||
@@ -741,6 +755,25 @@ export function DesktopShell(props) {
               recipient gets a clean first-impression page. */}
           {!anyShareActive && (
             <>
+              {/* Single-catalog collapsing header (Mark 2026-06-02): the sale
+                  title scrolls away in normal flow; the filter bar pins via a
+                  sticky wrapper at the top of the pane. Both bleed edge-to-edge
+                  (negative margins cancel the pane's 20px padding, mirroring
+                  EditorialView's sticky filter). The catalog grid is flat (no
+                  date dividers), so top:0 has nothing to collide with. */}
+              {inCatalog && (
+                <>
+                  <div style={{ marginLeft: -20, marginRight: -20 }}>{saleContextHeaderJSX}</div>
+                  <div style={{
+                    position: "sticky", top: 0, zIndex: 15,
+                    background: "var(--bg)",
+                    marginLeft: -20, marginRight: -20,
+                    paddingLeft: 20, paddingRight: 20,
+                  }}>
+                    {filterRowJSX}
+                  </div>
+                </>
+              )}
               {/* identityBandJSX moved to chrome stack 2026-05-21
                   (PR_Y4): sits between sub-tabs and filter row up
                   there, no longer inside the scroll content. */}

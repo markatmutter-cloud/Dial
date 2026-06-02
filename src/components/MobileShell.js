@@ -263,9 +263,10 @@ export function MobileShell(props) {
               comparison or links"). Editorial keeps search (its
               filter strip has its own inline input on desktop;
               mobile uses the shell search row here). */}
-        {/* Catalog header ABOVE the filter/search row — the sale frames the
-            filters (Mark 2026-06-01). Null unless inside one catalog. */}
-        {!anyShareActive && saleContextHeaderJSX}
+        {/* Catalog header moved OUT of the sticky chrome into the scroll body
+            (Mark 2026-06-02) so it scrolls away while the tabs + filter pills
+            stay pinned — see the saleContextHeaderJSX render in the body
+            below. */}
         {tab !== "watchlist"
           && !(tab === "listings" && listingsSubTab === "calendar")
           && !(tab === "references" && referencesSubTab !== "editorial")
@@ -522,6 +523,12 @@ export function MobileShell(props) {
             sees a clean first-impression page. */}
         {!anyShareActive && (
           <div style={{ padding: `${tab === "watchlist" ? 0 : 12}px 16px 32px` }}>
+            {/* Catalog header scrolls here (Mark 2026-06-02), bleeding to the
+                screen edges past the body's 16px padding; the filter pills stay
+                pinned in the sticky chrome above. Null unless in one catalog. */}
+            {!searchAllActive && saleContextHeaderJSX && (
+              <div style={{ marginLeft: -16, marginRight: -16 }}>{saleContextHeaderJSX}</div>
+            )}
             {/* identityBandJSX moved into the sticky chrome stack
                 2026-05-21 (PR_Y4) — sits between sub-tabs and the
                 search row up there. Scroll content starts clean. */}
