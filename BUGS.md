@@ -230,6 +230,10 @@ install/decision tails remaining.*
 ### ◆ One-off (no epic)
 *Small correctness fix.*
 
+### B-55 — Auction catalog → Listings tab keeps the auction source filter on (empty grid)
+- **Reported:** 2026-06-02 · **Type:** Filter-state bleak across tabs · **Severity:** 2 (recoverable via Clear filters, but reads as broken — "Nothing matches" / "0 watches") · **Surface:** Listings tab after viewing an auction catalog · **Status:** OPEN.
+- **Detail:** From an auction catalog, tapping the **Listings/Watches** tab lands on Listings with the **auction sale's source filter still applied**, so the live grid shows nothing ("Nothing matches · Loosen the filters"). #744 reset-to-base on *return to Auctions* but not on the cross-tab jump *out* to Listings. Expected: switching to the Listings tab from a catalog **resets filters to default**. Likely `setTab("listings")` (or the tab handler) should clear the sale-context source filter / `effectiveSaleUrls` when leaving the catalog.
+
 ### B-26 — A shared item leaks into the brand-filtered Listings grid · Fixed #674
 - **Reported:** 2026-05-26 · **Status:** RESOLVED 2026-05-29 (#674 code + #679 data). Root cause was a single brand-misclassification, **not** a leak: a Wind Vintage "Richard Mille RM 002-V2" had its brand undetected (RM was on neither brand-detection list), so the matcher matched the bare "002" against Enicar's ref 002 and stamped `brand: Enicar`. Fixed by adding "Richard Mille" to `merge.py` BRANDS + `utils.js` FRONTEND_BRANDS (the cross-pollination guard then rejects the hit) + correcting the cached `lastBrand` in `state.json`. **The `/share/484b…` link was a red herring** — it's just this listing's own id (share URLs are built from the id), not another user's shared item, so there was no cross-user privacy leak. (The `state.json` fix was re-landed in #679 after a scrape-commit race clobbered the first one.)
 
