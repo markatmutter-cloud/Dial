@@ -8,7 +8,9 @@ import {
   REFERENCE_NODES_BY_ID,
   isLiveNode,
   referenceUpdatedAt,
+  referenceAsListing,
 } from "../data/referencePages";
+import { askLumeAbout } from "./LumeBus";
 
 // Reference browse surface (Collecting ▸ Reference guides).
 //
@@ -154,7 +156,10 @@ export function ReferenceBrowse(props) {
         }}>
           {cards.map((n) => (
             <RefGuideCard key={n.id} node={n} isMobile={isMobile}
-              onClick={() => go({ level: "node", nodeId: n.id })} />
+              onClick={() => go({ level: "node", nodeId: n.id })}
+              watchlist={props.watchlist} handleWish={props.handleWish}
+              openCollectionPicker={props.openCollectionPicker} handleShare={props.handleShare}
+              user={props.user} />
           ))}
         </div>
       )}
@@ -164,47 +169,93 @@ export function ReferenceBrowse(props) {
 
 // ── Presentational helpers ────────────────────────────────────────
 
-// Article-style guide card: hero on top, brand·model kicker, serif reference name.
-function RefGuideCard({ node, isMobile, onClick }) {
+// Article-style guide card: hero on top, brand·model kicker, serif reference
+// name. Carries the same heart + ⋯ actions as article cards (Mark 2026-06-02)
+// — save / add to list / share / Ask Lumé — via referenceAsListing(node).
+function RefGuideCard({ node, isMobile, onClick, watchlist, handleWish, openCollectionPicker, handleShare, user }) {
+  const [menuOpen, setMenuOpen] = useState(false);
   const coming = !isLiveNode(node);
   const title = node.group || (node.refs || []).join(" / ");
+  const asListing = referenceAsListing(node);
+  const wished = !!(watchlist && asListing && watchlist[asListing.id]);
+  const onKey = (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(); } };
+  const stop = (e) => { e.preventDefault(); e.stopPropagation(); };
+  const hasActions = asListing && (handleWish || (openCollectionPicker && user) || handleShare);
+  const overlayBtn = {
+    width: 28, height: 28, borderRadius: 999, border: "none", cursor: "pointer",
+    background: "rgba(0,0,0,0.45)", color: "#fff", display: "flex", alignItems: "center",
+    justifyContent: "center", fontFamily: "inherit", fontSize: 14, lineHeight: 1, padding: 0,
+  };
+  const menuItem = {
+    display: "block", width: "100%", textAlign: "left", padding: "9px 13px",
+    fontSize: 13, fontFamily: "inherit", border: "none", background: "transparent",
+    color: "var(--text1)", cursor: "pointer", whiteSpace: "nowrap",
+  };
   return (
-    <button onClick={onClick} style={{
-      textAlign: "left", cursor: "pointer", fontFamily: "inherit",
-      background: "transparent", border: "none", padding: 0, display: "block",
-    }}>
-      <div style={{
-        position: "relative", width: "100%", aspectRatio: "16 / 10",
-        background: "var(--surface)", overflow: "hidden", borderRadius: 4, marginBottom: 10,
+    <div style={{ position: "relative" }}>
+      <div role="button" tabIndex={0} onClick={onClick} onKeyDown={onKey} style={{
+        textAlign: "left", cursor: "pointer", fontFamily: "inherit", display: "block",
       }}>
-        {node.hero && node.hero.img && (
-          <img src={imgSrc(node.hero.img)} alt="" loading="lazy"
-            style={{ width: "100%", height: "100%", objectFit: "cover" }}
-            onError={(e) => { e.currentTarget.style.visibility = "hidden"; }} />
-        )}
-        {coming && (
-          <span style={{
-            position: "absolute", top: 8, left: 8,
-            fontSize: 10, fontWeight: 600, letterSpacing: 0.4, textTransform: "uppercase",
-            color: "#fff", background: "rgba(0,0,0,0.5)", borderRadius: 999, padding: "2px 8px",
-          }}>Coming soon</span>
+        <div style={{
+          position: "relative", width: "100%", aspectRatio: "16 / 10",
+          background: "var(--surface)", overflow: "hidden", borderRadius: 4, marginBottom: 10,
+        }}>
+          {node.hero && node.hero.img && (
+            <img src={imgSrc(node.hero.img)} alt="" loading="lazy"
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              onError={(e) => { e.currentTarget.style.visibility = "hidden"; }} />
+          )}
+          {coming && (
+            <span style={{
+              position: "absolute", top: 8, left: 8,
+              fontSize: 10, fontWeight: 600, letterSpacing: 0.4, textTransform: "uppercase",
+              color: "#fff", background: "rgba(0,0,0,0.5)", borderRadius: 999, padding: "2px 8px",
+            }}>Coming soon</span>
+          )}
+        </div>
+        <div style={{
+          fontSize: 10, fontWeight: 600, letterSpacing: "0.14em",
+          textTransform: "uppercase", color: "var(--text3)", marginBottom: 4,
+        }}>{[node.brand, node.modelLine].filter(Boolean).join(" · ")}</div>
+        <div style={{
+          fontFamily: FONT_SERIF, fontSize: isMobile ? 20 : 19, fontWeight: 500,
+          lineHeight: 1.2, color: "var(--text1)",
+        }}>{title}</div>
+        {node.definer && (
+          <div style={{
+            fontSize: 12, color: "var(--text2)", lineHeight: 1.4, marginTop: 4,
+            display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
+          }}>{node.definer}</div>
         )}
       </div>
-      <div style={{
-        fontSize: 10, fontWeight: 600, letterSpacing: "0.14em",
-        textTransform: "uppercase", color: "var(--text3)", marginBottom: 4,
-      }}>{[node.brand, node.modelLine].filter(Boolean).join(" · ")}</div>
-      <div style={{
-        fontFamily: FONT_SERIF, fontSize: isMobile ? 20 : 19, fontWeight: 500,
-        lineHeight: 1.2, color: "var(--text1)",
-      }}>{title}</div>
-      {node.definer && (
-        <div style={{
-          fontSize: 12, color: "var(--text2)", lineHeight: 1.4, marginTop: 4,
-          display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
-        }}>{node.definer}</div>
+      {hasActions && (
+        <div style={{ position: "absolute", top: 8, right: 8, display: "flex", gap: 6 }}>
+          {handleWish && (
+            <button onClick={(e) => { stop(e); handleWish(asListing); }}
+              aria-label={wished ? "Saved — tap to remove" : "Save guide"}
+              style={{ ...overlayBtn, color: wished ? "var(--heart)" : "#fff" }}>{wished ? "♥" : "♡"}</button>
+          )}
+          {((openCollectionPicker && user) || handleShare) && (
+            <button onClick={(e) => { stop(e); setMenuOpen(o => !o); }} aria-label="More" style={overlayBtn}>⋯</button>
+          )}
+        </div>
       )}
-    </button>
+      {menuOpen && (
+        <div onClick={stop} style={{
+          position: "absolute", top: 40, right: 8, zIndex: 20, minWidth: 150,
+          background: "var(--bg)", border: "0.5px solid var(--border)", borderRadius: 10,
+          boxShadow: "0 6px 20px rgba(0,0,0,0.18)", overflow: "hidden",
+        }}>
+          {openCollectionPicker && user && (
+            <button style={menuItem} onClick={(e) => { stop(e); setMenuOpen(false); openCollectionPicker(asListing); }}>Add to list…</button>
+          )}
+          {handleShare && (
+            <button style={menuItem} onClick={(e) => { stop(e); setMenuOpen(false); handleShare(asListing); }}>Share</button>
+          )}
+          <button style={menuItem} onClick={(e) => { stop(e); setMenuOpen(false); askLumeAbout(asListing); }}>Ask Lumé</button>
+        </div>
+      )}
+    </div>
   );
 }
 
