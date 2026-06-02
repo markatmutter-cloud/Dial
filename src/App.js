@@ -4758,6 +4758,8 @@ export default function Watchlist() {
     watchTopTab, watchlist,
     // Setters / handlers
     handleWish, openFavPrompt, resetFilters,
+    // Top-right "reach Saved from anywhere" heart link (Mark 2026-06-02).
+    goToSaved: () => { setTab("watchlist"); setWatchTopTab("hearted"); setPage(1); },
     setAboutModalOpen, setActiveFilterPop, setBrandsExpanded,
     setDrawerOpen,
     setFilterBrands, setFilterHearted, setFilterSources, setFilterModels, setFilterSaleUrls,
