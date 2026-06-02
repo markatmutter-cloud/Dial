@@ -1,10 +1,28 @@
 import React, { useEffect, useRef } from "react";
-import { SearchIcon, TabIcon, HomeIcon } from "./icons";
+import { SearchIcon, TabIcon, HomeIcon, HeartIcon } from "./icons";
 import { Chip } from "./Chip";
 import { AboutModal } from "./AboutModal";
 import { SignInPromptModal } from "./SignInPromptModal";
 import { FilterRow } from "./FilterRow";
 import { pillBase, tabPill } from "../styles";
+
+// Saved shortcut for the top-right chrome cluster — a heart that matches the
+// HomeIcon's white outline (Mark 2026-06-02). Sits between About and the auth
+// circle, tight padding so the cluster reads as one unit; fills red on hover.
+function SavedHeartLink({ onGo, onOlive }) {
+  const [hover, setHover] = React.useState(false);
+  const base = onOlive ? "rgba(255,255,255,0.85)" : "var(--text3)";
+  return (
+    <button onClick={onGo} aria-label="My saved" title="My saved"
+      onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
+      style={{ background: "none", border: "none", cursor: "pointer",
+              padding: "6px 6px", fontFamily: "inherit", flexShrink: 0,
+              display: "inline-flex", alignItems: "center",
+              color: hover ? "var(--heart)" : base, transition: "color 0.15s" }}>
+      <HeartIcon size={20} filled={hover} />
+    </button>
+  );
+}
 
 // Desktop shell — receives everything the desktop branch needs from
 // App.js as a single props bag. Stage 2 of recommendation #1 (extracted
@@ -623,16 +641,6 @@ export function DesktopShell(props) {
             font 12 → 13, weight 500 (matches tabPill inactive), drop
             the 0.04em letter-spacing so chrome reads as one type
             family across wordmark / tabs / About / auth pill. */}
-        {/* Subtle red-heart link to Saved — "reach Saved from anywhere"
-            (Mark 2026-06-02). Signed-in only; small, not a loud red. */}
-        {user && goToSaved && (
-          <button onClick={goToSaved} aria-label="My saved" title="My saved"
-            style={{ background: "none", border: "none", cursor: "pointer",
-                    padding: "6px 6px", fontFamily: "inherit", fontSize: 15,
-                    lineHeight: 1, color: "var(--heart)", flexShrink: 0 }}>
-            ♥
-          </button>
-        )}
         <button onClick={() => setAboutModalOpen(true)}
           style={{ background: "none", border: "none", cursor: "pointer",
                   padding: "6px 8px", fontFamily: "inherit", fontSize: 13,
@@ -641,6 +649,12 @@ export function DesktopShell(props) {
                   flexShrink: 0 }}>
           About
         </button>
+        {/* Heart link to Saved — matches the HomeIcon white outline, sits
+            between About and the auth circle, fills red on hover (Mark
+            2026-06-02). Signed-in only. */}
+        {user && goToSaved && (
+          <SavedHeartLink onGo={goToSaved} onOlive={onOlive} />
+        )}
         {authJSX}
         </div>
         );
