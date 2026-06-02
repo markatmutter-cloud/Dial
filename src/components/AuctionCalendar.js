@@ -530,7 +530,7 @@ function AuctionRow({ a, archive, lotCount = 0, heroImg = "", saved = false, onT
             </div>
             <div
               onClick={lotActionsAvailable && onOpenSale ? () => onOpenSale(a) : undefined}
-              title={lotActionsAvailable && onOpenSale ? "View this sale's lots" : undefined}
+              title={lotActionsAvailable && onOpenSale ? "View this auction's lots" : undefined}
               style={{ fontSize: 15, fontWeight: 600, color: "var(--text1)", lineHeight: 1.25,
                         overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
                         cursor: (lotActionsAvailable && onOpenSale) ? "pointer" : "default" }}>

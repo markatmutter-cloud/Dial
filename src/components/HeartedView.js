@@ -206,7 +206,7 @@ export default function HeartedView({
         <EmptyState
           icon="♡"
           heading="Nothing hearted yet"
-          blurb="Tap the heart on any watch, article or sale as you browse — it lands here, with the price you saved at even after the dealer takes the listing down."
+          blurb="Tap the heart on any watch, article or auction as you browse — it lands here, with the price you saved at even after the dealer takes the listing down."
           size="compact"
         />
       ) : type === "articles" ? (
