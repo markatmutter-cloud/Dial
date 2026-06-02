@@ -10,9 +10,9 @@ shipped (SHIPPED).
 |---|---|---|
 | **CLAUDE.md** | Working conventions / rules | Every session start |
 | **README.md** | What it is + architecture + data model + stack + folder layout | Onboarding; architecture questions |
-| **ROADMAP.md** | Direction only (north star, jobs-to-be-done, epics, explicitly-NOT) | Scoping new work |
+| **ROADMAP.md** | Direction: north star, jobs, epics 0–10 (incl. **Lumé/AI = Epic 10**), feature-threads, NOW/NEXT/LATER, explicitly-NOT | Every session start (NOW/NEXT) + scoping |
 | **SHIPPED.md** | The changelog (two-line entries by epic) | "When/what shipped?" |
-| **BUGS.md** | Usability/defect backlog (enriched, ID'd) | Every session start; on any `Bug:` |
+| **BUGS.md** | Defect + tech-debt backlog (enriched, ID'd); feature-threads route to ROADMAP | Every session start; on any `Bug:` |
 | **docs/audits/** | Cold audit reports (dated) + routing index | After an audit; tracking findings |
 | **DESIGN_SYSTEM.md** | Color + style tokens, components, reach-for rules | Any UI work |
 | **BRAND.md** | Voice | Before copy / visual choices |
@@ -70,10 +70,13 @@ the branch you'll create — branch before editing, never edit `main`.
   `FYI` / `Note` = ack and keep going on the current
   item (queue, don't repivot). `QQ` = quick answer up front, then resume.
   `Plan:` / `Save for plan` = a bigger thread for plan-mode later. `Bug:` =
-  triage + log to **BUGS.md** (break-now → fix immediately, else enriched
-  entry + ID, work continues; echo the one-liner back). `Remember:` = persist
-  to memory. No prefix = execute now. **A `Bug:` is never scope-drift — never
-  deflect it with "live with it"; that's only for stacked feature requests.**
+  triage **by kind** then log: a *defect / tech-debt* (broken/wrong/regressed)
+  → **BUGS.md** (break-now → fix now, else enriched entry + ID); a *capability
+  gap / feature / design thread* → **ROADMAP.md** under its epic (it's
+  direction — BUGS = what's broken, ROADMAP = what to build). Echo the
+  one-liner + where it landed. `Remember:` = persist to memory. No prefix =
+  execute now. **A `Bug:` is never scope-drift — never deflect it with "live
+  with it"; that's only for stacked feature requests.**
 - **Burst cadence.** He stacks feedback while testing — observations, not
   redirect-now interrupts. Ack briefly, stay on the agreed list, queue for
   the next pass. Don't pivot per message.
