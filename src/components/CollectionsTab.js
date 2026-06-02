@@ -294,12 +294,14 @@ function WLStartCard({ isMobile, onClick }) {
 // dossier: watches + writing + references + notes) and offer the four doors.
 // Three route you to where you add those (heart / add-to-list lives there);
 // notes happen in-place via DossierBlocks rendered below this.
-function EmptyListOnboarding({ name, isMobile, goToTab, onAddNote }) {
+function EmptyListOnboarding({ name, isMobile, goToTab }) {
+  // The navigate-away adds (heart a watch / save an article elsewhere). The
+  // in-place adds — note / reference guide / saved search — live as the matching
+  // boxed rows in DossierBlocks below, so there's one consistent boxed set, no
+  // duplication (Mark 2026-06-02).
   const rows = [
     { icon: "♡", label: "Add a watch", help: "Heart a listing on the Watches tab to file it here.", go: () => goToTab && goToTab("listings", "live") },
     { icon: "📰", label: "Add an article", help: "Save an article on the Collecting tab — it lands in this list.", go: () => goToTab && goToTab("references", "editorial") },
-    { icon: "📖", label: "Add a reference guide", help: "Pin a guide from Collecting to anchor the list.", go: () => goToTab && goToTab("references", "references") },
-    { icon: "✎", label: "Add a note", help: "Jot a thought, a question, a spec to check — right here.", go: onAddNote, inPlace: true },
   ];
   return (
     <div style={{ padding: isMobile ? "8px 0 4px" : "10px 0 6px" }}>
@@ -2129,11 +2131,6 @@ function ListsView({
                 name={selected.name}
                 isMobile={isMobile}
                 goToTab={goToTab}
-                onAddNote={() => {
-                  if (typeof document === "undefined") return;
-                  const el = document.getElementById("list-notes");
-                  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-                }}
               />
               <div id="list-notes" style={{ marginTop: 22 }}>
                 <DossierBlocks

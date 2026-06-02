@@ -246,25 +246,33 @@ function AddBlockBar({ adding, setAdding, savedSearches, referenceNodes, onAdd }
       />
     );
   }
+  // Boxed rows (Mark 2026-06-02) — consistent with the empty-list onboarding's
+  // "add" rows rather than bare word-pills.
+  const rows = [
+    { icon: "✎", label: "Add a note", go: () => onAdd("note", { noteText: "" }) },
+    { icon: "📖", label: "Add a reference guide", go: () => setAdding("reference_guide") },
+    { icon: "🔍", label: "Add a saved search", go: () => setAdding("saved_search") },
+  ];
   return (
-    <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 4 }}>
-      <button style={addBtn} onClick={() => onAdd("note", { noteText: "" })}>+ Note</button>
-      <button style={addBtn} onClick={() => setAdding("reference_guide")}>+ Reference guide</button>
-      <button style={addBtn} onClick={() => setAdding("saved_search")}>+ Saved search</button>
+    <div style={{ border: "0.5px solid var(--border)", borderRadius: 12, overflow: "hidden", marginTop: 8, maxWidth: 520 }}>
+      {rows.map((r, i) => (
+        <button key={r.label} onClick={r.go} style={{
+          display: "flex", alignItems: "center", gap: 12, width: "100%", textAlign: "left",
+          cursor: "pointer", fontFamily: "inherit", background: "transparent",
+          border: "none", borderTop: i ? "0.5px solid var(--border)" : "none", padding: "13px 14px",
+        }}>
+          <span aria-hidden style={{
+            flexShrink: 0, width: 34, height: 34, borderRadius: 999,
+            background: "var(--brand-olive-tint-12)", color: "var(--brand-olive-ink)",
+            display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15,
+          }}>{r.icon}</span>
+          <span style={{ flex: 1, minWidth: 0, fontSize: 14, fontWeight: 600, color: "var(--text1)" }}>{r.label}</span>
+          <span style={{ flexShrink: 0, color: "var(--text3)", fontSize: 16 }}>＋</span>
+        </button>
+      ))}
     </div>
   );
 }
-
-const addBtn = {
-  background: "transparent",
-  border: "0.5px dashed var(--border)",
-  borderRadius: 8,
-  cursor: "pointer",
-  color: "var(--text2)",
-  fontSize: 13,
-  fontFamily: "inherit",
-  padding: "6px 12px",
-};
 
 function PickerRow({ label, options, onPick, onCancel, emptyHint }) {
   return (
