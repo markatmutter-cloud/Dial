@@ -138,14 +138,26 @@ export function ShareReceiver({
       </div>
 
       {sharedItem ? (
-        <div style={{
+        <div className="sr-card" style={{
           borderRadius: 12, overflow: "hidden", border: "0.5px solid var(--border)",
           background: "var(--card-bg)", boxShadow: "var(--shadow-modal)",
+          display: "grid", gridTemplateColumns: "1fr", alignItems: "stretch",
         }}>
+          {/* Two columns on desktop (image left, details right) so the hero
+              uses the screen width instead of becoming a giant full-width
+              block you scroll past (Mark 2026-06-01). Mobile stays stacked. */}
+          <style>{`
+            .sr-card-img { aspect-ratio: 16 / 10; }
+            @media (min-width: 880px) {
+              .sr-card { grid-template-columns: 1.25fr 1fr !important; }
+              .sr-card-img { aspect-ratio: auto !important; height: 100%; min-height: 360px; }
+            }
+          `}</style>
           {/* [B] Hero */}
           <a href={sharedItem.url} target="_blank" rel="noopener noreferrer"
             onClick={() => { if (onClickListing) onClickListing(sharedItem); }}
-            style={{ position: "relative", display: "block", aspectRatio: "16 / 10", background: "var(--surface)" }}
+            className="sr-card-img"
+            style={{ position: "relative", display: "block", background: "var(--surface)" }}
             title={`Open ${sharedItem.source} listing`}>
             {sharedItem.img && !imgFailed ? (
               <img src={imgSrc(sharedItem.img)} alt={sharedItem.ref || sharedItem.title || "shared watch"}
@@ -173,6 +185,9 @@ export function ShareReceiver({
             )}
           </a>
 
+          {/* Right column (desktop) / below image (mobile): identity + actions,
+              vertically centred so it reads with the hero rather than below it. */}
+          <div className="sr-card-body" style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
           {/* Title + identity */}
           <div style={{ padding: "16px 18px 4px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 12, flexWrap: "wrap" }}>
@@ -217,6 +232,7 @@ export function ShareReceiver({
             {handleShare && (
               <button onClick={() => handleShare(sharedItem)} style={subtleBtnStyle}>Share</button>
             )}
+          </div>
           </div>
         </div>
       ) : (
