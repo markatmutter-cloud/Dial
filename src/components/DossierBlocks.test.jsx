@@ -18,6 +18,6 @@ describe("DossierBlocks", () => {
     const { getByText } = render(
       <DossierBlocks collectionId="c1" user={null} allListings={[]} canEdit={true} />
     );
-    expect(getByText("+ Note")).toBeInTheDocument();
+    expect(getByText("Add a note")).toBeInTheDocument();
   });
 });
