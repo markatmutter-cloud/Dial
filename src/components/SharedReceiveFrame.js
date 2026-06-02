@@ -76,8 +76,14 @@ export function SharedReceiveFrame({
       }}>
         <style>{`
           .srf-hero { aspect-ratio: 16 / 10; position: relative; background: var(--surface); }
-          @media (min-width: 880px) {
-            .srf-card { grid-template-columns: 1.2fr 1fr !important; }
+          .srf-body { min-width: 0; }
+          /* Two columns only when there's genuine room. The image column gets a
+             real minimum (300px) so a long title can't squeeze it to nothing —
+             which made the picture vanish at half-width (Mark). Below this we
+             fall back to the stacked mobile layout (image on top), so there's
+             always a picture. */
+          @media (min-width: 900px) {
+            .srf-card { grid-template-columns: minmax(320px, 1.2fr) minmax(0, 1fr) !important; }
             .srf-hero { aspect-ratio: auto !important; height: 100%; min-height: clamp(420px, 64vh, 660px); }
           }
         `}</style>
