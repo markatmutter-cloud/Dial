@@ -57,6 +57,7 @@ export function MobileShell(props) {
     settingsModalJSX, shareReceiverJSX,
     challengeReceiverJSX,
     listReceiverJSX,
+    catalogReceiverJSX,
     listingsSubTabsJSX,
     referencesSubTabsJSX,
     trackNewItemModalJSX, watchSubTabsJSX, watchHeartedToggleJSX, collectionsSubTabsJSX, watchlistTabJSX,
@@ -72,10 +73,11 @@ export function MobileShell(props) {
     shareActive,
     challengeShareActive,
     listShareActive,
+    catalogShareActive,
     colDrillInId,
   } = props;
-  // Any of the three receive-flows swallows the regular browse chrome.
-  const anyShareActive = shareActive || challengeShareActive || listShareActive;
+  // Any of the receive-flows swallows the regular browse chrome.
+  const anyShareActive = shareActive || challengeShareActive || listShareActive || catalogShareActive;
   // True when drilled into a list (Watchlists > Lists > [list]).
   // Filter row shows here so users can date-sort, narrow by source/
   // brand etc. inside a long list — same UX as the Listings tab.
@@ -527,6 +529,8 @@ export function MobileShell(props) {
             isolation pattern. Renders null when no `?list=…&shared=1`
             in URL. */}
         {listReceiverJSX}
+        {/* Auction-catalog share-receive surface (2026-06-02). */}
+        {catalogReceiverJSX}
         {/* Phase B2 lot-migration banner. Same isolation pattern as
             ShareReceiver — renders null until the one-shot migration
             actually moves at least one tracked URL into Favorites. */}

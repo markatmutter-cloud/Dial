@@ -55,7 +55,9 @@ export function PageHeader({ eyebrow, title, meta, actions = [], onExit, exitLab
                   textDecoration: "none",
                 };
                 return a.href ? (
-                  <a key={a.label} href={a.href} onClick={a.onClick} style={style}>
+                  <a key={a.label} href={a.href} onClick={a.onClick} style={style}
+                    target={a.external ? "_blank" : undefined}
+                    rel={a.external ? "noopener noreferrer" : undefined}>
                     {a.icon}{a.label}
                   </a>
                 ) : (

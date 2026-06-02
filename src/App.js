@@ -39,6 +39,7 @@ import { ViewSettingsControls } from "./components/ViewSettingsControls";
 import { ShareReceiver } from "./components/ShareReceiver";
 import { ChallengeReceiver } from "./components/ChallengeReceiver";
 import { ListReceiver } from "./components/ListReceiver";
+import { CatalogReceiver } from "./components/CatalogReceiver";
 // Code-split (B-22): the auction calendar renders only inside the modal when
 // opened (calendarModalOpen) — React.lazy splits it into its own chunk so it
 // never loads on first paint. Named export → unwrap to default.
@@ -868,6 +869,7 @@ export default function Watchlist() {
   // pattern — one-bit mirror; the ListReceiver component owns its
   // own intent state.
   const [listShareActive, setListShareActive] = useState(false);
+  const [catalogShareActive, setCatalogShareActive] = useState(false);
   // Auction calendar modal (Phase 4 slice 2). The calendar is no longer
   // a sub-tab — it opens as an overlay over the auctions grid and filters
   // it on sale pick.
@@ -1100,6 +1102,7 @@ export default function Watchlist() {
     setShareActive(false);
     setChallengeShareActive(false);
     setListShareActive(false);
+    setCatalogShareActive(false);
     // PR_W (2026-05-22): tab change exits the cross-tab Search-all
     // destination so the destination tab renders its normal content.
     setSearchAllActive(false);
@@ -1598,7 +1601,7 @@ export default function Watchlist() {
     // for chrome / PWA strip purposes — they have olive chrome above
     // them regardless of underlying tab value. Fix 2026-05-22.
     const onHome = tab === "home" && !shareActive && !challengeShareActive
-                   && !listShareActive && !searchAllActive;
+                   && !listShareActive && !catalogShareActive && !searchAllActive;
     // Per-theme olive (PR 2026-05-22 darker-green-in-dark-mode):
     // light mode keeps the favicon-matched #3b4a36; dark mode tones
     // it to #2a3527 so the chrome zone reads as a subtle brand
@@ -1619,7 +1622,7 @@ export default function Watchlist() {
     document.documentElement.style.background = onHome
       ? (dark ? darkHome : lightHome)
       : (dark ? oliveDark : oliveLight);
-  }, [tab, dark, shareActive, challengeShareActive, listShareActive, searchAllActive]);
+  }, [tab, dark, shareActive, challengeShareActive, listShareActive, catalogShareActive, searchAllActive]);
 
   // Measure the sticky chrome height + set `--sticky-top` CSS variable
   // so DateDivider can lock just below the chrome instead of hiding
@@ -1651,7 +1654,7 @@ export default function Watchlist() {
       window.removeEventListener('resize', measure);
       if (ro) ro.disconnect();
     };
-  }, [tab, shareActive, challengeShareActive, listShareActive, searchAllActive]);
+  }, [tab, shareActive, challengeShareActive, listShareActive, catalogShareActive, searchAllActive]);
 
   // Auction lots projected into the main listings feed. Two sources
   // get merged by URL key:
@@ -3736,12 +3739,26 @@ export default function Watchlist() {
   ) ? (() => {
     const sale = salesByUrl.get(effectiveSaleUrls[0]);
     const saved = savedAuctionUrlSet.has(sale.url);
+    // Share an IN-APP link to the catalog receive surface (Mark 2026-06-02) —
+    // NOT the raw auction-house URL (which dead-ended off the platform). Mirrors
+    // the listing share's sender-name (?from) derivation.
     const shareCatalog = async () => {
       try {
+        const u = new URL(window.location.origin);
+        u.searchParams.set("catalog", sale.url);
+        u.searchParams.set("shared", "1");
+        const md = user && user.user_metadata;
+        let senderName = md ? (md.full_name || md.name || "").trim() : "";
+        if (!senderName && user && user.email) {
+          senderName = String(user.email).split("@")[0].split(/[._-]+/).filter(Boolean)
+            .map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(" ");
+        }
+        if (senderName) u.searchParams.set("from", senderName);
+        const link = u.toString();
         if (typeof navigator !== "undefined" && navigator.share) {
-          await navigator.share({ title: sale.title || "Auction catalog", url: sale.url });
+          await navigator.share({ title: sale.title || "Auction catalog", url: link });
         } else if (typeof navigator !== "undefined" && navigator.clipboard) {
-          await navigator.clipboard.writeText(sale.url);
+          await navigator.clipboard.writeText(link);
         }
       } catch {}
     };
@@ -3753,6 +3770,9 @@ export default function Watchlist() {
       onClick: () => toggleSavedAuction(sale.url),
     });
     if (sale.url) actions.push({ label: "Share", onClick: shareCatalog });
+    // "→ auction house" link next to the header (Mark 2026-06-02) — the same
+    // affordance the auction calendar has; opens the house's own catalog page.
+    if (sale.url) actions.push({ label: "Auction house ↗", href: sale.url, external: true });
     return (
       <PageHeader
         isMobile={isMobile}
@@ -4678,6 +4698,27 @@ export default function Watchlist() {
     />
   );
 
+  // Auction-catalog share-receive surface (Mark 2026-06-02). Same isolation
+  // pattern — App mirrors one-bit `catalogShareActive`. The Share button on the
+  // catalog header now emits `?catalog=<saleUrl>&shared=1`, landing here.
+  const catalogReceiverJSX = (
+    <CatalogReceiver
+      user={user}
+      isAuthConfigured={isAuthConfigured}
+      signInWithGoogle={triggerSignInPrompt}
+      salesByUrl={salesByUrl}
+      lotsByAuctionUrl={lotsByAuctionUrl}
+      auctionHeroByUrl={auctionHeroByUrl}
+      lotCountsByAuctionUrl={lotCountsByAuctionUrl}
+      savedAuctionUrlSet={savedAuctionUrlSet}
+      toggleSavedAuction={user ? toggleSavedAuction : null}
+      onOpenCatalog={(url) => { const s = salesByUrl.get(url); if (s) handleOpenSale(s); }}
+      setCatalogShareActive={setCatalogShareActive}
+      setTab={setTabWithReceiveEscape}
+      resetTick={shareReceiveResetTick}
+    />
+  );
+
   // Phase B2 one-shot per-user migration of tracked auction-house URLs
   // → watchlist_items. Self-contained component (hooks isolated) so
   // App.js's hook count stays unchanged. Renders the dismissable
@@ -4803,6 +4844,7 @@ export default function Watchlist() {
     settingsModalJSX, shareReceiverJSX,
     challengeReceiverJSX,
     listReceiverJSX,
+    catalogReceiverJSX,
     listingsSubTabsJSX,
     referencesSubTabsJSX,
     trackNewItemModalJSX, watchSubTabsJSX, watchHeartedToggleJSX, collectionsSubTabsJSX,
@@ -4834,6 +4876,7 @@ export default function Watchlist() {
     shareActive,
     challengeShareActive,
     listShareActive,
+    catalogShareActive,
     // Drill-in mirror so the shell can show the filter row when
     // we're inside a list (Watchlists > Lists > [list]).
     colDrillInId,
