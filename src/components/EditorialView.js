@@ -2,6 +2,7 @@ import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "re
 import { createPortal } from "react-dom";
 import { pillBase, inputBase, clearAllPill, editorialTitle, cardGridStyle } from "../styles";
 import { Chip } from "./Chip";
+import { PageHeader } from "./PageHeader";
 import { FilterRow } from "./FilterRow";
 import { shortHash } from "../utils";
 import { HeartIcon } from "./icons";
@@ -701,6 +702,12 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
 
   return (
     <div style={{ paddingTop: 4 }}>
+      {/* Collapsing header (Mark 2026-06-02) — matches Reference guides / Saved /
+          catalog: the title scrolls away in normal flow while the filter chrome
+          below pins (desktop sticky wrapper; mobile portals it into the shell
+          sticky stack). */}
+      <PageHeader isMobile={isMobile} title="Articles"
+        meta={filtered.length ? `${filtered.length} ${filtered.length === 1 ? "article" : "articles"}` : null} />
       {/* B-01: mobile portals the filter chrome into the shell sticky stack
           (one shared chrome); desktop keeps the inline edge-to-edge sticky
           wrapper. Falls back to inline if the slot isn't mounted yet. */}

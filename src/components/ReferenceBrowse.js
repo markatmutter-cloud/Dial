@@ -124,13 +124,20 @@ export function ReferenceBrowse(props) {
 
   return (
     <div style={{ paddingTop: 0 }}>
-      {/* Consistent bleed-bar page header (Mark #6, 2026-06-01) — same
-          PageHeader every named surface uses. */}
+      {/* Collapsing header (Mark 2026-06-02), same pattern as Saved + catalog:
+          the title scrolls away while the search + brand chips PIN. The title
+          is a normal-flow bleed-bar PageHeader; the search/chips sit in a sticky
+          wrapper that bleeds to the pane edges (−20 desktop / −16 mobile cancels
+          the scroll pane's side padding). */}
       <PageHeader isMobile={isMobile} title="Reference guides"
         meta={`${REFERENCE_NODES.length} ${REFERENCE_NODES.length === 1 ? "guide" : "guides"}`} />
-      <div style={{ height: isMobile ? 16 : 20 }} />
-      {/* Search + brand filter */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 18 }}>
+      <div style={{
+        position: "sticky", top: 0, zIndex: 15, background: "var(--bg)",
+        marginLeft: isMobile ? -16 : -20, marginRight: isMobile ? -16 : -20,
+        paddingLeft: isMobile ? 16 : 20, paddingRight: isMobile ? 16 : 20,
+        paddingTop: isMobile ? 12 : 16, paddingBottom: 14, marginBottom: 6,
+        display: "flex", flexDirection: "column", gap: 10,
+      }}>
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
