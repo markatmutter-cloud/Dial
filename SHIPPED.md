@@ -289,6 +289,28 @@ within each section roughly last.
   hearted/Saved leading, bigger tiles, distinct in-list header, drill-in back-nav fix, list rename/delete
   (cards + in-list), hearted "♡ Saved" filter chip, Saved band on the shared CardStrip.
 
+- **2026-06-02 — Lists tab redesign · Phases 1–5 (#729–#734, #742, #750, #755, #758).**
+  Sub-tabbed Lists landing on **♡ Saved** (typed bookmark sections Watches/Articles/Sales;
+  search matches dealer); **save reference guides** + Guides type (closes B-37); bigger
+  list cards (title-below, matched to guide/article cards); land-in-new-list + boxed
+  empty-list onboarding; **sectioned Lists page** (Your lists · Shared · Saved sales,
+  retiring the Shared sub-tab); auctions get a **prominent catalog header + save/share**.
+- **2026-06-02 — Collecting tab redesign (#733, #743, #753, #757).** Reference guides
+  flattened to **cards + search/filter**; size/links/challenges bundled under **"Tools"**;
+  "References" → "Reference guides"; bespoke H1/explainer dropped to match other surfaces;
+  guide cards get **heart + ⋯ menu** (save / add-to-list / share / Ask Lumé).
+- **2026-06-02 — Unified share surface · Phase 6 (#735–#741, #746–#749, #752).** Extracted
+  **`SharedReceiveFrame`** — one parametrized bleed shell (attribution + hero/identity slots
+  + fixed-verb action bar + responsive two-column desktop + viewport-dynamic hero); listing
+  receiver renders through it; **seeded "Ask Lumé"** via the floating launcher callout (not
+  a button), generic launcher suppressed on share surfaces; sender `?from` preserved.
+- **2026-06-02 — Chrome unification + curation (#744, #745, #751, #754, #756, #759).**
+  Unified **bleed-bar `PageHeader`** across catalog / Saved / Lists / Searches / Reference
+  guides (Watchbox folded into the Lists header, vault card retired); **red-heart → Saved**
+  shortcut in the top-right, white-outline icon matching Home, fills red on hover; Home
+  **"×"** overlay retired (admin Hide is the single curation tool); duplicate signed-out
+  "About" removed; filter bar left-aligned + reset-to-base on Auctions return.
+
 ### Lumé — the AI spine (Epic 9 / Phase A)
 
 - **2026-05-29 — Lumé AI concierge v1 (#680/#681/#682).** Grounded watch-expert chat in a
