@@ -206,3 +206,49 @@ Continuation of the scraping/data session.
 - **wsrv blocks spread.** When a whole source's images break but a direct fetch is
   200, it's wsrv being blocked by that origin — add the host to `imgSrc()`'s
   direct-serve list (next to bonhams.com). Don't chase URL-encoding ghosts.
+
+---
+
+# Addendum 4 — doc-system reshape: BUGS hygiene + Lumé→ROADMAP merge (doc-only)
+
+A plan-then-execute session. Plan: `~/.claude/plans/this-is-a-separate-velvety-cocoa.md`
+(it started as the plumbing plan, then grew the doc work). **No code — docs + process only.**
+
+**1. BUGS hygiene.** The Open section had ~17 entries marked RESOLVED still sitting in
+Open (the file's own note said they'd be "pruned at next close" — this was it). Moved them
+to a consolidated **"Closed out 2026-06-02"** block in Resolved + pruned the redundant Open
+copies of already-resolved Lumé items. **Open dropped ~33 → 15** genuine items, so `/start`
+stops resurfacing shipped work.
+
+**2. Lumé is no longer a separate roadmap (Mark's call) — merged into ROADMAP as Epic 10.**
+The diagnosis: splitting AI direction into `docs/LUME_ROADMAP.md` is *why the main ROADMAP
+went stale* (last real edit 2026-05-27) — the biggest thread was invisible on the priority
+list. Fix: **ROADMAP gains Epic 10 (Lumé)** — north star + 6 pillars + charter + state;
+`docs/LUME_ROADMAP.md` **demoted to the build/detail doc** (same pattern as Epic 9 →
+IA_REDESIGN.md). Epic 7 now cross-links the recommender as Lumé pillar 5.
+
+**3. Bugs assigned to epics + `Bug:` now routes by KIND.** Added an **Epic assignment table**
+at the top of BUGS.md mapping every open item → ROADMAP epic + kind. New rule (CLAUDE.md +
+BUGS header + [[message-prefixes]] memory): **defects/tech-debt → BUGS, capability/feature/
+design threads → ROADMAP under their epic.** `/start` now reads ROADMAP NOW/NEXT as a
+standing input (start.md updated), not just when scoping.
+
+**⚠️ Supersedes the stale "Open threads" list at lines 59–67** — the BUGS **Epic assignment
+table** is now the source of truth for what's open + where it goes.
+
+## ⏭ Next session (Mark-led) — the NOW/NEXT/LATER rewrite
+The merge is done; what's left is the **priority reset**: rewrite ROADMAP's NOW/NEXT/LATER
+(the block is from 2026-05-27, pre-redesign/Lumé) and **physically graduate** the flagged
+feature-threads into their epic bodies (**B-45/46/47/51 → Epic 10**, **B-56 → Epic 9**;
+retire shipped design threads B-06/B-08). The Epic assignment table is the worklist.
+
+## ⚠️ Gotcha that bit us — shared checkout + concurrent sessions
+Multiple agent sessions ran in the **same working dir** (`~/Documents/watchlist`) today.
+Another session **switched the dir's branch** (`main` → `exclude-sothebys-fine-jewelry`)
+mid-edit, so this session's doc commit landed on *that* branch — then its **PR #780
+squash-merged my docs onto main bundled inside the Sotheby's fix** (content correct on main;
+commit label misleading). Recovery was non-destructive (a cherry-pick came up empty,
+confirming the squash already carried it); the guardrail correctly **blocked force-pushing
+the other session's branch**. **Lesson: give parallel sessions their own git worktrees, or
+don't run concurrent build sessions in one checkout** — they switch each other's branch out
+from under each other.
