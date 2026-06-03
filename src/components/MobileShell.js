@@ -2,6 +2,7 @@ import React from "react";
 import { SearchIcon, FilterIcon, HomeIcon } from "./icons";
 import { Chip } from "./Chip";
 import { AboutModal } from "./AboutModal";
+import { SavedHeartLink } from "./SavedHeartLink";
 import { SignInPromptModal } from "./SignInPromptModal";
 import { iconButton, pillBase, inputBase } from "../styles";
 
@@ -35,6 +36,7 @@ export function MobileShell(props) {
     watchTopTab, watchlist,
     // Setters / handlers
     handleWish, openFavPrompt, resetFilters,
+    goToSaved,
     onOpenCalendar,
     setAboutModalOpen, setBrandsExpanded, setModelsExpanded,
     setDrawerOpen,
@@ -58,7 +60,7 @@ export function MobileShell(props) {
     listReceiverJSX,
     catalogReceiverJSX,
     listingsSubTabsJSX,
-    referencesSubTabsJSX,
+    topTabs,
     trackNewItemModalJSX, watchSubTabsJSX, watchHeartedToggleJSX, collectionsSubTabsJSX, watchlistTabJSX,
     saleContextHeaderJSX,
     savedHeaderJSX,
@@ -167,7 +169,13 @@ export function MobileShell(props) {
               <span>Watchlist</span>
             </button>
           )}
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            {/* Heart shortcut to Saved ▸ ♡ Saved — desktop parity (P-7,
+                2026-06-03). White outline on the olive bar, like desktop. */}
+            {user && goToSaved && (
+              <SavedHeartLink onGo={goToSaved}
+                onOlive={tab !== "home" || anyShareActive || searchAllActive} />
+            )}
             {authJSX}
           </div>
         </div>
@@ -210,14 +218,19 @@ export function MobileShell(props) {
             msOverflowStyle: "none",
             flex: 1, minWidth: 0,
           }}>
-            {[["listings", "Watches"], ["watchlist", "Lists"], ["references", "Collecting"]].map(([key, label]) => {
-              const active = tab === key;
+            {/* Top tabs render from the shared `topTabs` model (App.js builds
+                it from src/topTabs.js) — labels/active/onSelect arrive
+                pre-computed so this strip can't drift from desktop/Home.
+                Mobile uses the short label ("Guides"). */}
+            {(topTabs || []).map((t) => {
+              const { key, active } = t;
+              const label = t.mobileLabel;
               // Always on olive here (the sticky chrome only renders when
               // tab !== "home"), so active = white, inactive = faded white.
               const onOlive = true;
               return (
                 <button key={key}
-                  onClick={() => { setTab(key); if (key === "listings") setSearch(""); }}
+                  onClick={t.onSelect}
                   style={{
                     padding: "8px 14px 8px 0",
                     marginRight: 18,
@@ -251,7 +264,9 @@ export function MobileShell(props) {
             three tabs hit the same shell-level slot. */}
         {!anyShareActive && listingsSubTabsJSX}
         {!anyShareActive && watchSubTabsJSX}
-        {!anyShareActive && referencesSubTabsJSX}
+        {/* referencesSubTabsJSX retired 2026-06-03 — Articles + Reference
+            Guides are top-level tabs now; the tools family launches from
+            the account menu. */}
         {/* Identity band — moved into the sticky chrome stack 2026-05-21
             (PR_Y4, Mark spec: "search and filter pills below the black
             block"). Sits between sub-tabs and the search row so the

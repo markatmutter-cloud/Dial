@@ -15,16 +15,18 @@ describe("DesktopShell", () => {
     expect(watchlistButtons.length).toBeGreaterThanOrEqual(1);
   });
 
-  test("renders the three main tabs (Watches / Lists / Collecting)", () => {
+  test("renders the four main tabs (Watches / Saved / Articles / Reference Guides)", () => {
     render(<DesktopShell {...buildMockShellProps()} />);
+    // 2026-06-03 IA restructure: Collecting dissolved into top-level
+    // Articles + Reference Guides; "Lists" tab renamed "Saved". Desktop
+    // shows the full "Reference Guides" label (mobile shows "Guides").
+    // Labels come from the shared topTabs model (src/topTabs.js).
     expect(screen.getAllByText("Watches").length).toBeGreaterThanOrEqual(1);
-    // 2026-05-14 IA pass: Share tab retired, Learn renamed to
-    // "Collecting" (verb framing). 2026-05-28: top-tab labels renamed
-    // Listings→Watches, Watchlists→Lists (labels only; internal keys
-    // unchanged). Three pills: Watches / Lists / Collecting.
-    expect(screen.getAllByText("Lists").length).toBeGreaterThanOrEqual(1);
-    expect(screen.getByText("Collecting")).toBeInTheDocument();
-    // Collections is no longer a top-level tab pill.
+    expect(screen.getAllByText("Saved").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText("Articles").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText("Reference Guides")).toBeInTheDocument();
+    // Retired labels stay retired.
+    expect(screen.queryByText("Collecting")).not.toBeInTheDocument();
     expect(screen.queryByText("Collections")).not.toBeInTheDocument();
     expect(screen.queryByText("Learn")).not.toBeInTheDocument();
     expect(screen.queryByText("Share")).not.toBeInTheDocument();

@@ -916,8 +916,11 @@ export function HomeTab(props) {
     // Masthead-nav props — top-bar chrome suppressed on Home, these
     // render the equivalent block inside the olive-bleed band below
     // the wordmark (PR 2026-05-22 γ).
+    // 2026-06-03: homeMastheadTabs is now the shared top-tab MODEL from
+    // App.js ({key,label,mobileLabel,icon,active,onSelect}) — same object
+    // both shells render, so Home can't drift. homeGoToTab retired
+    // (onSelect is embedded per entry).
     homeMastheadTabs,
-    homeGoToTab,
     homeMastheadAuthJSX,
     // Search-bar augmentations (PR 2026-05-22): recent-search history
     // + live counts per target + live filtering on the strip view as
@@ -1003,9 +1006,9 @@ export function HomeTab(props) {
                 About + Watchbox moved BACK to a top utility row
                 above the hero 2026-05-22 (after the in-band version
                 broke "same position on all tabs"). */}
-            {homeMastheadTabs.map(([key, label]) => (
-              <button key={key}
-                onClick={() => homeGoToTab && homeGoToTab(key)}
+            {homeMastheadTabs.map((t) => (
+              <button key={t.key}
+                onClick={t.onSelect}
                 style={{
                   background: "transparent", border: "none",
                   cursor: "pointer", fontFamily: "inherit",
@@ -1020,8 +1023,8 @@ export function HomeTab(props) {
                   padding: 0,
                   display: "inline-flex", alignItems: "center", gap: 6,
                 }}>
-                <TabIcon kind={key} />
-                {label}
+                <TabIcon kind={t.icon} />
+                {isMobile ? t.mobileLabel : t.label}
               </button>
             ))}
           </div>

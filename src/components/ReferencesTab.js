@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { SizeCompare } from "./SizeCompare";
 import { Links } from "./Links";
 import { EditorialView } from "./EditorialView";
@@ -34,9 +34,11 @@ function ToolsView({ initialTool = "size", challengeProps }) {
   );
 }
 
-// Collecting tab (internal `tab="references"`, UI label "Collecting").
-// Restructured 2026-05-18 (Mark spec) from a resource-button list
-// landing into a Listings-pattern sub-tab strip:
+// Internal `tab="references"` container. 2026-06-03 IA restructure: the
+// "Collecting" umbrella label is gone — Articles (sub "editorial") and
+// Reference Guides (sub "references") are separate TOP-LEVEL tabs over this
+// same container, and the tools family launches from the account menu.
+// This stays the thin dispatch over `subTab`:
 //
 //   editorial — Hairspring Finds + Bring a Loupe + more editorial
 //               sources, card grid with filter/sort/search. Default.
@@ -60,7 +62,6 @@ export function ReferencesTab({
   isAuthConfigured,
   signInWithGoogle,
   allListings,
-  tabResetTick,
   subTab,
   setSubTab,
   cols,
@@ -92,25 +93,15 @@ export function ReferencesTab({
   onViewAll,
   onClickListing,
 }) {
-  // Tab re-tap → return to default sub-tab. App.js bumps
-  // `tabResetTick` whenever the user clicks the active main tab
-  // pill. Mark feedback 2026-05-07: tapping the Collecting pill
-  // while inside a tool should return to the landing — now expressed
-  // as "return to the default sub-tab".
-  useEffect(() => {
-    if (tabResetTick && tabResetTick > 0 && typeof setSubTab === "function") {
-      setSubTab("editorial");
-    }
-  }, [tabResetTick, setSubTab]);
+  // The old tabResetTick → setSubTab("editorial") effect retired 2026-06-03:
+  // Articles and Reference Guides are separate TOP pills now, each pinning
+  // its own sub — a forced editorial reset would yank Reference Guides back
+  // to Articles on re-tap. Drill-in reset on re-tap is the follow-up
+  // (P-15/P-22) and lives with the drilled component, not here.
 
   const current = subTab || "editorial";
 
-  // Sub-tab strip retired here 2026-05-21 (PR_Y3) — lifted into App.js
-  // as `referencesSubTabsJSX` so it renders in the shell's sticky
-  // stack alongside listingsSubTabsJSX / watchSubTabsJSX. Consistent
-  // chrome on every tab.
-
-  // ── Sub-tab body dispatch ──────────────────────────────────────
+  // ── Body dispatch (sub driven by the top-tab pills / account menu) ──
   let body;
   if (current === "tools" || current === "size" || current === "links" || current === "challenges") {
     // Tools section (Mark 2026-06-01): size comparison · links · challenges
@@ -167,11 +158,6 @@ export function ReferencesTab({
 
   return (
     <div>
-      {/* subStrip retired here 2026-05-21 (PR_Y3) — the Collecting
-          sub-tabs lifted into App.js as `referencesSubTabsJSX` so
-          they render in the shell's sticky stack alongside the
-          Listings + Watchlists sub-tabs. Same chrome position on
-          every tab. */}
       {body}
     </div>
   );
