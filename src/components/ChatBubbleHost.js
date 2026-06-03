@@ -303,7 +303,17 @@ export function ChatBubbleHost({ seedItem = null }) {
     // Tapping the launcher (or the callout) opens SEEDED when there's a
     // shared item on screen, else a normal chat. The callout reads "Ask Lumé"
     // on a share surface (always shown there) or the first-run "Ask me" hint.
-    const openSeeded = () => { openChat(); if (seedItem && user) send(describeItem(seedItem)); };
+    //
+    // Seed ONLY an empty conversation (P-29, 2026-06-03): Lumé minimises
+    // itself after every action button (deliberate — the result behind should
+    // be visible), so without the guard every reopen re-sent the same seed
+    // question — one full model turn per round-trip, costing real API spend
+    // just to get back to the transcript. With a transcript present, reopening
+    // simply shows it.
+    const openSeeded = () => {
+      openChat();
+      if (seedItem && user && messages.length === 0 && !loading) send(describeItem(seedItem));
+    };
     const showCallout = !!seedItem || !hasOpened;
     node = (
       <div style={{ ...FIXED, display: "flex", alignItems: "center", gap: 10 }}>
