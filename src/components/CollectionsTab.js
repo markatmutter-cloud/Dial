@@ -1892,11 +1892,18 @@ function ListsView({
     const isRecipient = isSharedList && !isOwner;
     const ownerName = (selected?.userId && memberMap.get(selected.userId)) || "Someone";
     const myUserId = user?.id || null;
-    // Share callback — copies a `?list=<id>&shared=1` link via the Web
-    // Share API (or clipboard fallback). Recipients land on
+    // Share callback — routes through /share/list_<id> so preview bots get a
+    // per-list OG card (name + count + first cover) instead of the generic
+    // site hourglass (P-23, 2026-06-03). api/share.js redirects humans to the
+    // same ?list=<id>&shared=1 surface as before; recipients land on
     // ListReceiver which fetches via the public `get_public_list` RPC.
     const triggerShare = async () => {
-      const url = `${window.location.origin}/?list=${encodeURIComponent(selected.id)}&shared=1`;
+      const cover = (rawItems.find(i => i && i.img) || {}).img || "";
+      const shareU = new URL(`${window.location.origin}/share/${encodeURIComponent(`list_${selected.id}`)}`);
+      shareU.searchParams.set("t", selected.name || "A list");
+      shareU.searchParams.set("n", String(rawItems.length));
+      if (cover) shareU.searchParams.set("img", cover);
+      const url = shareU.toString();
       const shareData = {
         title: `${selected.name} — Watchlist`,
         text: `${selected.name} — a list on Watchlist`,
