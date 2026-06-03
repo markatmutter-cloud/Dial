@@ -149,7 +149,11 @@ export function ManageListSheet({
   // page can accept directly.
   const copyShareUrl = useCallback(async () => {
     if (!collection?.id) return;
-    const url = `${window.location.origin}/?list=${encodeURIComponent(collection.id)}&shared=1`;
+    // Routed through /share/list_<id> (P-23) so the preview card carries the
+    // list's name — same treatment as triggerShare + submitInvite.
+    const shareU = new URL(`${window.location.origin}/share/${encodeURIComponent(`list_${collection.id}`)}`);
+    shareU.searchParams.set("t", collection.name || "A list");
+    const url = shareU.toString();
     try {
       if (navigator.share) {
         await navigator.share({
