@@ -80,6 +80,12 @@ within each section roughly last.
   fixed the curated index (Explorer refs were orphaned under a parser-invisible
   label; 14270 mis-parked under Submariner). Re-tags 29 rows on next scrape.
   Spun off B-57 (same-brand collision sweep).
+- **2026-06-02 — Same-brand reference collisions fixed (B-57, #779).** Web-search
+  adjudicated the curated index: removed the wrong-family entry for 7 refs (Patek
+  5236P off Calatrava→Perpetual Calendar, IWC IW5004 off Portugieser→Big Pilot,
+  Lange 216.026/233.026, Heuer 73463→Skipper, UG 22409, Rolex 69173/69178→Lady
+  Datejust). Left deliberate annotated cross-refs; flagged Cartier WJTA0001 +
+  Breitling 765 for Mark.
 - **2026-06-02 — Scraper filename de-clash (B-20, #776).** Renamed
   `auctionlots_scraper.py` → `tracked_lots_scraper.py` so it's no longer one
   underscore from `auction_lots_scraper.py`; updated both importers + the
@@ -178,6 +184,15 @@ within each section roughly last.
   `auction_lots_scraper.py` for lots + `merge.py` for the calendar) drops
   Sotheby's "Noble & Private Collections" + Bonhams "Espionage: Fact & Fiction"
   from scrape + calendar; purged the existing lots/sales.
+- **2026-06-02 — Sotheby's "Fine Jewelry" excluded (#780).** L26050 (~225 jewels,
+  ~6 watches) polluted the grid. Added the title to `EXCLUDE_CATALOG_TITLES`, plus
+  a new `EXCLUDE_CATALOG_URL_SLUGS` (jewel*) because the calendar cross-lists it in
+  the watches category with a misleading "Fine Watches" title but a
+  `/fine-jewelry-l26050` URL. Pruned 225 lots + 1 calendar entry.
+- **2026-06-02 — Christie's lot images fixed (#781).** Every Christie's lot showed
+  "IMAGE NOT AVAILABLE": wsrv.nl's fetcher now times out on `christies.com` (same
+  block Bonhams hits) though direct fetch is 200. Added christies.com to
+  `imgSrc()`'s direct-serve exceptions.
 
 ## Epic 3 — Watchlist
 

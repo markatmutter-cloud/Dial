@@ -168,3 +168,41 @@ and CI stays on `npm install` (unchanged).
 B-16/B-20/B-44 **done**. **Remaining: B-22** (code-split phase 2) **+ B-34**
 (lazy-load ReferencesTab subtree) — App.js, preview-verification-gated, collide
 with the Lumé UI session. Their own session **after** the front sessions merge.
+
+---
+
+# Addendum 3 — B-57 + two break-fixes + branch prune (#779–#781, all merged)
+
+Continuation of the scraping/data session.
+
+- **B-57 same-brand ref collisions (#779).** Closed out via **web-search adjudication**
+  — for each genuinely-different-family collision, searched the brand's official
+  site + press to settle the true model, then removed the wrong-family entry.
+  Fixed 7 (Patek 5236P→Perpetual Calendar, IWC IW5004→Big Pilot, Lange 216.026→
+  Saxonia [index typo] + 233.026→1815, Heuer 73463→Skipper, UG 22409→Compax, Rolex
+  69173/69178→Lady Datejust). Left **deliberate annotated cross-refs** (Patek 5004
+  "also in chronograph section", Lange 403.x "see Datograph", Rolex 16264/17013/17014
+  — all still Datejusts) and parser-fragment tokens. **Open for Mark to google:**
+  Cartier `WJTA0001` (my search says Tank Américaine; index annotates "Crash Tigrée")
+  + Breitling `765`. (Method works — search turns watch-knowledge calls into rubber-stamps.)
+- **Sotheby's "Fine Jewelry" L26050 (#780).** A jewels sale (~225 lots) hit the grid.
+  Title blocklist drops the lots; but the CALENDAR cross-lists it in the watches
+  category with a misleading **"Fine Watches"** title + a `/fine-jewelry-l26050` URL,
+  so added `EXCLUDE_CATALOG_URL_SLUGS` (jewel*) + pass the URL at the calendar call
+  sites (lockstep auction_lots_scraper ↔ merge.py). Pruned the committed data.
+- **Christie's images (#781).** All Christie's lots showed "IMAGE NOT AVAILABLE" —
+  **wsrv.nl's datacenter fetcher now times out on christies.com** (same block as
+  Bonhams) though direct fetch is 200. One-liner: christies.com → `imgSrc()`
+  direct-serve exceptions. **Watch for the next house to do this** — the wsrv
+  direct-serve exception list (Bonhams, Tropical Watch, now Christie's) is the place.
+- **Branch prune (Mark's ask):** deleted all merged local branches + **55 merged
+  remote branches** (the stale squash-merged pile). Kept `origin/lume-mentality-data`
+  (no merged PR — active WIP). Only `main` + that branch remain.
+
+## Gotchas reinforced (Addendum 3)
+- **A misleading sale TITLE needs a URL-slug fallback.** Sotheby's cross-lists
+  jewels in the watches category titled "Fine Watches" — title blocklists alone
+  can't catch it; the URL slug is the reliable signal.
+- **wsrv blocks spread.** When a whole source's images break but a direct fetch is
+  200, it's wsrv being blocked by that origin — add the host to `imgSrc()`'s
+  direct-serve list (next to bonhams.com). Don't chase URL-encoding ghosts.

@@ -152,9 +152,10 @@ diagram, data model, and folder layout.
   referer) + `api/share.js` `PROXIED_IMG_HOSTS` (OG bots). Miss one and share
   cards break. In `imgSrc()`: Phillips/Monaco use their own CDN size-rewrites;
   every other dealer image routes through **wsrv.nl** resize (~720px WebP).
-  Direct-serve exceptions (skip wsrv): Bonhams (Cloudflare blocks wsrv's
-  datacenter fetcher) + Tropical Watch `d29…cloudfront` (240px source — resize
-  only adds grain). Sotheby's brightspot is hash-signed — don't retry URL rewrites.- **`is_excluded_title`** filters only pocket watches / clocks / loose dials;
+  Direct-serve exceptions (skip wsrv): Bonhams + Christie's (both block wsrv's
+  datacenter fetcher — direct fetch is 200, wsrv times out) + Tropical Watch
+  `d29…cloudfront` (240px source — resize only adds grain). Sotheby's brightspot
+  is hash-signed — don't retry URL rewrites.- **`is_excluded_title`** filters only pocket watches / clocks / loose dials;
   keep all other accessories. Strip `o'clock` before the `\bclock\b` regex
   (it dropped real lots). Apply the same predicate in any new auction scraper.
 - **Phillips: never fetch lot detail from CI** (WAF 403s after ~7 requests).
