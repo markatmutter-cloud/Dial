@@ -120,7 +120,7 @@ export function ReferencePage({
   const sectionGap = isMobile ? 40 : 64;
 
   const Section = (id, kicker, title, intro, children) => (
-    <section id={id} data-refsection style={{ scrollMarginTop: 70, marginTop: sectionGap }}>
+    <section id={id} data-refsection style={{ scrollMarginTop: "calc(var(--sticky-top, 0px) + 70px)", marginTop: sectionGap }}>
       {shell(
         <div style={{ borderTop: "0.5px solid var(--border)", paddingTop: isMobile ? 22 : 30, marginBottom: isMobile ? 16 : 22 }}>
           <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--brand-olive-text)", marginBottom: 8 }}>{kicker}</div>
@@ -221,8 +221,14 @@ export function ReferencePage({
         );
       })()}
 
-      {/* STICKY SCROLL-SPY NAV — where am I + jump */}
-      <nav style={{ position: "sticky", top: 0, zIndex: 20, background: "var(--bg)", borderBottom: "0.5px solid var(--border)" }}>
+      {/* STICKY SCROLL-SPY NAV — where am I + jump.
+          top reads --sticky-top (the measured height of the mobile sticky
+          chrome stack, set in App.js) so the nav pins BELOW the tab/sub-tab
+          chrome instead of on top of it (P-11 — it used to overlap the green
+          band). Desktop has no [data-sticky-chrome] → var stays 0 → top:0 in
+          the scroll pane, as before. zIndex 15 < the chrome's 20 so during
+          scroll transitions the nav tucks under the chrome, never over it. */}
+      <nav style={{ position: "sticky", top: "var(--sticky-top, 0px)", zIndex: 15, background: "var(--bg)", borderBottom: "0.5px solid var(--border)" }}>
         {shell(
           <div style={{ display: "flex", gap: 4, overflowX: "auto", scrollbarWidth: "none", msOverflowStyle: "none", padding: "9px 0" }}>
             {NAV.map((s) => {
@@ -237,7 +243,7 @@ export function ReferencePage({
       </nav>
 
       {/* OVERVIEW — model intro + the reference story, side by side on desktop */}
-      <section id="overview" data-refsection style={{ scrollMarginTop: 70, marginTop: sectionGap }}>
+      <section id="overview" data-refsection style={{ scrollMarginTop: "calc(var(--sticky-top, 0px) + 70px)", marginTop: sectionGap }}>
         {shell(
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "0.8fr 1.2fr", gap: isMobile ? 26 : 52, alignItems: "start" }}>
             {node.modelIntro && (
@@ -316,7 +322,7 @@ export function ReferencePage({
       )}
 
       {/* EXAMPLES — see real ones: how-to-look + the market, one grey unit */}
-      <section id="examples" data-refsection style={{ scrollMarginTop: 70, marginTop: sectionGap }}>
+      <section id="examples" data-refsection style={{ scrollMarginTop: "calc(var(--sticky-top, 0px) + 70px)", marginTop: sectionGap }}>
         {shell(
           <div style={{ borderTop: "0.5px solid var(--border)", paddingTop: isMobile ? 22 : 30, marginBottom: isMobile ? 16 : 22 }}>
             <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--brand-olive-text)", marginBottom: 8 }}>See real ones</div>
