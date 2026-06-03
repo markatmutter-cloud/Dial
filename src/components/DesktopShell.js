@@ -1,28 +1,14 @@
 import React, { useEffect, useRef } from "react";
-import { SearchIcon, TabIcon, HomeIcon, HeartIcon } from "./icons";
+import { SearchIcon, TabIcon, HomeIcon } from "./icons";
 import { Chip } from "./Chip";
 import { AboutModal } from "./AboutModal";
+import { SavedHeartLink } from "./SavedHeartLink";
 import { SignInPromptModal } from "./SignInPromptModal";
 import { FilterRow } from "./FilterRow";
 import { pillBase, tabPill } from "../styles";
 
-// Saved shortcut for the top-right chrome cluster — a heart that matches the
-// HomeIcon's white outline (Mark 2026-06-02). Sits between About and the auth
-// circle, tight padding so the cluster reads as one unit; fills red on hover.
-function SavedHeartLink({ onGo, onOlive }) {
-  const [hover, setHover] = React.useState(false);
-  const base = onOlive ? "rgba(255,255,255,0.85)" : "var(--text3)";
-  return (
-    <button onClick={onGo} aria-label="My saved" title="My saved"
-      onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
-      style={{ background: "none", border: "none", cursor: "pointer",
-              padding: "6px 6px", fontFamily: "inherit", flexShrink: 0,
-              display: "inline-flex", alignItems: "center",
-              color: hover ? "var(--heart)" : base, transition: "color 0.15s" }}>
-      <HeartIcon size={20} filled={hover} />
-    </button>
-  );
-}
+// SavedHeartLink extracted to its own file 2026-06-03 so MobileShell renders
+// the same Saved shortcut next to the avatar (P-7 parity).
 
 // Desktop shell — receives everything the desktop branch needs from
 // App.js as a single props bag. Stage 2 of recommendation #1 (extracted
@@ -73,7 +59,7 @@ export function DesktopShell(props) {
     listReceiverJSX,
     catalogReceiverJSX,
     listingsSubTabsJSX,
-    referencesSubTabsJSX,
+    topTabs,
     trackNewItemModalJSX, watchSubTabsJSX, watchHeartedToggleJSX, collectionsSubTabsJSX, watchlistTabJSX,
     saleContextHeaderJSX,
     watchboxTabJSX,
@@ -621,19 +607,20 @@ export function DesktopShell(props) {
             in the masthead band under the hero on Home). */}
         {!minimalTopBar && (
         <div style={{ display: "flex", gap: 18, alignItems: "center", flexShrink: 0, marginLeft: 8 }}>
-          {[["listings", "Watches"], ["watchlist", "Lists"], ["references", "Collecting"]].map(([key, label]) => {
-            const active = tab === key;
-            return (
-              <button key={key} onClick={() => setTab(key)} style={{
-                ...tabPill(active, { onOlive: true }),
-                padding: "10px 0",
-                display: "flex", alignItems: "center", gap: 6,
-              }}>
-                <TabIcon kind={key} />
-                {label}
-              </button>
-            );
-          })}
+          {/* Top tabs render from the shared `topTabs` model (App.js builds
+              it from src/topTabs.js) — labels/active/onSelect pre-computed
+              so this strip can't drift from mobile/Home. Desktop shows the
+              full label ("Reference Guides"). */}
+          {(topTabs || []).map((t) => (
+            <button key={t.key} onClick={t.onSelect} style={{
+              ...tabPill(t.active, { onOlive: true }),
+              padding: "10px 0",
+              display: "flex", alignItems: "center", gap: 6,
+            }}>
+              <TabIcon kind={t.icon} />
+              {t.label}
+            </button>
+          ))}
         </div>
         )}
         {/* Top-bar search relocated AGAIN 2026-05-22 (PR_ε1.5): back
@@ -686,7 +673,9 @@ export function DesktopShell(props) {
           sub-tab + filter row chrome until they dismiss / save. */}
       {!anyShareActive && !searchAllActive && listingsSubTabsJSX}
       {!anyShareActive && !searchAllActive && watchSubTabsJSX}
-      {!anyShareActive && !searchAllActive && referencesSubTabsJSX}
+      {/* referencesSubTabsJSX retired 2026-06-03 — Articles + Reference
+          Guides are top-level tabs; the tools family launches from the
+          account menu. */}
       {/* Identity band — moved to chrome stack 2026-05-21 (PR_Y4,
           Mark spec: "search and filter pills below the black block").
           Band reads as the section header between sub-tabs and the

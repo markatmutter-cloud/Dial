@@ -74,6 +74,7 @@ const SearchResultsView = React.lazy(() =>
 );
 import DateDivider from "./components/DateDivider";
 import SubTabBar from "./components/SubTabBar";
+import { TOP_TABS, isTopTabActive } from "./topTabs";
 import { innerToggleButton, actionButton } from "./styles";
 
 // Same-origin paths — Vercel serves everything in /public at the
@@ -1113,11 +1114,27 @@ export default function Watchlist() {
     // On cross-main-tab navigation, reset the destination tab's sub-tab to its first value — do NOT restore from localStorage (Mark spec: clicking a tab loads the first sub-tab).
     if (newTab === "listings") setListingsSubTab("live");
     else if (newTab === "watchlist") setWatchTopTab("hearted");
-    else if (newTab === "references") setReferencesSubTab("editorial");
+    // `references` is NOT reset here (2026-06-03 IA): Articles and Reference
+    // Guides are two top pills over the same internal container, so the
+    // caller (selectTopTab / menu tools / challenge receive) sets the sub
+    // explicitly BEFORE switching — a forced "editorial" here would clobber it.
     // Returning to Auctions later should start from the base page, not the
     // catalog you'd drilled into — clear the sale filter on tab nav (Mark).
     setFilterSaleUrls([]);
     setTab(newTab);
+  };
+
+  // Top-pill click handler (2026-06-03 IA: Watches · Saved · Articles ·
+  // Reference Guides). Articles + Reference Guides both live in the internal
+  // `references` container, so selecting either sets the sub FIRST, then
+  // routes through setTabWithReceiveEscape (same-tab clicks still bump
+  // tabResetTick for drill-in reset). Plain function, not useCallback —
+  // see the note on setTabWithReceiveEscape above.
+  const selectTopTab = (entry) => {
+    const dest = entry.tab || entry.key;
+    if (entry.key === "listings") setSearch("");
+    if (entry.sub) setReferencesSubTab(entry.sub);
+    setTabWithReceiveEscape(dest);
   };
 
   // Saved searches are per-user (stored in Supabase). Signed-out visitors
@@ -3370,6 +3387,26 @@ export default function Watchlist() {
                       fontSize: 13, fontWeight: 500, borderRadius: 6 }}>
               My Watchbox
             </button>
+            {/* Tools — relocated from the dissolved Collecting tab (2026-06-03
+                IA restructure). Size comparison + Challenges launch the old
+                tools surface (internal tab "references", sub set first so
+                setTabWithReceiveEscape doesn't need to know which tool).
+                Links is parked (legacy ?tab=learn&sub=links still resolves).
+                Challenges' final home is provisional — Mark to revisit. */}
+            <button onClick={() => { setShowUserMenu(false); setReferencesSubTab("size"); setTabWithReceiveEscape("references"); setPage(1); }}
+              style={{ display: "block", width: "100%", textAlign: "left",
+                      padding: "8px 8px", border: "none", background: "transparent",
+                      color: "var(--text1)", cursor: "pointer", fontFamily: "inherit",
+                      fontSize: 13, fontWeight: 500, borderRadius: 6 }}>
+              Size comparison
+            </button>
+            <button onClick={() => { setShowUserMenu(false); setReferencesSubTab("challenges"); setTabWithReceiveEscape("references"); setPage(1); }}
+              style={{ display: "block", width: "100%", textAlign: "left",
+                      padding: "8px 8px", border: "none", background: "transparent",
+                      color: "var(--text1)", cursor: "pointer", fontFamily: "inherit",
+                      fontSize: 13, fontWeight: 500, borderRadius: 6 }}>
+              Challenges
+            </button>
             <button onClick={() => { setShowUserMenu(false); signOut(); }}
               style={{ display: "block", width: "100%", textAlign: "left",
                       padding: "8px 8px", border: "none", background: "transparent",
@@ -4082,30 +4119,23 @@ export default function Watchlist() {
     />
   );
 
-  // References (Collecting) sub-tab strip — lifted from inside
-  // ReferencesTab into App.js 2026-05-21 (PR_Y3) so it sits in the
-  // same shell-level position as the Listings / Watchlists sub-tab
-  // strips. Mark feedback: Editorial band rendered ABOVE the
-  // sub-tabs because they lived inside the tab content component
-  // — fix was to lift them up so every tab's chrome stack matches.
-  const referencesSubTabsJSX = tab !== "references" ? null : (
-    <SubTabBar
-      ariaLabel="Collecting views"
-      tabs={[
-        ["editorial",  "Articles"],
-        ["references", "Reference guides"],
-        ["tools",      "Tools"],
-      ]}
-      activeKey={["size", "links", "challenges"].includes(referencesSubTab) ? "tools" : referencesSubTab}
-      onSelect={(key) => setReferencesSubTab(key)}
-      isMobile={isMobile}
-      onOlive={isMobile}
-      containerStyle={{
-        background: isMobile ? "var(--brand-olive)" : "var(--bg)",
-        borderBottom: isMobile ? "none" : "0.5px solid var(--border)",
-      }}
-    />
-  );
+  // referencesSubTabsJSX retired 2026-06-03 (IA restructure): Articles and
+  // Reference Guides are top-level tabs now; the tools family (size / links /
+  // challenges) launches from the account menu. The strip's job moved into
+  // the shared top-tab model below.
+
+  // Top-tab model — built once from TOP_TABS (src/topTabs.js), consumed by
+  // BOTH shells and the HomeTab masthead. One source of truth for labels,
+  // active state and click handling — the three render sites used to carry
+  // their own inline arrays, which is exactly how labels drifted.
+  const topTabs = TOP_TABS.map((t) => ({
+    key: t.key,
+    label: t.label,
+    mobileLabel: t.mobileLabel || t.label,
+    icon: t.icon,
+    active: isTopTabActive(t, tab, referencesSubTab),
+    onSelect: () => selectTopTab(t),
+  }));
 
   // (Retired 2026-04-30) AuctionsTab JSX was built here. Tracked lots
   // now flow into Watchlist > Listings; calendar lives at Watchlist >
@@ -4263,12 +4293,7 @@ export default function Watchlist() {
       // γ). Tabs + auth render below the wordmark in an olive-bleed
       // band; top bar is suppressed on Home in both shells. About
       // trigger reuses openAbout above.
-      homeMastheadTabs={[
-        ["listings", "Watches"],
-        ["watchlist", "Lists"],
-        ["references", "Collecting"],
-      ]}
-      homeGoToTab={(key) => { setTab(key); setPage(1); }}
+      homeMastheadTabs={topTabs}
       homeMastheadAuthJSX={authJSX}
       // Search-bar augmentations (PR 2026-05-22): recent-search
       // history surfaced on focus when input is empty, live per-
@@ -4297,7 +4322,6 @@ export default function Watchlist() {
       // chrono24Items only — other projections aren't part of the reference
       // filter today; broadening to mainFeedItems would be a separate call.
       allListings={[...items, ...chrono24Items]}
-      tabResetTick={tab === "references" ? tabResetTick : 0}
       subTab={referencesSubTab}
       setSubTab={setReferencesSubTab}
       cols={cols}
@@ -4889,7 +4913,7 @@ export default function Watchlist() {
     listReceiverJSX,
     catalogReceiverJSX,
     listingsSubTabsJSX,
-    referencesSubTabsJSX,
+    topTabs,
     trackNewItemModalJSX, watchSubTabsJSX, watchHeartedToggleJSX, collectionsSubTabsJSX,
     saleContextHeaderJSX,
     savedHeaderJSX,

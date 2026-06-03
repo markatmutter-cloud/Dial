@@ -68,6 +68,16 @@ export function TabIcon({ kind }) {
       <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
     </svg>
   );
+  if (kind === "articles") return (
+    // Page-with-lines glyph — the top-level Articles tab (2026-06-03 IA
+    // split of Collecting into Articles + Reference Guides).
+    <svg {...props}>
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+      <path d="M14 2v6h6"/>
+      <line x1="8" y1="13" x2="16" y2="13"/>
+      <line x1="8" y1="17" x2="16" y2="17"/>
+    </svg>
+  );
   if (kind === "references") return (
     // Open-book glyph — reads as "reference resources" (encyclopedia
     // + tools + calculators) on hover/inspection without overstating

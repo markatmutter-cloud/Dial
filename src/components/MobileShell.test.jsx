@@ -36,20 +36,18 @@ describe("MobileShell", () => {
     expect(screen.queryByLabelText("Filters")).not.toBeInTheDocument();
   });
 
-  test("renders the bottom tab bar with Watches + Lists + Collecting", () => {
+  test("renders the main tabs: Watches + Saved + Articles + Guides", () => {
     render(<MobileShell {...buildMockShellProps()} />);
-    // 2026-05-14 IA pass: Share tab retired (absorbed by the Lists tab
-    // > Lists > SHARED WITH ME group + per-list Share button), and
-    // the Learn label was renamed to "Collecting" — verb framing
-    // that fits the surface (discipline + tools + future
-    // encyclopedia). 2026-05-28: top-tab labels renamed Listings→Watches,
-    // Watchlists→Lists (labels only; internal keys unchanged). Three
-    // pills: Watches / Lists / Collecting. Brand title at the top still
-    // says "Watchlist" (singular).
+    // 2026-06-03 IA restructure: Collecting dissolved into top-level
+    // Articles + Reference Guides ("Guides" on mobile); "Lists" tab
+    // renamed "Saved". Labels come from the shared topTabs model
+    // (src/topTabs.js). Brand title still says "Watchlist".
     expect(screen.getAllByText("Watchlist").length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByText("Lists").length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText("Watches").length).toBeGreaterThanOrEqual(1);
-    expect(screen.getByText("Collecting")).toBeInTheDocument();
+    expect(screen.getAllByText("Saved").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText("Articles").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText("Guides")).toBeInTheDocument();
+    expect(screen.queryByText("Collecting")).not.toBeInTheDocument();
     expect(screen.queryByText("Learn")).not.toBeInTheDocument();
     expect(screen.queryByText("Share")).not.toBeInTheDocument();
     expect(screen.queryByText("Collections")).not.toBeInTheDocument();
