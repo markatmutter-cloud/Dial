@@ -532,38 +532,86 @@ is the clarity mechanism — not a nicety. **Planning = one experience, two door
 ## Epic 10: Lumé — the AI spine
 
 The AI concierge of OUR corpus (grounded, cite-or-don't), not a general watch
-oracle. **All AI work lives here** — recommender included (it's pillar 5; Epic 7
-holds the recommender *substrate/strategy*, this epic the *conversational
-surface*). Merged in 2026-06-02 so direction lives in ONE roadmap; the build
-detail, behavioral charter, and resume-brief stay in the build doc
-**[docs/LUME_ROADMAP.md](docs/LUME_ROADMAP.md)** (+ companions
-[LUME_UX_PRINCIPLES.md](docs/LUME_UX_PRINCIPLES.md),
-[RECOMMENDER_STRATEGY.md](docs/RECOMMENDER_STRATEGY.md)) — same pattern as
-Epic 9 → IA_REDESIGN.md.
+oracle. **All AI work lives here as ONE list** — recommender included (it's
+pillar 5; Epic 7 holds the recommender *substrate/strategy*, this epic the
+*conversational surface*). 2026-06-03 (Mark): the separate build doc
+`docs/LUME_ROADMAP.md` is **retired and folded in below** — splitting the AI
+direction out is what made this roadmap go stale. Companions that remain:
+[LUME_UX_PRINCIPLES.md](docs/LUME_UX_PRINCIPLES.md) (the design bible) ·
+[RECOMMENDER_STRATEGY.md](docs/RECOMMENDER_STRATEGY.md) (Epic 7 detail) ·
+[LUME_CONFIG_REQUESTS.md](docs/LUME_CONFIG_REQUESTS.md) (prompt-tune intake) ·
+[REFERENCE_INTELLIGENCE.md](docs/REFERENCE_INTELLIGENCE.md) (the corpus).
 
 **North star:** get a collector into the rabbit hole they want, and help them
-fully understand a reference (articles · guides · real examples). It *augments*
-the collector — a companion, never an oracle that decides.
+fully understand a reference (articles · guides · real examples). Lumé is a
+vintage-watch collecting **GUIDE**, not a shopping assistant — listings are
+examples, never the centre. It *augments* the collector — a companion, never
+an oracle that decides.
+
+**State (2026-06-03):** v1 + Phase 2 + memory + web-search gap-sensor live; an
+eval harness (#728) gates prompt/tool PRs and already catches real grounding
+bugs. The honest diagnosis: where ChatGPT "reads better," it's an unconstrained
+free-recall essay — the exact trust-killer we refuse. Lumé's gaps are
+**plumbing, not intelligence**: it doesn't reliably retrieve our own guides
+(retrieval hierarchy: guide → notes → auctions → articles → listings → web;
+`groundingSource()` is the test hook). No transcript persistence yet — reload =
+clean slate; only usage counts persist, so abuse-testing pollutes nothing until
+pillar 4 ships (then incognito + reset are hard requirements; use a second
+Google account for cold-start testing).
 
 **Six capability pillars** (KNOWS · DOES · KNOWS-YOU · TAKES-YOU · NUDGES):
 1. **Knowledge — references & watches.** Built: ref index + 7 model-line deep-dives + lexicon P1. Next: attribute-level knowledge (**B-45**), more synthesis nodes, fact-vs-opinion tagging per claim.
-2. **Knowledge — collector mentality.** Powers a *coaching mode only* — never bleeds into how a watch is described (intrinsic-voice firewall).
+2. **Knowledge — collector mentality.** Lives in the editorial corpus (Screwdown Crown +) — the work is *classify*, not ingest. Powers a *coaching mode only* — never bleeds into how a watch is described (intrinsic-voice firewall).
 3. **Action — deep-linking.** Built: 6 in-app actions. Next: map the full surface Lumé can drive; every offered button must be real (**B-47** see-the-screen context · **B-51** keep links in-app).
 4. **Personalization — profile/memory (THE SUBSTRATE).** A fluid, evolving taste profile + Settings view/edit/reset + per-chat incognito toggle. Pillars 2/5/6 only get good once this exists.
-5. **Discovery — recommender + rabbit holes.** Wire Lumé to the Epic 7 recommender and design the *journeys* (subsumes RECOMMENDER_STRATEGY.md).
-6. **Proactive — the nudge layer.** "You've been looking at a lot of X — want a list / this guide?" — **prompt, never force**; needs pillar 4 signals.
+5. **Discovery — recommender + rabbit holes.** Wire Lumé to the Epic 7 recommender and design the *journeys*. Honors taste→condition→price + the trust stance (transparent/AI-mapped, label-matches-filter, invite correction).
+6. **Proactive — the nudge layer.** "You've been looking at a lot of X — want a list / this guide?" — **prompt, never force**; needs pillar 4 signals. Ties to the watchlists pulse.
 
-**Charter (the trust floor):** hard facts come only from the corpus — never
-confabulate (**B-46**); be honest about a search limit but still coach, never
-dead-end; differentiate opinion from fact; friendly/adult/user-led with a hard
-floor against hateful content; epistemic humility as a feature.
+**Charter (the trust floor — prompt-level, in `public/lume_system_prompt.txt`):**
+hard facts come only from the corpus — never confabulate, and NEVER tell a user
+their real listing is wrong on the strength of an unverified belief (**B-46**);
+don't write a check the search can't cash — be honest about a limit but still
+coach, never dead-end; differentiate opinion from fact and say which is which;
+scope = watches, porous at the edges (relevance test, hard-refuse the genuinely
+unrelated); friendly/adult/user-led, swearing fine, hard floor against hateful
+content regardless of goading; epistemic humility as a feature.
 
-**State (2026-06-01):** v1 + Phase 2 + memory shipped; web-search gap-sensor
-live; an eval harness (#728) gates prompt/tool PRs. Frontier = attribute search
-(B-45) · grounding (B-46) · screen-context (B-47). Reframe as a collecting
-**GUIDE**, not a shopping assistant.
-
-**Open BUGS assigned here (graduate at the NOW/NEXT pass):** B-45, B-46, B-47, B-51.
+**The Lumé list (one list, rough order — graduated B-45/46/47/51 live here):**
+1. **Product-behavior phase — retrieval hierarchy first.** Guide-first
+   retrieval (guides must outrank listings), reframe-as-GUIDE posture, the
+   E2643 learn/evaluate/explore eval cases. The eval already flagged the
+   failures (5513 free-recall, fabricated user history); this closes them.
+2. **Grounding hardening (B-46).** Corpus-only facts; defer to the user's
+   validated reality; humble-decline over confident wrong.
+3. **Profile / memory store (pillar 4 — the substrate).** Persist transcripts +
+   fluid taste profile; Settings view/edit/reset + incognito; fixes the
+   20-message truncation ("gets weird in a long chat") by summarise-and-persist;
+   folds in slang/currency normalization (lexicon P2, locale-inferred budgets).
+4. **Attribute search (B-45).** Case material / dial / markers facets — the
+   headline capability gap; same substrate the recommender needs.
+5. **Screen-context (B-47).** Pass active tab/filters/visible listing into the
+   chat so "the one on my screen" just works (app→Lumé, inverse of actions).
+6. **In-app links (B-51).** Listings through the share/open surface; build the
+   matching in-app ARTICLE surface (read + save, never bounce to source).
+7. **Lumé UX pass (own session).** Entry-aware opener (P-27 — no cold-open
+   spiel when seeded by a share); context-correct action labels (P-28 —
+   "save this *article*", not "listing"); follow-up chips, design-gallery
+   recs, visible verify.
+8. **Shared-link provenance as a signal (P-31).** A chat opened from a link
+   someone SENT you gets a different frame + a distinct engagement tag in the
+   profile (shared-to-me ≠ sought-out) for the recommender.
+9. **Proactive nudges (pillar 6)** — needs 3.
+10. **Recommender wiring (pillar 5)** — needs 3 + 4.
+11. **Collector-psychology coaching (pillar 2)** — classify the corpus; coaching
+    mode only.
+12. **App-literacy / onboarding composer.** Lumé teaches the app and composes a
+    one-tap starter dossier (create_list + add_to_list + save_note + read_more).
+13. **Per-user response-depth tiers** (user_limits knobs: max_output, tool
+    rounds, model tier) — depth ≠ the daily cap.
+14. **Opinion-vs-fact tagging** in the synthesis screening (taxonomy TBD).
+15. **Web-search gap-log → authoring loop.** The sensor is live; build the
+    demand-ranked guide backlog it feeds — and it's the capability worth gating
+    for free/subscriber tiers.
 
 ## Explicitly NOT on the roadmap
 

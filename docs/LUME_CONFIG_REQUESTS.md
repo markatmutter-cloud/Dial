@@ -6,7 +6,7 @@ get lost and the encoded behaviour can be audited against intent.
 **Three docs, three jobs:**
 - **This file** — the chronological *request ledger* (what was asked, when, where
   it landed, status).
-- [LUME_ROADMAP.md](LUME_ROADMAP.md) *Behavioral charter* — the synthesised
+- [ROADMAP.md Epic 10](../ROADMAP.md) *charter* — the synthesised
   *principles* those requests roll up into.
 - **`public/lume_system_prompt.txt`** — the *operational source of truth*; the
   externalised prompt Lumé actually runs (edit there + redeploy to change behaviour).
@@ -17,7 +17,7 @@ test), add a row here, encode it in the prompt, and note where.
 ## How to add a request
 1. Add a row to the table (date · request in plain English · where encoded · status).
 2. Encode it in `public/lume_system_prompt.txt` (the relevant section).
-3. If it's a durable principle, fold it into the LUME_ROADMAP charter too.
+3. If it's a durable principle, fold it into the ROADMAP Epic 10 charter too.
 4. Redeploy; if there's an eval scenario that guards it, add/adjust it (`src/lume_eval.test.js`).
 
 ## Ledger
@@ -34,7 +34,7 @@ test), add a row here, encode it in the prompt, and note where.
 | 2026-05-29 | **Never join multiple references in one query** (ANDs → 0 results). | prompt `SEARCH — KEEP THE QUERY FILTERABLE`; BUGS B-42 | ✅ shipped |
 | 2026-05-29 | **Header name + descriptor; friendlier cold open** that says what Lumé can do. | client greeting + header (`ChatBubbleHost.js`); BUGS B-42 | ✅ shipped |
 | ongoing | **Grounding is non-negotiable** — state watch facts only from a tool; always include a source URL. | prompt `GROUNDING` | ✅ prompt |
-| ongoing | **Scope = watches, porous at the edges** — relevance test, hard-refuse the genuinely unrelated. | LUME_ROADMAP charter #4 | ⏳ partial (tighten in prompt) |
+| ongoing | **Scope = watches, porous at the edges** — relevance test, hard-refuse the genuinely unrelated. | ROADMAP Epic 10 charter (scope) | ⏳ partial (tighten in prompt) |
 | ongoing | **No hierarchy / diminishment** — never "starter/entry-level/overshadowed"; describe watches intrinsically + laterally. | prompt `VOICE`; memory `feedback_reference_voice_intrinsic` | ✅ prompt |
 
 ## Queued (requested, not yet encoded)
