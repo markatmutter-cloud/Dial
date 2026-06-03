@@ -56,11 +56,23 @@ export function SettingsModal({
 
   return (
     <div onClick={onClose} style={modalBackdrop}>
-      <div onClick={e => e.stopPropagation()} style={{ ...modalShell, maxWidth: 420 }}>
-        <div style={modalTitleRow}>
+      {/* Pinned-header restructure (P-9): the shell stops scrolling itself
+          (overflow hidden) and the body scrolls instead, so the title row +
+          × stay reachable however tall the content gets on mobile. */}
+      <div onClick={e => e.stopPropagation()} style={{
+        ...modalShell, maxWidth: 420,
+        padding: 0, overflowY: "hidden",
+        display: "flex", flexDirection: "column",
+      }}>
+        <div style={{
+          ...modalTitleRow, marginBottom: 0, flexShrink: 0,
+          padding: "16px 24px 12px",
+          borderBottom: "0.5px solid var(--border)",
+        }}>
           <div style={modalTitle}>Settings</div>
           <button onClick={onClose} aria-label="Close" style={modalCloseButton}>×</button>
         </div>
+        <div style={{ overflowY: "auto", WebkitOverflowScrolling: "touch", padding: "0 24px 24px" }}>
 
         {/* Display name — only render for signed-in users. Used on
             shared lists (the who_added chip) and on reactions /
@@ -184,6 +196,7 @@ export function SettingsModal({
           color: "var(--text1)", cursor: "pointer", fontFamily: "inherit",
           fontSize: 13,
         }}>About Watchlist</button>
+        </div>
       </div>
     </div>
   );
