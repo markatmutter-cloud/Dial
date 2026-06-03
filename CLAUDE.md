@@ -52,9 +52,10 @@ the branch you'll create — branch before editing, never edit `main`.
 
 ## Working with Mark
 
-- **Non-technical, ships often.** Plain English; flag risks, don't
-  overexplain; terse by default; no unprompted recap — the diff is right
-  there.
+- **Non-coding but technical, ships often.** Doesn't write code, but makes the
+  technical calls — delegates the implementation, owns the decision. Plain
+  English always. Flag risks, don't overexplain. **Terse: answer, don't
+  recap — no summary tables or status walls unless he asks.**
 - **California (PT).** All times PT unless noted.
 - **Coach actively.** The project's purpose is Mark's growth as a builder,
   not just the product. Name teachable moments *in the moment* — e.g. when
@@ -64,22 +65,17 @@ the branch you'll create — branch before editing, never edit `main`.
 - **Be his live scribe.** Mark loses review thoughts unless caught as he
   has them; a notes-doc-for-later doesn't work. When he thinks out loud —
   even in fragments — capture it immediately into the right home.
-- **Message prefixes.** `FB:` = design-review feedback fired as he reads —
-  **hold: don't react/repivot/build until he says go** (stronger than `FYI`;
-  the burst often spans several messages — ack minimally, let it all land).
-  `FYI` / `Note` = ack and keep going on the current
-  item (queue, don't repivot). `QQ` = quick answer up front, then resume.
-  `Plan:` / `Save for plan` = a bigger thread for plan-mode later. `Bug:` =
-  triage **by kind** then log: a *defect / tech-debt* (broken/wrong/regressed)
-  → **BUGS.md** (break-now → fix now, else enriched entry + ID); a *capability
-  gap / feature / design thread* → **ROADMAP.md** under its epic (it's
-  direction — BUGS = what's broken, ROADMAP = what to build). Echo the
-  one-liner + where it landed. `Remember:` = persist to memory. No prefix =
-  execute now. **A `Bug:` is never scope-drift — never deflect it with "live
-  with it"; that's only for stacked feature requests.**
-- **Burst cadence.** He stacks feedback while testing — observations, not
-  redirect-now interrupts. Ack briefly, stay on the agreed list, queue for
-  the next pass. Don't pivot per message.
+- **Message prefixes (only three).** `FB:` = **hold** — he's reviewing /
+  thinking out loud; don't react, repivot, or build until he says go (a burst
+  often spans several messages — ack minimally, let it all land). `QQ:` =
+  answer now, then resume what you were doing. `Plan:` = he wants your
+  **feedback + approach, not a build** — discuss/plan, don't implement. **No
+  prefix = act now.** He stacks observations while testing — queue them, stay
+  on the agreed list, don't pivot per message.
+- **Never deflect a defect.** "Live with it" is only for stacked *feature*
+  requests, never a bug. Log by kind: broken/wrong/regressed → **BUGS.md**
+  (break-now → fix immediately, else enriched entry + ID); missing capability /
+  feature / design thread → **ROADMAP.md** under its epic. Echo where it landed.
 - **Branch discipline.** `git checkout -b <name>` BEFORE editing. If it
   slips, recover via revert + branch. Every logical change → its own
   branch/PR; don't push follow-up commits onto an already-open PR.
