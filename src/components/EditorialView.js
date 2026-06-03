@@ -1,9 +1,9 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { pillBase, inputBase, clearAllPill, editorialTitle, cardGridStyle } from "../styles";
+import { pillBase, clearAllPill, editorialTitle, cardGridStyle } from "../styles";
 import { Chip } from "./Chip";
 import { PageHeader } from "./PageHeader";
-import { FilterRow } from "./FilterRow";
+import { StandardFilterBar, standardSearchInputStyle } from "./StandardFilterBar";
 import { shortHash } from "../utils";
 import { HeartIcon } from "./icons";
 
@@ -240,12 +240,11 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
   // Hearted toggle. Off by default; tap to scope the visible set
   // to just articles the current user has hearted.
   const [heartedOnly, setHeartedOnly] = useState(false);
-  // Sort modes (2026-05-20): "relevance" (only meaningful when a
-  // query is present; falls back to date_desc when empty),
-  // "date_desc", "date_asc". Cycles through Relevance → Date ↓ →
-  // Date ↑ → Relevance when a query is typed; cycles between just
-  // Date ↓ and Date ↑ otherwise.
-  const [sort, setSort] = useState("date_desc");
+  // Sort is DERIVED, not user-facing (P-12, 2026-06-03): the Date ↓/↑ pill
+  // "didn't do anything" visible and cost a row on mobile — removed. A typed
+  // query sorts by relevance; otherwise newest-first. (The old cycleSort /
+  // sortLabel pill machinery went with it.)
+  const sort = (search || "").trim() ? "relevance" : "date_desc";
   // Inline-expansion popover state — same shape as Listings filter row.
   // null | "source" | "brand". Tapping the active pill closes it; tapping
   // a different pill switches.
@@ -482,31 +481,6 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
     setActiveFilterPop(null);
   };
 
-  // Sort cycle behavior:
-  //   - With a query: Relevance → Date ↓ → Date ↑ → Relevance
-  //   - Without a query: Date ↓ → Date ↑ → Date ↓ (Relevance hidden,
-  //     the option only makes sense when there's something to score)
-  // If the user types a query while on Date sort, we DON'T jump them
-  // to Relevance — they chose the date axis explicitly. But if they
-  // clear the query while on Relevance, the memo falls back to
-  // date_desc rendering transparently (so the pill keeps showing
-  // "Relevance" but the actual order is date_desc).
-  const hasQuery = !!search.trim();
-  const cycleSort = () => {
-    setSort(s => {
-      if (hasQuery) {
-        if (s === "relevance") return "date_desc";
-        if (s === "date_desc") return "date_asc";
-        return "relevance";
-      }
-      return s === "date_desc" ? "date_asc" : "date_desc";
-    });
-  };
-  const sortLabel = sort === "relevance" ? (hasQuery ? "Relevance" : "Date ↓")
-                  : sort === "date_desc" ? "Date ↓"
-                  : sort === "date_asc"  ? "Date ↑"
-                  : "Date";
-
   // ─────────────────────────────────────────────────────────────────
   // Render
   // ─────────────────────────────────────────────────────────────────
@@ -562,96 +536,59 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
           Listings and Collecting headers (the empty slot where the
           search used to be). */}
 
-      {/* Filter strip — mirrors Listings filterRowJSX shape. Single
-          horizontal row, pill toggles, inline-expansion panels below
-          for source / brand chip clusters. Shared FilterRow primitive
-          (PR FilterRow refactor) standardizes the outer flex/border
-          geometry so Listings + Editorial can't drift apart again. */}
-      <FilterRow expanded={expanded} paddingX={0} paddingY={6} background={filterBandBg}>
-        {/* Search input — desktop only. Sits as the leftmost element
-            of the filter strip so search + sort + chips render on one
-            row (Mark feedback 2026-05-21: "filter not in line with
-            search still"). Mobile keeps the Spotify-pattern overlay
-            from the shell — adding an input here on mobile would be
-            redundant. Shell skips its own search row on tab=references
-            so this is the single source on Collecting. */}
-        {/* Inline search input retired 2026-05-22 (PR_ε1.5). The
-            top-bar search (DesktopShell topBarSearchJSX) is now the
-            single source of truth for search on Collecting too —
-            context-aware via the same `search` state. Mobile already
-            went through the Spotify overlay (PR_Z); desktop now
-            mirrors that pattern with an expanding icon-then-input. */}
-        {/* Search input (restored 2026-05-27, Mark): a visible, consistent
-            search bar on the Articles page, bound to the shared `search` state
-            so it filters the article grid (title/author now, body once loaded).
-            The top-bar search row is skipped on tab=references, so this is the
-            single on-page search affordance for Articles. */}
-        {/* Sort pill — sits to the LEFT of the search bar (Mark 2026-05-28).
-            Cycles Date ↓ / Date ↑ when no query is typed, expands to
-            Relevance / Date ↓ / Date ↑ when a query is active. */}
-        <button
-          onClick={cycleSort}
-          style={{
-            ...pillBase(true, { compact: true }),
-            fontWeight: 600,
-          }}>{sortLabel}</button>
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search articles…"
-          aria-label="Search articles"
-          style={{
-            flex: isMobile ? "1 1 100%" : "0 1 240px",
-            minWidth: 0, fontFamily: "inherit", fontSize: 13,
-            color: "var(--text1)", background: "transparent",
-            border: "0.5px solid var(--border)", borderRadius: 18,
-            padding: "6px 14px", outline: "none",
-          }}
-        />
-
-        {/* Source inline-expand pill */}
-        <button
-          onClick={() => setActiveFilterPop(p => p === "source" ? null : "source")}
-          style={pillBase(activeSources.length > 0 || activeFilterPop === "source", { compact: true })}>
-          Source{activeSources.length > 0 ? ` · ${activeSources.length}` : ""}
-        </button>
-
-        {/* Brand inline-expand pill */}
-        <button
-          onClick={() => setActiveFilterPop(p => p === "brand" ? null : "brand")}
-          style={pillBase(activeBrands.length > 0 || activeFilterPop === "brand", { compact: true })}>
-          Brand{activeBrands.length > 0 ? ` · ${activeBrands.length}` : ""}
-        </button>
-
-        {/* Hearted-only toggle (PR_P, 2026-05-20). Mirrors the Listings
-            Hearted pill. Only meaningful when a user is signed in
-            with at least one hearted article — disabled otherwise so
-            taps on the empty state don't dead-end with "no results."  */}
-        <button
-          onClick={() => setHeartedOnly(v => !v)}
-          aria-pressed={heartedOnly}
-          title={heartedOnly ? "Showing hearted articles only" : "Filter to hearted articles"}
-          style={pillBase(heartedOnly, { compact: true })}>
-          ♥ Hearted
-        </button>
-
-        {/* Article count — right-aligned via marginLeft auto. */}
-        <span style={{
-          marginLeft: "auto", flexShrink: 0,
-          fontSize: 12, color: "var(--text3)", fontFamily: "inherit",
-          whiteSpace: "nowrap", padding: "0 6px",
-        }}>
-          {loading
-            ? "Loading…"
-            : `${filtered.length.toLocaleString()} ${filtered.length === 1 ? "article" : "articles"}`}
-        </span>
-
-        {/* × Clear all — shared olive clearAllPill (same as Listings). */}
-        {hasFilters && (
-          <button onClick={clearAll} style={clearAllPill}>× Clear all</button>
+      {/* Filter strip — the StandardFilterBar layout (2026-06-03 chrome pass):
+          pills left · search CENTERED (desktop) · count right in a reserved
+          slot. The Date sort pill is gone (P-12 — derived sort above); the
+          mobile in-bar search input is gone (P-13 — the shell's sticky search
+          row is the single input on mobile; this bar carries only the pills
+          + count there). */}
+      <StandardFilterBar
+        isMobile={isMobile}
+        expanded={expanded}
+        background={filterBandBg}
+        count={loading
+          ? "Loading…"
+          : `${filtered.length.toLocaleString()} ${filtered.length === 1 ? "article" : "articles"}`}
+        search={isMobile ? null : (
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search articles…"
+            aria-label="Search articles"
+            style={standardSearchInputStyle}
+          />
         )}
-      </FilterRow>
+        pills={
+          <>
+            {/* Source inline-expand pill */}
+            <button
+              onClick={() => setActiveFilterPop(p => p === "source" ? null : "source")}
+              style={pillBase(activeSources.length > 0 || activeFilterPop === "source", { compact: true })}>
+              Source{activeSources.length > 0 ? ` · ${activeSources.length}` : ""}
+            </button>
+            {/* Brand inline-expand pill */}
+            <button
+              onClick={() => setActiveFilterPop(p => p === "brand" ? null : "brand")}
+              style={pillBase(activeBrands.length > 0 || activeFilterPop === "brand", { compact: true })}>
+              Brand{activeBrands.length > 0 ? ` · ${activeBrands.length}` : ""}
+            </button>
+            {/* Saved-only toggle (internally heartedOnly). Label is "♥ Saved",
+                never "Hearted" (Mark 2026-06-03 — see no-hearted-label rule). */}
+            <button
+              onClick={() => setHeartedOnly(v => !v)}
+              aria-pressed={heartedOnly}
+              title={heartedOnly ? "Showing saved articles only" : "Filter to saved articles"}
+              style={pillBase(heartedOnly, { compact: true })}>
+              ♥ Saved
+            </button>
+            {/* × Clear all — shared olive clearAllPill (same as Listings). */}
+            {hasFilters && (
+              <button onClick={clearAll} style={clearAllPill}>× Clear all</button>
+            )}
+          </>
+        }
+      />
 
       {/* Source expansion panel */}
       {activeFilterPop === "source" && (
@@ -706,8 +643,10 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
           catalog: the title scrolls away in normal flow while the filter chrome
           below pins (desktop sticky wrapper; mobile portals it into the shell
           sticky stack). */}
-      <PageHeader isMobile={isMobile} title="Articles"
-        meta={filtered.length ? `${filtered.length} ${filtered.length === 1 ? "article" : "articles"}` : null} />
+      {/* Count moved out of the header meta into the filter bar's reserved
+          right slot (P-8/P-16, 2026-06-03) — it was rendering in BOTH places,
+          and the late-loading under-title copy jogged the layout. */}
+      <PageHeader isMobile={isMobile} title="Articles" />
       {/* B-01: mobile portals the filter chrome into the shell sticky stack
           (one shared chrome); desktop keeps the inline edge-to-edge sticky
           wrapper. Falls back to inline if the slot isn't mounted yet. */}
