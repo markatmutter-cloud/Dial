@@ -352,6 +352,12 @@ export function ListReceiver({
           ? "Nothing in this list yet."
           : `${itemCount} watch${itemCount === 1 ? "" : "es"}`}
       </div>
+      {/* What a list IS + what you can do — the recipient's first impression
+          used to explain nothing (P-23, Mark 2026-06-03). */}
+      <div style={{ fontSize: 12.5, color: "var(--text2)", marginTop: 8, lineHeight: 1.55 }}>
+        A list on Watchlist — watches {sender ? `${sender} collected` : "someone collected"} from
+        dealers and auctions. Browse it below{user ? ", or save your own copy to keep and edit" : ""}.
+      </div>
       {isCollab && (
         <div style={{ fontSize: 12, color: "var(--text2)", marginTop: 8, lineHeight: 1.5 }}>
           Invited to <strong style={{ color: "var(--text1)" }}>collaborate</strong> as a{" "}
@@ -381,35 +387,85 @@ export function ListReceiver({
   }
 
   return (
-    <SharedReceiveFrame
-      sender={sender}
-      typeLabel="list"
-      hero={hero}
-      identity={identity}
-      primaryCTA={primaryCTA}
-      signedIn={!!user}
-      busy={busy}
-      extraActions={extraActions}
-      navCues={[{ label: "Just browse", onClick: onJustBrowse }]}
-    />
+    <>
+      <SharedReceiveFrame
+        sender={sender}
+        typeLabel="list"
+        hero={hero}
+        identity={identity}
+        primaryCTA={primaryCTA}
+        signedIn={!!user}
+        busy={busy}
+        extraActions={extraActions}
+        navCues={[{ label: "Just browse", onClick: onJustBrowse }]}
+      />
+      {/* The list's actual CONTENT, viewable in place (P-23 — "shared to view
+          only but there is no view"). Read-only tiles off the snapshot/feed;
+          saving/joining is what unlocks the full interactive list. Negative
+          top margin tightens against the frame's launcher-clearance padding. */}
+      {itemCount > 0 && (
+        <div style={{ maxWidth: 1100, margin: "-72px auto 0", padding: "0 16px 110px", width: "100%" }}>
+          <div style={{
+            fontSize: 11, fontWeight: 600, letterSpacing: "0.06em",
+            textTransform: "uppercase", color: "var(--text2)", margin: "0 0 12px",
+          }}>In this list</div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))", gap: 14 }}>
+            {items.map((it) => {
+              const img = itemImage(it, feedItems);
+              const title = itemTitle(it, feedItems);
+              return (
+                <div key={it.rowId || it.listingId}>
+                  <div style={{ width: "100%", aspectRatio: "1 / 1", background: "var(--surface)", overflow: "hidden", borderRadius: 6 }}>
+                    {img && (
+                      <img src={img} alt="" loading="lazy"
+                        onError={(e) => { e.currentTarget.style.visibility = "hidden"; }}
+                        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                    )}
+                  </div>
+                  <div style={{
+                    fontSize: 12, fontWeight: 500, color: "var(--text1)", marginTop: 6, lineHeight: 1.35,
+                    display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
+                  }}>{title}</div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
 // ── Hero builders ─────────────────────────────────────────────
 
 // Up to four cover images for the list-cover collage. Listing-backed rows
-// resolve against the live feed; manual rows carry their own snapshot URL.
+// resolve against the live feed, FALLING BACK to the saved listing_snapshot
+// (returned by get_public_list since 2026-06-03) — before that fallback, any
+// item no longer in the live feed rendered the 🗂 placeholder (P-23).
+function itemImage(it, feed) {
+  if (!it) return null;
+  if (it.isManual) return it.manualImageUrl || null;
+  const live = it.listingId ? (feed || []).find(fi => fi.id === it.listingId) : null;
+  if (live && live.img) return imgSrc(live.img);
+  const snap = it.snapshot || {};
+  return snap.img ? imgSrc(snap.img) : null;
+}
+
+function itemTitle(it, feed) {
+  if (!it) return "Watch";
+  if (it.isManual) {
+    return [it.manualBrand, it.manualModel, it.manualReference].filter(Boolean).join(" ") || "Watch";
+  }
+  const live = it.listingId ? (feed || []).find(fi => fi.id === it.listingId) : null;
+  const snap = it.snapshot || {};
+  return (live && (live.ref || live.title)) || snap.ref || snap.title || "Watch";
+}
+
 function coverImages(items, feedItems) {
   const out = [];
-  const feed = feedItems || [];
   for (const it of items || []) {
     if (out.length >= 4) break;
-    let img = null;
-    if (it.isManual) img = it.manualImageUrl;
-    else if (it.listingId) {
-      const l = feed.find(fi => fi.id === it.listingId);
-      img = l ? imgSrc(l.img) : null;
-    }
+    const img = itemImage(it, feedItems);
     if (img) out.push(img);
   }
   return out;

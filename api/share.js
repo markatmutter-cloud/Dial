@@ -143,43 +143,77 @@ function resolveOgImage(rawUrl, siteUrl) {
 }
 
 module.exports = function handler(req, res) {
-  const id = (req.query && (req.query.listing || req.query.id)) || '';
+  const q = req.query || {};
+  const id = (q.listing || q.id || '').toString();
   const siteUrl = 'https://the-watch-list.app';
 
-  const listings = loadListings();
-  const item = id ? (listings.find((l) => l && l.id === id) || null) : null;
+  // Per-type share metadata (2026-06-03, P-17/P-23/P-25). Guides and lists
+  // aren't in any deployed JSON this function can read (guides are an
+  // src/data module; lists live behind Supabase), so the SENDER passes the
+  // preview metadata in the link: t=title, img=cover, n=item count,
+  // k=article marker. Caller-provided, so it's escaped like everything else
+  // and only ever influences the preview card — never app state.
+  const metaTitle = (q.t || '').toString().slice(0, 120);
+  const metaImg = (q.img || '').toString();
+  const metaCount = parseInt(q.n, 10);
+  const kind = (q.k || '').toString();
+  const fromName = q.from ? `&from=${encodeURIComponent(q.from)}` : '';
 
-  // Default fallback (no listing matched): site-wide preview, same
-  // shape the static index.html had before this function existed.
+  // Default fallback: site-wide preview, same shape the static
+  // index.html had before this function existed.
   let ogImage = `${siteUrl}/apple-touch-icon.png`;
   let ogTitle = 'Watchlist · Vintage watches in one feed';
   let ogDesc = 'Aggregator for vintage watches from independent dealers and auction houses.';
   let twitterCard = 'summary';
+  let redirectUrl;
 
-  if (item) {
-    ogImage = resolveOgImage(item.img, siteUrl);
-    const watchTitle = [item.brand, item.ref].filter(Boolean).join(' ').trim();
-    if (watchTitle) {
-      ogTitle = `${watchTitle} · Watchlist`;
-    } else if (item.title) {
-      ogTitle = `${String(item.title).slice(0, 80)} · Watchlist`;
+  if (id.startsWith('list_')) {
+    // ── Shared LIST (/share/list_<uuid>?t&n&img[&invite]) ──────────
+    const rawId = id.slice(5);
+    ogTitle = metaTitle ? `${metaTitle} — a list on Watchlist` : 'A list on Watchlist';
+    ogDesc = Number.isFinite(metaCount) && metaCount > 0
+      ? `${metaCount} watch${metaCount === 1 ? '' : 'es'} · a shared list of vintage watches`
+      : 'A shared list of vintage watches';
+    if (metaImg) { ogImage = resolveOgImage(metaImg, siteUrl); twitterCard = 'summary_large_image'; }
+    const invite = q.invite ? `&invite=${encodeURIComponent(q.invite)}` : '';
+    redirectUrl = `${siteUrl}/?list=${encodeURIComponent(rawId)}&shared=1${invite}${fromName}`;
+  } else if (id.startsWith('ref_')) {
+    // ── Shared REFERENCE GUIDE (/share/ref_<nodeId>?t&img) ─────────
+    // Humans land directly ON the live guide page (the best receive
+    // surface there is); bots get a guide-typed card.
+    const nodeId = id.slice(4);
+    ogTitle = metaTitle ? `${metaTitle} · Reference guide on Watchlist` : 'A reference guide on Watchlist';
+    ogDesc = 'Collector reference guide — the marks, the variants, real examples.';
+    if (metaImg) { ogImage = resolveOgImage(metaImg, siteUrl); twitterCard = 'summary_large_image'; }
+    redirectUrl = `${siteUrl}/?tab=learn&sub=references&ref=${encodeURIComponent(nodeId)}${fromName}`;
+  } else {
+    // ── Listing / auction lot / article (the original path) ────────
+    const listings = loadListings();
+    const item = id ? (listings.find((l) => l && l.id === id) || null) : null;
+    const img = (item && item.img) || metaImg;
+    const title = (item && ([item.brand, item.ref].filter(Boolean).join(' ').trim() || item.title)) || metaTitle;
+    if (item || metaTitle) {
+      ogImage = resolveOgImage(img, siteUrl);
+      if (kind === 'article') {
+        // P-25: say it's an ARTICLE, carry the article header.
+        ogTitle = title ? `${String(title).slice(0, 90)} — an article on Watchlist` : 'An article on Watchlist';
+        ogDesc = 'Watch journalism, collected on Watchlist';
+      } else if (title) {
+        ogTitle = `${String(title).slice(0, 90)} · Watchlist`;
+        // Mark-specified caption (2026-05-06): keep it about the site,
+        // not the watch — recipient should know what app they're being
+        // sent to before opening.
+        ogDesc = 'Watchlist — Vintage watches in one feed';
+      }
+      twitterCard = img ? 'summary_large_image' : 'summary';
     }
-    // Mark-specified caption (2026-05-06): keep it about the site,
-    // not the watch — recipient should know what app they're being
-    // sent to before opening.
-    ogDesc = 'Watchlist — Vintage watches in one feed';
-    twitterCard = 'summary_large_image';
+    // Real browsers redirect to the SPA's share-receive surface
+    // (ShareReceiver parses ?listing=&shared=1). `k` rides along so the
+    // receive surface can type the copy ("shared an ARTICLE with you")
+    // even when the item isn't resolvable client-side.
+    const k = kind ? `&k=${encodeURIComponent(kind)}` : '';
+    redirectUrl = `${siteUrl}/?listing=${encodeURIComponent(id)}&shared=1${k}${fromName}`;
   }
-
-  // Real browsers redirect to the SPA's existing share-receive
-  // surface. ShareReceiver parses ?listing=&shared=1 on mount and
-  // takes over the content area. Preview bots stop after the head
-  // and never see the redirect.
-  // Preserve the sender name through the redirect so the receive surface can
-  // show "X shared a watch with you" (it was dropped here → no name; Mark
-  // 2026-06-01).
-  const fromName = (req.query && req.query.from) ? `&from=${encodeURIComponent(req.query.from)}` : '';
-  const redirectUrl = `${siteUrl}/?listing=${encodeURIComponent(id)}&shared=1${fromName}`;
 
   // Canonical points at the SPA root so search engines don't index
   // /share/<id> as a separate page from the main app.

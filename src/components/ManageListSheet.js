@@ -82,9 +82,13 @@ export function ManageListSheet({
       return;
     }
     const inviteId = res?.id;
-    const url = `${window.location.origin}/?list=${encodeURIComponent(collection.id)}&shared=1${
-      inviteId ? `&invite=${encodeURIComponent(inviteId)}` : ""
-    }`;
+    // Collaborate links route through /share/list_<id> too (P-23) so the
+    // invite ALSO previews as the list; api/share.js passes the invite
+    // token through to the ?list= redirect unchanged.
+    const shareU = new URL(`${window.location.origin}/share/${encodeURIComponent(`list_${collection.id}`)}`);
+    shareU.searchParams.set("t", collection.name || "A list");
+    if (inviteId) shareU.searchParams.set("invite", inviteId);
+    const url = shareU.toString();
     let outcome = "";
     try {
       if (navigator.share) {

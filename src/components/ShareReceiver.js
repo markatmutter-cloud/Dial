@@ -34,7 +34,10 @@ export function ShareReceiver({
 }) {
   const [shareIntent, setShareIntent] = useState(null);
   const [busy, setBusy] = useState(false);
-  const [imgFailed, setImgFailed] = useState(false);
+  // Hero image attempts (P-30, 2026-06-03): 0 = wsrv-resized via imgSrc,
+  // 1 = the RAW origin URL (wsrv flakes transiently on some hosts — retry
+  // direct before giving up), 2 = placeholder.
+  const [imgAttempt, setImgAttempt] = useState(0);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -43,7 +46,10 @@ export function ShareReceiver({
       if (params.get("shared") !== "1") return;
       const id = params.get("listing");
       const fromName = params.get("from") || "";
-      if (id) setShareIntent({ id, from: fromName });
+      // `k` types the share (api/share.js passes it through) so the copy can
+      // say "article" even when the item can't be resolved client-side (P-25).
+      const k = params.get("k") || "";
+      if (id) setShareIntent({ id, from: fromName, k });
     } catch (e) {
       console.warn("share URL parse failed", e);
     }
@@ -59,8 +65,8 @@ export function ShareReceiver({
 
   useEffect(() => {
     if (openTick && openTick > 0 && openListingId) {
-      setShareIntent({ id: openListingId, from: "" });
-      setImgFailed(false);
+      setShareIntent({ id: openListingId, from: "", k: "" });
+      setImgAttempt(0);
     }
   }, [openTick, openListingId]);
 
@@ -92,7 +98,9 @@ export function ShareReceiver({
       console.warn("share save failed", e);
     }
     setBusy(false);
-    clearIntent();
+    // Save no longer dismisses the surface (P-26, Mark 2026-06-03) — the
+    // button flips to "♥ Saved" and the recipient stays on the page; the
+    // top tabs / Browse CTA are the exits.
   }, [sharedItem, user, watchlist, toggleWatchlist, addToSharedInbox, clearIntent]);
 
   // Tell App which item the floating Lumé launcher should seed with (null when
@@ -106,6 +114,11 @@ export function ShareReceiver({
   if (!Array.isArray(items) || items.length === 0) return null;
 
   const sender = (shareIntent.from || "").trim();
+  // Type the copy from the resolved item's kind, falling back to the `k`
+  // URL param when the item can't be resolved (P-25 — an article share used
+  // to read "shared a watch with you").
+  const kind = (sharedItem && sharedItem.kind) || shareIntent.k || "";
+  const typeLabel = kind === "article" ? "article" : "watch";
   // Nav cues under the card retired 2026-06-01 (Mark): the top tabs already
   // navigate, so "Browse Watchlist / Your lists" read as redundant clutter.
   const goBrowse = () => { clearIntent(); if (typeof setTab === "function") setTab("listings"); };
@@ -113,26 +126,29 @@ export function ShareReceiver({
   // Shared listing not in the live feed (dealer pulled it / scrolled off).
   // Still no dead end — render through the frame with a "not available" hero.
   if (!sharedItem) {
+    const noun = typeLabel === "article" ? "article" : "listing";
     return (
       <SharedReceiveFrame
         sender={sender}
-        typeLabel="watch"
+        typeLabel={typeLabel}
         hero={
           <div style={{
             position: "absolute", inset: 0, display: "flex", flexDirection: "column",
             alignItems: "center", justifyContent: "center", gap: 8, padding: 24,
             textAlign: "center", color: "var(--text3)", fontSize: 13,
           }}>
-            <span>This listing isn't available right now</span>
+            <span>This {noun} isn't available right now</span>
           </div>
         }
         identity={
           <>
             <h2 style={{ fontSize: 18, fontWeight: 700, color: "var(--text1)", margin: 0, lineHeight: 1.25 }}>
-              This listing isn't available
+              This {noun} isn't available
             </h2>
             <div style={{ fontSize: 13, color: "var(--text2)", lineHeight: 1.5, marginTop: 6 }}>
-              The dealer may have removed it. The rest of Watchlist is here.
+              {typeLabel === "article"
+                ? "The article may have moved. The rest of Watchlist is here."
+                : "The dealer may have removed it. The rest of Watchlist is here."}
             </div>
           </>
         }
@@ -158,9 +174,14 @@ export function ShareReceiver({
       onClick={() => { if (onClickListing) onClickListing(sharedItem); }}
       style={{ position: "absolute", inset: 0, display: "block" }}
       title={`Open ${sharedItem.source} listing`}>
-      {sharedItem.img && !imgFailed ? (
-        <img src={imgSrc(sharedItem.img)} alt={sharedItem.ref || sharedItem.title || "shared watch"}
-          onError={() => setImgFailed(true)} loading="eager"
+      {sharedItem.img && imgAttempt < 2 ? (
+        <img
+          // Attempt 0 = the resized/proxied URL; attempt 1 = the RAW origin
+          // URL (wsrv flakes transiently on some hosts — P-30: the same link
+          // showed an image on first open and the placeholder on the second).
+          src={imgAttempt === 0 ? imgSrc(sharedItem.img) : sharedItem.img}
+          alt={sharedItem.ref || sharedItem.title || "shared watch"}
+          onError={() => setImgAttempt((n) => n + 1)} loading="eager"
           style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
       ) : (
         <div style={{
@@ -206,11 +227,11 @@ export function ShareReceiver({
   return (
     <SharedReceiveFrame
       sender={sender}
-      typeLabel="watch"
+      typeLabel={typeLabel}
       hero={hero}
       identity={identity}
       primaryCTA={{
-        label: `View on ${sharedItem.source || "dealer"} →`,
+        label: `${typeLabel === "article" ? "Read on" : "View on"} ${sharedItem.source || "dealer"} →`,
         href: sharedItem.url,
         onClick: () => { if (onClickListing) onClickListing(sharedItem); },
       }}

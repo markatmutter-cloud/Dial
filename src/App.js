@@ -1260,6 +1260,15 @@ export default function Watchlist() {
         if (senderName) {
           url.searchParams.set("from", senderName);
         }
+        // Per-type preview metadata (P-17/P-25, 2026-06-03): guides + most
+        // articles aren't in the JSON api/share.js can read, so the link
+        // carries title/image/kind for the OG card. Guides are detected
+        // server-side by their ref_ id prefix; k marks articles.
+        if (input.kind === "article" || input.kind === "reference") {
+          if (input.kind === "article") url.searchParams.set("k", "article");
+          if (input.title) url.searchParams.set("t", String(input.title).slice(0, 120));
+          if (input.img) url.searchParams.set("img", String(input.img));
+        }
         shareUrl = url.toString();
       } catch {
         return { copied: false };
@@ -3332,7 +3341,11 @@ export default function Watchlist() {
           fixes the mobile regression from ε5 where olive disc on
           olive chrome was invisible. */}
       {(() => {
-        const onOliveBar = tab !== "home";
+        // The share-receive surfaces keep tab="home" but paint the top bar
+        // olive — without OR-ing them in, the disc rendered olive-on-olive
+        // (only the white initial visible; P-32, Mark 2026-06-03).
+        const onOliveBar = tab !== "home"
+          || shareActive || challengeShareActive || listShareActive || catalogShareActive || searchAllActive;
         const discBg     = onOliveBar ? "#ffffff" : "var(--brand-olive)";
         const discFg     = onOliveBar ? "var(--brand-olive)" : "#ffffff";
         const pillBorder = onOliveBar ? "rgba(255,255,255,0.3)" : "var(--border)";
