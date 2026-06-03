@@ -187,3 +187,23 @@ Most are **prompt-level** (live in `public/lume_system_prompt.txt`).
 - **Keep Lumé's links IN-APP (B-51).** Listing links are inconsistent — some hit the /share surface, some go straight to the external dealer. Article links go straight to the source, so there's **no way to save them or see them in-app**. Need a consistent in-app surface for BOTH: route listings through the (being-improved) share/open surface, and build the **same in-app surface for ARTICLES** (read + save into a list, never bounce to the raw source). Pairs with B-37.
 - **Per-user response-depth tiers.** Depth is fixed (max_output 1024, MAX_TOOL_ROUNDS 6, Haiku-default/Opus-on-hard). Make these **per-user knobs** (via user_limits, like chat_cap) so owner / paid tier get deeper answers and free stays lean. Depth ≠ the daily message cap.
 - **Conversation memory / length.** Server truncates to the last MAX_HISTORY_MSGS=20 messages (~10 exchanges); beyond that early context silently drops (where "gets weird in a long chat" comes from). Fix path = the profile/memory store (pillar 4): summarise/persist rather than hard-truncate.
+
+## Backlog additions (2026-06-03, polish session — the Lumé UX trio)
+*Routed from the polish queue (P-27/P-28/P-31); P-29 (re-sending the seed
+question on every reopen — the API-cost loop) was fixed in-session (#785).
+These three are dedicated-Lumé-session items:*
+- **P-27 — Entry-aware opener (pillar 3/6).** The cold-open spiel shouldn't
+  show when Lumé opens WITH context (share-with-Lumé, a seeded share surface).
+  The opening line should match the entry — "Let me look at this article you've
+  sent," etc., per entry type. The client knows the entry point; pass it so the
+  server prompt can skip/replace the greeting.
+- **P-28 — Context-correct action labels (pillar 3).** Action buttons must
+  type-match the subject: Lumé offered "Save a note on this *listing*" when the
+  subject was an ARTICLE. Labels (and the action target) should key off the
+  item kind — article → "Save this article to a note / a list."
+- **P-31 — Shared-link provenance as a signal (pillar 4/5).** When the chat
+  starts from a link someone SENT the user, Lumé should know: a different frame
+  ("What do you think of this — or is it something {sender} has in mind for
+  you?") AND a distinct engagement tag in the profile/memory store —
+  shared-to-me vs sought-out are different taste signals for the recommender.
+  The sender name is already on the receive surface; thread it into the seed.
