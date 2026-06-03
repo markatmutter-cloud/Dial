@@ -345,7 +345,9 @@ export const modalBackdrop = {
   backdropFilter: "blur(4px)",
   WebkitBackdropFilter: "blur(4px)",
   display: "flex", alignItems: "center", justifyContent: "center",
-  padding: 20,
+  // Safe-area aware: on notched iPhones the 20px gutter alone can sit a
+  // modal's top edge under the status bar / Dynamic Island (B-/P-9).
+  padding: "max(20px, env(safe-area-inset-top)) 20px max(20px, env(safe-area-inset-bottom))",
 };
 
 // Centered modal card. Override `maxWidth` per-modal (Hidden = 720,
@@ -355,10 +357,18 @@ export const modalBackdrop = {
 // pronounced radius + stronger drop shadow + slightly thicker border
 // for definition. The backdrop now blurs the page beneath, giving the
 // modal a clearer "this is the focus" elevation cue.
+// maxHeight 100% (= the backdrop's padded content box) + overflow auto
+// guard EVERY modal against running past the viewport — a tall modal
+// (Settings on mobile, P-9) used to overflow both ends, leaving the
+// title row + close button unreachable. A modal wanting its own sticky
+// header (SettingsModal) overrides padding/overflow and scrolls a body
+// div instead.
 export const modalShell = {
   background: "var(--bg)", borderRadius: 16,
   border: "0.5px solid var(--border)",
   padding: 24, width: "100%",
+  maxHeight: "100%", overflowY: "auto",
+  WebkitOverflowScrolling: "touch",
   boxShadow: "0 24px 64px rgba(0,0,0,0.32), 0 4px 12px rgba(0,0,0,0.08)",
 };
 
