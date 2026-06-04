@@ -80,6 +80,19 @@ export function ReferenceBrowse(props) {
     setView(next);
   }, []);
 
+  // Re-tap of the active Reference Guides top pill → exit a drilled-in guide
+  // back to the index (P-15, Mark 2026-06-03). The breadcrumb stays as the
+  // second door. URL cleanup is a REPLACE (drops ?ref) per CLAUDE.md nav
+  // rules — the drill-in itself was the pushState.
+  useEffect(() => {
+    if (!props.resetTick || props.resetTick <= 0) return;
+    setView((v) => {
+      if (v.level !== "node") return v;
+      try { window.history.replaceState({}, "", urlForView({ level: "home" })); } catch {}
+      return { level: "home" };
+    });
+  }, [props.resetTick]);
+
   // ── Reference leaf (full guide / coming-soon teaser) ────────────
   if (view.level === "node") {
     const node = REFERENCE_NODES_BY_ID[view.nodeId];

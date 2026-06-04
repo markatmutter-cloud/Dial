@@ -62,6 +62,9 @@ export function ReferencesTab({
   isAuthConfigured,
   signInWithGoogle,
   allListings,
+  // Bumped when the user re-taps the active Reference Guides top pill;
+  // forwarded to ReferenceBrowse to exit a drilled-in guide (P-15).
+  resetTick,
   subTab,
   setSubTab,
   cols,
@@ -125,6 +128,7 @@ export function ReferencesTab({
     body = (
       <ReferenceBrowse
         items={allListings || []}
+        resetTick={resetTick}
         isMobile={isMobile}
         watchlist={watchlist}
         handleWish={handleWish}
