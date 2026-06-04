@@ -3,10 +3,10 @@
 Supersedes SESSION_HANDOFF_2026-06-02.md (archived). **The polish session**:
 Mark walked the live build + user feedback and fed a 33-item queue (P-1…P-33);
 plus a live verification round after the merges. 12 PRs merged (#782–#793),
-**9 PRs open at close (#794–#802 — merge these first next session)**, plus two
-doc-only consolidations straight to main.
+**all 21 PRs merged (#782–#802** — Mark merged the final nine right after the
+close), plus two doc-only consolidations straight to main.
 
-## ⚠️ Open PRs at close — all green, Mark merges
+## The final nine (#794–#802 — merged post-close, listed for the record)
 - **#794** Home avatar disc: heart-matched white ring (2px, heart's white)
 - **#795** PageHeader one-row header (actions/count inline with title — the
   "narrow Saved look" everywhere)
@@ -22,8 +22,7 @@ doc-only consolidations straight to main.
 - **#801** CardStrip: ::-webkit-scrollbar hide (the grey track under home strips)
 - **#802** Reference-guide images: 11 empty `img:""` data fields filled from
   cited pages' og:image + RefImg wsrv→raw retry with favicon terminal
-- ⚠️ #795/#796/#797 touch overlapping chrome — if a later merge conflicts,
-  rebase the branch (done once already for #792, pattern works).
+- (All merged clean — no rebases needed.)
 
 ## What shipped (merged, 2026-06-03 — see SHIPPED for the log)
 - **IA: 4 top tabs** Watches · Saved · Articles · Reference Guides ("Guides"

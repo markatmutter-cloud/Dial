@@ -462,6 +462,12 @@ within each section roughly last.
 - **2026-06-03 — One Lumé list.** docs/LUME_ROADMAP.md retired; all AI direction lives as ROADMAP
   Epic 10's single 15-item list (incl. graduated B-45/46/47/51 + the P-27/28/31 UX trio).
 
+- **2026-06-03 — Verification-round polish (#794–#802).** Heart-matched avatar ring; one-row
+  PageHeader (actions/count inline); title-height ledger (one px-above-title rule); CHROME metrics
+  token sheet; sign-out under the identity; Articles flat grid (year roll-up retired); About
+  auto-open retired; CardStrip webkit-scrollbar hide; guide images filled from cited og:image +
+  wsrv→raw→favicon retry ladder.
+
 ## UI & chrome (cross-cutting)
 
 - **2026-05-27 — Home "Articles" strip + reorder (#636).** Idle-loaded recent editorial; Home strips
