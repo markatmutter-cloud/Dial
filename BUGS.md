@@ -49,10 +49,10 @@ here until then so nothing's lost.
 
 | Bug | ROADMAP epic | Kind | Disposition |
 |---|---|---|---|
-| B-45 | **10 Lumé** (pillar 1/5) | capability gap | → graduate to Epic 10 |
-| B-46 | **10 Lumé** (charter) | capability gap | → graduate to Epic 10 |
-| B-47 | **10 Lumé** (pillar 3) | capability gap | → graduate to Epic 10 |
-| B-51 | **10 Lumé** (pillar 3) | feature | → graduate to Epic 10 |
+| B-45 | **10 Lumé** (pillar 1/5) | capability gap | ✅ graduated — Epic 10 list #4 |
+| B-46 | **10 Lumé** (charter) | capability gap | ✅ graduated — Epic 10 list #2 |
+| B-47 | **10 Lumé** (pillar 3) | capability gap | ✅ graduated — Epic 10 list #5 |
+| B-51 | **10 Lumé** (pillar 3) | feature | ✅ graduated — Epic 10 list #6 |
 | B-56 | **9 IA/UX** (+brand) | feature thread | → graduate to Epic 9 |
 | B-14 | **9 IA/UX** (brand) | thread | folded into B-56 |
 | B-06 | **9 IA/UX** | design thread | shipped-ish → confirm/retire |

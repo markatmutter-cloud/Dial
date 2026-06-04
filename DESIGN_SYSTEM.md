@@ -166,6 +166,39 @@ single chrome accent (links/text-accents may still use `--brand`).
 | `Links.js` / `icons.js` | Internal/external link helpers, SVG icons |
 | `ConfirmModal.js` | Styled confirm dialog. Imperative API — `await confirm({ title, message, confirmLabel, cancelLabel, tone: "danger" \| "default" })` returns `Promise<boolean>`. One `<ConfirmHost/>` mounts at App level. Replaces every `window.confirm` site since PR #317 |
 
+## Page chrome — the standard library (2026-06-03)
+
+The one set of components + numbers for every named surface's chrome. The
+chrome-guard jest suite fails the build on drift.
+
+- **`CHROME` (styles.js)** — the metrics sheet: left inset (20/16), mobile body
+  top (12, flat on every tab), control height (30), pill font/pad (13 / 6×12),
+  PageHeader padding, header→bar gap (0/4), bar→content gap (18/14). Chrome
+  code imports the constant; a raw px for these properties is a smell.
+- **`PageHeader`** — every page title. One-inset rule: no horizontal
+  self-padding (the container provides the inset, so title + hairline + pills
+  share one left edge). One-row header: actions · `trailing` (composed
+  controls, e.g. ⋯ menu) · `count` sit inline-right of the title; `meta`
+  ("Shared by X") is the only line-adder.
+- **`StandardFilterBar`** — the one bar: pills left · search in a CENTERED
+  fixed slot (grid `1fr minmax(200,340) 1fr`) · right zone · count in a
+  reserved right slot (minWidth 86 — late counts can't jog). Mobile = pill row
+  only; search lives in the shell row (one input per surface).
+- **`StandardSearchInput`** — the one search field: SearchIcon · radius 20 ·
+  height `CHROME.CONTROL_H` · built-in clear ×; `trailing` slot for extras
+  (Save-search heart).
+- **`topTabs.js`** — the only home of top-tab labels (Watches · Saved ·
+  Articles · Reference Guides / "Guides" mobile); both shells + the Home
+  masthead consume the same built model.
+- **Counts**: bar surfaces → the bar's right slot; bar-less headers →
+  PageHeader `count`; never under a title.
+- **Failed images** — terminal state is ALWAYS the favicon placeholder
+  (`/favicon-192.png`, CardShell.CardImage pattern); wsrv-served images retry
+  the raw origin once first (RefImg / ShareReceiver ladder). ShareReceiver's
+  "Open on {source} to see it" is the one richer exception.
+- **Labels**: never "Hearted" — "♡ Saved". Tabs title-case; page titles
+  sentence-case.
+
 ## Reach-for-this rules
 
 - **New button somewhere?** `actionButton` for header/toolbar; `pillBase` for filter row; `signInButton` for sign-in CTAs; `innerToggleButton` for nested sub-toggles. Don't hand-roll padding / borderRadius / colors.

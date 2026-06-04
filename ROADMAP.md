@@ -263,7 +263,8 @@ for CGNAT, power/network reliability, backups. ~$600 M4 base.
 ### Site discoverability + welcome page — parked
 
 og:image refresh (proper 1200×630) is a small near-term item (NEXT #5). The
-cold-landing welcome surface is filled for now by the auto-opening AboutModal.
+AboutModal auto-open is retired (users click About); the proper cold-landing
+welcome belongs to the B-56 About/Nexus redesign (Epic 9).
 
 ## Epic 1: Sources
 
@@ -500,7 +501,9 @@ type + history, not by user job). Full thinking + plan + wireframes + AI prompts
 design threads that were logged as bugs (BUGS Epic A: B-06, B-08, B-14) plus the
 chrome-unification + card-design-system memories.
 
-**The spine — three speeds, named by noun (never label tabs Fast/Medium/Slow):**
+**The spine (2026-06-03: now FOUR tabs — Watches · Saved · Articles · Reference
+Guides; Collecting dissolved into its two contents, Tools → account menu).
+Tempo stays the design rationale, never a label:**
 - **Listings (fast)** — encounter the market: one dense grid, cut by
   new/price/brand/house.
 - **Watchlists (medium)** — make meaning: the "living dossier" keystone (lists

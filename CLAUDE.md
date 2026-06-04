@@ -198,7 +198,13 @@ diagram, data model, and folder layout.
   *after* the `if (loading)` / `if (loadError)` early returns — it triggers
   React #310 (white screen). New hooks go in a self-contained component
   App.js mounts unconditionally, or above every early return. A `useEffect`
-  must not reference state declared later in the function (TDZ).- **Shells move in lockstep.** Any `shellProps` field used in one of
+  must not reference state declared later in the function (TDZ).- **Page chrome = the standard library** (see DESIGN_SYSTEM "Page chrome"):
+  titles via `PageHeader`, bars via `StandardFilterBar`/`StandardSearchInput`,
+  governed numbers from `CHROME` in styles.js (raw px in chrome code is a
+  smell), counts in the bar's right slot / PageHeader `count` (never under a
+  title), failed images end at the favicon placeholder. `chrome-guard.test.js`
+  fails the build on drift — fix the surface, not the test.
+- **Shells move in lockstep.** Any `shellProps` field used in one of
   `MobileShell` / `DesktopShell` must exist in both *and* in
   `mockShellProps.js`. A name destructured in one and missing in the other is
   a ReferenceError the moment that branch renders.
@@ -233,19 +239,19 @@ diagram, data model, and folder layout.
 ## Internal-vs-UI naming (deliberate — don't "fix" casually)
 
 UI labels diverge from internals on purpose — don't "fix" casually.
-- **Top-tab labels (2026-05-28): Watches · Lists · Collecting.** Internal tab
-  keys stay `listings` · `watchlist` · `references` (and `?tab=…` URLs). The
-  rename was label-only (#655). **NB "Lists" now labels BOTH the `watchlist`
-  tab AND the `collections` sub-section — a known collision; rename one if it
-  confuses (parked decision).**
-- **DB `collections` ↔ UI "Lists"** — `collections` is the umbrella for
-  Lists, Wishlist, Owned, Sold, Challenges, shared inbox. Keep the DB name.
-- **Internal `watchlist` (tab "Lists", `?tab=saved`)** — hook `useWatchlist`,
-  table `watchlist_items`, `WatchlistTab.js`; "Saved" is the hearted band in it.
-- **Internal `references` ↔ tab "Collecting"** — `ReferencesTab.js`, `?tab=learn`.
-  "Reference" also means watch reference numbers (Epic 0), so the internal name
-  stays — and don't rename the tab to "Reference(s)" (that collision is why it's
-  "Collecting"; an "Explore" rename is parked).
+- **Top tabs: Watches · Saved · Articles · Reference Guides ("Guides" on
+  mobile).** Labels live ONLY in `src/topTabs.js` (both shells + Home masthead
+  consume it). Internal keys stay `listings` · `watchlist` · `references` and
+  `?tab=…` URLs are unchanged; Articles/Reference Guides are two top pills over
+  the same internal `references` container (sub `editorial` / `references`).
+  Tools (Size compare · Challenges — placement provisional) live in the
+  account menu; Links parked.
+- **DB `collections` ↔ UI "Lists"** (the Saved sub-tab) — `collections` is the
+  umbrella for Lists, Wishlist, Owned, Sold, Challenges, shared inbox. Keep it.
+- **Internal `watchlist` (tab "Saved", `?tab=saved`)** — hook `useWatchlist`,
+  table `watchlist_items`; sub-tabs ♡ Saved · Lists · Searches.
+- **Never label anything "Hearted"** — the word is "♡ Saved" (internal
+  `hearted` keys stay).
 
 A full internal rename is a parked, low-priority sweep. **Never bump these
 storage keys** (resets user data): `LEGACY_WATCHLIST_KEY`, `LEGACY_HIDDEN_KEY`,

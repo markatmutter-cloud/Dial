@@ -102,6 +102,9 @@ within each section roughly last.
   to `npm ci`, so it waits until the in-flight branches merge; then dispatch →
   merge → flip `tests.yml` to `npm ci`. Procedure in the workflow header.
 
+- **2026-06-03 — Chrome-consistency CI guard (#791).** Source-scan jest suite: FilterRow stays
+  retired, PageHeader one-inset rule, topTabs.js owns tab labels, no "Hearted" UI label — drift fails the build.
+
 ## Epic 1 — Sources
 
 - **2026-04-30 — eBay integration.** Free Browse API source; admin
@@ -248,6 +251,10 @@ within each section roughly last.
   `reference_synthesis.py`, `reference_digest.py`); source-grounded cited JSON,
   every item `applies_to`-scoped so a reference page shows only its slice;
   Submariner + Speedmaster run. First Anthropic-Opus integration.
+
+- **2026-06-03 — Per-type share pass (#787).** Real OG cards for lists/guides/articles
+  (name + cover via /share/list_·ref_ links); guide shares land ON the guide; ListReceiver gains a
+  view grid + snapshot covers (get_public_list returns listing_snapshot); Save = toggle not dismiss.
 
 ## Epic 5 — References
 
@@ -429,6 +436,25 @@ within each section roughly last.
 - **2026-06-01 — Lumé "always suggest a next step" + config ledger (#725).** Prompt rule: every reply
   ends with a concrete next step from a REAL capability. `docs/LUME_CONFIG_REQUESTS.md` = the running
   ledger of Mark's behavioral/config requests (date · request · where encoded · status).
+
+- **2026-06-03 — IA restructure: 4 top tabs (#784).** Watches · **Saved** (was "Lists") ·
+  **Articles** · **Reference Guides** ("Guides" mobile); Collecting dissolved, Tools → account
+  menu, mobile Saved-heart parity. One shared topTabs model; internal keys/URLs unchanged.
+- **2026-06-03 — Standard chrome library (#786/#788).** One PageHeader (one-inset rule, count
+  slots) + StandardFilterBar (pills left · centered fixed search slot · reserved right count) +
+  StandardSearchInput across Watches/Saved/Articles/Guides; Date pill + duplicate searches removed;
+  ActiveFiltersStrip stops echoing single-pill state.
+- **2026-06-03 — Polish wave from Mark's live pass (#782/#783/#789/#790/#792).** Settings sheet
+  pinned header + modal viewport guard; guide section-nav sticky fix; re-tap active sub-tab exits
+  drill-ins; in-list view → PageHeader + section quick-nav + compact add-pills; counts never under
+  titles (bar/right rule).
+
+## Epic 10 — Lumé (AI spine)
+
+- **2026-06-03 — Lumé seed re-send fix (#785).** Reopening a seeded chat no longer re-fires the
+  seed question (one wasted model turn per round-trip); transcripts persist in the bubble.
+- **2026-06-03 — One Lumé list.** docs/LUME_ROADMAP.md retired; all AI direction lives as ROADMAP
+  Epic 10's single 15-item list (incl. graduated B-45/46/47/51 + the P-27/28/31 UX trio).
 
 ## UI & chrome (cross-cutting)
 
