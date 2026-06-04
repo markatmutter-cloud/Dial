@@ -130,6 +130,12 @@ within each section roughly last.
 - **2026-06-02 — Pascal Karp (Brussels) dealer source (#772).** Shopify
   `products.json` clone of the Falco pattern, EUR; brand left "Other" so
   merge.py owns resolution (no "TAG Heuer"→"Heuer" override, no third brand list).
+- **2026-06-04 — Tokant (Paris) dealer source (#803).** Shopify Pascal Karp
+  clone scoped to its watches collection, EUR; ~38 listings, non-watch gimmick
+  product filtered.
+- **2026-06-04 — Romain Réa (Paris) dual source (#804).** Listings (~233, EUR,
+  store-wide products.json — collection JSON hidden) + editorial corpus from
+  both blogs (16 essays; video/dead-PDF stubs dropped at the <100-word threshold).
 - **2026-06-02 — Chrono24 per-reference scraper, residential (#775).** curl-cffi
   Chrome impersonation (CI gets 403, like Bonhams), JSON-LD AggregateOffer parse;
   narrow by design (JLC E2643 test), own `chrono24_lots.json` folded into Listings
