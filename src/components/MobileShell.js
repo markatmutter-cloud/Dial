@@ -546,14 +546,17 @@ export function MobileShell(props) {
         {!anyShareActive && (
           <div style={{ padding: `${tab === "watchlist" ? 0 : 12}px 16px 32px` }}>
             {/* Collapsing header (Mark 2026-06-02): the catalog title — or the
-                "Saved" title on the hearted surface — scrolls here, bleeding to
-                the screen edges past the body's 16px padding, while the filter
-                pills stay pinned in the sticky chrome above. */}
+                "Saved" title on the hearted surface — scrolls here while the
+                filter pills stay pinned in the sticky chrome above. One-inset
+                rule (P-5/P-6, 2026-06-03): no more edge bleed — the header sits
+                at the body's 16px inset (PageHeader carries no side padding
+                now), so the title + hairline share the same left edge as every
+                other surface. */}
             {(() => {
               if (searchAllActive) return null;
               const h = saleContextHeaderJSX
                 || (tab === "watchlist" && watchTopTab === "hearted" ? savedHeaderJSX : null);
-              return h ? <div style={{ marginLeft: -16, marginRight: -16 }}>{h}</div> : null;
+              return h || null;
             })()}
             {/* identityBandJSX moved into the sticky chrome stack
                 2026-05-21 (PR_Y4) — sits between sub-tabs and the

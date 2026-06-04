@@ -52,11 +52,15 @@ export function ActiveFiltersStrip({
   // Price
   minPriceText = "", setMinPriceText,
   maxPriceText = "", setMaxPriceText,
-  // Heart-only
-  filterHearted = false, setFilterHearted,
   // Reset-all
   resetFilters,
 }) {
+  // The ♥ Saved-only toggle is deliberately NOT echoed here (P-24,
+  // 2026-06-03): its pill in the filter bar already shows the lit state, so
+  // a "Saved only ×" chip restated it and burned a whole row. The strip only
+  // carries selections you can't see in the bar (named chips you can ×
+  // individually). filterHearted/setFilterHearted props were dropped the
+  // same pass; resetFilters still clears hearted with everything else.
   const hasAny = (
     filterSources.length > 0
     || filterBrands.length > 0
@@ -66,7 +70,6 @@ export function ActiveFiltersStrip({
     || newDays > 0
     || !!minPriceText
     || !!maxPriceText
-    || filterHearted
   );
   if (!hasAny) return null;
 
@@ -127,12 +130,6 @@ export function ActiveFiltersStrip({
       )}
       {priceLabel && (
         <FilterChip label={priceLabel} onRemove={removePriceRange} />
-      )}
-      {filterHearted && (
-        <FilterChip
-          label="Saved only"
-          onRemove={() => setFilterHearted && setFilterHearted(false)}
-        />
       )}
       {/* Single "Clear all" — pushed to the right of the chips row
           (Mark 2026-05-28). The filter-bar copies in both shells were

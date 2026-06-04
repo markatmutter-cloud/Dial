@@ -4,7 +4,7 @@ import { Chip } from "./Chip";
 import { AboutModal } from "./AboutModal";
 import { SavedHeartLink } from "./SavedHeartLink";
 import { SignInPromptModal } from "./SignInPromptModal";
-import { FilterRow } from "./FilterRow";
+import { StandardFilterBar } from "./StandardFilterBar";
 import { pillBase, tabPill } from "../styles";
 
 // SavedHeartLink extracted to its own file 2026-06-03 so MobileShell renders
@@ -173,7 +173,10 @@ export function DesktopShell(props) {
                   // not a different control. radius 10 → 20.
                   borderRadius: 20,
                   padding: "4px 12px",
-                  width: 320, minWidth: 0,
+                  // Fills the StandardFilterBar's centered slot (P-2) — the
+                  // slot's grid column (minmax 200–340px) owns the width, so
+                  // the input can't move or resize between tabs.
+                  width: "100%", minWidth: 0,
                   height: 30,
                   color: tbIconColor }}>
       <SearchIcon />
@@ -270,76 +273,78 @@ export function DesktopShell(props) {
     const anyExpanded = expandedSource || expandedBrand || expandedModel;
     return (
     <>
-    <FilterRow expanded={anyExpanded} paddingX={20} paddingY={6}>
-      {/* Filter row reorder PR 2026-05-22 (Mark spec):
-          LEFT — noun filters (Source / Brand / Sale / Model)
-          MIDDLE — search anchor (the "more in the middle of the page" framing)
-          RIGHT — numeric range + sort + saved (Min-Max / Date / Price / Saved)
-          plus the count + Clear-all tail. */}
-
-      {/* Auction calendar launcher (Phase 4) — far left, before the
-          noun filters (Mark 2026-05-26). Styled as a filter pill (was a
-          prominent brand-olive button; 2026-05-28 Mark wanted it sized
-          consistent with the filter-line pills). Opens the calendar modal
-          (the sale-picker); the active-sale state shows in the grid's
-          sale-context header, with its own Clear there. Auction surfaces only. */}
-      {/* The Calendar pill is interactive only on Auctions/Sold, but we
-          render it on ALL listings sub-tabs so the left cluster keeps a
-          CONSTANT width — otherwise the pill's appearance on Auctions/Sold
-          widened the left side and shoved the centered search bar right,
-          so search visibly jumped position when switching sub-tabs (Mark
-          2026-05-28). On Live it's a hidden, inert placeholder that only
-          reserves space (visibility:hidden, removed from a11y + tab order). */}
-      {/* Calendar pill renders ONLY on Auctions/Sold now. The old
-          visibility:hidden placeholder on Live reserved space and left a
-          gap before Source so the row looked unfinished/misaligned (Mark
-          2026-06-01) — alignment wins over the minor search-shift the
-          placeholder was preventing. */}
-      {tab === "listings" && (listingsSubTab === "auctions" || listingsSubTab === "sold") && !!onOpenCalendar && (() => {
-        return (
-          <button onClick={onOpenCalendar}
-            title="Browse the auction calendar"
-            style={{
-              ...dtPill(false),
-              display: "inline-flex", alignItems: "center", gap: 6, flexShrink: 0,
-              whiteSpace: "nowrap",
-            }}>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <rect x="3" y="4" width="18" height="18" rx="2"/>
-              <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
-              <line x1="3" y1="10" x2="21" y2="10"/>
-            </svg>
-            Auction Calendar
+    {/* StandardFilterBar (2026-06-03 chrome pass): same layout contract as
+        Articles/Guides — [pills left] [search CENTERED, fixed slot] [right
+        zone] [count, reserved] — so the search can't shift between tabs
+        (P-2; the old dual-marginLeft:auto trick only approximated centering)
+        and the count can't jog the row (P-8). The 20px inset comes from the
+        wrapper div: the hairline now stops at the content edge on every
+        surface (P-5), single inset (P-6 — the collapse wrapper used to ADD
+        20 on top of FilterRow's 20, which is why Saved's Source pill sat
+        indented). */}
+    <div style={{ padding: "0 20px" }}>
+    <StandardFilterBar
+      expanded={anyExpanded}
+      count={`${(displayedCount || 0).toLocaleString()} ${displayedCount === 1 ? "watch" : "watches"}`}
+      search={expandingSearchJSX}
+      pills={
+        <>
+          {/* Auction calendar launcher (Phase 4) — far left, Auctions/Sold only. */}
+          {tab === "listings" && (listingsSubTab === "auctions" || listingsSubTab === "sold") && !!onOpenCalendar && (
+            <button onClick={onOpenCalendar}
+              title="Browse the auction calendar"
+              style={{
+                ...dtPill(false),
+                display: "inline-flex", alignItems: "center", gap: 6, flexShrink: 0,
+                whiteSpace: "nowrap",
+              }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <rect x="3" y="4" width="18" height="18" rx="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+              Auction Calendar
+            </button>
+          )}
+          <button onClick={() => setActiveFilterPop(p => p === "source" ? null : "source")}
+            style={dtPill(filterSources.length > 0 || activeFilterPop === "source")}>
+            Source{filterSources.length > 0 ? ` · ${filterSources.length}` : ""}
           </button>
-        );
-      })()}
-      {/* LEFT — Source / Brand / Model */}
-      <button onClick={() => setActiveFilterPop(p => p === "source" ? null : "source")}
-        style={dtPill(filterSources.length > 0 || activeFilterPop === "source")}>
-        Source{filterSources.length > 0 ? ` · ${filterSources.length}` : ""}
-      </button>
-      <button onClick={() => setActiveFilterPop(p => p === "brand" ? null : "brand")}
-        style={dtPill(filterBrands.length > 0 || activeFilterPop === "brand")}>
-        Brand{filterBrands.length > 0 ? ` · ${filterBrands.length}` : ""}
-      </button>
-      {(MODELS?.length || 0) > 0 && (
-        <button onClick={() => setActiveFilterPop(p => p === "model" ? null : "model")}
-          style={dtPill((filterModels?.length || 0) > 0 || activeFilterPop === "model")}>
-          Model{(filterModels?.length || 0) > 0 ? ` · ${filterModels.length}` : ""}
-        </button>
-      )}
-
-      {/* MIDDLE — search bar. marginLeft:auto pulls it right of the
-          left filters; the right-cluster's marginLeft:auto below
-          balances it back into the middle. */}
-      <div style={{ marginLeft: "auto" }}>
-        {expandingSearchJSX}
-      </div>
-
-      {/* RIGHT — Min-Max price, Date sort, Price sort, Saved hearted,
-          watchlist hearted-toggle (when applicable), count, Clear all. */}
-      <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+          <button onClick={() => setActiveFilterPop(p => p === "brand" ? null : "brand")}
+            style={dtPill(filterBrands.length > 0 || activeFilterPop === "brand")}>
+            Brand{filterBrands.length > 0 ? ` · ${filterBrands.length}` : ""}
+          </button>
+          {(MODELS?.length || 0) > 0 && (
+            <button onClick={() => setActiveFilterPop(p => p === "model" ? null : "model")}
+              style={dtPill((filterModels?.length || 0) > 0 || activeFilterPop === "model")}>
+              Model{(filterModels?.length || 0) > 0 ? ` · ${filterModels.length}` : ""}
+            </button>
+          )}
+          {/* ♥ Saved-only — moved IN with the noun filters (P-1, Mark
+              2026-06-03): it's a filter, not a sort, so it sits after
+              Source/Brand/Model rather than out by the sort pills. */}
+          {tab === "listings" && user && listingsSubTab !== "calendar" && (
+            <button onClick={() => setFilterHearted && setFilterHearted(!filterHearted)}
+              aria-pressed={!!filterHearted}
+              title={filterHearted ? "Show all" : "Show only saved"}
+              style={{
+                ...pillBase(!!filterHearted, { compact: true, surface: true }),
+                display: "flex", alignItems: "center", gap: 5,
+              }}>
+              <svg width="11" height="11" viewBox="0 0 24 24"
+                fill={filterHearted ? "var(--danger)" : "none"}
+                stroke="var(--danger)"
+                strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+              Saved
+            </button>
+          )}
+        </>
+      }
+      right={
+      <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
         {watchHeartedToggleJSX && (
           <>
             <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
@@ -420,41 +425,12 @@ export function DesktopShell(props) {
           );
         })()}
 
-        {/* (Brand/Source group pills retired 2026-06-02 — redundant with the
-            Source/Brand filters; Saved is now a flat newest-first grid.) */}
-
-        {/* ♥ Saved-only filter pill */}
-        {tab === "listings" && user && listingsSubTab !== "calendar" && (
-          <button onClick={() => setFilterHearted && setFilterHearted(!filterHearted)}
-            aria-pressed={!!filterHearted}
-            title={filterHearted ? "Show all" : "Show only saved"}
-            style={{
-              // Active state now comes straight from pillBase (olive
-              // tinted-fill) — no blue override. Heart svg stays red below.
-              ...pillBase(!!filterHearted, { compact: true, surface: true }),
-              display: "flex", alignItems: "center", gap: 5,
-            }}>
-            <svg width="11" height="11" viewBox="0 0 24 24"
-              fill={filterHearted ? "var(--danger)" : "none"}
-              stroke="var(--danger)"
-              strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-            </svg>
-            Saved
-          </button>
-        )}
-        {/* Count tail at the end of the right cluster. The single
-            "Clear all" now lives in the active-filters strip next to the
-            chips (Mark 2026-05-28) — removed the redundant filter-bar copy. */}
-        <span style={{
-          flexShrink: 0,
-          fontSize: 12, color: "var(--text3)", fontFamily: "inherit",
-          whiteSpace: "nowrap", padding: "0 6px",
-        }}>
-          {(displayedCount || 0).toLocaleString()} {displayedCount === 1 ? "watch" : "watches"}
-        </span>
+        {/* (♥ Saved pill moved to the LEFT noun-filter group — P-1, 2026-06-03.
+            Count moved to StandardFilterBar's reserved right slot.) */}
       </div>
-    </FilterRow>
+      }
+    />
+    </div>
     {expandedSource && (() => {
       // Iterate the cross-axis-filtered effective list (visibleSources)
       // — NOT the raw DEALER_SOURCES / AUCTION_SOURCES catalogs.
@@ -765,12 +741,18 @@ export function DesktopShell(props) {
                   bar scrolls (HeartedView) so nothing fights top:0. */}
               {useCollapse && (
                 <>
-                  <div style={{ marginLeft: -20, marginRight: -20 }}>{collapsingHeader}</div>
+                  {/* One-inset rule (P-5/P-6, 2026-06-03): the header renders
+                      IN FLOW at the pane's 20px inset (PageHeader carries no
+                      side padding now) — its hairline stops at the content
+                      edge like every other surface. The sticky filter wrapper
+                      bleeds for a full-width pinned background, but adds NO
+                      padding of its own — filterRowJSX's wrapper owns the 20px
+                      (the old double-pad is why Saved's pills sat indented). */}
+                  <div>{collapsingHeader}</div>
                   <div style={{
                     position: "sticky", top: 0, zIndex: 15,
                     background: "var(--bg)",
                     marginLeft: -20, marginRight: -20,
-                    paddingLeft: 20, paddingRight: 20,
                   }}>
                     {filterRowJSX}
                   </div>
