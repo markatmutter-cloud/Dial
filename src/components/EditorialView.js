@@ -250,7 +250,6 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
   // a different pill switches.
   const [activeFilterPop, setActiveFilterPop] = useState(null);
   const [brandsExpanded, setBrandsExpanded] = useState(false);
-  const [collapsedYears, setCollapsedYears] = useState({});
   const [pageSize, setPageSize] = useState(RESULTS_PAGE_SIZE);
 
   // B-01 (2026-05-24): on mobile, find the shell's editorial filter slot so we
@@ -449,17 +448,7 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
     return list.slice(0, pageSize);
   }, [filtered, pageSize, showFeatured, featuredUrls]);
 
-  // Group visible items by year.
-  const groups = useMemo(() => {
-    const buckets = {};
-    visible.forEach(a => {
-      const y = (a.published_at || "").slice(0, 4) || "Undated";
-      (buckets[y] = buckets[y] || []).push(a);
-    });
-    const years = Object.keys(buckets).sort((a, b) =>
-      sort === "date_desc" ? b.localeCompare(a) : a.localeCompare(b));
-    return years.map(y => ({ label: y, items: buckets[y] }));
-  }, [visible, sort]);
+  // (Year-bucket grouping retired 2026-06-03 — flat newest-first grid.)
 
   const toggleSource = (key) => {
     setActiveSources(prev =>
@@ -468,9 +457,6 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
   const toggleBrand = (brand) => {
     setActiveBrands(prev =>
       prev.includes(brand) ? prev.filter(b => b !== brand) : [...prev, brand]);
-  };
-  const toggleYearCollapse = (label) => {
-    setCollapsedYears(prev => ({ ...prev, [label]: !prev[label] }));
   };
 
   const clearAll = () => {
@@ -712,48 +698,23 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
           </div>
         )}
 
-        {groups.map((group, gi) => {
-          const collapsed = !!collapsedYears[group.label];
-          return (
-            <div key={group.label + gi} style={{ marginBottom: 12 }}>
-              <button
-                onClick={() => toggleYearCollapse(group.label)}
-                style={{
-                  display: "flex", alignItems: "center", gap: 8,
-                  background: "transparent", border: "none",
-                  padding: "12px 0 8px", margin: 0,
-                  fontSize: 13, fontWeight: 600, color: "var(--text2)",
-                  cursor: "pointer", fontFamily: "inherit",
-                  borderBottom: "0.5px solid var(--border)",
-                  width: "100%", textAlign: "left",
-                }}>
-                <span style={{
-                  display: "inline-block", width: 12,
-                  transform: collapsed ? "rotate(-90deg)" : "rotate(0deg)",
-                  transition: "transform 120ms",
-                }}>▾</span>
-                {group.label} <span style={{ fontWeight: 400, color: "var(--text3)" }}>· {group.items.length}</span>
-              </button>
-              {!collapsed && (
-                <div style={{ marginTop: isMobile ? 20 : 28 }}>
-                  <div style={articleGridStyle}>
-                    {group.items.map(a => (
-                      <ArticleCard
-                        key={a.url}
-                        article={a}
-                        isMobile={isMobile}
-                        watchlist={watchlist}
-                        handleWish={handleWish}
-                        openCollectionPicker={openCollectionPicker}
-                        handleShare={handleShare}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          );
-        })}
+        {/* Flat newest-first grid (Mark 2026-06-03) — the year roll-up
+            (collapsible buckets + year header rows) is retired: it was one
+            more nonstandard chrome element, and infinite scroll makes the
+            grouping redundant. */}
+        <div style={articleGridStyle}>
+          {visible.map(a => (
+            <ArticleCard
+              key={a.url}
+              article={a}
+              isMobile={isMobile}
+              watchlist={watchlist}
+              handleWish={handleWish}
+              openCollectionPicker={openCollectionPicker}
+              handleShare={handleShare}
+            />
+          ))}
+        </div>
 
         {/* Infinite scroll sentinel — replaces the Load more button
             (Mark spec 2026-05-22: "yes to infinite scroll loading as
