@@ -2340,8 +2340,9 @@ function ListsView({
           type were retired in favour of these). */}
       {section === "lists" && (
         <>
+          {/* Under-title count removed (P-8 consistency, Mark 2026-06-03) —
+              counts never sit under the title. */}
           <PageHeader isMobile={isMobile} title="Lists"
-            meta={`${ownedByRecency.length} ${ownedByRecency.length === 1 ? "list" : "lists"}`}
             actions={(user && goToWatchbox) ? [{
               label: "Watchbox", onClick: goToWatchbox,
               icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -2415,8 +2416,8 @@ function ListsView({
       {/* SEARCHES — saved searches, tap to re-run on Listings. */}
       {section === "searches" && (
         <>
+          {/* Under-title count removed (P-8 consistency, Mark 2026-06-03). */}
           <PageHeader isMobile={isMobile} title="Searches"
-            meta={savedSearchStats ? `${savedSearchStats.length} saved` : null}
             actions={startAddSearch ? [{ label: "+ New search", onClick: startAddSearch }] : []} />
           <div style={{ paddingTop: isMobile ? 16 : 20 }}>
             {savedSearchStats && savedSearchStats.length > 0 ? (

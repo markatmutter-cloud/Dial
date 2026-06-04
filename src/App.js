@@ -3874,7 +3874,9 @@ export default function Watchlist() {
         exitLabel="Exit auction"
         eyebrow={eyebrow}
         title={sale.title}
-        meta={`${allFiltered.length} lots`}
+        // Lot count removed from the header meta (P-8 consistency, Mark's
+        // 2026-06-03 verification pass) — the count's one home is the filter
+        // bar's reserved right slot, same as every other surface.
         actions={actions}
       />
     );
@@ -3884,16 +3886,14 @@ export default function Watchlist() {
   // surface the title scrolls away while the filter bar pins — same collapsing
   // pattern as the catalog. The shell renders this in the scroll pane above the
   // sticky filter, so the title must live here (a shell slot), not in
-  // HeartedView. Count mirrors HeartedView's savedTotal exactly (hearted
-  // watches + hearted articles + hearted guides) so the number always matches.
-  const savedHeaderCount = watchItems.length
-    + Object.values(watchlist || {}).filter(v => v && v.kind === "article").length
-    + Object.values(watchlist || {}).filter(v => v && v.kind === "reference").length;
+  // HeartedView. The under-title count was removed 2026-06-03 (P-8, Mark's
+  // verification pass): the count's ONE home is the filter bar's reserved
+  // right slot — the header carried a second, slightly different number
+  // ("434 items" over the grid's "432 watches") right above it.
   const savedHeaderJSX = (
     <PageHeader
       isMobile={isMobile}
       title="Saved"
-      meta={savedHeaderCount ? `${savedHeaderCount} ${savedHeaderCount === 1 ? "item" : "items"}` : null}
     />
   );
 

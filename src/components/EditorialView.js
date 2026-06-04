@@ -677,7 +677,9 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
           grid stays as the visual cue that these are surfaced
           items; no label slab needed. */}
       {showFeatured && featured.length > 0 && (
-        <div style={{ marginBottom: isMobile ? 32 : 48 }}>
+        // Top margin = breathing room below the pinned filter bar (Mark's
+        // 2026-06-03 verification pass — cards sat flush against it).
+        <div style={{ marginTop: isMobile ? 14 : 18, marginBottom: isMobile ? 32 : 48 }}>
           {/* Featured strip uses the same 3-col magazine layout as
               the year-grouped grid below — Vogue/Hodinkee top-of-
               page pattern. Mobile keeps 1-col so the hero card
@@ -698,8 +700,10 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
         </div>
       )}
 
-      {/* Card grid grouped by year */}
-      <div style={{ padding: isMobile ? "0 14px 110px" : "0 20px 110px" }}>
+      {/* Card grid grouped by year. Top padding gives the first year header
+          breathing room below the pinned filter bar when the featured strip
+          is hidden (filters/search active). */}
+      <div style={{ padding: isMobile ? "10px 14px 110px" : "14px 20px 110px" }}>
         {!loading && filtered.length === 0 && (
           <div style={{
             padding: 32, color: "var(--text2)", textAlign: "center",
