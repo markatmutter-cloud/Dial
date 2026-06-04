@@ -551,7 +551,12 @@ export function MobileShell(props) {
             challenge), skip the regular tab content so the recipient
             sees a clean first-impression page. */}
         {!anyShareActive && (
-          <div style={{ padding: `${tab === "watchlist" ? 0 : 12}px 16px 32px` }}>
+          // Flat 12px top on every tab (2026-06-03 ledger audit). The old
+          // `watchlist ? 0 : 12` branch meant the BODY padding, not the
+          // header, decided title height per tab — Saved/Lists/Searches
+          // titles sat 12px higher than Articles/Guides. One rule: the body
+          // gives every tab the same 12, PageHeader owns the rest.
+          <div style={{ padding: "12px 16px 32px" }}>
             {/* Collapsing header (Mark 2026-06-02): the catalog title — or the
                 "Saved" title on the hearted surface — scrolls here while the
                 filter pills stay pinned in the sticky chrome above. One-inset
