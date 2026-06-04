@@ -4901,7 +4901,12 @@ export default function Watchlist() {
     // Setters / handlers
     handleWish, openFavPrompt, resetFilters,
     // Top-right "reach Saved from anywhere" heart link (Mark 2026-06-02).
-    goToSaved: () => { setTab("watchlist"); setWatchTopTab("hearted"); setPage(1); },
+    // Routes through setTabWithReceiveEscape (Mark 2026-06-03): the raw
+    // setTab changed the tab state but left an active share-receive surface
+    // covering the content, so on share pages the heart looked dead — the
+    // wrapper dismisses the receiver (like the Home icon) and its cross-tab
+    // branch already lands Saved on the ♡ Saved sub-tab.
+    goToSaved: () => { setTabWithReceiveEscape("watchlist"); setWatchTopTab("hearted"); setPage(1); },
     setAboutModalOpen, setActiveFilterPop, setBrandsExpanded,
     setDrawerOpen,
     setFilterBrands, setFilterHearted, setFilterSources, setFilterModels, setFilterSaleUrls,
