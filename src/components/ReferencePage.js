@@ -26,6 +26,25 @@ const SERIF = FONT_SERIF;
 const MAXW = 1080;
 const NONDEBATE = /(not a factual conflict|no source ranks|tonal|sibling watches|consensus is that)/i;
 
+// Image with the wsrv→raw retry ladder (same fix class as the share hero,
+// P-30): several guide-source hosts (WatchProSite, A Collected Man, Phillips,
+// Beaumont Miller …) block wsrv's datacenter fetcher or hot-linking, so the
+// resized URL 404s and the box rendered empty (Mark 2026-06-03). Attempt 0 =
+// wsrv-resized, attempt 1 = the raw origin URL, then give up (caller's
+// placeholder/empty box shows).
+function RefImg({ src, width, alt, style }) {
+  const [attempt, setAttempt] = useState(0);
+  if (!src || attempt >= 2) return null;
+  return (
+    <img
+      src={attempt === 0 ? imgSrc(src, width) : src}
+      alt={alt} loading="lazy"
+      onError={() => setAttempt((n) => n + 1)}
+      style={style}
+    />
+  );
+}
+
 const itemBlob = (it) =>
   `${it.ref || ""} ${it.reference_no || ""} ${it.model_line || ""} ${it.brand || ""}`.toLowerCase();
 function matchItem(it, spec) {
@@ -140,7 +159,7 @@ export function ReferencePage({
   const renderEditorialCard = (a) => (
     <a href={a.url} target="_blank" rel="noopener noreferrer" style={{ display: "block", textDecoration: "none", color: "inherit" }}>
       <div style={{ width: "100%", aspectRatio: "4 / 3", overflow: "hidden", background: "var(--surface)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        {a.img ? <img src={imgSrc(a.img)} alt={a.title} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+        {a.img ? <RefImg src={a.img} alt={a.title} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
                : <span style={{ fontFamily: SERIF, fontSize: 15, color: "var(--text3)", padding: 12, textAlign: "center" }}>{a.publication}</span>}
       </div>
       <div style={{ padding: "8px 10px 12px" }}>
@@ -170,7 +189,7 @@ export function ReferencePage({
         {/* Hero is a full-width banner — request it at 1600px (vs imgSrc's 720
             default) so it's sharp on wide/retina screens. wsrv's `we` flag means
             no upscaling, so smaller-source heroes are still safe. */}
-        <img src={imgSrc(node.hero.img, 1600)} alt={`${node.brand} ${node.modelLine} ${node.group}`} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+        <RefImg src={node.hero.img} width={1600} alt={`${node.brand} ${node.modelLine} ${node.group}`} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.74) 0%, rgba(0,0,0,0.18) 48%, rgba(0,0,0,0.05) 100%)" }} />
         <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, padding: isMobile ? "0 16px 20px" : "0 20px 34px" }}>
           <div style={{ maxWidth: MAXW, margin: "0 auto" }}>
@@ -279,7 +298,7 @@ export function ReferencePage({
                 <div style={{ fontSize: 13, color: "var(--text2)" }}><span style={{ fontWeight: 600 }}>Read this for:</span> {g.readThisFor}. <a href={g.url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--brand)", textDecoration: "none", whiteSpace: "nowrap" }}>Read ↗</a></div>
               </div>,
               g.img
-                ? <a href={g.url} target="_blank" rel="noopener noreferrer" style={{ display: "block", width: "100%", height: "100%" }}><img src={imgSrc(g.img)} alt={g.title} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} /></a>
+                ? <a href={g.url} target="_blank" rel="noopener noreferrer" style={{ display: "block", width: "100%", height: "100%" }}><RefImg src={g.img} alt={g.title} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} /></a>
                 : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: SERIF, color: "var(--text3)", fontSize: 16, textAlign: "center", padding: 16 }}>{g.publication}</div>,
               i
             ))}
@@ -297,7 +316,7 @@ export function ReferencePage({
                 <p style={{ fontSize: isMobile ? 15 : 16, lineHeight: 1.6, color: "var(--text2)", margin: 0 }}>{m.body}</p>
                 {m.source && m.url && <a href={m.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, color: "var(--text3)", letterSpacing: "0.04em", textTransform: "uppercase", textDecoration: "none", display: "inline-block", marginTop: 8 }}>{m.source} ↗</a>}
               </div>,
-              m.img ? <a href={m.url || undefined} target="_blank" rel="noopener noreferrer" style={{ display: "block", width: "100%", height: "100%" }}><img src={imgSrc(m.img)} alt={m.name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} /></a> : null,
+              m.img ? <a href={m.url || undefined} target="_blank" rel="noopener noreferrer" style={{ display: "block", width: "100%", height: "100%" }}><RefImg src={m.img} alt={m.name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} /></a> : null,
               i, { flip: true, ratio: "3 / 2" }
             ))}
           </div>
@@ -314,7 +333,7 @@ export function ReferencePage({
                 <p style={{ fontSize: isMobile ? 14 : 15, lineHeight: 1.55, color: "var(--text2)", margin: 0 }}>{v.traits}</p>
                 <a href={v.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, color: "var(--brand)", fontWeight: 600, textDecoration: "none", display: "inline-block", marginTop: 8 }}>View example — {v.source} ↗</a>
               </div>,
-              <a href={v.url} target="_blank" rel="noopener noreferrer" style={{ display: "block", width: "100%", height: "100%" }}><img src={imgSrc(v.img)} alt={v.name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} /></a>,
+              <a href={v.url} target="_blank" rel="noopener noreferrer" style={{ display: "block", width: "100%", height: "100%" }}><RefImg src={v.img} alt={v.name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} /></a>,
               i, { ratio: "3 / 2" }
             ))}
           </div>
@@ -432,7 +451,7 @@ export function ReferencePage({
                 return (
                   <div key={i} onClick={canOpen ? () => setOpenConn(i) : undefined} style={{ display: "flex", gap: 12, alignItems: "center", borderTop: "0.5px solid var(--border)", padding: "14px 0", cursor: canOpen ? "pointer" : "default" }}>
                     <div style={{ flex: "0 0 auto", width: 56, height: 56, borderRadius: 8, overflow: "hidden", background: "var(--surface)" }}>
-                      {thumb && <img src={imgSrc(thumb)} alt={conn.label} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />}
+                      {thumb && <RefImg src={thumb} alt={conn.label} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />}
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3, flexWrap: "wrap" }}>{chip}<span style={{ fontFamily: SERIF, fontSize: isMobile ? 16 : 18, fontWeight: 600, color: "var(--text1)" }}>{conn.label}</span></div>
