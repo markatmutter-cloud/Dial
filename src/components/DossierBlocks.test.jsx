@@ -15,9 +15,11 @@ describe("DossierBlocks", () => {
   });
 
   test("editable with no blocks renders the add-block bar without crashing", () => {
-    const { getByText } = render(
+    // P-20 (2026-06-03): the add bar is a compact pill row now — the pill is
+    // labelled "Note" with title "Add a note".
+    const { getByTitle } = render(
       <DossierBlocks collectionId="c1" user={null} allListings={[]} canEdit={true} />
     );
-    expect(getByText("Add a note")).toBeInTheDocument();
+    expect(getByTitle("Add a note")).toBeInTheDocument();
   });
 });
