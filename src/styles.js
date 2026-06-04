@@ -68,6 +68,33 @@ export const cardGridStyle = ({ isMobile } = {}) => ({
   gap: isMobile ? 16 : 24,
 });
 
+// ── CHROME METRICS — the one spacing/size sheet (Mark 2026-06-03) ─────
+// Every governed chrome number lives HERE, once. The day's lesson: shared
+// COMPONENTS weren't enough — surfaces still chose their own paddings and
+// tokens still defined their own font/pad, so heights and gaps drifted one
+// edit at a time. Rule: chrome code never writes a raw px for these
+// properties — it imports the constant. Change a number here and every
+// screen moves together. (chrome-guard.test.js asserts consumption.)
+export const CHROME = {
+  // The one left edge (P-5/P-6): scroll-pane / body horizontal inset.
+  INSET_X_DESKTOP: 20,
+  INSET_X_MOBILE: 16,
+  // Mobile scroll-body top inset — flat on every tab (title-height ledger).
+  BODY_TOP_MOBILE: 12,
+  // Bar controls: pills + search field share one height.
+  CONTROL_H: 30,
+  PILL_FONT: 13,
+  PILL_PAD: "6px 12px",
+  // PageHeader vertical padding — the ONLY contributor above a title.
+  HEADER_PAD: { desktop: "14px 0 16px", mobile: "10px 0 13px" },
+  // Header→bar gap (sticky-wrapper paddingTop).
+  GAP_HEADER_BAR_DESKTOP: 0,
+  GAP_HEADER_BAR_MOBILE: 4,
+  // Bar→first-content gap.
+  GAP_BAR_CONTENT_DESKTOP: 18,
+  GAP_BAR_CONTENT_MOBILE: 14,
+};
+
 // ── PILLS ─────────────────────────────────────────────────────────────
 
 // Sort/filter pills in the sticky/filter rows. Inactive = transparent
@@ -99,8 +126,8 @@ const UNSELECTED = (surface) => ({
 });
 
 export const pillBase = (active, { compact = false, surface = false } = {}) => ({
-  fontSize: 13,
-  padding: compact ? "6px 12px" : "9px 14px",
+  fontSize: CHROME.PILL_FONT,
+  padding: compact ? CHROME.PILL_PAD : "9px 14px",
   borderRadius: 20, cursor: "pointer",
   fontFamily: "inherit", whiteSpace: "nowrap", border: "none", outline: "none",
   fontWeight: active ? 600 : 500,
@@ -303,11 +330,14 @@ export const iconButton = ({ size = 40, active = false } = {}) => ({
 // Unified "Clear all" / reset control — olive-ink OUTLINE pill (no fill;
 // it's a reset action, not a selected state). Replaces the inline clear-
 // alls in the shells + EditorialView + ActiveFiltersStrip.
+// 2026-06-03: metrics aligned to the pill standard (CHROME.PILL_FONT /
+// PILL_PAD) — its old 12px/5px ran a different height than every
+// neighboring pill in the bar, which read as clipped (Mark's report).
 export const clearAllPill = {
   display: "inline-flex", alignItems: "center", gap: 4,
-  padding: "5px 12px", borderRadius: 999,
+  padding: CHROME.PILL_PAD, borderRadius: 999,
   cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap",
-  fontSize: 12, fontWeight: 600, letterSpacing: "0.02em",
+  fontSize: CHROME.PILL_FONT, fontWeight: 600, letterSpacing: "0.02em",
   border: "none", outline: "none",
   background: "transparent", color: "var(--brand-olive-ink)",
   boxShadow: "inset 0 0 0 0.5px var(--brand-olive-ink)",
