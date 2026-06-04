@@ -32,6 +32,8 @@ jobs:
           - { scraper: menta }
           - { scraper: collectorscorner }
           - { scraper: falco }
+          - { scraper: pascalkarp }
+          - { scraper: tokant }
           - { scraper: tropicalwatch }
           - { scraper: greyandpatina }
           - { scraper: oliverandclarke }
