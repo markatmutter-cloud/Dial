@@ -20,7 +20,15 @@ export function PageHeader({ eyebrow, title, meta, actions = [], onExit, exitLab
   return (
     <div style={{
       borderBottom: "0.5px solid var(--border)", background: "var(--bg)",
-      padding: isMobile ? "10px 14px 13px" : "14px 20px 16px",
+      // ONE-INSET RULE (P-5/P-6, 2026-06-03): the header carries NO horizontal
+      // padding of its own — the surface's container provides the standard
+      // inset (20px desktop pane / 16px mobile body), so the title, the
+      // hairline's endpoints, and the filter pills below all share ONE left
+      // edge. The old self-padding (14/20) double-stacked with container
+      // padding on some surfaces (title at 40px while pills sat at 20) and
+      // bleed-wrappers ran the hairline edge-to-edge on others — exactly the
+      // per-surface drift this component exists to prevent.
+      padding: isMobile ? "10px 0 13px" : "14px 0 16px",
     }}>
       {onExit && (
         <button onClick={onExit}
