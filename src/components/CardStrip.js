@@ -70,7 +70,12 @@ export default function CardStrip({
           affordance, instead of each caller adding its own (only SectionStrip
           had one, so the Articles strip read differently). */}
       <div style={{ position: "relative" }}>
-        <div ref={scrollRef} onScroll={onScroll} style={{
+        {/* scrollbarWidth:none is Firefox-only — WebKit (Safari/Chrome with
+            "always show scroll bars" on macOS) needs the ::-webkit-scrollbar
+            rule, which inline styles can't express. Without it some strips
+            drew a grey track bar and others didn't (Mark 2026-06-03). */}
+        <style>{`.wl-hscroll::-webkit-scrollbar{display:none}`}</style>
+        <div ref={scrollRef} onScroll={onScroll} className="wl-hscroll" style={{
           display: "flex", gap: 1, overflowX: "auto", overflowY: "hidden",
           padding: inset ? (isMobile ? "0 16px 4px" : "0 20px 4px") : "0 0 4px",
           // proximity (not mandatory) so the drag stays free / un-sticky and
