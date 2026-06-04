@@ -3387,10 +3387,19 @@ export default function Watchlist() {
                        padding: "2px 8px" }}>
             Signed in as
           </div>
-          <div style={{ fontSize: 13, color: "var(--text1)", padding: "2px 8px 8px",
+          <div style={{ fontSize: 13, color: "var(--text1)", padding: "2px 8px 0",
                        overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
             {userName}
           </div>
+          {/* Sign out lives WITH the identity it signs out of (Mark
+              2026-06-03) — a quiet link under the name, not a menu row. */}
+          <button onClick={() => { setShowUserMenu(false); signOut(); }}
+            style={{ display: "block", textAlign: "left",
+                    padding: "2px 8px 8px", border: "none", background: "transparent",
+                    color: "var(--text3)", cursor: "pointer", fontFamily: "inherit",
+                    fontSize: 12, textDecoration: "underline", textUnderlineOffset: 2 }}>
+            Sign out
+          </button>
 
           {/* Utilities. Watchbox is re-added here 2026-06-01 (eBay "My
               eBay" model — the second door to the owned/wishlist/sold
@@ -3423,13 +3432,6 @@ export default function Watchlist() {
                       color: "var(--text1)", cursor: "pointer", fontFamily: "inherit",
                       fontSize: 13, fontWeight: 500, borderRadius: 6 }}>
               Challenges
-            </button>
-            <button onClick={() => { setShowUserMenu(false); signOut(); }}
-              style={{ display: "block", width: "100%", textAlign: "left",
-                      padding: "8px 8px", border: "none", background: "transparent",
-                      color: "var(--text1)", cursor: "pointer", fontFamily: "inherit",
-                      fontSize: 13, borderRadius: 6 }}>
-              Sign out
             </button>
             {isAdmin && (
               // Site Stats is admin-only — shown only to Mark.
