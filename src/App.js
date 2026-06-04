@@ -3348,7 +3348,10 @@ export default function Watchlist() {
           || shareActive || challengeShareActive || listShareActive || catalogShareActive || searchAllActive;
         const discBg     = onOliveBar ? "#ffffff" : "var(--brand-olive)";
         const discFg     = onOliveBar ? "var(--brand-olive)" : "#ffffff";
-        const pillBorder = onOliveBar ? "rgba(255,255,255,0.3)" : "var(--border)";
+        // Home: the olive disc sits in the olive masthead band once it
+        // scrolls/sticks, so the circle vanished (only the M showed) — a
+        // white ring keeps it visible there (Mark 2026-06-03).
+        const pillBorder = onOliveBar ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.85)";
         // Just the initial disc (Mark 2026-05-28): dropped the "Watchbox"
         // label pill — Watchbox is no longer the menu's primary destination
         // (it lives in the Lists tab), so the bare "M" reads cleanly as the
@@ -3358,7 +3361,8 @@ export default function Watchlist() {
           aria-label="Account menu" title="Account menu"
           style={{
             width: isMobile ? 40 : 36, height: isMobile ? 40 : 36, borderRadius: "50%",
-            border: `0.5px solid ${pillBorder}`,
+            // 1px on Home so the white ring actually reads on the olive band.
+            border: `${onOliveBar ? "0.5px" : "1px"} solid ${pillBorder}`,
             background: discBg, color: discFg, cursor: "pointer", fontFamily: "inherit",
             fontSize: 14, fontWeight: 600,
             display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
