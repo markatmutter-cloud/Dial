@@ -51,47 +51,53 @@ export function PageHeader({ eyebrow, title, meta, count, actions = [], onExit, 
           textTransform: "uppercase", color: "var(--brand-olive-text)",
         }}>{eyebrow}</div>
       )}
+      {/* ONE-ROW HEADER (Mark 2026-06-03): the right cluster (actions · ⋯ ·
+          count) sits INLINE with the title, not on a second row below it —
+          the second row made Lists/Searches taller than Saved's tight
+          title→hairline band, and the narrow look is the standard. `meta`
+          (rare — e.g. "Shared by X") is the only thing that adds a line. */}
       <div style={{
-        fontSize: isMobile ? 23 : 28, fontWeight: 700, color: "var(--text1)",
-        lineHeight: 1.12, marginTop: eyebrow ? 5 : 0, letterSpacing: "-0.01em",
-      }}>{title}</div>
-      {(meta || count || actions.length > 0 || trailing) && (
-        <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap", marginTop: 9 }}>
-          {meta && <span style={{ fontSize: 13, color: "var(--text2)" }}>{meta}</span>}
-          {/* Right cluster always pushes right (was `meta ? "auto" : 0`, which
-              dropped the actions to the LEFT when no meta rendered). */}
-          {(actions.length > 0 || count || trailing) && (
-            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginLeft: "auto" }}>
-              {actions.map((a) => {
-                const style = {
-                  display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer",
-                  fontFamily: "inherit", fontSize: 12.5, fontWeight: 600, padding: "5px 12px",
-                  borderRadius: 999, border: "0.5px solid var(--border)",
-                  background: a.active ? "var(--brand-olive-tint-12)" : "var(--surface)",
-                  color: a.active ? "var(--brand-olive-ink)" : "var(--text1)",
-                  textDecoration: "none",
-                };
-                return a.href ? (
-                  <a key={a.label} href={a.href} onClick={a.onClick} style={style}
-                    target={a.external ? "_blank" : undefined}
-                    rel={a.external ? "noopener noreferrer" : undefined}>
-                    {a.icon}{a.label}
-                  </a>
-                ) : (
-                  <button key={a.label} onClick={a.onClick} aria-label={a.ariaLabel || a.label} style={style}>
-                    {a.icon}{a.label}
-                  </button>
-                );
-              })}
-              {trailing}
-              {count && (
-                <span style={{ fontSize: 12, color: "var(--text3)", whiteSpace: "nowrap", marginLeft: 4 }}>
-                  {count}
-                </span>
-              )}
-            </div>
-          )}
-        </div>
+        display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap",
+        marginTop: eyebrow ? 5 : 0,
+      }}>
+        <div style={{
+          fontSize: isMobile ? 23 : 28, fontWeight: 700, color: "var(--text1)",
+          lineHeight: 1.12, letterSpacing: "-0.01em", minWidth: 0,
+        }}>{title}</div>
+        {(actions.length > 0 || count || trailing) && (
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginLeft: "auto" }}>
+            {actions.map((a) => {
+              const style = {
+                display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer",
+                fontFamily: "inherit", fontSize: 12.5, fontWeight: 600, padding: "5px 12px",
+                borderRadius: 999, border: "0.5px solid var(--border)",
+                background: a.active ? "var(--brand-olive-tint-12)" : "var(--surface)",
+                color: a.active ? "var(--brand-olive-ink)" : "var(--text1)",
+                textDecoration: "none",
+              };
+              return a.href ? (
+                <a key={a.label} href={a.href} onClick={a.onClick} style={style}
+                  target={a.external ? "_blank" : undefined}
+                  rel={a.external ? "noopener noreferrer" : undefined}>
+                  {a.icon}{a.label}
+                </a>
+              ) : (
+                <button key={a.label} onClick={a.onClick} aria-label={a.ariaLabel || a.label} style={style}>
+                  {a.icon}{a.label}
+                </button>
+              );
+            })}
+            {trailing}
+            {count && (
+              <span style={{ fontSize: 12, color: "var(--text3)", whiteSpace: "nowrap", marginLeft: 4 }}>
+                {count}
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+      {meta && (
+        <div style={{ fontSize: 13, color: "var(--text2)", marginTop: 6 }}>{meta}</div>
       )}
     </div>
   );
