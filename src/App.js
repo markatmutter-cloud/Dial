@@ -784,25 +784,11 @@ export default function Watchlist() {
   // signed-out feature prompts) keep firing signInWithGoogle directly;
   // they already carry their own context. (2026-05-07)
   const [signInPromptOpen, setSignInPromptOpen] = useState(false);
-  // First-visit auto-show of the welcome (AboutModal). Defer one tick
-  // past mount so we don't fire during loading early-return. Hook lives
-  // here near the other top-of-list state — well before App.js's
-  // loading + loadError early returns; adding hooks past those triggers
-  // React #310 (see Things-to-never-do in CLAUDE.md).
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    try {
-      if (!window.localStorage.getItem("dial_visited_v1")) {
-        // Slight delay so the welcome doesn't flash on top of the
-        // listings loading state.
-        const t = setTimeout(() => {
-          setAboutModalOpen(true);
-          window.localStorage.setItem("dial_visited_v1", "1");
-        }, 400);
-        return () => clearTimeout(t);
-      }
-    } catch {}
-  }, []);
+  // First-visit AUTO-open of the AboutModal retired 2026-06-03 (Mark):
+  // a modal in a new visitor's face before they've seen the product was
+  // the wrong welcome — users click About to read it. Manual opens stay
+  // (top-nav About on both shells, account menu, Settings). The
+  // dial_visited_v1 localStorage key is left orphaned, not reused.
   // Watchlist + hidden now live server-side (Supabase) per authenticated
   // user. When signed out, these hooks return empty objects and their
   // toggles no-op — we wrap the toggles below to kick off sign-in instead.
