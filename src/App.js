@@ -4335,6 +4335,10 @@ export default function Watchlist() {
       // chrono24Items only — other projections aren't part of the reference
       // filter today; broadening to mainFeedItems would be a separate call.
       allListings={[...items, ...chrono24Items]}
+      // Re-tap of the active Reference Guides top pill bumps this (via
+      // setTabWithReceiveEscape's same-tab branch); ReferenceBrowse uses it
+      // to exit a drilled-in guide back to the index (P-15, 2026-06-03).
+      resetTick={tab === "references" ? tabResetTick : 0}
       subTab={referencesSubTab}
       setSubTab={setReferencesSubTab}
       cols={cols}
@@ -4539,7 +4543,16 @@ export default function Watchlist() {
       ariaLabel="Lists views"
       tabs={[["hearted", "♡ Saved"], ["lists", "Lists"], ["searches", "Searches"]]}
       activeKey={watchTopTab}
-      onSelect={(key) => { setWatchTopTab(key); setDrawerOpen(false); setPage(1); }}
+      // Re-tapping the ACTIVE sub-tab returns to its landing (P-22, Mark
+      // 2026-06-03): inside a drilled-in list, tapping "Lists" used to be a
+      // no-op (only the "< All lists" breadcrumb exited). The bump feeds the
+      // same tabResetTick CollectionsTab already watches to clear its
+      // drill-in; the breadcrumb stays as the second door.
+      onSelect={(key) => {
+        if (key === watchTopTab) setTabResetTick((n) => n + 1);
+        else setWatchTopTab(key);
+        setDrawerOpen(false); setPage(1);
+      }}
       isMobile={isMobile}
       onOlive={isMobile}
       containerStyle={{
