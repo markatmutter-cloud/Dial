@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import { pillBase, clearAllPill, editorialTitle, cardGridStyle } from "../styles";
 import { Chip } from "./Chip";
 import { PageHeader } from "./PageHeader";
-import { StandardFilterBar, standardSearchInputStyle } from "./StandardFilterBar";
+import { StandardFilterBar, StandardSearchInput } from "./StandardFilterBar";
 import { shortHash } from "../utils";
 import { HeartIcon } from "./icons";
 
@@ -550,13 +550,11 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
           ? "Loading…"
           : `${filtered.length.toLocaleString()} ${filtered.length === 1 ? "article" : "articles"}`}
         search={isMobile ? null : (
-          <input
-            type="text"
+          <StandardSearchInput
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search articles…"
-            aria-label="Search articles"
-            style={standardSearchInputStyle}
+            ariaLabel="Search articles"
           />
         )}
         pills={

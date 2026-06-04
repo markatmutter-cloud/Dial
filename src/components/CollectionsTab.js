@@ -16,7 +16,7 @@ import HeartedView from "./HeartedView";
 import { PageHeader } from "./PageHeader";
 import { DossierBlocks } from "./DossierBlocks";
 import { fmtUSD, matchesSearch, imgSrc } from "../utils";
-import { actionButton, signInButton, innerToggleButton, FONT_SERIF, cardGridStyle } from "../styles";
+import { actionButton, signInButton, innerToggleButton, pillBase, FONT_SERIF, cardGridStyle } from "../styles";
 import { EmptyState } from "./EmptyState";
 import { Section } from "./Section";
 
@@ -1964,8 +1964,10 @@ function ListsView({
             onExit={() => setSelectedListId(null)}
             exitLabel="All lists"
             title={selected.name}
-            meta={`${rawItems.length} ${rawItems.length === 1 ? "item" : "items"}${
-              isRecipient && items.length > 0 ? ` · shared by ${ownerName}` : ""}`}
+            // Count rule (Mark 2026-06-03): the drill-in's filter bar already
+            // carries "N items" in its reserved slot — meta keeps only the
+            // shared-by attribution, never a count under the title.
+            meta={isRecipient && items.length > 0 ? `Shared by ${ownerName}` : null}
             actions={[
               ...(screensEnabled ? [{
                 label: "Screen",
@@ -2254,20 +2256,20 @@ function ListsView({
                     standard `♡ Saved` filter-chip style (Mark 2026-05-28). */}
                 {!isSavedColl && !isHiddenColl && heartedCount > 0 && (
                   <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12 }}>
+                    {/* 2026-06-03 alignment audit: the one bar-level pill not
+                        on pillBase — now the same recipe as the ♥ Saved pill
+                        on Listings/Articles/Guides (olive SELECTED_FILL). */}
                     <button
                       onClick={() => setHeartedOnly(v => !v)}
                       aria-pressed={heartedOnly}
                       title={heartedOnly ? `Show all (${rawItems.length})` : `Show only your hearted items (${heartedCount})`}
                       style={{
-                        display: "inline-flex", alignItems: "center", gap: 7,
-                        padding: "6px 14px", borderRadius: 999, cursor: "pointer",
-                        fontFamily: "inherit", fontSize: 13, fontWeight: 500,
-                        background: "transparent", color: "var(--text1)",
-                        border: `0.5px solid ${heartedOnly ? "var(--text1)" : "var(--border)"}`,
+                        ...pillBase(heartedOnly, { compact: true, surface: true }),
+                        display: "inline-flex", alignItems: "center", gap: 5,
                       }}>
-                      <svg width="14" height="14" viewBox="0 0 24 24"
-                        fill={heartedOnly ? "#e0564f" : "none"} stroke="#e0564f"
-                        strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <svg width="11" height="11" viewBox="0 0 24 24"
+                        fill={heartedOnly ? "var(--danger)" : "none"} stroke="var(--danger)"
+                        strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
                       </svg>
                       Saved
@@ -2340,9 +2342,11 @@ function ListsView({
           type were retired in favour of these). */}
       {section === "lists" && (
         <>
-          {/* Under-title count removed (P-8 consistency, Mark 2026-06-03) —
-              counts never sit under the title. */}
+          {/* Count rides PageHeader's RIGHT-aligned slot (Mark 2026-06-03):
+              no filter bar on this surface, so the header row carries it —
+              but never under the title. */}
           <PageHeader isMobile={isMobile} title="Lists"
+            count={`${ownedByRecency.length} ${ownedByRecency.length === 1 ? "list" : "lists"}`}
             actions={(user && goToWatchbox) ? [{
               label: "Watchbox", onClick: goToWatchbox,
               icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -2416,8 +2420,9 @@ function ListsView({
       {/* SEARCHES — saved searches, tap to re-run on Listings. */}
       {section === "searches" && (
         <>
-          {/* Under-title count removed (P-8 consistency, Mark 2026-06-03). */}
+          {/* Count rides PageHeader's RIGHT-aligned slot (Mark 2026-06-03). */}
           <PageHeader isMobile={isMobile} title="Searches"
+            count={savedSearchStats ? `${savedSearchStats.length} saved` : null}
             actions={startAddSearch ? [{ label: "+ New search", onClick: startAddSearch }] : []} />
           <div style={{ paddingTop: isMobile ? 16 : 20 }}>
             {savedSearchStats && savedSearchStats.length > 0 ? (

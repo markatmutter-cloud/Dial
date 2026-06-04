@@ -17,8 +17,13 @@ import React from "react";
 //   onExit:  () => void   — renders a "← {exitLabel}" link above the eyebrow
 //   trailing: JSX — rendered after the action pills (for composed controls a
 //             plain {label,onClick} can't express, e.g. the in-list ⋯ menu)
+//   count:   string — RIGHT-aligned item count, for surfaces WITHOUT a filter
+//            bar (Lists, Searches). Surfaces with a bar pass null — there the
+//            count's one home is the bar's reserved right slot (P-8). Never
+//            put a count in `meta` (left/under-title is the placement Mark
+//            vetoed on the 2026-06-03 verification pass).
 
-export function PageHeader({ eyebrow, title, meta, actions = [], onExit, exitLabel = "Back", isMobile, trailing = null }) {
+export function PageHeader({ eyebrow, title, meta, count, actions = [], onExit, exitLabel = "Back", isMobile, trailing = null }) {
   return (
     <div style={{
       borderBottom: "0.5px solid var(--border)", background: "var(--bg)",
@@ -50,11 +55,13 @@ export function PageHeader({ eyebrow, title, meta, actions = [], onExit, exitLab
         fontSize: isMobile ? 23 : 28, fontWeight: 700, color: "var(--text1)",
         lineHeight: 1.12, marginTop: eyebrow ? 5 : 0, letterSpacing: "-0.01em",
       }}>{title}</div>
-      {(meta || actions.length > 0 || trailing) && (
+      {(meta || count || actions.length > 0 || trailing) && (
         <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap", marginTop: 9 }}>
           {meta && <span style={{ fontSize: 13, color: "var(--text2)" }}>{meta}</span>}
-          {(actions.length > 0 || trailing) && (
-            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginLeft: meta ? "auto" : 0 }}>
+          {/* Right cluster always pushes right (was `meta ? "auto" : 0`, which
+              dropped the actions to the LEFT when no meta rendered). */}
+          {(actions.length > 0 || count || trailing) && (
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginLeft: "auto" }}>
               {actions.map((a) => {
                 const style = {
                   display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer",
@@ -77,6 +84,11 @@ export function PageHeader({ eyebrow, title, meta, actions = [], onExit, exitLab
                 );
               })}
               {trailing}
+              {count && (
+                <span style={{ fontSize: 12, color: "var(--text3)", whiteSpace: "nowrap", marginLeft: 4 }}>
+                  {count}
+                </span>
+              )}
             </div>
           )}
         </div>
