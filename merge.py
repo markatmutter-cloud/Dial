@@ -876,6 +876,7 @@ def process_listings():
         ('data/falco.csv',                'Falco Watches',         'GBP'),
         ('data/pascalkarp.csv',           'Pascal Karp',           'EUR'),
         ('data/tokant.csv',               'Tokant',                'EUR'),
+        ('data/romainrea.csv',            'Romain Réa',            'EUR'),
         ('data/greyandpatina.csv',        'Grey & Patina',         'USD'),
         ('data/oliverandclarke.csv',      'Oliver & Clarke',       'USD'),
         ('data/craftandtailored.csv',     'Craft & Tailored',      'USD'),

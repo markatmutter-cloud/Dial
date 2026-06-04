@@ -119,6 +119,15 @@ jobs:
         continue-on-error: true
         run: python bulangandsons_watch_talks_scraper.py
 
+      - name: Run Romain Réa editorial scraper
+        # Two small Shopify blogs (Expert Files + Dating, ~31 posts)
+        # folded into one corpus file. Stub posts (video embeds,
+        # dead-PDF wrappers) drop at the <100-word threshold —
+        # ~16 real essays survive. Incremental, same 30-day refresh
+        # window as the other blog scrapers.
+        continue-on-error: true
+        run: python romainrea_editorial_scraper.py
+
       - name: Run Hodinkee Shop archive scraper
         # Shopify products.json API, ~2,346 products. Collection
         # frozen since Feb 2023 (Hodinkee shut the vintage shop),
@@ -205,6 +214,7 @@ jobs:
                   public/rolex_magazine.json public/rolex_magazine_bodies.json \
                   public/onthedash.json public/onthedash_bodies.json \
                   public/bulang_watch_talks.json public/bulang_watch_talks_bodies.json \
+                  public/romainrea_editorial.json public/romainrea_editorial_bodies.json \
                   public/hodinkee_shop.json public/hodinkee_shop_bodies.json \
                   public/hodinkee_reference_points.json public/hodinkee_reference_points_bodies.json \
                   public/acollectedman_journal.json public/acollectedman_journal_bodies.json \
