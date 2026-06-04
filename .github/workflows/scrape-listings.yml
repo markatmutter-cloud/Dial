@@ -55,6 +55,10 @@ jobs:
         continue-on-error: true
         run: python tokant_scraper.py
 
+      - name: Run Romain Réa scraper
+        continue-on-error: true
+        run: python romainrea_scraper.py
+
       - name: Run Tropical Watch scraper (direct HTML, no Browse AI)
         continue-on-error: true
         run: python tropicalwatch_scraper.py
@@ -277,6 +281,7 @@ jobs:
           [ -f falco_listings.csv ]               && mv falco_listings.csv               data/falco.csv               || echo "falco missing"
           [ -f pascalkarp_listings.csv ]          && mv pascalkarp_listings.csv          data/pascalkarp.csv          || echo "pascalkarp missing"
           [ -f tokant_listings.csv ]              && mv tokant_listings.csv              data/tokant.csv              || echo "tokant missing"
+          [ -f romainrea_listings.csv ]           && mv romainrea_listings.csv           data/romainrea.csv           || echo "romainrea missing"
           [ -f tropicalwatch_listings.csv ]       && mv tropicalwatch_listings.csv       data/tropicalwatch.csv       || echo "tropicalwatch missing"
           [ -f greyandpatina_listings.csv ]       && mv greyandpatina_listings.csv       data/greyandpatina.csv       || echo "greyandpatina missing"
           [ -f oliverandclarke_listings.csv ]     && mv oliverandclarke_listings.csv     data/oliverandclarke.csv     || echo "oliverandclarke missing"

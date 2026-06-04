@@ -121,6 +121,19 @@ const SOURCES = [
   // archive as a dealer source, and the scraped body_text remains
   // available for the future editorial_index.py recommender pass.
   {
+    key: "romainrea_editorial",
+    label: "Romain Réa",
+    publication: "Romain Réa",
+    column: null,
+    url: "/romainrea_editorial.json",
+    bodies_url: "/romainrea_editorial_bodies.json",
+    // Paris dealer (also scraped at listing level). Two Shopify blogs
+    // (Expert Files + Dating) folded into one source; video/dead-PDF
+    // stub posts are dropped at scrape time (<100 words), so the
+    // corpus carries only the real essays (~16 of 31 posts).
+    publication_url: "https://romainrea.com/en-int",
+  },
+  {
     key: "hodinkee_reference_points",
     label: "Reference Points",
     publication: "Hodinkee",

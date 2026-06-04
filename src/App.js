@@ -149,6 +149,7 @@ const EDITORIAL_SOURCE_URLS = [
   "/rolex_magazine.json",
   "/onthedash.json",
   "/bulang_watch_talks.json",
+  "/romainrea_editorial.json",
   "/hodinkee_reference_points.json",
   "/acollectedman_journal.json",
   "/woe_dispatch.json",
