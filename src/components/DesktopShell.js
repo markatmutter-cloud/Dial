@@ -1,10 +1,10 @@
 import React, { useEffect, useRef } from "react";
-import { SearchIcon, TabIcon, HomeIcon } from "./icons";
+import { TabIcon, HomeIcon } from "./icons";
 import { Chip } from "./Chip";
 import { AboutModal } from "./AboutModal";
 import { SavedHeartLink } from "./SavedHeartLink";
 import { SignInPromptModal } from "./SignInPromptModal";
-import { StandardFilterBar } from "./StandardFilterBar";
+import { StandardFilterBar, StandardSearchInput } from "./StandardFilterBar";
 import { pillBase, tabPill } from "../styles";
 
 // SavedHeartLink extracted to its own file 2026-06-03 so MobileShell renders
@@ -155,45 +155,31 @@ export function DesktopShell(props) {
   // "search bar location should apply to all tabs where the search
   // bar exists, other than landing page and strip search"). Filter
   // row is always neutral bg so the chrome colors are fixed.
-  const tbBorderColor = "var(--border)";
-  const tbTextColor   = "var(--text1)";
+  // (tbBorderColor/tbTextColor/tbMutedColor retired with the hand-rolled
+  // input — StandardSearchInput owns those tokens now.)
   const tbIconColor   = "var(--text2)";
-  const tbMutedColor  = "var(--text3)";
   // PR 2026-05-22: search bar is now ALWAYS expanded as an inline
   // input (Mark spec: "I want the search bar to the right of the
   // filters not hidden/collapsed and working how it already does").
   // The icon → input toggle + "Close" chevron are retired. `/`
   // shortcut now focuses (instead of expanding-then-focusing).
+  // 2026-06-03 alignment audit: now the shared StandardSearchInput — the ONE
+  // search-field recipe (Articles/Guides consume the same component, so the
+  // input physically can't read differently per tab). The Save-search heart
+  // rides the `trailing` slot; Enter/Esc via onKeyDown; the `/` shortcut
+  // focuses via inputRef; the clear × is built into the shared component.
   const expandingSearchJSX = (
-    <div style={{ display: "flex", alignItems: "center", gap: 8,
-                  background: "transparent",
-                  border: `0.5px solid ${tbBorderColor}`,
-                  // PR 2026-05-22 (Mark spec): match the pill type
-                  // system so search reads as part of the filter row,
-                  // not a different control. radius 10 → 20.
-                  borderRadius: 20,
-                  padding: "4px 12px",
-                  // Fills the StandardFilterBar's centered slot (P-2) — the
-                  // slot's grid column (minmax 200–340px) owns the width, so
-                  // the input can't move or resize between tabs.
-                  width: "100%", minWidth: 0,
-                  height: 30,
-                  color: tbIconColor }}>
-      <SearchIcon />
-      <input
-        ref={topBarInputRef}
-        value={search}
-        onChange={e => setSearch(e.target.value)}
-        onKeyDown={e => {
-          if (e.key === "Enter") e.target.blur();
-          if (e.key === "Escape") { setSearch(""); e.target.blur(); }
-        }}
-        placeholder={searchPlaceholder}
-        style={{ flex: 1, border: "none", background: "transparent",
-                 fontSize: 13, color: tbTextColor, outline: "none",
-                 fontFamily: "inherit", minWidth: 0 }}
-      />
-      {search && user && (
+    <StandardSearchInput
+      value={search}
+      onChange={e => setSearch(e.target.value)}
+      onKeyDown={e => {
+        if (e.key === "Enter") e.target.blur();
+        if (e.key === "Escape") { setSearch(""); e.target.blur(); }
+      }}
+      inputRef={topBarInputRef}
+      placeholder={searchPlaceholder}
+      ariaLabel="Search"
+      trailing={search && user ? (
         <button onClick={openFavPrompt}
           aria-label={currentIsSaved ? "Already saved" : "Save search as favorite"}
           title={currentIsSaved ? "Saved to favorites" : "Save as favorite search"}
@@ -211,21 +197,8 @@ export function DesktopShell(props) {
           </svg>
           <span>{currentIsSaved ? "Saved" : "Save"}</span>
         </button>
-      )}
-      {search && (
-        <button onClick={() => setSearch("")} aria-label="Clear search"
-          style={{ flexShrink: 0, background: "none", border: "none",
-                  cursor: "pointer", color: tbMutedColor, padding: 2,
-                  fontFamily: "inherit", display: "flex",
-                  alignItems: "center", justifyContent: "center" }}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <line x1="18" y1="6" x2="6" y2="18"/>
-            <line x1="6" y1="6" x2="18" y2="18"/>
-          </svg>
-        </button>
-      )}
-    </div>
+      ) : null}
+    />
   );
   // PR_ε1.5 retires searchComposite from the filter row. Keep the
   // declaration here ONLY as a no-op so future-self doesn't reach for

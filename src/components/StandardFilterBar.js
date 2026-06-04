@@ -1,4 +1,5 @@
 import React from "react";
+import { SearchIcon } from "./icons";
 
 // StandardFilterBar — THE one filter-bar layout for named, finite surfaces
 // (Mark 2026-06-03, the "standard library" chrome pass — P-2/P-4/P-8/P-13).
@@ -57,11 +58,50 @@ export function StandardFilterBar({ pills, search, right, count, isMobile, backg
   );
 }
 
-// The one search-input recipe for the centered slot — callers spread extra
-// per-surface props (value/onChange/placeholder) onto a real <input>.
-export const standardSearchInputStyle = {
-  width: "100%", minWidth: 0, fontFamily: "inherit", fontSize: 13,
-  color: "var(--text1)", background: "transparent",
-  border: "0.5px solid var(--border)", borderRadius: 18,
-  padding: "6px 14px", outline: "none", boxSizing: "border-box",
-};
+// StandardSearchInput — THE one search-field recipe (2026-06-03 alignment
+// audit; replaces the bare `standardSearchInputStyle` input). Three recipes
+// used to render in the same centered slot — icon + radius 20 + height 30 on
+// Watches/Saved, a bare radius-18 input on Articles/Guides, radius-8 on
+// Guides-mobile — which is why "the search bar looks different" per tab
+// (Mark). One component now: leading SearchIcon · radius 20 · height 30 ·
+// trailing clear × when there's a value. `trailing` slot for per-surface
+// extras (DesktopShell's Save-search heart); `inputRef`/`onKeyDown` for its
+// `/`-shortcut + Esc behavior.
+export function StandardSearchInput({ value, onChange, placeholder, ariaLabel, inputRef, onKeyDown, trailing }) {
+  return (
+    <div style={{
+      display: "flex", alignItems: "center", gap: 8,
+      border: "0.5px solid var(--border)", borderRadius: 20,
+      padding: "4px 12px", height: 30, boxSizing: "border-box",
+      width: "100%", minWidth: 0,
+      background: "transparent", color: "var(--text2)",
+    }}>
+      <SearchIcon />
+      <input
+        ref={inputRef}
+        value={value}
+        onChange={onChange}
+        onKeyDown={onKeyDown}
+        placeholder={placeholder}
+        aria-label={ariaLabel || placeholder}
+        style={{ flex: 1, border: "none", background: "transparent",
+                 fontSize: 13, color: "var(--text1)", outline: "none",
+                 fontFamily: "inherit", minWidth: 0 }}
+      />
+      {trailing}
+      {value && (
+        <button onClick={() => onChange({ target: { value: "" } })} aria-label="Clear search"
+          style={{ flexShrink: 0, background: "none", border: "none",
+                  cursor: "pointer", color: "var(--text3)", padding: 2,
+                  fontFamily: "inherit", display: "flex",
+                  alignItems: "center", justifyContent: "center" }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      )}
+    </div>
+  );
+}

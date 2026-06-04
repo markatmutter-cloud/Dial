@@ -3,8 +3,8 @@ import { ReferencePage } from "./ReferencePage";
 import { Breadcrumb } from "./Breadcrumb";
 import { PageHeader } from "./PageHeader";
 import { Chip } from "./Chip";
-import { StandardFilterBar, standardSearchInputStyle } from "./StandardFilterBar";
-import { editorialHeading, editorialProse, editorialTitle, inputBase, pillBase, clearAllPill, cardGridStyle } from "../styles";
+import { StandardFilterBar, StandardSearchInput } from "./StandardFilterBar";
+import { editorialHeading, editorialProse, editorialTitle, pillBase, clearAllPill, cardGridStyle } from "../styles";
 import { imgSrc } from "../utils";
 import {
   REFERENCE_NODES,
@@ -169,33 +169,35 @@ export function ReferenceBrowse(props) {
         position: "sticky", top: "var(--sticky-top, 0px)", zIndex: 15, background: "var(--bg)",
         marginLeft: isMobile ? -16 : -20, marginRight: isMobile ? -16 : -20,
         paddingLeft: isMobile ? 16 : 20, paddingRight: isMobile ? 16 : 20,
-        paddingTop: isMobile ? 8 : 10, marginBottom: 6,
+        // One vertical rhythm with Articles/Watches (2026-06-03 alignment
+        // audit): header→bar gap 4 mobile / 0 desktop; the bar→content gap
+        // lives on the grid below (14/18), not here.
+        paddingTop: isMobile ? 4 : 0,
       }}>
         {/* Mobile: the shell search row doesn't render on this sub-tab, so the
             guides search keeps its own full-width row above the pill bar (one
             input per surface — P-13). Desktop: the input sits in the bar's
             centered slot. */}
         {isMobile && (
-          <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Search guides — brand, model, reference…"
-            autoCapitalize="none" autoCorrect="off" spellCheck={false}
-            style={{ ...inputBase, fontSize: 14, marginBottom: 8 }}
-          />
+          <div style={{ marginBottom: 8 }}>
+            <StandardSearchInput
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Search guides — brand, model, reference…"
+              ariaLabel="Search guides"
+            />
+          </div>
         )}
         <StandardFilterBar
           isMobile={isMobile}
           expanded={activeFilterPop !== null}
           count={`${cards.length} ${cards.length === 1 ? "guide" : "guides"}`}
           search={isMobile ? null : (
-            <input
+            <StandardSearchInput
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Search guides — brand, model, reference…"
-              aria-label="Search guides"
-              autoCapitalize="none" autoCorrect="off" spellCheck={false}
-              style={standardSearchInputStyle}
+              ariaLabel="Search guides"
             />
           )}
           pills={
@@ -234,7 +236,7 @@ export function ReferenceBrowse(props) {
       {cards.length === 0 ? (
         <p style={{ fontSize: 13, color: "var(--text3)" }}>No guides match your search.</p>
       ) : (
-        <div style={cardGridStyle({ isMobile })}>
+        <div style={{ ...cardGridStyle({ isMobile }), marginTop: isMobile ? 14 : 18 }}>
           {cards.map((n) => (
             <RefGuideCard key={n.id} node={n} isMobile={isMobile}
               onClick={() => go({ level: "node", nodeId: n.id })}

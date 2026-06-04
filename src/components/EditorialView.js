@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import { pillBase, clearAllPill, editorialTitle, cardGridStyle } from "../styles";
 import { Chip } from "./Chip";
 import { PageHeader } from "./PageHeader";
-import { StandardFilterBar, standardSearchInputStyle } from "./StandardFilterBar";
+import { StandardFilterBar, StandardSearchInput } from "./StandardFilterBar";
 import { shortHash } from "../utils";
 import { HeartIcon } from "./icons";
 
@@ -550,13 +550,11 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
           ? "Loading…"
           : `${filtered.length.toLocaleString()} ${filtered.length === 1 ? "article" : "articles"}`}
         search={isMobile ? null : (
-          <input
-            type="text"
+          <StandardSearchInput
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search articles…"
-            aria-label="Search articles"
-            style={standardSearchInputStyle}
+            ariaLabel="Search articles"
           />
         )}
         pills={
@@ -677,7 +675,9 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
           grid stays as the visual cue that these are surfaced
           items; no label slab needed. */}
       {showFeatured && featured.length > 0 && (
-        <div style={{ marginBottom: isMobile ? 32 : 48 }}>
+        // Top margin = breathing room below the pinned filter bar (Mark's
+        // 2026-06-03 verification pass — cards sat flush against it).
+        <div style={{ marginTop: isMobile ? 14 : 18, marginBottom: isMobile ? 32 : 48 }}>
           {/* Featured strip uses the same 3-col magazine layout as
               the year-grouped grid below — Vogue/Hodinkee top-of-
               page pattern. Mobile keeps 1-col so the hero card
@@ -698,8 +698,10 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
         </div>
       )}
 
-      {/* Card grid grouped by year */}
-      <div style={{ padding: isMobile ? "0 14px 110px" : "0 20px 110px" }}>
+      {/* Card grid grouped by year. Top padding gives the first year header
+          breathing room below the pinned filter bar when the featured strip
+          is hidden (filters/search active). */}
+      <div style={{ padding: isMobile ? "10px 14px 110px" : "14px 20px 110px" }}>
         {!loading && filtered.length === 0 && (
           <div style={{
             padding: 32, color: "var(--text2)", textAlign: "center",
