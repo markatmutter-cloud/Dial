@@ -1,5 +1,6 @@
 import React from "react";
 import { SearchIcon } from "./icons";
+import { CHROME } from "../styles";
 
 // StandardFilterBar — THE one filter-bar layout for named, finite surfaces
 // (Mark 2026-06-03, the "standard library" chrome pass — P-2/P-4/P-8/P-13).
@@ -72,7 +73,7 @@ export function StandardSearchInput({ value, onChange, placeholder, ariaLabel, i
     <div style={{
       display: "flex", alignItems: "center", gap: 8,
       border: "0.5px solid var(--border)", borderRadius: 20,
-      padding: "4px 12px", height: 30, boxSizing: "border-box",
+      padding: "4px 12px", height: CHROME.CONTROL_H, boxSizing: "border-box",
       width: "100%", minWidth: 0,
       background: "transparent", color: "var(--text2)",
     }}>
