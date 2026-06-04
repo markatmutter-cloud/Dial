@@ -246,28 +246,31 @@ function AddBlockBar({ adding, setAdding, savedSearches, referenceNodes, onAdd }
       />
     );
   }
-  // Boxed rows (Mark 2026-06-02) — consistent with the empty-list onboarding's
-  // "add" rows rather than bare word-pills.
+  // Compact pill row (P-20, 2026-06-03 — was three full-width boxed rows
+  // that ate the top of every list before its actual content; Mark: the
+  // populated things should come first, not the add options). One quiet
+  // line; the empty-list onboarding keeps its big boxed rows.
   const rows = [
-    { icon: "✎", label: "Add a note", go: () => onAdd("note", { noteText: "" }) },
-    { icon: "📖", label: "Add a reference guide", go: () => setAdding("reference_guide") },
-    { icon: "🔍", label: "Add a saved search", go: () => setAdding("saved_search") },
+    { icon: "✎", label: "Note", go: () => onAdd("note", { noteText: "" }) },
+    { icon: "📖", label: "Reference guide", go: () => setAdding("reference_guide") },
+    { icon: "🔍", label: "Saved search", go: () => setAdding("saved_search") },
   ];
   return (
-    <div style={{ border: "0.5px solid var(--border)", borderRadius: 12, overflow: "hidden", marginTop: 8, maxWidth: 520 }}>
-      {rows.map((r, i) => (
-        <button key={r.label} onClick={r.go} style={{
-          display: "flex", alignItems: "center", gap: 12, width: "100%", textAlign: "left",
-          cursor: "pointer", fontFamily: "inherit", background: "transparent",
-          border: "none", borderTop: i ? "0.5px solid var(--border)" : "none", padding: "13px 14px",
+    <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", marginTop: 8 }}>
+      <span style={{
+        fontSize: 11, fontWeight: 600, letterSpacing: "0.06em",
+        textTransform: "uppercase", color: "var(--text3)", marginRight: 2,
+      }}>Add</span>
+      {rows.map((r) => (
+        <button key={r.label} onClick={r.go} title={`Add a ${r.label.toLowerCase()}`} style={{
+          display: "inline-flex", alignItems: "center", gap: 6,
+          cursor: "pointer", fontFamily: "inherit", fontSize: 12.5, fontWeight: 500,
+          background: "var(--surface)", color: "var(--text1)",
+          border: "0.5px solid var(--border)", borderRadius: 999, padding: "5px 12px",
         }}>
-          <span aria-hidden style={{
-            flexShrink: 0, width: 34, height: 34, borderRadius: 999,
-            background: "var(--brand-olive-tint-12)", color: "var(--brand-olive-ink)",
-            display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15,
-          }}>{r.icon}</span>
-          <span style={{ flex: 1, minWidth: 0, fontSize: 14, fontWeight: 600, color: "var(--text1)" }}>{r.label}</span>
-          <span style={{ flexShrink: 0, color: "var(--text3)", fontSize: 16 }}>＋</span>
+          <span aria-hidden>{r.icon}</span>
+          {r.label}
+          <span aria-hidden style={{ color: "var(--text3)" }}>＋</span>
         </button>
       ))}
     </div>

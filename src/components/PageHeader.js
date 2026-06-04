@@ -15,8 +15,10 @@ import React from "react";
 //
 //   actions: [{ label, onClick, href?, icon?, active? }]
 //   onExit:  () => void   — renders a "← {exitLabel}" link above the eyebrow
+//   trailing: JSX — rendered after the action pills (for composed controls a
+//             plain {label,onClick} can't express, e.g. the in-list ⋯ menu)
 
-export function PageHeader({ eyebrow, title, meta, actions = [], onExit, exitLabel = "Back", isMobile }) {
+export function PageHeader({ eyebrow, title, meta, actions = [], onExit, exitLabel = "Back", isMobile, trailing = null }) {
   return (
     <div style={{
       borderBottom: "0.5px solid var(--border)", background: "var(--bg)",
@@ -48,10 +50,10 @@ export function PageHeader({ eyebrow, title, meta, actions = [], onExit, exitLab
         fontSize: isMobile ? 23 : 28, fontWeight: 700, color: "var(--text1)",
         lineHeight: 1.12, marginTop: eyebrow ? 5 : 0, letterSpacing: "-0.01em",
       }}>{title}</div>
-      {(meta || actions.length > 0) && (
+      {(meta || actions.length > 0 || trailing) && (
         <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap", marginTop: 9 }}>
           {meta && <span style={{ fontSize: 13, color: "var(--text2)" }}>{meta}</span>}
-          {actions.length > 0 && (
+          {(actions.length > 0 || trailing) && (
             <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginLeft: meta ? "auto" : 0 }}>
               {actions.map((a) => {
                 const style = {
@@ -74,6 +76,7 @@ export function PageHeader({ eyebrow, title, meta, actions = [], onExit, exitLab
                   </button>
                 );
               })}
+              {trailing}
             </div>
           )}
         </div>

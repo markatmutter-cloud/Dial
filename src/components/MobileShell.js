@@ -408,7 +408,14 @@ export function MobileShell(props) {
           <span style={{
             fontSize: 12, color: "var(--text3)", marginRight: 2, flexShrink: 0,
             minWidth: 38, textAlign: "right",
-          }}>{displayedCount}</span>
+          }}>{
+            // Inside a list drill-in the bare number read as a stray "1"
+            // (P-21, Mark 2026-06-03) — label it there; the dense Listings
+            // row keeps the compact bare count.
+            inListsDrillIn
+              ? `${displayedCount} ${displayedCount === 1 ? "item" : "items"}`
+              : displayedCount
+          }</span>
           {/* Saved hearted-sub-tab toggle (Listings/Auctions/Sold)
               prepended into the filter row on Saved + a hearted
               sub-tab. Thin divider after the cluster so it visually

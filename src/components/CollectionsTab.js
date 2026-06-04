@@ -16,7 +16,7 @@ import HeartedView from "./HeartedView";
 import { PageHeader } from "./PageHeader";
 import { DossierBlocks } from "./DossierBlocks";
 import { fmtUSD, matchesSearch, imgSrc } from "../utils";
-import { actionButton, signInButton, FONT_SERIF, cardGridStyle } from "../styles";
+import { actionButton, signInButton, innerToggleButton, FONT_SERIF, cardGridStyle } from "../styles";
 import { EmptyState } from "./EmptyState";
 import { Section } from "./Section";
 
@@ -1953,100 +1953,31 @@ function ListsView({
             occupied its own row is gone — the discovery caption + a
             small "Review →" CTA carry the same information inline.
             Hidden entirely when inline-screening on desktop. */}
+        {/* In-list header → the shared PageHeader (P-18, 2026-06-03): the
+            tinted title CARD truncated the list name on mobile ("JLC Wat…")
+            and didn't match any other surface's header. PageHeader gives the
+            standard exit link + full wrapping title + meta + action pills;
+            the ⋯ menu rides the `trailing` slot. */}
         {!inlineScreeningActive && (
-          <div style={{
-            display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap",
-            padding: "12px 14px",
-            background: "var(--surface)",
-            border: "0.5px solid var(--border)", borderRadius: 12,
-            marginBottom: 14,
-          }}>
-            {/* Distinct list header (Mark): a tinted banner with a
-                breadcrumb back + prominent name + item count, so you
-                clearly know you're INSIDE a list, not on a grid tab. */}
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <button onClick={() => setSelectedListId(null)} style={{
-                border: "none", background: "transparent", cursor: "pointer",
-                color: "var(--brand)", fontFamily: "inherit", fontSize: 12.5,
-                padding: 0, letterSpacing: "0.02em",
-              }}>‹ All lists</button>
-              <div style={{
-                fontSize: 22, fontWeight: 700, color: "var(--text1)",
-                letterSpacing: "-0.01em", lineHeight: 1.15, marginTop: 3,
-                overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-              }}>{selected.name}</div>
-              <div style={{ fontSize: 12, color: "var(--text3)", marginTop: 2, fontVariantNumeric: "tabular-nums" }}>
-                {rawItems.length} {rawItems.length === 1 ? "item" : "items"}
-              </div>
-            </div>
-            {/* Hearted-only toggle relocated (Mark, 2026-05-28): it
-                used to live here in the header as a verbose pill — moved
-                to a `♡ Saved` chip at the top of the listgrid, matching
-                the standard filter-row heuristics on other tabs. */}
-            {/* Screen — launches the binary skip/heart swipe over the
-                list's items (shared lists only). Sits next to the list
-                name; Share is on the right edge. */}
-            {screensEnabled && (
-              <div style={{
-                display: "inline-flex", alignItems: "center", gap: 6,
-                flexShrink: 0,
-              }}>
-                <button
-                  onClick={() => {
-                    setReviewModeOpen(true);
-                    setScreeningResetTick(t => t + 1);
-                  }}
-                  title="Screen this list one watch at a time"
-                  style={{
-                    ...actionButton({ variant: "subtle" }),
-                    flexShrink: 0,
-                    display: "inline-flex", alignItems: "center", gap: 6,
-                  }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" strokeWidth="1.6"
-                    strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/>
-                    <circle cx="12" cy="12" r="3"/>
-                  </svg>
-                  Screen
-                </button>
-              </div>
-            )}
-            {isRecipient && items.length > 0 && (
-              <>
-                <span style={{ color: "var(--text3)", fontSize: 13, flexShrink: 0 }}>·</span>
-                <span style={{
-                  fontSize: 12, color: "var(--text2)",
-                  display: "inline-flex", alignItems: "center", gap: 6,
-                  minWidth: 0,
-                }}>
-                  <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    <strong style={{ color: "var(--text1)", fontWeight: 500 }}>{ownerName}</strong> shared this list
-                  </span>
-                </span>
-              </>
-            )}
-            <div style={{ flex: 1 }} />
-            {shareCopied && (
-              <span style={{
-                fontSize: 12, color: "var(--brand)", fontWeight: 500,
-                flexShrink: 0,
-              }}>
-                Link copied
-              </span>
-            )}
-            {/* Share sits alone on the right — distribution action,
-                separate from the "act on your reactions" pair above. */}
-            {showActions && (
-              <button onClick={isOwner ? () => setManageListOpen(true) : triggerShare}
-                title="Share this list"
-                style={{ ...actionButton({ variant: "primary" }), flexShrink: 0 }}>
-                Share
-              </button>
-            )}
-            {/* Rename / delete the list, in-list (owners only) — same ⋯
-                affordance as on the landing cards (Mark). */}
-            {isOwner && !selected.isSharedInbox && setEditingCollection && (
+          <PageHeader
+            isMobile={!isWide}
+            onExit={() => setSelectedListId(null)}
+            exitLabel="All lists"
+            title={selected.name}
+            meta={`${rawItems.length} ${rawItems.length === 1 ? "item" : "items"}${
+              isRecipient && items.length > 0 ? ` · shared by ${ownerName}` : ""}`}
+            actions={[
+              ...(screensEnabled ? [{
+                label: "Screen",
+                ariaLabel: "Screen this list one watch at a time",
+                onClick: () => { setReviewModeOpen(true); setScreeningResetTick(t => t + 1); },
+              }] : []),
+              ...(showActions ? [{
+                label: shareCopied ? "Link copied" : "Share",
+                onClick: isOwner ? () => setManageListOpen(true) : triggerShare,
+              }] : []),
+            ]}
+            trailing={(isOwner && !selected.isSharedInbox && setEditingCollection) ? (
               <WLCardMenu
                 onRename={() => setEditingCollection({ id: selected.id, name: selected.name })}
                 onDelete={deleteCollection ? async () => {
@@ -2057,8 +1988,8 @@ function ListsView({
                   })) { await deleteCollection(selected.id); setSelectedListId(null); }
                 } : undefined}
               />
-            )}
-          </div>
+            ) : null}
+          />
         )}
         {reviewModeOpen && screensEnabled && (
           <ListReviewMode
@@ -2223,7 +2154,7 @@ function ListsView({
                 };
               });
               return (
-                <div style={{ marginTop: 24 }}>
+                <div id="list-articles" style={{ marginTop: 24, scrollMarginTop: "calc(var(--sticky-top, 0px) + 56px)" }}>
                   <div style={{
                     display: "flex", alignItems: "baseline", gap: 8,
                     margin: "0 0 10px",
@@ -2272,16 +2203,52 @@ function ListsView({
             // Reactions retired 2026-05-26 — every list (shared
             // included) renders as a flat grid; the sentiment buckets
             // (To review / Loved / Liked / Passed) are gone.
+            //
+            // Section quick-nav (P-19, 2026-06-03): the same jump-pill
+            // pattern as the reference-guide page, over the list's parts —
+            // Notes (the dossier blocks) · Watches · Articles. Pills render
+            // only when there's more than one section to jump between.
+            // scrollMarginTop offsets by --sticky-top so anchors land clear
+            // of the mobile chrome (same hook as ReferencePage).
+            const hasDossier = !isHiddenColl && !isSavedColl && !selected.isSharedInbox;
+            const NAV_SECTIONS = [
+              hasDossier && { id: "list-notes", label: "Notes" },
+              listingItems.length > 0 && { id: "list-items", label: "Watches" },
+              articleItems.length > 0 && { id: "list-articles", label: "Articles" },
+            ].filter(Boolean);
+            const goToSection = (id) => {
+              const el = document.getElementById(id);
+              if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+            };
+            const sectionAnchor = { scrollMarginTop: "calc(var(--sticky-top, 0px) + 56px)" };
             return (
               <>
-                {!isHiddenColl && !isSavedColl && !selected.isSharedInbox && (
-                  <DossierBlocks
-                    collectionId={selected.id}
-                    user={user}
-                    allListings={allListings}
-                    canEdit={isOwner}
-                    onClickListing={onClickListing}
-                  />
+                {NAV_SECTIONS.length > 1 && (
+                  <nav style={{
+                    position: "sticky", top: "var(--sticky-top, 0px)", zIndex: 15,
+                    background: "var(--bg)", borderBottom: "0.5px solid var(--border)",
+                    display: "flex", gap: 4, overflowX: "auto",
+                    scrollbarWidth: "none", msOverflowStyle: "none", padding: "9px 0",
+                    marginBottom: 10,
+                  }}>
+                    {NAV_SECTIONS.map((s) => (
+                      <button key={s.id} onClick={() => goToSection(s.id)}
+                        style={{ ...innerToggleButton(false), letterSpacing: "0.02em", padding: "5px 11px", whiteSpace: "nowrap" }}>
+                        {s.label}
+                      </button>
+                    ))}
+                  </nav>
+                )}
+                {hasDossier && (
+                  <div id="list-notes" style={sectionAnchor}>
+                    <DossierBlocks
+                      collectionId={selected.id}
+                      user={user}
+                      allListings={allListings}
+                      canEdit={isOwner}
+                      onClickListing={onClickListing}
+                    />
+                  </div>
                 )}
                 {/* Hearted filter — at the top of the listgrid, in the
                     standard `♡ Saved` filter-chip style (Mark 2026-05-28). */}
@@ -2307,7 +2274,7 @@ function ListsView({
                     </button>
                   </div>
                 )}
-                <div style={{ ...gridStyle, borderRadius: 10, overflow: "hidden" }}>
+                <div id="list-items" style={{ ...gridStyle, borderRadius: 10, overflow: "hidden", ...sectionAnchor }}>
                   {listingItems.map(renderItemCard)}
                 </div>
                 {renderArticlesSection()}
