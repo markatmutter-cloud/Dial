@@ -636,7 +636,10 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
   );
 
   return (
-    <div style={{ paddingTop: 4 }}>
+    // paddingTop 4 → 0 (2026-06-03 ledger audit): the stray 4px made the
+    // Articles title sit lower than Guides/Saved. Title height is
+    // PageHeader's job alone — surface roots carry NO top padding.
+    <div style={{ paddingTop: 0 }}>
       {/* Collapsing header (Mark 2026-06-02) — matches Reference guides / Saved /
           catalog: the title scrolls away in normal flow while the filter chrome
           below pins (desktop sticky wrapper; mobile portals it into the shell
