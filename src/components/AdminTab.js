@@ -811,7 +811,10 @@ export function AdminTab({ watchItems, hiddenItems }) {
 
     // Houses that have lot-level scrapers; everything else is
     // calendar-only per CLAUDE.md "Comprehensive auction-lot scraping".
-    const SCRAPED_HOUSES = new Set(["Antiquorum", "Christie's", "Sotheby's", "Phillips"]);
+    const SCRAPED_HOUSES = new Set([
+      "Antiquorum", "Christie's", "Sotheby's", "Phillips",
+      "Watches of Knightsbridge",
+    ]);
 
     const byHouse = new Map();
     const ensure = (h) => {

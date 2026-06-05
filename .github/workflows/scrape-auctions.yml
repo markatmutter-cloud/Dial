@@ -61,6 +61,10 @@ jobs:
         continue-on-error: true
         run: python sothebys_auctions_scraper.py
 
+      - name: Run Watches of Knightsbridge auctions scraper
+        continue-on-error: true
+        run: python watchesofknightsbridge_auctions_scraper.py
+
       - name: Run tracked auction lots scraper
         # Reads the union of tracked_lots URLs across all users from
         # Supabase, scrapes each, writes public/tracked_lots.json. Soft
@@ -117,6 +121,7 @@ jobs:
           [ -f bonhams_auctions_listings.csv ]      && mv bonhams_auctions_listings.csv      data/bonhams_auctions.csv      || echo "bonhams auctions missing"
           [ -f christies_auctions_listings.csv ]    && mv christies_auctions_listings.csv    data/christies_auctions.csv    || echo "christies auctions missing"
           [ -f sothebys_auctions_listings.csv ]     && mv sothebys_auctions_listings.csv     data/sothebys_auctions.csv     || echo "sothebys auctions missing"
+          [ -f watchesofknightsbridge_auctions_listings.csv ] && mv watchesofknightsbridge_auctions_listings.csv data/watchesofknightsbridge_auctions.csv || echo "watchesofknightsbridge auctions missing"
 
       - name: Merge into auctions.json
         run: python merge.py --auctions-only
