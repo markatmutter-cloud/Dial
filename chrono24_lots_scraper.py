@@ -64,6 +64,7 @@ OUT_PATH = "public/chrono24_lots.json"
 REFERENCES = [
     {"brand": "Jaeger-LeCoultre", "query": "Jaeger-LeCoultre E2643"},
     {"brand": "Omega", "query": "Omega Seamaster 145.006"},
+    {"brand": "Heuer", "query": "Heuer 1153"},
 ]
 
 
