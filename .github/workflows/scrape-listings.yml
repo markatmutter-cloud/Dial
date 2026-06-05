@@ -26,7 +26,11 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        # -auctions.txt adds curl-cffi for Chrome-TLS impersonation, used by
+        # watchcenter_scraper.py (B-58: CI-only block on watchcenter.ch needed
+        # browser-fingerprinted TLS) and available to any future site that
+        # needs the same treatment.
+        run: pip install -r requirements.txt -r requirements-auctions.txt
 
       # Every scraper step uses `continue-on-error: true` so one failing
       # source (Cloudflare block, timeout, transient 5xx, etc.) doesn't

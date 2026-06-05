@@ -3,32 +3,48 @@
 Watch Center scraper — WooCommerce Store API, CHF.
 
 Swiss dealer (Mendrisio, Ticino) running WooCommerce on the standard
-`/wp-json/wc/store/v1` endpoint. ~414 products today. Same pattern as
+`/wp-json/wc/store/v1` endpoint. ~430 products today. Same pattern as
 Maunder / Watchurbia / Menta / Grey & Patina but currency is CHF and
 `currency_minor_unit` is 0 (whole-franc display, no cents). Multilingual
 site (Italian default + `/en/` locale) — the Store API returns the
 language-neutral permalink under `/prodotto/<slug>/`, which works for
 both locales.
 
+CI block (B-58, 2026-06-05): from 2026-05-30 onward the runner could no
+longer reach `watchcenter.ch` — every scheduled run errored with
+`[Errno 101] Network is unreachable` (the host responds 200 from
+residential and unblocked datacenter IPs). `continue-on-error: true`
+silently swallowed it. Probe: swap plain `requests` for `curl_cffi` with
+`impersonate="chrome"` (same pattern as `chrono24_lots_scraper.py` +
+`auction_lots_scraper._bonhams_get`) so the TLS/JA3 fingerprint matches
+a real browser. If the block is fingerprint-driven (Cloudflare-style),
+this gets through; if it's pure IP-range, we'll see the same errno and
+escalate to the residential-host pattern.
+
 Run: python3 watchcenter_scraper.py
+Requires: pip install -r requirements-auctions.txt   (curl-cffi)
 Output: watchcenter_listings.csv
 """
 import csv
 import re
+import sys
 import time
 from html import unescape
 
-import requests
+try:
+    from curl_cffi import requests as cc
+except ImportError:
+    sys.exit("curl-cffi not installed — `pip install -r requirements-auctions.txt`")
 
+IMPERSONATE = "chrome"
 BASE = "https://watchcenter.ch"
 API = f"{BASE}/wp-json/wc/store/v1/products"
 HEADERS = {
-    "User-Agent": "Mozilla/5.0",
     "Accept": "application/json, text/plain, */*",
     "Accept-Language": "en-US,en;q=0.9",
     "Referer": f"{BASE}/",
 }
-SESSION = requests.Session()
+SESSION = cc.Session(impersonate=IMPERSONATE)
 SESSION.headers.update(HEADERS)
 
 BRANDS = [
@@ -80,7 +96,7 @@ def fetch_chunk(page, per_page):
                 return r.json()
             last_err = f"HTTP {r.status_code}"
             time.sleep(2 ** attempt)
-        except requests.RequestException as e:
+        except Exception as e:  # curl_cffi raises curl_cffi.requests.errors.RequestsError
             last_err = str(e)
             time.sleep(2 ** attempt)
     raise RuntimeError(f"page {page} failed after 3 attempts: {last_err}")
