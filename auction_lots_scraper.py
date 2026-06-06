@@ -2239,6 +2239,22 @@ def enumerate_watchesofknightsbridge(sale_url, sale=None):
         print("  [WoK] no lot blocks found in page HTML")
         return []
 
+    # Load prior auction_lots.json once. WoK strips the
+    # estimate-price-value span from sold lots' grid blocks post-sale
+    # (only unsold lots keep it visible) — re-scraping would otherwise
+    # regress fields we already captured pre-sale. Use prior values as
+    # a fallback for any field the current scrape returns empty.
+    prior_by_url: dict = {}
+    try:
+        if os.path.exists(OUTPUT_JSON):
+            with open(OUTPUT_JSON) as _pf:
+                prior_by_url = json.load(_pf) or {}
+            if not isinstance(prior_by_url, dict):
+                prior_by_url = {}
+    except Exception as e:
+        print(f"  [WoK] couldn't read prior {OUTPUT_JSON}: {e}")
+        prior_by_url = {}
+
     # Pre-pass: harvest each lot card's outer class string by UUID so
     # the body-side loop can read post-sale state flags. The opener
     # sits BEFORE the `data-lot-id` attribute we split on, so it's not
@@ -2247,6 +2263,35 @@ def enumerate_watchesofknightsbridge(sale_url, sale=None):
         om.group("uuid"): om.group("cls")
         for om in _WOK_LOT_OPENER_RE.finditer(html)
     }
+
+    # If the sale has ended, the live page hides hammer prices but the
+    # parallel `/past-auctions/<slug>` archive exposes them publicly
+    # via `data-current-bid="N.0"`. Fetch and harvest by UUID; the
+    # body loop below uses the map to fill `sold_price` per lot.
+    hammer_by_uuid: dict = {}
+    if sale_ended or any("lot-status-closed" in c for c in class_by_uuid.values()):
+        m_slug = re.search(r"/auctions/\d+/([A-Za-z0-9_-]+)", sale_url)
+        slug = m_slug.group(1) if m_slug else None
+        if slug:
+            archive_url = f"https://auctions.watchesofknightsbridge.com/past-auctions/{slug}"
+            try:
+                ar = requests.get(archive_url, headers=HEADERS, timeout=30)
+                if ar.ok:
+                    for am in re.finditer(
+                        r'data-lot-id="(?P<uuid>[0-9a-f-]+)"[\s\S]*?data-current-bid="(?P<bid>[0-9.]+)"',
+                        ar.text,
+                    ):
+                        try:
+                            v = int(float(am.group("bid")))
+                        except (ValueError, TypeError):
+                            continue
+                        if v > 0:
+                            hammer_by_uuid[am.group("uuid")] = v
+                    print(f"  [WoK] archive merge: {len(hammer_by_uuid)} hammer prices recovered from {archive_url}")
+                else:
+                    print(f"  [WoK] archive fetch HTTP {ar.status_code} — falling back to withheld")
+            except Exception as e:
+                print(f"  [WoK] archive fetch failed: {e}")
 
     out = []
     for m in matches:
@@ -2317,13 +2362,13 @@ def enumerate_watchesofknightsbridge(sale_url, sale=None):
         ended = class_closed or sale_ended
 
         if ended and has_current_bid:
-            # Sold but WoK hides the hammer from anonymous viewers.
-            # Keep `current_bid` if the public DOM ever exposes a
-            # non-zero value (some pre-close states still leak it);
-            # otherwise leave sold_price null and surface the state
-            # via lot_outcome + catalogue_note.
-            sold_price = current_bid or None
-            lot_outcome = "sold_price_withheld" if not sold_price else "sold"
+            # Prefer the archive surface's hammer when we have it; fall
+            # back to `current_bid` (in case a pre-close state leaked
+            # it) or mark as withheld so the frontend can render
+            # "Sold (hammer withheld)" cleanly.
+            archive_hammer = hammer_by_uuid.get(lot_id)
+            sold_price = archive_hammer or current_bid or None
+            lot_outcome = "sold" if sold_price else "sold_price_withheld"
         elif ended:
             sold_price = None
             lot_outcome = "unsold"
@@ -2373,6 +2418,20 @@ def enumerate_watchesofknightsbridge(sale_url, sale=None):
             "lot_outcome": lot_outcome,
             "scraped_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         }
+
+        # Fall back to prior-record values for fields the post-sale
+        # grid strips. The estimate-price-value span is removed from
+        # SOLD lots' grid blocks (only unsold lots keep it inline);
+        # description is hidden behind `display:none`. We never want
+        # a post-sale re-scrape to lose pre-sale data.
+        prior = prior_by_url.get(url) if isinstance(prior_by_url.get(url), dict) else None
+        if prior:
+            for k in ("estimate_low", "estimate_high",
+                      "estimate_low_usd", "estimate_high_usd",
+                      "description", "image"):
+                if not data.get(k) and prior.get(k):
+                    data[k] = prior[k]
+
         out.append((url, data))
 
     return out
