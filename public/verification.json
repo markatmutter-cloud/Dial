@@ -1,6 +1,6 @@
 {
   "date": "2026-06-06",
-  "updated_at": "2026-06-06T15:47:58+00:00",
+  "updated_at": "2026-06-06T21:27:03+00:00",
   "alerts": [],
   "counts": {
     "Wind Vintage": 106,
@@ -15,13 +15,13 @@
     "Oliver & Clarke": 88,
     "Craft & Tailored": 70,
     "Watch Brothers London": 14,
-    "MVV Watches": 57,
+    "MVV Watches": 60,
     "DB1983": 24,
     "Hairspring": 32,
     "Somlo": 202,
     "Analog Shift": 612,
     "Watches of Knightsbridge": 67,
-    "Belmont Watches": 38,
+    "Belmont Watches": 37,
     "Bob's Watches": 45,
     "Watchfid": 64,
     "Bulang & Sons": 171,
@@ -34,9 +34,9 @@
     "Central Watch": 175,
     "European Watch": 18,
     "Vintage Watch Collective": 34,
-    "Vision Vintage Watches": 34,
+    "Vision Vintage Watches": 37,
     "Watchurbia": 7,
-    "Maunder Watches": 86,
+    "Maunder Watches": 84,
     "Watch Club": 58,
     "Vintage Watch Shop": 25,
     "Watches of Lancashire": 60,
@@ -45,9 +45,9 @@
     "Luna Royster": 32,
     "S.Song Watches": 20,
     "Swiss Hours": 66,
-    "Watch Center": 274,
-    "eBay": 26
+    "Watch Center": 272,
+    "eBay": 27
   },
-  "total_listings": 3937,
+  "total_listings": 3939,
   "sources_tracked": 44
 }
