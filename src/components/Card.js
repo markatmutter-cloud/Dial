@@ -159,9 +159,13 @@ export const Card = memo(function Card({
   const isLot = !!item._isTrackedLot;
   const isAuctionLot = isLot && item._isAuctionFormat;
   const isBinLot = isLot && !item._isAuctionFormat;
+  // "SOLD FOR" / "CURRENT BID", not the auctioneer's "HAMMER" / "CURRENT"
+  // (audit:2026-06-06 U-06): "HAMMER £635" is the literal answer to "what
+  // did it sell for" wearing a word a first-time visitor doesn't own, and
+  // "CURRENT" without "bid" leaves the meaning to be inferred.
   const lotLabel = !isLot ? null
     : isBinLot ? (item.sold ? "SOLD" : "BUY NOW")
-    : (item.sold ? "HAMMER" : "CURRENT");
+    : (item.sold ? "SOLD FOR" : "CURRENT BID");
   const lotNativeValue = !isLot ? null
     : item.sold
         ? (item.sold_price ?? item.price)

@@ -274,7 +274,7 @@ function HomeSearchBar({ onSubmit, onLiveQuery, isMobile, dealerSources, onJumpT
                 }
               }}
               onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); fire("all"); } }}
-              placeholder={isMobile ? "Reference or brand…" : "Reference, brand, model…"}
+              placeholder={isMobile ? "Brand or reference…" : "Brand, model, reference…"}
               style={{ flex: 1, border: "none", background: "transparent", fontSize: isMobile ? 14 : 15, color: "var(--text1)", outline: "none", fontFamily: "inherit", minWidth: 0, padding: isMobile ? "11px 0" : "13px 0" }}
             />
             {draft && (
@@ -453,7 +453,7 @@ function HomeSearchBar({ onSubmit, onLiveQuery, isMobile, dealerSources, onJumpT
                 value={draft}
                 onChange={(e) => handleDraftChange(e.target.value)}
                 onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); fire("all"); } }}
-                placeholder="Reference, brand, dealer…"
+                placeholder="Brand, model, dealer…"
                 style={{
                   flex: 1, border: "none", background: "transparent",
                   fontSize: 16, color: "var(--text1)", outline: "none",
