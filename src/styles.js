@@ -189,6 +189,55 @@ export const tabPill = (active, opts = {}) => {
   };
 };
 
+// ── SUB-TAB SEGMENTED CONTROL (audit:2026-06-06 U-01) ─────────────────
+// The sub-tab row's restyle. The underline `tabPill` treatment failed the
+// first-time-user test: inactive sub-tabs rendered as faint grey text —
+// which novices read as DISABLED — while the filter pills below were
+// filled chips that looked like the buttons. A real user, told to "click
+// the subtab", tapped the pills. Twice. (docs/audits/2026-06-06-usability/)
+//
+// Fix: sub-tabs become a single ENCLOSED segmented control — one rounded
+// track holding all the options, active segment solid-filled. The
+// enclosure is the message ("one chooser, pick a view"), and the solid
+// active fill is deliberately LOUDER than the filter pills' tint —
+// navigation must out-shout filters. `tabPill` (underline) remains the
+// TOP-tab treatment, so the two nav levels now look different by
+// construction.
+//
+// Two color contexts, like tabPill's onOlive:
+//   on olive (mobile colored chrome): translucent white track; active =
+//     solid white segment with olive ink; inactive = white text at 0.9
+//     (legible — NOT the 0.65 "disabled grey" the audit flagged).
+//   on neutral (desktop): hairline track; active = solid olive fill +
+//     white text (one notch louder than SELECTED_FILL's tint, which the
+//     filter pills keep).
+export const segTrack = (onOlive) => ({
+  display: "inline-flex", alignItems: "center",
+  padding: 3, borderRadius: 999, gap: 2,
+  background: onOlive ? "rgba(255,255,255,0.14)" : "var(--surface)",
+  boxShadow: onOlive ? "none" : "inset 0 0 0 0.5px var(--border)",
+});
+
+export const segItem = (active, { onOlive = false } = {}) => ({
+  fontSize: CHROME.PILL_FONT,
+  padding: "7px 14px", borderRadius: 999,
+  border: "none", outline: "none",
+  cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap",
+  fontWeight: active ? 600 : 500,
+  letterSpacing: "0.01em",
+  transition: "background 0.15s ease, color 0.15s ease",
+  ...(onOlive
+    // active label uses --brand-olive (dark in BOTH themes) — NOT
+    // --brand-olive-ink, which flips to light sage in dark mode and
+    // would wash out on the solid-white active chip.
+    ? (active
+        ? { background: "#ffffff", color: "var(--brand-olive)" }
+        : { background: "transparent", color: "rgba(255,255,255,0.9)" })
+    : (active
+        ? { background: "var(--brand-olive)", color: "#ffffff" }
+        : { background: "transparent", color: "var(--text2)" })),
+});
+
 // Compact action buttons used in tab headers, list-drill-in toolbars,
 // and inline editors (Share / Manage / Rename / Delete / + From feed /
 // + Add a watch / inline-editor Cancel-Save). Three variants:
