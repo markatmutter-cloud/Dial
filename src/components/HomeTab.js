@@ -209,10 +209,15 @@ function HomeSearchBar({ onSubmit, onLiveQuery, isMobile, dealerSources, onJumpT
   const fmtCount = (n) => (n == null ? null : Number(n).toLocaleString());
 
   const targets = [
-    ["all",      "Search all", "Across Listings, Auctions, Sold"],
-    ["live",     "Listings",   "Live dealer items"],
+    ["all",      "Search all", "For sale · Auctions · Sold"],
+    ["live",     "For sale",   "Live dealer items"],
     ["auctions", "Auctions",   "Active auction lots"],
     ["sold",     "Sold",       "Archive of sold items"],
+    // Articles (Mark 2026-06-06). No live count chip: the article corpus
+    // lazy-loads with Search-all (B-17 keeps it off the Home payload), so
+    // there's no match count to show pre-navigation — fmtCount(null)
+    // renders no chip, the others keep theirs.
+    ["articles", "Articles",   "Magazine + journal articles"],
   ];
 
   // Dealer name typeahead — case-insensitive substring match. Caps at

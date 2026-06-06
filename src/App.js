@@ -4247,6 +4247,15 @@ export default function Watchlist() {
           return;
         }
         setSearchAllActive(false);
+        // Articles target (Mark 2026-06-06): land on the Articles tab —
+        // EditorialView reads the same shared `search` state, so the
+        // query applies on arrival.
+        if (target === "articles") {
+          setTab("references");
+          setReferencesSubTab("editorial");
+          setPage(1);
+          return;
+        }
         setTab("listings");
         setListingsSubTab(target);
         setPage(1);
