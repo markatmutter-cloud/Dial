@@ -4106,14 +4106,19 @@ export default function Watchlist() {
   // Listings tab now uses sub-tabs. listingsSubTabsJSX below replaces
   // both controls.)
 
-  // Listings tab sub-tab strip — the shared SubTabBar (underline tabPill
-  // buttons, horizontally scrollable). Mobile picks up the olive bg to extend
-  // the colored chrome zone from brand+tabs down through the sub-tabs
-  // (PR_β-A 2026-05-22); desktop is neutral + a hairline divider.
+  // Listings tab sub-tab strip — the shared SubTabBar (segmented control
+  // since audit:2026-06-06, horizontally scrollable). Mobile picks up the
+  // olive bg to extend the colored chrome zone from brand+tabs down through
+  // the sub-tabs (PR_β-A 2026-05-22); desktop is neutral + hairline divider.
   const listingsSubTabsJSX = tab !== "listings" ? null : (
     <SubTabBar
       ariaLabel="Listings views"
-      tabs={[["live", "Listings"], ["auctions", "Auctions"], ["sold", "Sold"]]}
+      // "For sale", not "Listings" (audit:2026-06-06 U-10): to a novice,
+      // "Listings" under a tab called "Watches" is a near-synonym that adds
+      // no meaning — outcome words make the row read as a real three-way
+      // choice (for sale now / at auction / already sold). Internal key
+      // stays `live`; only the label changes.
+      tabs={[["live", "For sale"], ["auctions", "Auctions"], ["sold", "Sold"]]}
       activeKey={listingsSubTab}
       onSelect={(key) => { setListingsSubTab(key); setDrawerOpen(false); setPage(1); }}
       isMobile={isMobile}
@@ -4568,7 +4573,9 @@ export default function Watchlist() {
   const watchHeartedToggleJSX = (tab !== "watchlist" || !SAVED_HEARTED_SUBS.includes(watchTopTab)) ? null : (
     <>
       {[
-        ["listings", "Listings"],
+        // "For sale" matches the Watches sub-tab rename (audit:2026-06-06
+        // U-10) — same concept, same word everywhere. Keys unchanged.
+        ["listings", "For sale"],
         ["auctions", "Auctions"],
         ["sold",     "Sold"],
       ].map(([key, label]) => {
