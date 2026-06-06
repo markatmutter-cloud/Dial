@@ -1,0 +1,7 @@
+{
+  "_comment": "Curated Hodinkee articles for the editorial corpus. Hodinkee publishes a huge amount of new-watch content; this list captures the OCCASIONAL vintage-relevant piece Mark wants in the corpus — a complement to the existing Bring a Loupe / Reference Points scrapers (which target specific columns, not general /articles/...). To add an article: paste the full URL into the `urls` array; the scraper picks it up on the next cron run. URLs are matched by exact string; old/new can coexist.",
+  "_added_by": "Mark, 2026-06-06",
+  "urls": [
+    "https://www.hodinkee.com/articles/a-truly-wild-tudor-collector-meet-up-in-geneva"
+  ]
+}

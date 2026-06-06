@@ -142,6 +142,20 @@ const SOURCES = [
     bodies_url: "/hodinkee_reference_points_bodies.json",
   },
   {
+    key: "hodinkee_picks",
+    label: "Hodinkee Picks",
+    publication: "Hodinkee",
+    column: "Picks",
+    url: "/hodinkee_picks.json",
+    bodies_url: "/hodinkee_picks_bodies.json",
+    // Curated URL list at data/hodinkee_picks_urls.json. Hodinkee mostly
+    // covers new-watch content; this source captures the OCCASIONAL
+    // vintage-relevant general /articles/... piece Mark hand-adds.
+    // Complement to Bring a Loupe + Reference Points which target
+    // specific Hodinkee columns. Pattern mirrors Christie's Stories.
+    publication_url: "https://www.hodinkee.com/",
+  },
+  {
     key: "acollectedman_journal",
     label: "A Collected Man",
     publication: "A Collected Man",
