@@ -4,7 +4,7 @@ import { Chip } from "./Chip";
 import { AboutModal } from "./AboutModal";
 import { SavedHeartLink } from "./SavedHeartLink";
 import { SignInPromptModal } from "./SignInPromptModal";
-import { iconButton, pillBase, inputBase } from "../styles";
+import { pillBase, inputBase } from "../styles";
 
 // Mobile shell — receives everything the mobile branch needs from
 // App.js as a single props bag. Extracted 2026-04-30 (Stage 2 of
@@ -310,7 +310,7 @@ export function MobileShell(props) {
                   setPage(1);
                 }
               }}
-              placeholder={tab === "references" ? "Search articles by title, author, body…" : "Search reference or brand..."} style={{ flex: 1, border: "none", background: "transparent", fontSize: 14, color: "var(--text1)", outline: "none", fontFamily: "inherit", minWidth: 0 }} />
+              placeholder={tab === "references" ? "Search articles by title, author, body…" : "Search brand, model, or reference…"} style={{ flex: 1, border: "none", background: "transparent", fontSize: 14, color: "var(--text1)", outline: "none", fontFamily: "inherit", minWidth: 0 }} />
             {search && user && (
               <button onClick={openFavPrompt} aria-label={currentIsSaved ? "Already saved" : "Save search as favorite"}
                 title={currentIsSaved ? "Saved to favorites" : "Save as favorite search"}
@@ -335,8 +335,16 @@ export function MobileShell(props) {
             )}
           </div>
           {!noFilterableList && (
-            <button onClick={() => { setDrawerOpen(true); setSourcePickerOpen(false); }} aria-label="Filters" style={iconButton({ active: hasFilters })}>
+            // Icon + the word "Filter", not icon-only (audit:2026-06-06
+            // U-04): the filter sheet behind this button tested great, but
+            // a first-time user never opened it — she scans for words, not
+            // icons. Pill chrome matches the bar's pill language; active
+            // state still signals filters-applied.
+            <button onClick={() => { setDrawerOpen(true); setSourcePickerOpen(false); }} aria-label="Filters"
+              style={{ ...pillBase(hasFilters, { compact: true }),
+                       display: "flex", alignItems: "center", gap: 5, flexShrink: 0 }}>
               <FilterIcon />
+              Filter
             </button>
           )}
         </div>

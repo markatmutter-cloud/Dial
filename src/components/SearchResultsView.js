@@ -387,7 +387,7 @@ export function SearchResultsView({
               if (e.key === "Enter") { e.target.blur(); }
               if (e.key === "Escape") { e.target.blur(); }
             }}
-            placeholder="Search reference, brand, model…"
+            placeholder="Search brand, model, or reference…"
             style={{ flex: 1, border: "none", background: "transparent",
                      fontSize: isMobile ? 15 : 16, fontWeight: 600,
                      color: "var(--text1)", outline: "none",

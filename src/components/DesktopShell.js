@@ -140,7 +140,7 @@ export function DesktopShell(props) {
   }, []);
   const searchPlaceholder = tab === "references"
     ? "Search articles by title, author, body…"
-    : "Search reference or brand...";
+    : "Search brand, model, or reference…";
   // Top-bar search JSX — collapsed icon button OR expanded inline input.
   // Width grows from ~32px (icon-only) to 320px on expand. Esc collapses.
   // PR_ε2 2026-05-22: colors flip when the top bar is olive (every tab
