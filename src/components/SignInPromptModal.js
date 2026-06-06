@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { modalBackdrop, modalShell, modalCloseButton, modalTitleRow, signInButton } from "../styles";
 
 // Sign-in 2-step explainer. Replaces the cold-OAuth flow on the top-bar
@@ -44,6 +44,17 @@ const sectionLabel = {
 };
 
 export function SignInPromptModal({ open, onClose, onSignIn }) {
+  // Escape closes (B-63, audit:2026-06-06 U-08): Escape is the cautious
+  // user's "get me out" reflex — a dead key on an unexpected gate is a
+  // moment of "I'm stuck" the modal's copy otherwise defuses. Same
+  // pattern as ConfirmModal / the CardShell ⋯ menu. Hook sits ABOVE the
+  // early return (hook-ordering rule) and self-gates on `open`.
+  useEffect(() => {
+    if (!open) return undefined;
+    const onKey = (e) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open, onClose]);
   if (!open) return null;
   return (
     <div onClick={onClose} style={modalBackdrop}>
