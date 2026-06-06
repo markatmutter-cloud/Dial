@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { SearchIcon, FilterIcon, HomeIcon } from "./icons";
 import { Chip } from "./Chip";
 import { AboutModal } from "./AboutModal";
@@ -77,6 +77,18 @@ export function MobileShell(props) {
     catalogShareActive,
     colDrillInId,
   } = props;
+  // Escape closes the filter drawer (B-63, audit:2026-06-06 U-08) —
+  // same listener pattern as ConfirmModal / the CardShell ⋯ menu. Less
+  // common on touch, but iPads-with-keyboards and the desktop-narrow
+  // layout hit this shell too, and a dead Escape on an open sheet is
+  // the "I'm stuck" moment the audit flagged. Self-gates on drawerOpen.
+  useEffect(() => {
+    if (!drawerOpen) return undefined;
+    const onKey = (e) => { if (e.key === "Escape") setDrawerOpen(false); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [drawerOpen, setDrawerOpen]);
+
   // Any of the receive-flows swallows the regular browse chrome.
   const anyShareActive = shareActive || challengeShareActive || listShareActive || catalogShareActive;
   // True when drilled into a list (Watchlists > Lists > [list]).
