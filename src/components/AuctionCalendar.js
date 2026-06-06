@@ -191,7 +191,7 @@ export function AuctionCalendar({
         <div style={{ fontSize: 28, marginBottom: 10 }}>🔨</div>
         <div style={{ fontSize: 16, fontWeight: 500, marginBottom: 8, color: "var(--text1)" }}>No auctions on the calendar yet</div>
         <div style={{ fontSize: 12, color: "var(--text2)", maxWidth: 340, margin: "0 auto", lineHeight: 1.5 }}>
-          Currently pulling from Antiquorum, Monaco Legend, Phillips, Bonhams, Christie's, and Sotheby's.
+          Currently pulling from Antiquorum, Monaco Legend, Phillips, Bonhams, Christie's, Sotheby's, and Watches of Knightsbridge.
         </div>
       </div>
     );

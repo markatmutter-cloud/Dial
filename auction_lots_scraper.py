@@ -46,6 +46,7 @@ import re
 import sys
 import time
 from datetime import date, datetime, timedelta
+from html import unescape
 
 import requests
 
@@ -2099,6 +2100,226 @@ def _phillips_lot_to_record(lot, auction_title, auction_start, auction_end, sale
     }
 
 
+# ── Watches of Knightsbridge ────────────────────────────────────────────
+# WoK runs on the Metropress / ab-initio auction platform (UK). Each sale
+# page renders all lots inline (~60 lots in ~720 KB of HTML) — no JS
+# execution, no API call needed. Same shape across upcoming + past sales,
+# so one enumerator covers both. Currency is GBP. See
+# watchesofknightsbridge_auctions_scraper.py for the calendar side.
+
+# Each lot is wrapped in `<div id="lot-list-item-<UUID>" class="card
+# lot-list-item ..." data-auction-id="..." data-auction-ref="..."
+# data-lot-id="<UUID>" ...>` — we split on the next `data-lot-id` so the
+# block body covers everything up to the following lot (or end-of-grid).
+_WOK_LOT_BLOCK_RE = re.compile(
+    r'data-lot-id="(?P<lot_id>[0-9a-f-]+)"(?P<body>.*?)'
+    r'(?=data-lot-id="[0-9a-f-]+"|<div\s+class="footer\b|</section>|<footer)',
+    re.S,
+)
+_WOK_LOT_NUMBER_RE = re.compile(r'class="meta lot-number"[^>]*>\s*([^<]+?)\s*<', re.S)
+_WOK_LOT_TITLE_RE = re.compile(
+    r'<a[^>]*name="lot-title"[^>]*>(?P<t>[^<]+)</a>', re.S,
+)
+_WOK_LOT_IMAGE_RE = re.compile(
+    r'<img[^>]*class="lot-grid-image"[^>]*src="(?P<src>https://cdn\.globalauctionplatform\.com/[^"]+)"',
+    re.S,
+)
+_WOK_LOT_DESCRIPTION_RE = re.compile(
+    r'<span class="lot-description-value">(?P<d>.*?)</span>', re.S,
+)
+_WOK_LOT_ESTIMATE_RE = re.compile(
+    r'class="[^"]*estimate-price-value[^"]*"[^>]*>\s*<span>\s*(?P<text>[^<]+?)\s*</span>',
+    re.S,
+)
+_WOK_LOT_CURRENT_BID_RE = re.compile(
+    r'<span class="current-bid-value"[^>]*data-current-bid="(?P<v>[0-9.]+)"',
+)
+_WOK_LOT_OPENING_BID_RE = re.compile(
+    r'<span class="opening-bid-value">(?P<v>[0-9,.]+)</span>',
+)
+_WOK_LOT_HREF_RE = re.compile(
+    r'href="(?P<href>/auctions/\d+/[a-zA-Z0-9_-]+/lot-details/[0-9a-f-]+)"',
+)
+_WOK_ESTIMATE_NUMS_RE = re.compile(
+    r'([0-9][0-9,]*)\s*-\s*([0-9][0-9,]*)\s*(GBP|USD|EUR|CHF)?', re.I,
+)
+# Auction-level date hint embedded in each lot's footer.
+_WOK_AUCTION_DATE_RE = re.compile(r'Auction date\(s\):\s*([^<]+?)\s*<', re.S)
+
+
+def _wok_to_int(s):
+    if not s:
+        return None
+    s = s.replace(",", "").strip()
+    if not s:
+        return None
+    try:
+        return int(float(s))
+    except (ValueError, TypeError):
+        return None
+
+
+def _wok_clean_text(s):
+    if not s:
+        return ""
+    s = unescape(s)
+    s = re.sub(r"\s+", " ", s).strip()
+    return s
+
+
+def enumerate_watchesofknightsbridge(sale_url, sale=None):
+    """Return a list of (url, lot dict) tuples for one WoK auction.
+
+    Fetches the auction page once and parses the inline lot grid — same
+    pattern across live + past sales. The page is server-rendered so no
+    Playwright. Status comes from the calendar's `dateEnd`: a sale whose
+    end date is in the past is "ended" and any non-zero current bid is
+    taken as the realized hammer price (WoK shows the closing bid in
+    the `current-bid-value` span post-sale).
+    """
+    sale = sale or {}
+    try:
+        r = requests.get(sale_url, headers=HEADERS, timeout=30)
+        r.raise_for_status()
+    except Exception as e:
+        print(f"  [WoK] auction page fetch failed: {e}")
+        return []
+    html = r.text
+
+    # Auction-level metadata: prefer the calendar's authoritative dates,
+    # fall back to the date string embedded in each lot footer.
+    auction_start = sale.get("dateStart") or sale.get("date_start") or ""
+    auction_end = sale.get("dateEnd") or sale.get("date_end") or auction_start
+    if not auction_start:
+        dm = _WOK_AUCTION_DATE_RE.search(html)
+        if dm:
+            # "06 Jun" / "06 Jun 2026" — parse defensively, year may be missing.
+            txt = dm.group(1).strip()
+            ym = re.match(r"(\d{1,2})\s+([A-Za-z]+)(?:\s+(\d{4}))?", txt)
+            if ym:
+                year = ym.group(3) or str(date.today().year)
+                try:
+                    auction_start = datetime.strptime(
+                        f"{ym.group(1)} {ym.group(2)} {year}", "%d %b %Y"
+                    ).date().isoformat()
+                    auction_end = auction_start
+                except ValueError:
+                    pass
+    auction_title = (sale.get("title") or "Modern, Vintage & Military Timepieces").strip()
+
+    today = date.today()
+    sale_ended = False
+    if auction_end:
+        try:
+            sale_ended = date.fromisoformat(auction_end) < today
+        except ValueError:
+            pass
+
+    matches = list(_WOK_LOT_BLOCK_RE.finditer(html))
+    if not matches:
+        print("  [WoK] no lot blocks found in page HTML")
+        return []
+
+    out = []
+    for m in matches:
+        body = m.group("body")
+        lot_id = m.group("lot_id")
+
+        tm = _WOK_LOT_TITLE_RE.search(body)
+        title = _wok_clean_text(tm.group("t")) if tm else ""
+        if not title or is_excluded_title(title):
+            continue
+
+        href_m = _WOK_LOT_HREF_RE.search(body)
+        if not href_m:
+            continue
+        url = f"https://auctions.watchesofknightsbridge.com{href_m.group('href')}"
+
+        lot_number = ""
+        nm = _WOK_LOT_NUMBER_RE.search(body)
+        if nm:
+            lot_number = _wok_clean_text(nm.group(1))
+
+        image = None
+        im = _WOK_LOT_IMAGE_RE.search(body)
+        if im:
+            # Drop the `?h=N` size suffix so downstream image proxy can
+            # apply its own size policy (same convention as the calendar
+            # scraper).
+            image = im.group("src").split("?")[0]
+
+        description = ""
+        dm2 = _WOK_LOT_DESCRIPTION_RE.search(body)
+        if dm2:
+            description = _wok_clean_text(re.sub(r"<[^>]+>", " ", dm2.group("d")))[:2500]
+
+        estimate_low = estimate_high = None
+        currency = "GBP"
+        em = _WOK_LOT_ESTIMATE_RE.search(body)
+        if em:
+            est_text = em.group("text")
+            ne = _WOK_ESTIMATE_NUMS_RE.search(est_text)
+            if ne:
+                estimate_low = _wok_to_int(ne.group(1))
+                estimate_high = _wok_to_int(ne.group(2))
+                if ne.group(3):
+                    currency = ne.group(3).upper()
+
+        current_bid = None
+        cm = _WOK_LOT_CURRENT_BID_RE.search(body)
+        if cm:
+            v = _wok_to_int(cm.group("v"))
+            if v and v > 0:
+                current_bid = v
+
+        starting_price = None
+        om = _WOK_LOT_OPENING_BID_RE.search(body)
+        if om:
+            v = _wok_to_int(om.group("v"))
+            if v and v > 0:
+                starting_price = v
+
+        # Sold-price heuristic: only credit a hammer once the sale has
+        # ended AND the current bid is non-zero. WoK keeps the closing
+        # bid in `current-bid-value` post-sale.
+        sold_price = current_bid if (sale_ended and current_bid) else None
+        status = "ended" if sale_ended else "active"
+
+        data = {
+            "house": "Watches of Knightsbridge",
+            "lot_id": lot_id,
+            "lot_number": lot_number,
+            "title": title,
+            "description": description,
+            "catalogue_note": "",
+            "provenance": "",
+            "literature": "",
+            "exhibition": "",
+            "currency": currency,
+            "estimate_low": estimate_low,
+            "estimate_high": estimate_high,
+            "starting_price": starting_price,
+            "current_bid": current_bid,
+            "sold_price": sold_price,
+            "estimate_low_usd":   to_usd(estimate_low,   currency),
+            "estimate_high_usd":  to_usd(estimate_high,  currency),
+            "starting_price_usd": to_usd(starting_price, currency),
+            "current_bid_usd":    to_usd(current_bid,    currency),
+            "sold_price_usd":     to_usd(sold_price,     currency),
+            "status": status,
+            "image": image,
+            "auction_title": auction_title,
+            "auction_start": auction_start or None,
+            "auction_end":   auction_end or None,
+            "auction_url":   sale_url,
+            "auction_date_label": (sale.get("dateLabel") or auction_start or None),
+            "scraped_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        }
+        out.append((url, data))
+
+    return out
+
+
 # ── Helpers ─────────────────────────────────────────────────────────────
 
 def _brace_match_json(text, start):
@@ -2145,6 +2366,15 @@ ENUMERATORS = {
     "Monaco Legend": (enumerate_monaco_legend, ("monacolegendauctions.com/auction/",)),
     "Sotheby's":     (enumerate_sothebys,    ("sothebys.com/en/buy/auction/",)),
     "Phillips":      (enumerate_phillips,    ("phillips.com/auction/",)),
+    # Watches of Knightsbridge: matches both upcoming (`/auctions/<id>/<slug>`)
+    # and archived (`/past-auctions/<slug>`) URL shapes — the calendar
+    # scraper prefers the live form when both exist, but old archived
+    # sales fall back to the past-auctions path.
+    "Watches of Knightsbridge": (
+        enumerate_watchesofknightsbridge,
+        ("auctions.watchesofknightsbridge.com/auctions/",
+         "auctions.watchesofknightsbridge.com/past-auctions/"),
+    ),
 }
 
 

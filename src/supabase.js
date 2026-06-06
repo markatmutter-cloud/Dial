@@ -1746,7 +1746,7 @@ export function useTrackedLots(user) {
       /^https?:\/\/(?:www\.)?ebay\.(?:us|gg|to)\/[a-z]\/[A-Za-z0-9]+/i,
     ];
     if (!supported.some(re => re.test(url))) {
-      return { error: 'Only eBay item URLs are supported here. For auction-house lots (Antiquorum / Christie\'s / Sotheby\'s / Phillips) heart them from the main feed — they\'re scraped automatically.' };
+      return { error: 'Only eBay item URLs are supported here. For auction-house lots (Antiquorum / Christie\'s / Sotheby\'s / Phillips / Watches of Knightsbridge) heart them from the main feed — they\'re scraped automatically.' };
     }
     if (urls.includes(url)) return { error: 'Already tracking this lot.' };
     const ts = new Date().toISOString();
