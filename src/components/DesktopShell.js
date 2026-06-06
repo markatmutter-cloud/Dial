@@ -101,6 +101,13 @@ export function DesktopShell(props) {
   // cleanly below it). On Saved the grouped quick-jump bar scrolls rather than
   // pinning, so it can't fight the sticky filter for top:0 (see HeartedView).
   const isSavedHearted = tab === "watchlist" && watchTopTab === "hearted";
+  // Empty Saved suppression (audit:2026-06-06 U-11): with zero hearted
+  // items, the hearted surface showed sort pills + a "0 watches" count
+  // above the sign-in/empty state — noise on a screen whose job is to
+  // invite. No filter can change an empty underlying list, so the row
+  // goes; the title (savedHeaderJSX) stays. (Mirrored in MobileShell.)
+  const savedHeartedEmpty =
+    isSavedHearted && Object.keys(watchlist || {}).length === 0;
   const collapsingHeader = (!anyShareActive && !searchAllActive)
     ? (saleContextHeaderJSX || (isSavedHearted ? savedHeaderJSX : null))
     : null;
@@ -655,7 +662,9 @@ export function DesktopShell(props) {
           inListsDrillIn ||
           // Lists tab: the filter row belongs to the Hearted surface only
           // (2026-06-01). Lists / Searches / Shared are not filterable grids.
-          (tab === "watchlist" && watchTopTab === "hearted");
+          // (Hearted normally renders via the useCollapse path below; the
+          // savedHeartedEmpty guard here covers U-11 on both paths.)
+          (isSavedHearted && !savedHeartedEmpty);
         // Full filter row carries search + chips + sort. Tabs without
         // an applicable chip set fall through to a slim search-only
         // row so the search stays at the same vertical position
@@ -722,13 +731,17 @@ export function DesktopShell(props) {
                       padding of its own — filterRowJSX's wrapper owns the 20px
                       (the old double-pad is why Saved's pills sat indented). */}
                   <div>{collapsingHeader}</div>
-                  <div style={{
-                    position: "sticky", top: 0, zIndex: 15,
-                    background: "var(--bg)",
-                    marginLeft: -20, marginRight: -20,
-                  }}>
-                    {filterRowJSX}
-                  </div>
+                  {/* U-11: no pinned filter row over an empty Saved list —
+                      the empty state owns the screen. */}
+                  {!savedHeartedEmpty && (
+                    <div style={{
+                      position: "sticky", top: 0, zIndex: 15,
+                      background: "var(--bg)",
+                      marginLeft: -20, marginRight: -20,
+                    }}>
+                      {filterRowJSX}
+                    </div>
+                  )}
                 </>
               )}
               {/* identityBandJSX moved to chrome stack 2026-05-21

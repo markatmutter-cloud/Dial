@@ -93,12 +93,24 @@ export function MobileShell(props) {
   // Lists drill-in is the exception: when colDrillInId is set we
   // re-enable the filter chrome so the user can narrow inside the
   // list (mirrors Listings tab behavior).
+  // Empty Saved suppression (audit:2026-06-06 U-11): with zero hearted
+  // items (signed-out, or signed-in before the first ♡) the hearted view
+  // showed sort pills + a "0" count above the empty state — controls for
+  // a list with nothing in it, and the "0" reads as a scorecard on a
+  // screen whose job is to invite. No filter can change an empty
+  // underlying list, so the row carries no function — let the empty
+  // state own the screen. (Mirrored in DesktopShell.)
+  const savedHeartedEmpty =
+    tab === "watchlist" && watchTopTab === "hearted" &&
+    Object.keys(watchlist || {}).length === 0;
+
   const noFilterableList =
     tab === "home" ||
     (tab === "listings" && listingsSubTab === "calendar") ||
     // Lists tab: only the Hearted surface (and a drilled-in list) is a
     // filterable grid. Lists-landing / Searches / Shared have no filter row.
     (tab === "watchlist" && watchTopTab !== "hearted" && !inListsDrillIn) ||
+    savedHeartedEmpty ||
     tab === "references" ||
     tab === "admin";
 
