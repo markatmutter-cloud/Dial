@@ -65,6 +65,7 @@ here until then so nothing's lost.
 | B-34 | **0** (platform health) | tech-debt | stays |
 | B-27 | **0** (platform health) | maintenance | stays |
 | B-63 | **9 IA/UX** | defect (overlay keyboard) | ✅ Fixed #816 `[audit:2026-06-06]` |
+| B-64 | **9 IA/UX** | visual defect | stays (defect) |
 
 *The ⓐ/ⓑ/ⓒ groupings below are the OLD (IA_REDESIGN) taxonomy — superseded by the
 table above; next session's NOW/NEXT pass migrates the "graduate" rows into ROADMAP
@@ -207,6 +208,11 @@ install/decision tails remaining.*
   2. **Archive surface merge** — when a sale has ended, the enumerator also fetches `/past-auctions/<slug>` and merges the `data-current-bid="..."` values into `sold_price` by lot UUID. Heat Wave: **46 hammer prices recovered** (GBP 127,700 total realised).
   3. **Prior-record fallback for stripped fields** — WoK also strips `estimate-price-value` / lot description from sold lots' grid blocks on the live URL post-close. The enumerator now reads prior `auction_lots.json` once at startup and uses prior values as a fallback so a post-sale re-scrape never regresses fields captured pre-sale.
 - **Operational note:** Future WoK sales need the same flow — pre-sale scrape captures estimates/descriptions, post-sale scrape captures hammer via archive merge + preserves estimates via prior fallback. Both are automatic in the existing cron.
+
+### B-64 — Desktop filter row: Min/Max fields overlap the centered search input at laptop widths
+- **Reported:** 2026-06-06 (Mark screenshot, ~1190px window) · **Type:** Visual defect · **Severity:** 3 · **Surface:** `StandardFilterBar` (desktop filter row) · **Status:** Open.
+- **Detail:** The filter row centers the search input in a FIXED slot (the P-2 "search can't shift between tabs" rule), with pills left and Min/Max + Date + Price + count right. At laptop window widths the right cluster runs INTO the centered search box — Mark's screenshot shows "$ Min – Max" sitting on top of the input's right half (Auctions sub-tab, which adds the Auction Calendar pill and wraps "♡ Saved" to a second row). Pre-existing narrow-width crowding, surfaced by the same screenshot as the #819 wordmark collision.
+- **Hypothesis:** the centered-search slot doesn't reserve width against the right cluster — needs a min-width collapse rule (e.g. search slot yields/shrinks below ~1250px, or Min/Max collapses into the Price pill's popover at narrow widths). Fix inside `StandardFilterBar` so every tab inherits (cross-surface rule), not per-tab.
 
 ### ◆ One-off (no epic)
 *Small correctness fix.*
