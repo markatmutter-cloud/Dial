@@ -43,6 +43,9 @@ within each section roughly last.
   the whole codebase; report + 6 domain findings archived to
   `docs/audits/2026-05-24-vibe-code/`, findings filed as BUGS B-15–B-22
   (`[audit:2026-05-24]`), direction items to ROADMAP (#574, #575).
+- **2026-06-06 — Cold usability audit (grade C+) (#813).** First-time-user
+  walkthrough; report + screens archived to `docs/audits/2026-06-06-usability/`,
+  findings routed.
 - **2026-05-26 — Scrape integrity: disappearance debounce (B-15).** A listing
   must be absent 2 consecutive runs before flipping to sold — a single
   empty/failed scrape can no longer silently mark a whole source SOLD (#576).
@@ -140,6 +143,21 @@ within each section roughly last.
   Chrome impersonation (CI gets 403, like Bonhams), JSON-LD AggregateOffer parse;
   narrow by design (JLC E2643 test), own `chrono24_lots.json` folded into Listings
   + the reference-guide filter. Manual-run for now; launchd later.
+- **2026-06-05 — Chrono24 reference additions (#805/#806).** Omega Seamaster
+  145.006 + Heuer 1153 added to `chrono24_lots_scraper.REFERENCES`; runs on the
+  same residential cadence as the JLC E2643 test.
+- **2026-06-05 — B-58 Watch Center silent CI block fixed (#807).** Site
+  errno-101'd on the GHA runner every cron for 6 days, silently swallowed by
+  `continue-on-error: true`. Swapped `requests` → `curl_cffi` Chrome
+  impersonation (same pattern as Bonhams/Chrono24); workflow install now
+  pulls `requirements-auctions.txt`. Logged **B-59** (Watch Club chronic
+  truncation-abort, log-only) + **B-60** (silent-fail notifier gap — the
+  meta-bug behind B-58) at the same time.
+- **2026-06-06 — Hodinkee Picks: curated one-off articles (#810).** Hand-curated
+  URL list (`data/hodinkee_picks_urls.json`) for the OCCASIONAL vintage-relevant
+  general `/articles/...` piece, complementing Bring a Loupe + Reference Points.
+  Reuses BAL's `parse_article()`; same shape as Christie's Stories. Seeded with
+  the James Stacey Tudor-collector meet-up.
 
 ## Epic 2 — Auction houses
 
@@ -202,6 +220,25 @@ within each section roughly last.
   "IMAGE NOT AVAILABLE": wsrv.nl's fetcher now times out on `christies.com` (same
   block Bonhams hits) though direct fetch is 200. Added christies.com to
   `imgSrc()`'s direct-serve exceptions.
+- **2026-06-06 — Watches of Knightsbridge: 7th comprehensive house (#808).**
+  UK Metropress / ab-initio platform; server-rendered HTML with ~60 lots inline
+  per sale. New `watchesofknightsbridge_auctions_scraper.py` + an
+  `enumerate_watchesofknightsbridge()` registered in `ENUMERATORS`. Heat Wave
+  (Jun 6, 60 lots) live-tracked.
+- **2026-06-06 — Marteau & Co: 8th comprehensive house (#809).** Geneva-based
+  Tandem Auctions platform; contemporary independents (Daniel Roth, Furlan Marri,
+  F.P. Journe, MB&F, De Bethune × Urwerk). CHF with the U+2019 thousands
+  separator. Previous 2 sales (Echo + First Strike, 55 lots / 53 with realised)
+  one-shot backfilled — they're outside the orchestrator's 30-day past-active
+  window and would otherwise never get enumerated.
+- **2026-06-06 — B-62 WoK post-sale hammer-price recovery (#811 + #812).**
+  WoK's main `/auctions/<id>/<slug>` URL hides hammer prices post-close (lot
+  card classes only show sold/unsold); the parallel `/past-auctions/<slug>`
+  archive surface exposes `data-current-bid="<hammer>"` publicly. Enumerator
+  now fetches both, merges hammer by lot UUID, and falls back to prior
+  `auction_lots.json` for fields the post-sale grid strips (estimate /
+  description / image). Heat Wave: 46 sold (GBP 127,700 realised) + 14 unsold.
+  New `lot_outcome` field: `sold` / `sold_price_withheld` / `unsold` / `active`.
 
 ## Epic 3 — Watchlist
 
