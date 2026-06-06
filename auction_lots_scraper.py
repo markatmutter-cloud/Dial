@@ -2116,6 +2116,16 @@ _WOK_LOT_BLOCK_RE = re.compile(
     r'(?=data-lot-id="[0-9a-f-]+"|<div\s+class="footer\b|</section>|<footer)',
     re.S,
 )
+# Lot-card opener class string — drives post-sale state detection
+# because WoK hides hammer prices from anonymous viewers (see B-62).
+# Post-sale the page strips the `current-bid-value` span entirely; the
+# only public signal of outcome is the lot card's CSS class list:
+#   • `lot-status-closed` → sale ended for this lot
+#   • `has-current-bid`   → bids received → sold (price gated)
+#   • absence of both     → still live or pre-sale
+_WOK_LOT_OPENER_RE = re.compile(
+    r'<div\s+id="lot-list-item-(?P<uuid>[0-9a-f-]+)"\s+class="(?P<cls>[^"]+)"',
+)
 _WOK_LOT_NUMBER_RE = re.compile(r'class="meta lot-number"[^>]*>\s*([^<]+?)\s*<', re.S)
 _WOK_LOT_TITLE_RE = re.compile(
     r'<a[^>]*name="lot-title"[^>]*>(?P<t>[^<]+)</a>', re.S,
@@ -2172,10 +2182,19 @@ def enumerate_watchesofknightsbridge(sale_url, sale=None):
 
     Fetches the auction page once and parses the inline lot grid — same
     pattern across live + past sales. The page is server-rendered so no
-    Playwright. Status comes from the calendar's `dateEnd`: a sale whose
-    end date is in the past is "ended" and any non-zero current bid is
-    taken as the realized hammer price (WoK shows the closing bid in
-    the `current-bid-value` span post-sale).
+    Playwright.
+
+    Post-sale price quirk (B-62): WoK gates hammer prices behind a
+    registered-bidder login. Once a sale closes, the `current-bid-value`
+    span is stripped from the public HTML entirely; only the lot card's
+    CSS class flags remain to indicate outcome:
+      • `lot-status-closed` + `has-current-bid` → sold (price withheld)
+      • `lot-status-closed` without `has-current-bid` → unsold/passed
+      • no `lot-status-closed` → still active (pre-sale or in progress)
+    We emit `status` accordingly + `lot_outcome` for fine-grained
+    discrimination, and stamp a `catalogue_note` on sold lots so
+    downstream surfaces can render "Sold (hammer withheld)" instead of
+    leaving the lot in a confusing "ended without a price" state.
     """
     sale = sale or {}
     try:
@@ -2220,10 +2239,20 @@ def enumerate_watchesofknightsbridge(sale_url, sale=None):
         print("  [WoK] no lot blocks found in page HTML")
         return []
 
+    # Pre-pass: harvest each lot card's outer class string by UUID so
+    # the body-side loop can read post-sale state flags. The opener
+    # sits BEFORE the `data-lot-id` attribute we split on, so it's not
+    # inside `body`.
+    class_by_uuid = {
+        om.group("uuid"): om.group("cls")
+        for om in _WOK_LOT_OPENER_RE.finditer(html)
+    }
+
     out = []
     for m in matches:
         body = m.group("body")
         lot_id = m.group("lot_id")
+        lot_classes = class_by_uuid.get(lot_id, "")
 
         tm = _WOK_LOT_TITLE_RE.search(body)
         title = _wok_clean_text(tm.group("t")) if tm else ""
@@ -2279,11 +2308,39 @@ def enumerate_watchesofknightsbridge(sale_url, sale=None):
             if v and v > 0:
                 starting_price = v
 
-        # Sold-price heuristic: only credit a hammer once the sale has
-        # ended AND the current bid is non-zero. WoK keeps the closing
-        # bid in `current-bid-value` post-sale.
-        sold_price = current_bid if (sale_ended and current_bid) else None
-        status = "ended" if sale_ended else "active"
+        # Sold-price heuristic — see the function docstring on B-62.
+        # The class flags are authoritative once a sale closes; the
+        # date-based check is a backstop for the brief window after
+        # close before the page re-renders with `lot-status-closed`.
+        class_closed = "lot-status-closed" in lot_classes
+        has_current_bid = "has-current-bid" in lot_classes
+        ended = class_closed or sale_ended
+
+        if ended and has_current_bid:
+            # Sold but WoK hides the hammer from anonymous viewers.
+            # Keep `current_bid` if the public DOM ever exposes a
+            # non-zero value (some pre-close states still leak it);
+            # otherwise leave sold_price null and surface the state
+            # via lot_outcome + catalogue_note.
+            sold_price = current_bid or None
+            lot_outcome = "sold_price_withheld" if not sold_price else "sold"
+        elif ended:
+            sold_price = None
+            lot_outcome = "unsold"
+        else:
+            sold_price = None
+            lot_outcome = "active"
+
+        status = "ended" if ended else "active"
+        catalogue_note = ""
+        if lot_outcome == "sold_price_withheld":
+            catalogue_note = (
+                "Sold — hammer price not published. "
+                "Watches of Knightsbridge gates realised prices behind "
+                "a registered-bidder login (B-62)."
+            )
+        elif lot_outcome == "unsold":
+            catalogue_note = "Did not sell (no bids received at close)."
 
         data = {
             "house": "Watches of Knightsbridge",
@@ -2291,7 +2348,7 @@ def enumerate_watchesofknightsbridge(sale_url, sale=None):
             "lot_number": lot_number,
             "title": title,
             "description": description,
-            "catalogue_note": "",
+            "catalogue_note": catalogue_note,
             "provenance": "",
             "literature": "",
             "exhibition": "",
@@ -2313,6 +2370,7 @@ def enumerate_watchesofknightsbridge(sale_url, sale=None):
             "auction_end":   auction_end or None,
             "auction_url":   sale_url,
             "auction_date_label": (sale.get("dateLabel") or auction_start or None),
+            "lot_outcome": lot_outcome,
             "scraped_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         }
         out.append((url, data))
