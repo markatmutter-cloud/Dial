@@ -6,6 +6,7 @@ import { SavedHeartLink } from "./SavedHeartLink";
 import { SignInPromptModal } from "./SignInPromptModal";
 import { StandardFilterBar, StandardSearchInput } from "./StandardFilterBar";
 import { pillBase, tabPill } from "../styles";
+import { useWidth } from "../hooks";
 
 // SavedHeartLink extracted to its own file 2026-06-03 so MobileShell renders
 // the same Saved shortcut next to the avatar (P-7 parity).
@@ -75,6 +76,11 @@ export function DesktopShell(props) {
     catalogShareActive,
     colDrillInId,
   } = props;
+  // Live window width — drives the wordmark collision guard in the top
+  // bar (full mark ≥1280px, ⌂ icon below). Same hook App.js uses for
+  // the mobile/desktop split; self-contained here so shellProps don't
+  // grow a field for one consumer.
+  const vw = useWidth();
   const anyShareActive = shareActive || challengeShareActive || listShareActive || catalogShareActive;
   // True when we're drilled into a list (Watchlists > Lists > [list]).
   // Filter row is shown here so users can date-sort, narrow by source/
@@ -569,7 +575,13 @@ export function DesktopShell(props) {
         </div>
         )}
         {/* Center zone — wordmark. Hidden on Home (editorial hero in body
-            is the brand mark there) AND on the minimal Home top bar. */}
+            is the brand mark there) AND on the minimal Home top bar.
+            COLLISION GUARD (Mark screenshot 2026-06-06): the centered
+            wordmark sits between two flex:1 zones, but the tab buttons
+            don't shrink — below ~1280px the wordmark landed ON TOP of
+            "Articles / Reference Guides". Under the threshold the mark
+            collapses to its ⌂ icon (the home affordance stays; ~30px
+            can't collide until far below any real desktop width). */}
         {onOlive && !minimalTopBar && (
           <button onClick={() => { setTab("home"); setPage(1); }}
             aria-label="Home" title="Home"
@@ -587,7 +599,7 @@ export function DesktopShell(props) {
                     // (white on the olive bar).
                     display: "inline-flex", alignItems: "center", gap: 9 }}>
             <HomeIcon size={20} />
-            <span>Watchlist</span>
+            {vw >= 1280 && <span>Watchlist</span>}
           </button>
         )}
         {/* Top-bar search relocated AGAIN 2026-05-22 (PR_ε1.5), then
