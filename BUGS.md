@@ -64,7 +64,7 @@ here until then so nothing's lost.
 | B-22 | **0** (platform health) | tech-debt | stays |
 | B-34 | **0** (platform health) | tech-debt | stays |
 | B-27 | **0** (platform health) | maintenance | stays |
-| B-63 | **9 IA/UX** | defect (overlay keyboard) | stays (defect) `[audit:2026-06-06]` |
+| B-63 | **9 IA/UX** | defect (overlay keyboard) | ✅ Fixed #816 `[audit:2026-06-06]` |
 
 *The ⓐ/ⓑ/ⓒ groupings below are the OLD (IA_REDESIGN) taxonomy — superseded by the
 table above; next session's NOW/NEXT pass migrates the "graduate" rows into ROADMAP
@@ -148,10 +148,6 @@ in-app since Claude can't run the app here.*
   6. **Naming** — resolve **"About" vs "Nexus"** (the internal/label name).
 - **Why plan-mode:** copy/voice-heavy + a design fork (modal vs page) + a guided-RAG flow + a brand review — not a quick edit, and the copy needs Mark's eye.
 
-### B-63 — Escape key doesn't close the sign-in modal or the mobile filter sheet
-- **Reported:** 2026-06-06 · **Source:** `audit:2026-06-06` (finding U-08) · **Type:** UI defect (keyboard affordance) · **Severity:** 3 · **Surface:** the sign-in modal (♡-tap gate) + the mobile filter sheet · **Status:** Open.
-- **Detail:** Pressing Escape does nothing on either overlay — the user must find the × or the "Keep browsing without an account" button. The pattern already exists in the codebase (`CardShell.js:109` wires Escape for the card ⋯ menu), so this is an apply-the-existing-pattern fix, not new design. Why it matters: Escape is the universal "get me out" reflex for exactly the cautious first-time user the sign-in modal's (excellent) copy is trying to reassure — a dead Escape key is a moment of "I'm stuck" at the worst possible time. Evidence: the audit's Playwright driver had to fall back to clicking the close buttons on both overlays (`docs/audits/2026-06-06-usability/`).
-
 ### ⓑ Epic B — Platform Health
 *Audit remediation + reliability. Low-risk, noise-reducing; mostly independent of
 the redesign.*
@@ -222,6 +218,9 @@ install/decision tails remaining.*
 ---
 
 ## Resolved
+
+### B-63 — Escape didn't close the sign-in modal / mobile filter sheet · Fixed #816
+- **Fixed 2026-06-06** (same-day as reported, `audit:2026-06-06` U-08): keydown listeners added to `SignInPromptModal` + the MobileShell filter drawer, same pattern as ConfirmModal / the CardShell ⋯ menu; hooks self-gate on open state above any early return.
 
 ### Closed out 2026-06-02 (hygiene pass — moved from Open; full enriched detail in git history + the cited PRs)
 - **B-18** — Currency FX tables duplicated, could drift → CI parity guard (`merge.py` ↔ `utils.js` FX) · #675
