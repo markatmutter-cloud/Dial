@@ -1,0 +1,202 @@
+[
+  {
+    "step": "mobile/T1-landing",
+    "ok": true,
+    "note": "https://the-watch-list.app/"
+  },
+  {
+    "step": "mobile/T1-landing-scrolled",
+    "ok": true,
+    "note": ""
+  },
+  {
+    "step": "mobile/T2-watches-tab",
+    "ok": true,
+    "note": "clicked 'text=\"Watches\"' -> https://the-watch-list.app/?tab=listings"
+  },
+  {
+    "step": "mobile/T2-sold-subtab",
+    "ok": true,
+    "note": "clicked 'text=\"Sold\"' -> https://the-watch-list.app/?tab=listings&sub=sold"
+  },
+  {
+    "step": "mobile/T4-auctions-subtab",
+    "ok": true,
+    "note": "clicked 'text=\"Auctions\"' -> https://the-watch-list.app/?tab=listings&sub=auctions"
+  },
+  {
+    "step": "mobile/T3-back-to-listings",
+    "ok": true,
+    "note": "clicked 'text=\"Listings\"' -> https://the-watch-list.app/?tab=listings"
+  },
+  {
+    "step": "mobile/T3-brand-filter",
+    "ok": true,
+    "note": "clicked 'button[aria-label*=\"ilter\" i]' -> https://the-watch-list.app/?tab=listings"
+  },
+  {
+    "step": "mobile/T8-search",
+    "ok": false,
+    "note": "no search input found/usable"
+  },
+  {
+    "step": "mobile/T5-heart-signedout",
+    "ok": false,
+    "note": "no candidate worked; last='button[aria-label*=\"ave\" i]': TimeoutError"
+  },
+  {
+    "step": "mobile/T5-dismiss-signin",
+    "ok": true,
+    "note": "clicked 'button[aria-label*=\"lose\" i]' -> https://the-watch-list.app/?tab=listings"
+  },
+  {
+    "step": "mobile/T9-card-open",
+    "ok": true,
+    "note": "clicked 'text=/\\\\$\\\\d[\\\\d,]+/' -> https://the-watch-list.app/?tab=listings"
+  },
+  {
+    "step": "mobile/T5-saved-tab",
+    "ok": true,
+    "note": "clicked 'text=\"Saved\"' -> https://the-watch-list.app/?tab=saved"
+  },
+  {
+    "step": "mobile/T6-articles-tab",
+    "ok": true,
+    "note": "clicked 'text=\"Articles\"' -> https://the-watch-list.app/?tab=learn"
+  },
+  {
+    "step": "mobile/T6-article-open",
+    "ok": true,
+    "note": "clicked 'img[alt]:visible' -> https://the-watch-list.app/?tab=learn"
+  },
+  {
+    "step": "mobile/T7-guides-tab",
+    "ok": true,
+    "note": "clicked 'text=\"Guides\"' -> https://the-watch-list.app/?tab=learn"
+  },
+  {
+    "step": "mobile/T7-guide-open",
+    "ok": true,
+    "note": "clicked 'img[alt]:visible' -> https://the-watch-list.app/?tab=learn&ref=jlc-shark-vogue-e2643"
+  },
+  {
+    "step": "mobile/T9-back-1",
+    "ok": true,
+    "note": "https://the-watch-list.app/?tab=learn"
+  },
+  {
+    "step": "mobile/T9-back-2",
+    "ok": true,
+    "note": "https://the-watch-list.app/?tab=saved"
+  },
+  {
+    "step": "mobile/T9-back-3",
+    "ok": true,
+    "note": "https://the-watch-list.app/?tab=listings"
+  },
+  {
+    "step": "mobile/depth-urls",
+    "ok": true,
+    "note": "https://the-watch-list.app/?tab=listings -> https://the-watch-list.app/?tab=listings -> https://the-watch-list.app/?tab=learn -> https://the-watch-list.app/?tab=learn&ref=jlc-shark-vogue-e2643"
+  },
+  {
+    "step": "desktop/T1-landing",
+    "ok": true,
+    "note": "https://the-watch-list.app/"
+  },
+  {
+    "step": "desktop/T1-landing-scrolled",
+    "ok": true,
+    "note": ""
+  },
+  {
+    "step": "desktop/T2-watches-tab",
+    "ok": true,
+    "note": "clicked 'text=\"Watches\"' -> https://the-watch-list.app/?tab=listings"
+  },
+  {
+    "step": "desktop/T2-sold-subtab",
+    "ok": true,
+    "note": "clicked 'text=\"Sold\"' -> https://the-watch-list.app/?tab=listings&sub=sold"
+  },
+  {
+    "step": "desktop/T4-auctions-subtab",
+    "ok": true,
+    "note": "clicked 'text=\"Auctions\"' -> https://the-watch-list.app/?tab=listings&sub=auctions"
+  },
+  {
+    "step": "desktop/T3-back-to-listings",
+    "ok": false,
+    "note": "no candidate worked; last='button:has-text(\"Listings\")': TimeoutError"
+  },
+  {
+    "step": "desktop/T3-brand-filter",
+    "ok": false,
+    "note": "no candidate worked; last='text=\"Brand\"': TimeoutError"
+  },
+  {
+    "step": "desktop/T8-search",
+    "ok": true,
+    "note": "via 'input[placeholder*=\"earch\" i]'"
+  },
+  {
+    "step": "desktop/T5-heart-signedout",
+    "ok": true,
+    "note": "clicked 'button[aria-label*=\"ave\" i]' -> https://the-watch-list.app/?tab=listings&sub=auctions"
+  },
+  {
+    "step": "desktop/T5-dismiss-signin",
+    "ok": true,
+    "note": "clicked 'text=\"Keep browsing without an account\"' -> https://the-watch-list.app/?tab=listings&sub=auctions"
+  },
+  {
+    "step": "desktop/T9-card-open",
+    "ok": true,
+    "note": "clicked 'text=/\\\\$\\\\d[\\\\d,]+/' -> https://the-watch-list.app/?tab=listings&sub=auctions"
+  },
+  {
+    "step": "desktop/T5-saved-tab",
+    "ok": true,
+    "note": "clicked 'text=\"Saved\"' -> https://the-watch-list.app/?tab=saved"
+  },
+  {
+    "step": "desktop/T6-articles-tab",
+    "ok": true,
+    "note": "clicked 'text=\"Articles\"' -> https://the-watch-list.app/?tab=learn"
+  },
+  {
+    "step": "desktop/T6-article-open",
+    "ok": true,
+    "note": "clicked 'img[alt]:visible' -> https://the-watch-list.app/?tab=learn"
+  },
+  {
+    "step": "desktop/T7-guides-tab",
+    "ok": true,
+    "note": "clicked 'text=\"Reference Guides\"' -> https://the-watch-list.app/?tab=learn"
+  },
+  {
+    "step": "desktop/T7-guide-open",
+    "ok": true,
+    "note": "clicked 'img[alt]:visible' -> https://the-watch-list.app/?tab=learn&ref=jlc-shark-vogue-e2643"
+  },
+  {
+    "step": "desktop/T9-back-1",
+    "ok": true,
+    "note": "https://the-watch-list.app/?tab=learn"
+  },
+  {
+    "step": "desktop/T9-back-2",
+    "ok": true,
+    "note": "https://the-watch-list.app/?tab=saved"
+  },
+  {
+    "step": "desktop/T9-back-3",
+    "ok": true,
+    "note": "https://the-watch-list.app/?tab=listings&sub=auctions"
+  },
+  {
+    "step": "desktop/depth-urls",
+    "ok": true,
+    "note": "https://the-watch-list.app/?tab=listings&sub=auctions -> https://the-watch-list.app/?tab=listings&sub=auctions -> https://the-watch-list.app/?tab=learn -> https://the-watch-list.app/?tab=learn&ref=jlc-shark-vogue-e2643"
+  }
+]

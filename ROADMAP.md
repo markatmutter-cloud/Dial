@@ -519,6 +519,25 @@ is the clarity mechanism — not a nicety. **Planning = one experience, two door
 (Watchbox + Collecting). **Screening** stops being a tab — a mode on long catalogs
 + shared lists.
 
+**Field evidence (2026-06-06):** Mark watched a real target-age/competency user
+fail exactly the way the dispatch layer predicts — couldn't distinguish sub-tabs
+from filter pills (tapped pills when told "click the subtab"), didn't know the
+second nav level *existed*, and was afraid to explore ("not wanting to be seen as
+getting it wrong"). The same-day cold usability audit
+([docs/audits/2026-06-06-usability/](docs/audits/2026-06-06-usability/), grade C+)
+confirmed it on the live site and consolidated the discoverability findings here
+rather than scattering them: **U-01** sub-tabs read as *disabled* grey text while
+filter pills look like the buttons (navigation must out-shout filters — SubTabBar
+restyle + consider outcome labels "For sale · Auctions · Sold"); **U-04** mobile
+filter entry is an unlabeled icon (the excellent filter sheet is behind an
+invisible door); **U-05** no purpose statement on the landing (pairs with B-56);
+**U-06/U-09** copy sweep (HAMMER → "Sold for", CURRENT → "Current bid", search
+placeholder leads with "reference", source names that parse as verbs); **U-11**
+signed-out Saved shows a "0" + sort pills over the empty state. Defects went to
+BUGS (B-63 Escape-to-close); the in-app reader / outbound-cue findings upgraded
+B-51. **This is the case for pulling Phase 2's dispatch layer forward.** The audit
+is repeatable (`walk.py`) for a before/after once it ships.
+
 **Build sequence** — capability before the dispatch layer that advertises it:
 - ✅ **Phase 0** — Listings/Auctions restructure (calendar modal + Bonhams) — shipped #612–621.
 - ▶ **Phase 1** — Watchlists living dossier (the keystone): **1a spec done**
