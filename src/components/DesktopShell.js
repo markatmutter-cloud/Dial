@@ -540,12 +540,43 @@ export function DesktopShell(props) {
                         ? { position: "absolute", top: 0, right: 0, zIndex: 40 }
                         : { flexShrink: 0 }),
                     }}>
-        {/* Top wordmark hidden on Home (editorial hero in body is the
-            brand mark there) AND on the minimal Home top bar. */}
+        {/* Three-zone bar (Mark 2026-06-06): [tabs | wordmark | account].
+            Tabs move to the LEFT EDGE so the sub-tab row below hangs from
+            the same 20px inset — alignment-as-hierarchy: sub-tabs read as
+            children of the tabs when the two rows share an edge (before,
+            sub-tabs sat far-left while tabs floated mid-bar after the
+            wordmark). The wordmark centers between two equal flex:1 zones
+            (true centering without absolute positioning — and on narrow
+            desktop widths the zones compress instead of overlapping). */}
+        {/* Left zone — tabs cluster. Hidden on minimal Home top bar (tabs
+            live in the masthead band under the hero on Home). */}
+        {!minimalTopBar && (
+        <div style={{ flex: 1, minWidth: 0, display: "flex", gap: 18, alignItems: "center" }}>
+          {/* Top tabs render from the shared `topTabs` model (App.js builds
+              it from src/topTabs.js) — labels/active/onSelect pre-computed
+              so this strip can't drift from mobile/Home. Desktop shows the
+              full label ("Reference Guides"). */}
+          {(topTabs || []).map((t) => (
+            <button key={t.key} onClick={t.onSelect} style={{
+              ...tabPill(t.active, { onOlive: true }),
+              padding: "10px 0",
+              display: "flex", alignItems: "center", gap: 6, flexShrink: 0,
+            }}>
+              <TabIcon kind={t.icon} />
+              {t.label}
+            </button>
+          ))}
+        </div>
+        )}
+        {/* Center zone — wordmark. Hidden on Home (editorial hero in body
+            is the brand mark there) AND on the minimal Home top bar. */}
         {onOlive && !minimalTopBar && (
           <button onClick={() => { setTab("home"); setPage(1); }}
             aria-label="Home" title="Home"
             style={{ background: "none", border: "none", cursor: "pointer",
+                    // paddingLeft balances the trailing 0.16em letterSpacing
+                    // after the final T, so the centered wordmark sits
+                    // optically true.
                     padding: 0, paddingLeft: "0.16em", fontFamily: "inherit",
                     fontSize: 24, fontWeight: 700, letterSpacing: "0.16em",
                     textTransform: "uppercase",
@@ -559,41 +590,16 @@ export function DesktopShell(props) {
             <span>Watchlist</span>
           </button>
         )}
-        {/* Tabs cluster — hidden on minimal Home top bar (tabs live
-            in the masthead band under the hero on Home). */}
-        {!minimalTopBar && (
-        <div style={{ display: "flex", gap: 18, alignItems: "center", flexShrink: 0, marginLeft: 8 }}>
-          {/* Top tabs render from the shared `topTabs` model (App.js builds
-              it from src/topTabs.js) — labels/active/onSelect pre-computed
-              so this strip can't drift from mobile/Home. Desktop shows the
-              full label ("Reference Guides"). */}
-          {(topTabs || []).map((t) => (
-            <button key={t.key} onClick={t.onSelect} style={{
-              ...tabPill(t.active, { onOlive: true }),
-              padding: "10px 0",
-              display: "flex", alignItems: "center", gap: 6,
-            }}>
-              <TabIcon kind={t.icon} />
-              {t.label}
-            </button>
-          ))}
-        </div>
-        )}
-        {/* Top-bar search relocated AGAIN 2026-05-22 (PR_ε1.5): back
-            to the top bar as an expanding icon → input pattern. Sits
-            in the account zone alongside About + Watchbox. Replaces
-            the filter-row search (PR_V from 2026-05-21). Mobile
-            unchanged (Spotify overlay from PR_Z). On non-Home tabs
-            only — Home has its own editorial hero search. */}
-        <div style={{ flex: 1 }} />
-        {/* PR 2026-05-22 (Mark feedback): two search inputs visible
-            on the Search-all page (top-bar expanding + SearchResultsView's
-            sticky header). Hide the top-bar one when Search-all is
-            active — the body's input is the canonical surface for
-            editing the query in that context. */}
-        {/* Top-bar search retired 2026-05-22 — moved into the
-            filter row's right edge (see expandingSearchJSX render
-            below). */}
+        {/* Top-bar search relocated AGAIN 2026-05-22 (PR_ε1.5), then
+            retired 2026-05-22 — moved into the filter row's right edge
+            (see expandingSearchJSX render below). */}
+        {/* Right zone — About + heart + auth, right-aligned. flex:1
+            mirrors the left zone so the wordmark stays centered; on the
+            minimal Home bar there's no left zone, so it just right-floats
+            inside the absolute overlay as before. */}
+        <div style={{ flex: minimalTopBar ? undefined : 1, minWidth: 0,
+                      display: "flex", alignItems: "center", gap: 10,
+                      justifyContent: "flex-end" }}>
         {/* About link — top-right area, before the auth chrome.
             Was previously next to the top-left wordmark; relocated
             2026-05-11 so it lives in the same zone as sign-in (per
@@ -619,6 +625,7 @@ export function DesktopShell(props) {
           <SavedHeartLink onGo={goToSaved} onOlive={onOlive} />
         )}
         {authJSX}
+        </div>
         </div>
         );
       })()}
