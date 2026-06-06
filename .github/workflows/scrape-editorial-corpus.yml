@@ -206,6 +206,14 @@ jobs:
         continue-on-error: true
         run: python christies_stories_scraper.py
 
+      - name: Run Hodinkee Picks scraper
+        # Curated one-off Hodinkee articles (vintage-relevant features
+        # outside the BAL / Reference Points columns). URLs added by
+        # Mark in data/hodinkee_picks_urls.json; same pattern as
+        # christies_stories above. See hodinkee_picks_scraper.py.
+        continue-on-error: true
+        run: python hodinkee_picks_scraper.py
+
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
