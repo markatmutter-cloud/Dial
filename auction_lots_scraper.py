@@ -2320,6 +2320,219 @@ def enumerate_watchesofknightsbridge(sale_url, sale=None):
     return out
 
 
+# ── Marteau & Co ────────────────────────────────────────────────────────
+# Geneva-based timed-auction house for contemporary independent watchmaking.
+# Custom Tandem Auctions stack (jQuery / Bootstrap); the lot grid renders
+# inline at `<base>/<slug>/catalogue`, so one HTTP request per sale. CHF
+# currency with a U+2019 (right single quote) thousands separator —
+# "4'000" really comes through as "4’000". See
+# marteauandco_auctions_scraper.py for the calendar side.
+
+_MAR_LOT_BLOCK_RE = re.compile(
+    r'<div id="(?P<lot_id>\d{4})" class="card h-100" data-ln="\d{4}">'
+    r'(?P<body>.*?)'
+    r'(?=<div id="\d{4}" class="card h-100" data-ln="\d{4}">|<h3 class="m-3">|</main>)',
+    re.S,
+)
+_MAR_LOT_HREF_RE = re.compile(r'<a[^>]+href="(?P<href>/[A-Za-z0-9_-]+/catalogue/\d{4})"')
+_MAR_LOT_IMAGE_RE = re.compile(
+    r'data-src="(?P<src>https://t4p7b9\.tandemauctions\.com/[^"]+)"'
+)
+_MAR_LOT_TITLE_RE = re.compile(
+    r'<p class="card-text">\s*(?P<t>[^<]+?)\s*<br',
+    re.S,
+)
+_MAR_LOT_ESTIMATE_RE = re.compile(
+    r'<small class="estimate">\s*Estimate:\s*(?P<text>[^<]+?)\s*</small>',
+    re.S,
+)
+_MAR_LOT_STARTING_BID_RE = re.compile(
+    r'<strong>\s*Starting Bid:\s*(?P<text>[^<]+?)\s*</strong>',
+    re.S,
+)
+_MAR_LOT_REALISED_RE = re.compile(
+    r'<div class="card-footer realised">\s*Realised:\s*(?P<text>[^<]+?)\s*<small>',
+    re.S,
+)
+_MAR_LOT_CLOSE_RE = re.compile(r'data-close="(?P<iso>[0-9TZ:.\-]+)"')
+# Currency + amount: "CHF 4'000" or "CHF 4’000" or "CHF 102'000" etc.
+# Marteau is CHF-only today; pattern allows EUR/USD/GBP for safety.
+_MAR_PRICE_RE = re.compile(
+    r"(?P<cur>CHF|USD|EUR|GBP)\s*(?P<num>[0-9][0-9,’'\s]*)",
+    re.I,
+)
+
+
+def _mar_clean_text(s):
+    if not s:
+        return ""
+    return re.sub(r"\s+", " ", unescape(s)).strip()
+
+
+def _mar_parse_price(text):
+    """Extract (amount_int, currency) from a 'CHF 4'000' style string.
+    Strips U+2019 / apostrophe / comma thousands separators."""
+    if not text:
+        return None, None
+    m = _MAR_PRICE_RE.search(unescape(text))
+    if not m:
+        return None, None
+    raw = m.group("num").replace(",", "").replace("’", "").replace("'", "").strip()
+    if not raw:
+        return None, m.group("cur").upper()
+    try:
+        return int(float(raw)), m.group("cur").upper()
+    except ValueError:
+        return None, m.group("cur").upper()
+
+
+def _mar_parse_estimate(text):
+    """'CHF 500 - CHF 1’000' → (500, 1000, 'CHF')."""
+    if not text:
+        return None, None, None
+    text = unescape(text)
+    parts = re.split(r"\s+-\s+|\s+to\s+", text, maxsplit=1)
+    if len(parts) != 2:
+        amt, cur = _mar_parse_price(text)
+        return amt, amt, cur
+    low, cur1 = _mar_parse_price(parts[0])
+    high, cur2 = _mar_parse_price(parts[1])
+    return low, high, cur1 or cur2 or "CHF"
+
+
+def enumerate_marteauandco(sale_url, sale=None):
+    """Return a list of (url, lot dict) tuples for one Marteau & Co sale.
+
+    Fetches `<sale_url>/catalogue` once and parses the inline lot cards.
+    Realised prices on past sales include the buyer premium (20% per
+    Marteau's terms) — we record the realised value as-given but flag
+    it in `catalogue_note` so downstream surfaces don't confuse it with
+    hammer-only prices from the other comprehensive houses.
+    """
+    sale = sale or {}
+    catalogue_url = sale_url.rstrip("/") + "/catalogue"
+    try:
+        r = requests.get(catalogue_url, headers=HEADERS, timeout=30)
+        r.raise_for_status()
+    except Exception as e:
+        print(f"  [Marteau] catalogue fetch failed: {e}")
+        return []
+    html = r.text
+
+    auction_start = sale.get("dateStart") or sale.get("date_start") or ""
+    auction_end = sale.get("dateEnd") or sale.get("date_end") or auction_start
+    auction_title = (sale.get("title") or "Marteau & Co Timed Auction").strip()
+
+    today = date.today()
+    sale_ended = False
+    if auction_end:
+        try:
+            sale_ended = date.fromisoformat(auction_end) < today
+        except ValueError:
+            pass
+
+    out = []
+    for m in _MAR_LOT_BLOCK_RE.finditer(html):
+        body = m.group("body")
+        lot_number = m.group("lot_id")
+
+        href_m = _MAR_LOT_HREF_RE.search(body)
+        if not href_m:
+            continue
+        url = "https://auctions.marteauandco.com" + href_m.group("href")
+
+        tm = _MAR_LOT_TITLE_RE.search(body)
+        title = _mar_clean_text(tm.group("t")) if tm else ""
+        if not title or is_excluded_title(title):
+            continue
+
+        # Image: card grid only serves the small (`/sm/`) variant — swap
+        # to `/md/` so the listings tile has reasonable resolution
+        # (~720px) without forcing a full XL fetch per card.
+        image = None
+        im = _MAR_LOT_IMAGE_RE.search(body)
+        if im:
+            image = im.group("src").replace("/sm/", "/md/")
+
+        estimate_low = estimate_high = None
+        currency = "CHF"
+        em = _MAR_LOT_ESTIMATE_RE.search(body)
+        if em:
+            estimate_low, estimate_high, cur = _mar_parse_estimate(em.group("text"))
+            if cur:
+                currency = cur
+
+        starting_price = None
+        sm = _MAR_LOT_STARTING_BID_RE.search(body)
+        if sm:
+            v, cur = _mar_parse_price(sm.group("text"))
+            if v and v > 0:
+                starting_price = v
+            if cur:
+                currency = cur
+
+        realised = None
+        rm = _MAR_LOT_REALISED_RE.search(body)
+        if rm:
+            v, cur = _mar_parse_price(rm.group("text"))
+            if v and v > 0:
+                realised = v
+            if cur:
+                currency = cur
+
+        # Status: past sales have `realised`; live/upcoming have a
+        # `data-close` timestamp + a `Starting Bid` line. Use the
+        # calendar's dateEnd as the source of truth (matches the
+        # convention in enumerate_watchesofknightsbridge).
+        status = "ended" if (sale_ended or realised) else "active"
+        sold_price = realised if status == "ended" else None
+        catalogue_note = (
+            "Realised price includes buyer premium (Marteau terms: 20% + VAT)."
+            if sold_price else ""
+        )
+
+        close_iso = None
+        cm = _MAR_LOT_CLOSE_RE.search(body)
+        if cm:
+            close_iso = cm.group("iso")
+
+        data = {
+            "house": "Marteau & Co",
+            "lot_id": lot_number,
+            "lot_number": lot_number.lstrip("0") or lot_number,
+            "title": title,
+            "description": "",  # rich description lives on per-lot detail
+                                # page; populated by a follow-up enrichment.
+            "catalogue_note": catalogue_note,
+            "provenance": "",
+            "literature": "",
+            "exhibition": "",
+            "currency": currency,
+            "estimate_low": estimate_low,
+            "estimate_high": estimate_high,
+            "starting_price": starting_price,
+            "current_bid": None,
+            "sold_price": sold_price,
+            "estimate_low_usd":   to_usd(estimate_low,   currency),
+            "estimate_high_usd":  to_usd(estimate_high,  currency),
+            "starting_price_usd": to_usd(starting_price, currency),
+            "current_bid_usd":    None,
+            "sold_price_usd":     to_usd(sold_price,     currency),
+            "status": status,
+            "image": image,
+            "auction_title": auction_title,
+            "auction_start": auction_start or None,
+            "auction_end":   auction_end or None,
+            "auction_url":   sale_url,
+            "auction_date_label": (sale.get("dateLabel") or auction_start or None),
+            "closing_at": close_iso,
+            "scraped_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        }
+        out.append((url, data))
+
+    return out
+
+
 # ── Helpers ─────────────────────────────────────────────────────────────
 
 def _brace_match_json(text, start):
@@ -2374,6 +2587,14 @@ ENUMERATORS = {
         enumerate_watchesofknightsbridge,
         ("auctions.watchesofknightsbridge.com/auctions/",
          "auctions.watchesofknightsbridge.com/past-auctions/"),
+    ),
+    # Marteau & Co: every sale URL is `auctions.marteauandco.com/<slug>`
+    # (e.g. /Jun-2026). The calendar scraper never emits the listing
+    # paths (/upcoming-auctions, /previous-auctions) so a single host
+    # needle is enough.
+    "Marteau & Co": (
+        enumerate_marteauandco,
+        ("auctions.marteauandco.com/",),
     ),
 }
 

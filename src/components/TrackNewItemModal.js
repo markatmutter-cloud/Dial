@@ -33,8 +33,9 @@ export function TrackNewItemModal({
         </div>
         <div style={{ fontSize: 11, color: "var(--text3)", marginBottom: 12, lineHeight: 1.5 }}>
           For auction-house lots (Antiquorum, Christie's, Sotheby's,
-          Phillips, Watches of Knightsbridge), heart them directly
-          from the main feed — they're scraped automatically every day.
+          Phillips, Watches of Knightsbridge, Marteau & Co), heart them
+          directly from the main feed — they're scraped automatically
+          every day.
         </div>
         <input
           autoFocus
