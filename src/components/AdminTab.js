@@ -813,7 +813,7 @@ export function AdminTab({ watchItems, hiddenItems }) {
     // calendar-only per CLAUDE.md "Comprehensive auction-lot scraping".
     const SCRAPED_HOUSES = new Set([
       "Antiquorum", "Christie's", "Sotheby's", "Phillips",
-      "Watches of Knightsbridge",
+      "Watches of Knightsbridge", "Marteau & Co",
     ]);
 
     const byHouse = new Map();
