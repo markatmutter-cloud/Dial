@@ -75,7 +75,12 @@ export function StandardSearchInput({ value, onChange, placeholder, ariaLabel, i
       border: "0.5px solid var(--border)", borderRadius: 20,
       padding: "4px 12px", height: CHROME.CONTROL_H, boxSizing: "border-box",
       width: "100%", minWidth: 0,
-      background: "transparent", color: "var(--text2)",
+      // Surface fill, not transparent (Mark 2026-06-06: "easy to see the
+      // search bar on Home — not on the other pages"). Home's hero search
+      // reads as an input because it's a FILLED field; the transparent
+      // hairline box disappeared next to the surface-filled pills around
+      // it. One token — every tab's search inherits.
+      background: "var(--surface)", color: "var(--text2)",
     }}>
       <SearchIcon />
       <input
