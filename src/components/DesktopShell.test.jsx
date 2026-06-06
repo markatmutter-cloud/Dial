@@ -9,10 +9,23 @@ import { buildMockShellProps } from "./__fixtures__/mockShellProps";
 
 describe("DesktopShell", () => {
   test("renders without crashing on a default empty session", () => {
+    // jsdom defaults window.innerWidth to 1024 — below the wordmark
+    // collision guard's 1280px threshold (the centered mark collapses
+    // to its ⌂ icon at laptop widths so it can't overlap the tabs).
+    // Render wide so the full wordmark is the thing under test.
+    window.innerWidth = 1440;
     render(<DesktopShell {...buildMockShellProps()} />);
     // The "Watchlist" home-link button anchors the top bar.
     const watchlistButtons = screen.getAllByText("Watchlist");
     expect(watchlistButtons.length).toBeGreaterThanOrEqual(1);
+  });
+
+  test("collapses the wordmark to the home icon below 1280px (collision guard)", () => {
+    window.innerWidth = 1100;
+    render(<DesktopShell {...buildMockShellProps()} />);
+    // Wordmark text gone; the home button itself survives at every width.
+    expect(screen.queryByText("Watchlist")).not.toBeInTheDocument();
+    expect(screen.getAllByLabelText("Home").length).toBeGreaterThanOrEqual(1);
   });
 
   test("renders the four main tabs (Watches / Saved / Articles / Reference Guides)", () => {
