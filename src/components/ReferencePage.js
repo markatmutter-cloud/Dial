@@ -74,6 +74,7 @@ export function ReferencePage({
   const [synthesis, setSynthesis] = useState(null);
   const [active, setActive] = useState(null);
   const [allSources, setAllSources] = useState(false);
+  const [moreStories, setMoreStories] = useState(false);
 
   useEffect(() => {
     const sn = node && node.synthesisNode;
@@ -137,10 +138,10 @@ export function ReferencePage({
   };
   const NAV = [
     { id: "overview", label: "Overview", show: true },
-    { id: "shorthand", label: "Evidence", show: has.shorthand },
-    { id: "stories", label: "Stories", show: has.stories },
+    { id: "shorthand", label: node.shorthandNav || "Production", show: has.shorthand },
     { id: "marks", label: "Details", show: has.marks },
     { id: "variants", label: "Configurations", show: has.variants },
+    { id: "stories", label: "Stories", show: has.stories },
     { id: "guides", label: "Sources", show: has.guides },
     { id: "examples", label: "Examples", show: true },
     { id: "explore", label: "Explore", show: has.explore },
@@ -184,6 +185,7 @@ export function ReferencePage({
       </div>
       <div style={{ padding: "8px 10px 12px" }}>
         <div style={{ fontFamily: SERIF, fontSize: 14, fontWeight: 600, color: "var(--text1)", lineHeight: 1.25 }}>{a.title}</div>
+        {a.blurb && <div style={{ fontSize: 12, lineHeight: 1.45, color: "var(--text2)", marginTop: 5, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{a.blurb}</div>}
         <div style={{ fontSize: 10, color: "var(--text3)", marginTop: 6, letterSpacing: "0.04em", textTransform: "uppercase" }}>{a.publication} ↗</div>
       </div>
     </a>
@@ -320,7 +322,7 @@ export function ReferencePage({
 
       {/* EVIDENCE — what the shorthand misses. Editorial blocks, not Q&A;
           hand-authored node.shorthand first, synthesis conflicts fallback. */}
-      {has.shorthand && Section("shorthand", "The collector version", "What the shorthand misses", null,
+      {has.shorthand && Section("shorthand", node.shorthandKicker || "Production", node.shorthandTitle || "From prototype to icon", null,
         readShell(
           <div>
             {shorthand.map((b, i) => (
@@ -334,40 +336,22 @@ export function ReferencePage({
         ), { narrowHeader: true }
       )}
 
-      {/* REFERENCE STORIES — promoted into the body (Mark 2026-06-07): the
-          stories explain the reference; they are not bonus trivia. */}
-      {has.stories && Section("stories", "Why collectors care", "Reference stories", `The episodes that explain the ${node.group}: where it came from, what it did, and why it gets retold.`,
-        <>
-          {node.storiesAndImages?.length > 0 && shell(<div style={{ margin: "0 -8px" }}><CardStrip items={node.storiesAndImages} isMobile={isMobile} inset={false} background="transparent" renderCard={renderEditorialCard} /></div>)}
-          {synStories.length > 0 && shell(
-            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 0 : "0 36px", marginTop: node.storiesAndImages?.length ? 16 : 0 }}>
-              {synStories.map((s, i) => (
-                <a key={i} href={s.source || undefined} target={s.source ? "_blank" : undefined} rel="noopener noreferrer" style={{ display: "block", textDecoration: "none", color: "inherit", padding: "12px 0", borderTop: "0.5px solid var(--border)" }}>
-                  <div style={{ fontFamily: SERIF, fontSize: isMobile ? 16 : 17, fontWeight: 600, color: "var(--text1)", lineHeight: 1.3 }}>{s.title}{s.source ? " ↗" : ""}</div>
-                  <div style={{ fontSize: 13, lineHeight: 1.5, color: "var(--text2)", marginTop: 4 }}>{s.why}</div>
-                </a>
-              ))}
-            </div>
-          )}
-        </>
-      )}
-
       {/* WHAT TO NOTICE — replaces "Reading the marks": a visual strip, not a
           card-grid essay. Education, not warning. */}
-      {has.marks && Section("marks", "Learn to see it", "What to notice", "The physical details that tell you what you're looking at. Tap any card for the source.",
+      {has.marks && Section("marks", "Details", "Reference details", node.marksIntro || `How to read a ${node.group}: the physical cues that carry the reference. Tap any card for the source.`,
         shell(
           <div style={{ margin: "0 -8px" }}>
             <CardStrip
               items={node.marks}
               isMobile={isMobile} inset={false} background="transparent"
-              renderCard={(m) => renderDetailCard({ name: m.name, text: m.body, img: m.img, url: m.url, source: m.source })}
+              renderCard={(m) => renderDetailCard({ name: m.name, text: m.short || m.body, img: m.img, url: m.url, source: m.source })}
             />
           </div>
         )
       )}
 
       {/* KEY CONFIGURATIONS — replaces "Variants worth seeing": compact strip. */}
-      {has.variants && Section("variants", "Learn by example", "Key configurations", "The configurations the reference is usually discussed through.",
+      {has.variants && Section("variants", "Configurations", "Key configurations", `The main ways the ${node.group} appears in the literature, auction records and collector shorthand.`,
         shell(
           <div style={{ margin: "0 -8px" }}>
             <CardStrip
@@ -379,9 +363,36 @@ export function ReferencePage({
         )
       )}
 
+      {/* REFERENCE STORIES — after Details/Configurations (rewrite brief): the
+          stories land once the reader has the physical vocabulary. Card grid
+          is the featured set; synthesis stories collapse behind a toggle. */}
+      {has.stories && Section("stories", "Stories", "Reference stories", node.storiesIntro || `The pieces that explain the ${node.group} beyond the spec sheet.`,
+        <>
+          {node.storiesAndImages?.length > 0 && shell(<div style={{ margin: "0 -8px" }}><CardStrip items={node.storiesAndImages} isMobile={isMobile} inset={false} background="transparent" renderCard={renderEditorialCard} /></div>)}
+          {synStories.length > 0 && (!node.storiesAndImages?.length || moreStories) && shell(
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 0 : "0 36px", marginTop: node.storiesAndImages?.length ? 16 : 0 }}>
+              {synStories.map((s, i) => (
+                <a key={i} href={s.source || undefined} target={s.source ? "_blank" : undefined} rel="noopener noreferrer" style={{ display: "block", textDecoration: "none", color: "inherit", padding: "12px 0", borderTop: "0.5px solid var(--border)" }}>
+                  <div style={{ fontFamily: SERIF, fontSize: isMobile ? 16 : 17, fontWeight: 600, color: "var(--text1)", lineHeight: 1.3 }}>{s.title}{s.source ? " ↗" : ""}</div>
+                  <div style={{ fontSize: 13, lineHeight: 1.5, color: "var(--text2)", marginTop: 4 }}>{s.why}</div>
+                </a>
+              ))}
+            </div>
+          )}
+          {synStories.length > 0 && node.storiesAndImages?.length > 0 && shell(
+            <div style={{ paddingTop: 12 }}>
+              <button onClick={() => setMoreStories((v) => !v)}
+                style={{ border: "none", background: "none", cursor: "pointer", padding: 0, color: "var(--brand)", fontSize: 13, fontWeight: 600, fontFamily: "inherit" }}>
+                {moreStories ? "Fewer stories" : `More reference stories (${synStories.length})`}
+              </button>
+            </div>
+          )}
+        </>
+      )}
+
       {/* READ IT FIRST — after the visual explainers (understand the watch
           first, then the research trail). Featured 4, the rest collapsed. */}
-      {has.guides && Section("guides", "Read it first", "The guides to read first", "If you're looking to understand this reference, start here. Deeper cuts follow, but these give you the basis to build from.",
+      {has.guides && Section("guides", "Sources", "The core references behind this guide", null,
         shell(
           <div>
             {guidesShown.map((g, i) => paired(
@@ -414,7 +425,7 @@ export function ReferencePage({
       <section id="examples" data-refsection style={{ scrollMarginTop: "calc(var(--sticky-top, 0px) + 70px)", marginTop: sectionGap }}>
         {shell(
           <div style={{ borderTop: "0.5px solid var(--border)", paddingTop: isMobile ? 22 : 30, marginBottom: isMobile ? 16 : 22 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--brand-olive-text)", marginBottom: 8 }}>See real ones</div>
+            <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--brand-olive-text)", marginBottom: 8 }}>Examples</div>
             <h2 style={{ ...editorialHeading({ isMobile }), color: "var(--text1)", margin: 0 }}>Look at real examples</h2>
             <p style={{ fontSize: isMobile ? 15 : 16, lineHeight: 1.5, color: "var(--text2)", marginTop: 10, marginBottom: 0, maxWidth: 640 }}>Compare current listings, sold examples and auction records to see how dial type, condition, originality, completeness and provenance change the story.</p>
           </div>
@@ -446,7 +457,7 @@ export function ReferencePage({
       </section>
 
       {/* EXPLORE — go wider: the rabbit hole */}
-      {has.explore && Section("explore", "Go wider", "Where to explore next", node.whereNext,
+      {has.explore && Section("explore", "Explore", "Where to explore next", node.whereNext,
         <>
           {shell(
             <div>
