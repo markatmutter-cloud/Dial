@@ -30,7 +30,7 @@ import { HeartIcon } from "./icons";
 // Image sub-component: owns the onError→placeholder fallback (dealer image
 // URLs 404 over time — Card.js relied on this). Falls back to the same
 // favicon placeholder when there's no src OR the load fails.
-function CardImage({ image, priority }) {
+function CardImage({ image, priority, aspect }) {
   const [failed, setFailed] = useState(false);
   const showImg = image && image.src && !failed;
   return (
@@ -138,7 +138,7 @@ export default function CardShell({
         onClick={() => { if (onClickLink) onClickLink(); }}
         style={{ textDecoration: "none", color: "inherit", display: "flex", flexDirection: "column" }}>
         <div style={{ position: "relative", paddingTop: ASPECT[aspect] || ASPECT.square, overflow: "hidden" }}>
-          <CardImage image={image} priority={priority} />
+          <CardImage image={image} priority={priority} aspect={aspect} />
           {imageOverlay}
         </div>
         <div style={{ padding: bodyPadding || (compact ? "8px 10px 10px" : "10px 12px 12px"), minWidth: 0 }}>
