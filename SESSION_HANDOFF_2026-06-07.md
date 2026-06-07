@@ -77,3 +77,16 @@ gone, "resident watch expert" present, no concierge/em-dash copy).
 `LEGACY_WATCHLIST_KEY`, `LEGACY_HIDDEN_KEY`, `dial_watch_anon_id`,
 `dial_collections_sub_tab`, `dial_listings_sub_tab`,
 `dial_watch_top_tab`. (Carried forward.)
+
+---
+
+# Addendum — copy-guard (#855)
+
+The LEARNING.md "make it a check" suggestion got built same-session at
+Mark's request: `src/copy-guard.test.js` fails CI on any em-dash in
+rendered strings/JSX text (comments stripped; lone "—" placeholder
+glyphs allowed). It immediately caught 8 leftovers from the #840 sweep
+(Track/MarkAsSold/FavSearch/ListingPicker modals, UserLimitBanner,
+ErrorBoundary, SignInPrompt, App load-error line); fixed in the same
+PR. The em-dash rule is now self-enforcing; the BRAND.md "concierge"
+rule remains doc-only (one string site-wide, not worth a guard yet).

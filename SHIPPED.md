@@ -663,3 +663,5 @@ within each section roughly last.
   existing editorial surfaces consume them; extended only to the ReferenceBrowse
   teaser. DESIGN_SYSTEM carries the system + the "serif = read, never on chrome"
   guardrail. Serif deliberately NOT added to search hero / empty states / list names.
+- **2026-06-07 — copy-guard.test.js (#855).** Jest enforcement of the BRAND.md em-dash ban
+  (chrome-guard pattern: comments stripped, placeholder "—" glyphs allowed); caught + fixed 8 strings the #840 sweep missed.
