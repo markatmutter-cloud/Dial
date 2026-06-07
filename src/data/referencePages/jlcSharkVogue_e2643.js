@@ -27,6 +27,31 @@ const node = {
   definer:
     "Late-1960s steel chronograph with swappable bezels: “Shark Deep Sea” in the US, “Vogue” in Europe · c. 1968–1971",
 
+  // "What the shorthand misses" — hand-authored editorial evidence blocks
+  // (no synthesisNode on this Route-B page, so these ARE the Evidence section).
+  shorthand: [
+    {
+      heading: "Two names, one watch",
+      body: "Shark Deep Sea and Vogue Chronograph are not different models. They are the US and European trade names for the same E2643, and the dial signature usually follows: LeCoultre for the US, Jaeger-LeCoultre for Europe. Neither name nor signature outranks the other; the question is whether the whole watch tells one market story.",
+      sourcePosition: "Phillips lot essays document the naming split; WatchProSite and dealer write-ups use the names interchangeably.",
+    },
+    {
+      heading: "Production numbers aren't established",
+      body: "Unlike references with archive tables, the E2643's exact production run isn't documented in the sources reviewed. The shorthand is a short run, roughly 1968 to 1971, ended by weak commercial performance. Scarcity today is inferred from how rarely correct examples surface, not from a known figure.",
+      sourcePosition: "Timeline.watch frames the short unsuccessful run; no reviewed source publishes a production count.",
+    },
+    {
+      heading: "One movement, three names",
+      body: "Valjoux 72, calibre 726 and JLC's Cal. 13 VZH all describe the same column-wheel family at different moments. Listings citing different calibres are not necessarily describing different watches, and a blanket 'it's always a Valjoux 72' is too narrow for later examples.",
+      sourcePosition: "WatchProSite pins the family; Phillips lots list both 72 and 726 across examples.",
+    },
+    {
+      heading: "The bezels are the identity, and the trap",
+      body: "Three bezels were catalogued: diving, telemeter, and world-time. Swapping them was the point, so an unusual bezel isn't automatically wrong, but it is automatically a question. The known fake pattern runs the other way: added complications (GMT hands, triple-date) that no catalogued E2643 carried.",
+      sourcePosition: "Phillips catalogues the three bezels; WatchProSite flags the white 24-hour bezel as suspect and the extra-complication fakes.",
+    },
+  ],
+
   hero: {
     img: "https://mentawatches.com/wp-content/uploads/2023/04/DSC09842-Edit-scaled-1.jpg",
     credit: "Menta Watches",
