@@ -120,7 +120,12 @@ within each section roughly last.
 - **2026-06-07 — Tier 1 road tests (#856).** Five render components — Card, PageHeader, StandardFilterBar
   (+ StandardSearchInput), ShareReceiver, CatalogReceiver — gain direct render tests (CardShell.test.jsx
   pattern); each was previously only exercised via shell mocks. Closes the "compiles but never runs" gap on
-  the central / recently-edited surfaces; modal suite is tier 2 (PR #857, CI green, awaiting merge at close).
+  the central / recently-edited surfaces.
+- **2026-06-07 — Tier 2 road tests, modal suite (#857).** 11 modals get direct render tests —
+  AddSearchModal, CollectionEditModal, CollectionPickerModal, ConfirmModal (+ ConfirmHost), FavSearchModal,
+  ListingPickerModal, MarkAsSoldModal, NotePickerModal, SettingsModal (mocks ../supabase for
+  LumeMemorySettings), SignInPromptModal, TrackNewItemModal. Post-state: 29/63 user-facing components
+  road-tested in CI (up from ~13). Tier 3 leaf elements left to the standing rule.
 
 ## Epic 1 — Sources
 

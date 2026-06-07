@@ -108,7 +108,7 @@ in two tiers:
   / recently-edited surfaces (whole-tab blast radius if they break).
   CardShell.test.jsx pattern: render-without-crash + a few representative
   branches per component. 293 lines.
-- **Tier 2 (#857, OPEN — CI green, awaiting merge):** the 11 modals —
+- **Tier 2 (#857, MERGED — landed during the close):** the 11 modals —
   AddSearchModal, CollectionEditModal, CollectionPickerModal,
   ConfirmModal (+ ConfirmHost), FavSearchModal, ListingPickerModal,
   MarkAsSoldModal, NotePickerModal, SettingsModal (mocks ../supabase
@@ -126,6 +126,7 @@ components; file-by-file verification against actual `.test.jsx` files
 dropped four (DesktopShell/MobileShell/HomeTab/AboutModal already had
 real tests — the agent had mistaken them for mock-only).
 
-**Flag for next session:** PR #857 still open at close — CI green,
-mergeable. Once merged, post-state is 29/63 components with direct
-render tests (up from 13).
+**Post-state:** 29/63 user-facing components have direct render tests
+in CI (up from 13 pre-session). Tier 3 leaves the small/rare-touch
+elements (Chip / Breadcrumb / DateDivider / etc.) to the standing
+blind-edit rule.
