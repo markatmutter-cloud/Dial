@@ -4010,7 +4010,8 @@ export default function Watchlist() {
       search={search}
       setSearch={setSearch}
       mainFeedItems={mainFeedItems}
-      articles={searchAllArticles}
+      // Admin-removed articles drop from Search-all too (Mark 2026-06-06)
+      articles={adminHidden.size ? searchAllArticles.filter(a => !adminHidden.has(shortHash(a.url))) : searchAllArticles}
       articleBodies={searchAllArticleBodies}
       auctionLotItems={auctionLotItems}
       isMobile={isMobile}
@@ -4231,7 +4232,8 @@ export default function Watchlist() {
       goToRecentAdded={() => { setTab("listings"); setListingsSubTab("live"); setPage(1); }}
       goToRecentSold={() => { setTab("listings"); setListingsSubTab("sold"); setPage(1); }}
       goToEndingNext={() => { setTab("listings"); setListingsSubTab("auctions"); setPage(1); }}
-      homeRecentArticles={homeArticles}
+      // Admin-removed articles drop from the Home strip (Mark 2026-06-06)
+      homeRecentArticles={adminHidden.size ? homeArticles.filter(a => !adminHidden.has(shortHash(a.url))) : homeArticles}
       goToArticles={() => { setTab("references"); setReferencesSubTab("editorial"); setPage(1); }}
       homeSearchSubmit={(query, target) => {
         // Commit the typed query to App.js's existing `search` state
@@ -4372,6 +4374,17 @@ export default function Watchlist() {
       // tabs; placeholder adapts via the shells.
       search={search}
       setSearch={setSearch}
+      // Admin article curation (Mark 2026-06-06): "Remove article" in the
+      // card ⋯ menu writes the article's shortHash(url) id into
+      // admin_hidden_listings — the same global blocklist the listings ×
+      // overlay uses — so it disappears for every visitor (Articles tab,
+      // Home strip, Search-all). Admin-gated here; RLS enforces it anyway.
+      isAdmin={isAdmin}
+      adminHidden={adminHidden}
+      onAdminRemoveArticle={isAdmin ? (article) => {
+        const id = shortHash(article.url);
+        toggleAdminHidden(id, adminHidden.has(id), { reason: "article" });
+      } : undefined}
       // Challenges plumbing (PR 2026-05-22, moved here from
       // CollectionsTab/Watchlists). Same prop bag ChallengesView
       // consumed before; just routed to the new mount point.

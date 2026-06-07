@@ -83,6 +83,11 @@ export function ReferencesTab({
   // from props (shared with the global listings search).
   search,
   setSearch,
+  // Admin article curation pass-through (Mark 2026-06-06) — see
+  // EditorialView's prop docs.
+  isAdmin,
+  adminHidden,
+  onAdminRemoveArticle,
   // Challenges plumbing (PR 2026-05-22, moved from Watchlists →
   // Collecting). Same props ChallengesView consumed when it lived
   // in CollectionsTab.
@@ -156,6 +161,9 @@ export function ReferencesTab({
         handleShare={handleShare}
         search={search}
         setSearch={setSearch}
+        isAdmin={isAdmin}
+        adminHidden={adminHidden}
+        onAdminRemoveArticle={onAdminRemoveArticle}
       />
     );
   }
