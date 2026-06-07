@@ -42,6 +42,43 @@ function houseTint(house) {
   return PLACEHOLDER_TINTS[h % PLACEHOLDER_TINTS.length];
 }
 
+// House-logo slug for the cover stand-in (Mark 2026-06-06): when a sale
+// has no scraped cover image, show the house's logo from public/logos/
+// instead of the bare name. Files are <slug>.svg with a .png fallback;
+// HouseLogo onError falls back to the text mark, so houses whose logo
+// hasn't been collected yet keep today's treatment — drop a file in
+// public/logos/ and it lights up with no code change.
+function houseLogoSlug(house) {
+  return String(house || "")
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function HouseLogo({ house }) {
+  // try .svg first, then .png, then the text mark
+  const [attempt, setAttempt] = useState(0);
+  const slug = houseLogoSlug(house);
+  if (!slug || attempt >= 2) {
+    return (
+      <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.06em",
+                    textTransform: "uppercase", lineHeight: 1.25 }}>
+        {house || "Auction"}
+      </div>
+    );
+  }
+  const ext = attempt === 0 ? "svg" : "png";
+  return (
+    <img src={`/logos/${slug}.${ext}`} alt={house || "Auction house"}
+      loading="lazy" decoding="async"
+      onError={() => setAttempt(a => a + 1)}
+      style={{ maxWidth: "78%", maxHeight: "55%", objectFit: "contain",
+               // logos are dark ink on transparent — blend onto the tint
+               mixBlendMode: "multiply" }} />
+  );
+}
+
 // Short month label for the month-jump nav ("2026-06" → "Jun", or
 // "Jun '27" when not the current year).
 function monthChipLabel(key) {
@@ -462,13 +499,11 @@ function AuctionRow({ a, archive, lotCount = 0, heroImg = "", saved = false, onT
             display: "flex", alignItems: "center", justifyContent: "center",
             padding: "12px 14px", overflow: "hidden", textAlign: "center",
           }}>
-            {/* Cover stand-in (no scraped cover yet): just the house mark.
-                Title/date live in the text column so the card stays
-                uniform with image cards — no duplication. */}
-            <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.06em",
-                          textTransform: "uppercase", lineHeight: 1.25 }}>
-              {a.house || "Auction"}
-            </div>
+            {/* Cover stand-in (no scraped cover yet): the house LOGO when
+                public/logos/<slug>.svg|png exists (Mark 2026-06-06), else
+                the text mark. Title/date live in the text column so the
+                card stays uniform with image cards — no duplication. */}
+            <HouseLogo house={a.house} />
           </div>
         )}
         {/* Heart the SALE (Phase 3). Overlay top-right of the hero,
