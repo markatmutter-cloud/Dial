@@ -100,22 +100,9 @@ function EditorialHero({ isMobile, dark }) {
   );
 }
 
-// Live counts strip — small caps under the hero confirming the
-// value prop at a glance. Numbers come from the same arrays
-// every other surface reads.
-function LiveCounts({ counts }) {
-  if (!counts) return null;
-  const fmt = (n) => (n || 0).toLocaleString("en-US");
-  return (
-    <div style={{
-      textAlign: "center", padding: "14px 16px 20px",
-      fontSize: 11, fontWeight: 500, letterSpacing: "0.18em",
-      textTransform: "uppercase", color: "var(--text3)",
-    }}>
-      Status: {fmt(counts.listings)} listings · {fmt(counts.lots)} lots
-    </div>
-  );
-}
+// (LiveCounts strip removed 2026-06-07 — it was defined but unmounted,
+// and its `homeCounts` feed from App.js carried a hardcoded stale
+// house count. Counts policy now: no live-count copy that can rot.)
 
 // Search composite (2026-05-11). Empty state: just the input + a
 // primary "Search" button (Listings default on click / Enter).
@@ -765,20 +752,22 @@ function SectionStrip({ heading, descriptor, items, onViewAll, onScreen, screenC
   );
 }
 
-// Manage-your-collection callout. Single editorial strip between the
-// discovery sections and the footer that nudges signed-in users back
-// into the collection-management surfaces (Saved listings, My watches,
-// Lists). Three small text-style CTAs — no card chrome, no images.
-// Manage callout — phase 4e (2026-05-11). Tried the inverted-bleed
-// treatment on the search composite (#232 → reverted) and the Ending
-// Next section (#230 → reverted) and both crashed: too heavy at the
-// top, and white cards on dark read as broken respectively. The
-// callout is the right surface for the bleed band — it's mid-page
-// (visual rhythm break lands cleanly), all text + CTAs (no card
-// photography), and reads as a "pause and think" beat between the
-// discovery sections and the footer. Negative-margin escape via
-// shellPad so the band runs edge-to-edge of the viewport.
-function ManageCallout({ goToSavedLists, goToMyWatches, goToChallenges, isMobile, shellPad }) {
+// Guides callout. Single editorial strip between the discovery
+// sections and the footer. Re-anchored from Watchbox to Reference
+// Guides 2026-06-07 (Mark: Watchbox + Challenges de-prioritized for
+// now; the guides are the current strategic push) — Watchbox and
+// Lists stay reachable as secondary pills.
+// Bleed-band rationale (phase 4e, 2026-05-11, still applies): tried
+// the inverted-bleed treatment on the search composite (#232 →
+// reverted) and the Ending Next section (#230 → reverted) and both
+// crashed: too heavy at the top, and white cards on dark read as
+// broken respectively. This callout is the right surface for the
+// bleed band — it's mid-page (visual rhythm break lands cleanly),
+// all text + CTAs (no card photography), and reads as a "pause and
+// think" beat between the discovery sections and the footer.
+// Negative-margin escape via shellPad so the band runs edge-to-edge
+// of the viewport.
+function GuidesCallout({ goToGuides, goToSavedLists, goToMyWatches, isMobile, shellPad }) {
   return (
     <section style={{
       // PR olive-on-home 2026-05-22: switch the Watchbox bleed block
@@ -797,41 +786,36 @@ function ManageCallout({ goToSavedLists, goToMyWatches, goToChallenges, isMobile
       textAlign: "center",
     }}>
       {/* Eyebrow — anchors the band to a single named destination
-          (Mark feedback 2026-05-15 desktop audit: "the watchbox
-          element on the home page is hidden or not clear enough
-          — could be better/clearer this is a separate engagement
-          surface"). The avatar pill + dropdown already promote
-          Watchbox at the chrome level; this band makes it a
-          discoverable destination FROM Home for users who haven't
-          ventured into the dropdown yet. */}
+          (pattern from the 2026-05-15 desktop audit; the band's job
+          is to make one engagement surface discoverable FROM Home). */}
       <div style={{
         fontSize: 11, fontWeight: 600,
         letterSpacing: "0.18em", textTransform: "uppercase",
         color: "var(--text-on-dark-3)",
         marginBottom: 12,
       }}>
-        Watchbox
+        Reference Guides
       </div>
       <h2 style={{ margin: 0, fontSize: isMobile ? 22 : 28, fontWeight: 600, color: "#ffffff", letterSpacing: "-0.3px" }}>
-        Your collecting space.
+        Know the reference, not just the listing.
       </h2>
       <p style={{ margin: "10px auto 0", maxWidth: 560, fontSize: 14, color: "var(--text-on-dark-2)", lineHeight: 1.5 }}>
-        Shortlists, ownership history, references worth revisiting, kept together thoughtfully.
+        Hand-built guides to the watches worth knowing. Production history, what to look for, and how examples differ.
       </p>
       <div style={{
         display: "flex", justifyContent: "center", alignItems: "center",
         gap: 12, marginTop: 26, flexWrap: "wrap",
       }}>
-        <button onClick={goToMyWatches} style={calloutPrimaryCta()}>
-          Open Watchbox <span aria-hidden style={{ fontSize: 15 }}>→</span>
+        <button onClick={goToGuides} style={calloutPrimaryCta()}>
+          Browse the guides <span aria-hidden style={{ fontSize: 15 }}>→</span>
         </button>
       </div>
       <div style={{
         display: "flex", justifyContent: "center",
         gap: 10, marginTop: 16, flexWrap: "wrap",
       }}>
-        <button onClick={goToSavedLists} style={calloutSecondaryCta()}>Saved lists</button>
-        <button onClick={goToChallenges} style={calloutSecondaryCta()}>Challenges</button>
+        <button onClick={goToMyWatches} style={calloutSecondaryCta()}>Watchbox</button>
+        <button onClick={goToSavedLists} style={calloutSecondaryCta()}>Lists</button>
       </div>
     </section>
   );
@@ -910,8 +894,7 @@ export function HomeTab(props) {
     homeDealerSources, homeJumpToDealer,
     goToRecentAdded, goToRecentSold, goToEndingNext,
     homeSearchSubmit,
-    homeCounts,
-    goToSavedLists, goToMyWatches, goToChallenges,
+    goToSavedLists, goToMyWatches,
     openAbout, signInWithGoogle,
     isMobile,
     watchlist, hidden, handleWish, toggleHide, primaryCurrency,
@@ -943,6 +926,11 @@ export function HomeTab(props) {
   // past that padding to reach the viewport edges — pass shellPad
   // through so the negative-margin escape uses the right value.
   const shellPad = isMobile ? 16 : 20;
+
+  // Guides-callout CTA — reuse the shared top-tab model's "guides"
+  // entry (onSelect lands on tab `references`, sub `references`)
+  // rather than adding a new App.js nav prop.
+  const goToGuides = (homeMastheadTabs || []).find(t => t.key === "guides")?.onSelect;
 
   return (
     <div style={{
@@ -1150,10 +1138,10 @@ export function HomeTab(props) {
           />
         </DeferUntilVisible>
       )}
-      <ManageCallout
+      <GuidesCallout
+        goToGuides={goToGuides}
         goToSavedLists={goToSavedLists}
         goToMyWatches={goToMyWatches}
-        goToChallenges={goToChallenges}
         isMobile={isMobile}
         shellPad={shellPad}
       />
