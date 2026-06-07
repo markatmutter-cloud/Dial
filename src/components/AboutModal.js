@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { modalBackdrop, modalShell, modalCloseButton } from "../styles";
 import { buildFeedbackMailto, captureFeedbackContext } from "../utils";
 
@@ -6,32 +6,35 @@ import { buildFeedbackMailto, captureFeedbackContext } from "../utils";
 // the always-on About surface (header dropdown entry). Same content,
 // two access paths.
 //
-// 2026-05-07 redesign #3 (Mark feedback on the #2 redesign):
-//   - Hero icon is the actual site favicon (/favicon-192.png), NOT the
-//     ⌛ emoji clip-art that earlier renders shipped. The favicon is
-//     the brand mark — newcomers should see the same thing they see
-//     in their browser tab. Don't reintroduce the emoji glyph; if a
-//     fallback is ever needed, ship a watch-specific SVG, not a
-//     generic emoji.
-//   - Mobile: compact card. The features grid + "passion project"
-//     section hide below 560px (the same breakpoint that already
-//     drives the desktop 2-col vs mobile 1-col grid switch). Mobile
-//     newcomers see the welcome heading + intro + Get started CTA in
-//     a card that fits comfortably at the top of the viewport. The
-//     full content is still reachable post-dismiss via the user
-//     dropdown's "About Watchlist" entry on any device.
+// 2026-06-07 redesign #4 (Mark + external review): the modal was an
+// onboarding screen, feature manual, founder story and trust statement
+// in one scrolling document. It now answers only three questions —
+// what is this / why trust it / what next — and the step-by-step
+// "How it works" rows moved to a second VIEW inside the same modal
+// (local state toggle, no new shellProps field). Other locked calls:
+//   - No dealer/auction-house COUNTS anywhere in the copy. Counts rot
+//     ("38 dealers… six major auction houses" shipped stale); phrase
+//     so it never rots.
+//   - No letter badges on the feature cards (B/S/P/L/D read as
+//     keyboard shortcuts). Plain bold verbs.
+//   - Lumé gets a card ("Ask"); the recommender rides inside
+//     "Discover" with the part-machine/part-human/still-learning
+//     transparency framing (locked recommender-trust language).
+//   - Keep the "obsession (/financial situation)" line — Mark's voice.
+//
+// 2026-05-07 redesign #3 (still applies):
+//   - Hero icon is the actual site favicon (/favicon-192.png), NOT an
+//     emoji glyph. If a fallback is ever needed, ship a watch-specific
+//     SVG, not a generic emoji.
 //   - Modal aligns to the top of the viewport on mobile (was
 //     centered) so the card sits where Mark sketched it.
 //   - "Get started →" primary CTA in a footer band so newcomers have
 //     an action to take, not just an X.
-//   - Privacy line: present-tense first-person ("I don't sell data,
-//     I don't run ads"), not the harder "never" claim.
-//   - "Get in touch" leads with Instagram (which Mark prefers as a
-//     contact channel and can handle bug reports too); mailto stays
-//     as the secondary feedback link because it auto-fills URL +
-//     currency + UA into the body so the reporter doesn't have to
-//     type the surface every time. See `buildFeedbackMailto` in
-//     utils.js for the shared helper.
+//   - Privacy line: present-tense first-person, not the harder
+//     "never" claim.
+//   - "Get in touch" leads with Instagram (Mark's preferred contact
+//     channel); mailto stays as the secondary feedback link because
+//     it auto-fills URL + currency + UA via `buildFeedbackMailto`.
 
 const sectionLabel = {
   fontSize: 11, fontWeight: 600, color: "var(--text3)",
@@ -62,41 +65,52 @@ const featureCard = {
 
 const featureVerb = {
   fontSize: 13, fontWeight: 600, color: "var(--text1)",
-  display: "flex", alignItems: "center", gap: 6,
 };
 
 const featureCopy = {
   fontSize: 12, color: "var(--text2)", lineHeight: 1.45,
 };
 
+// Capability cards — count-free copy (counts rot; see header note).
 const FEATURES = [
-  ["Browse", "Live inventory from 38 independent dealers and lots from the six major auction houses, in one feed. Refreshed three times a day."],
-  ["Save",   "Heart anything you want to come back to. Build lists by theme or reference, share them with someone, or keep them private."],
+  ["Browse", "Live listings from independent vintage dealers and the major auction houses, in one feed. Refreshed through the day."],
+  ["Save",   "Heart watches you want to revisit. Build lists by reference, theme, or project — share them or keep them private."],
+  ["Learn",  "Hand-built reference guides on the watches worth knowing, plus a daily feed of articles from across the watch world."],
+  ["Discover", "Auction archives, price movement, and AI-mapped connections between references — part machine, part human, still learning."],
   ["Plan",   "Track what you own, what you've sold, and what you'd buy next. See the cash impact of your moves before you make them."],
-  ["Learn",  "Wrist-fit comparison printouts, dealer link directory, and reference research clusters. Encyclopedia coming."],
-  ["Discover", "Auction-house archive feeds + cross-source price velocity show you watches you'd never have stumbled on yourself."],
+  ["Ask",    "Lumé, the in-house concierge. Ask about a reference, a listing, or what to look for — grounded in the site's own data, and honest when it doesn't know."],
 ];
 
-// "How to use" — a tighter walkthrough for newcomers who want to know
-// where each feature lives. Each row is a short verb + concrete steps.
+// "How it works" — the second view. Each row is a short verb +
+// concrete steps using the CURRENT UI labels (Watches tab, Saved →
+// ♡ Saved, Watchbox; verified against the live surfaces 2026-06-07).
 // Mark feedback 2026-05-10: descriptions on tabs aren't enough; an
-// always-on "how to" in About helps people get to the right surface.
+// always-on "how to" reachable from About helps people get to the
+// right surface.
 const HOW_TO_USE = [
-  ["Heart watches", "Tap the heart on any card. Hearted watches show up under Saved → Saved (the default sub-tab)."],
-  ["Save searches", "Type a query in the Listings tab, then tap the heart next to the search bar. Saved searches re-run across every dealer."],
+  ["Heart watches", "Tap the heart on any card. Hearted watches show up under Saved → ♡ Saved (the default sub-tab)."],
+  ["Save searches", "Type a query in the Watches tab, then tap the heart next to the search bar. Saved searches re-run across every dealer."],
   ["Build a list",  "Saved → Lists → + New list. Or hit ⋯ on any card → Add to… to add to an existing list."],
   ["Share a list",  "Open the list, tap Manage. Share a View Only Link, or invite by email for a Collaboration Link (they can add watches alongside you)."],
-  ["Track what you own", "Saved → My Watches → + Add a watch (off-platform, with photo) or + From feed (an existing dealer listing). Tap a watch for the detail sheet: your thoughts, buy/sell numbers, journal."],
-  ["Plan a move",   "My Watches → Plan. Tap ↑ on a Keeping watch to flag it for sale; pick from the picker below to add to your shortlist. Net cash impact updates live."],
+  ["Track what you own", "Open Watchbox from the account menu. + Add a watch (off-platform, with photo) or + From feed (an existing dealer listing). Tap a watch for the detail sheet: your thoughts, buy/sell numbers, journal."],
+  ["Plan a move",   "Watchbox → Plan. Tap ↑ on a watch in your Collection to flag it for sale; pick from the picker below to add to your shortlist. Net cash impact updates live."],
+  ["Read the guides", "Reference Guides tab → open a guide. A guide covers the reference's history, what to look for, and how examples differ."],
+  ["Ask Lumé",      "Tap the speech bubble in the corner of any page. Ask about a reference, a listing, or what to look for — answers come from the site's own data."],
 ];
 
 export function AboutModal({ open, onClose, primaryCurrency }) {
+  // 'about' (default) | 'how' — the How-it-works rows live behind a
+  // footer link so the About view stays a short introduction, not a
+  // scrolling manual. Local state on purpose: no shellProps churn.
+  // Reset on close so the modal always reopens on the About view.
+  const [view, setView] = useState("about");
+  const close = () => { setView("about"); onClose(); };
   if (!open) return null;
   const feedbackMailto = buildFeedbackMailto({
     contextLines: captureFeedbackContext({ primaryCurrency }),
   });
   return (
-    <div onClick={onClose} className="welcome-backdrop" style={modalBackdrop}>
+    <div onClick={close} className="welcome-backdrop" style={modalBackdrop}>
       <style>{`
         /* Top-align the welcome card on mobile so it sits at the
            top of the viewport (Mark feedback). The !important is
@@ -111,10 +125,8 @@ export function AboutModal({ open, onClose, primaryCurrency }) {
             padding: 20px !important;
           }
         }
-        /* 2026-05-10 — extended the full About content to mobile per
-           Mark spec. Was previously hidden under 560px. The features
-           grid switches from 2-col to 1-col at narrow widths so each
-           card stays readable. */
+        /* The features grid switches from 2-col to 1-col at narrow
+           widths so each card stays readable. */
         @media (max-width: 559px) {
           .watchlist-feature-grid {
             grid-template-columns: 1fr !important;
@@ -127,12 +139,13 @@ export function AboutModal({ open, onClose, primaryCurrency }) {
       <div onClick={e => e.stopPropagation()} style={{
         ...modalShell,
         maxWidth: 720,
-        maxHeight: "88vh",
+        maxHeight: "80vh",
         overflowY: "auto",
         padding: 0,
       }}>
-          {/* Hero band — favicon + heading + tagline + intro. Always
-              shown on every viewport. */}
+        {view === "about" ? (
+          <>
+          {/* Hero band — favicon + heading + tagline + intro. */}
           <div style={{
             padding: "20px 20px 16px",
             borderBottom: "0.5px solid var(--border)",
@@ -144,7 +157,7 @@ export function AboutModal({ open, onClose, primaryCurrency }) {
                 title-row layout would crush the title against the ×. The
                 absolute override is a one-off legitimate exception — don't
                 replicate it without the same hero-band justification. */}
-            <button onClick={onClose} aria-label="Close" style={{
+            <button onClick={close} aria-label="Close" style={{
               ...modalCloseButton, position: "absolute", top: 12, right: 12,
             }}>×</button>
             <div style={{
@@ -178,21 +191,18 @@ export function AboutModal({ open, onClose, primaryCurrency }) {
               </div>
             </div>
             <div style={bodyText}>
-              Search, save, and follow listings from across the
-              vintage watch world.
+              Search, save, and follow listings from across the vintage
+              watch world. Dealer inventory, auction lots, sold results,
+              reference guides, and saved searches — in one place.
             </div>
             <div style={{ ...bodyText, marginTop: 10 }}>
-              Built by a watch enthusiast as a passion project. Every listing
-              links back to the original dealer; this is a directory layer,
-              not a marketplace. No ads, no tracking, no fees, no data selling.
+              Built by a watch enthusiast as a passion project, not a
+              marketplace. Every listing links back to the original dealer
+              or auction house. No ads, no tracking, no fees, no data
+              selling.
             </div>
           </div>
 
-          {/* "Extras" — features grid + How-to-use + passion-project
-              section. Visible on every viewport now (2026-05-10);
-              previously mobile-hidden but Mark spec asks for full
-              content on phones too. The features grid drops from
-              2-col → 1-col at <560px via the @media rule above. */}
           <div className="welcome-extras">
             <div className="welcome-extras-pad" style={{ padding: "16px 24px 20px" }}>
               <div style={sectionLabel}>What you can do</div>
@@ -203,37 +213,8 @@ export function AboutModal({ open, onClose, primaryCurrency }) {
               }}>
                 {FEATURES.map(([verb, copy]) => (
                   <div key={verb} style={featureCard}>
-                    <div style={featureVerb}>
-                      <span style={{
-                        width: 18, height: 18, borderRadius: 4,
-                        // PR 2026-05-22: olive letter badge — matches the
-                        // site-wide olive thread (avatar, ADMIN, primary
-                        // CTAs, icon strokes, etc.).
-                        background: "var(--brand-olive)", color: "#fff",
-                        fontSize: 11, fontWeight: 700,
-                        display: "inline-flex", alignItems: "center", justifyContent: "center",
-                      }}>{verb[0]}</span>
-                      {verb}
-                    </div>
+                    <div style={featureVerb}>{verb}</div>
                     <div style={featureCopy}>{copy}</div>
-                  </div>
-                ))}
-              </div>
-
-              <div style={sectionLabel}>How to use it</div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {HOW_TO_USE.map(([verb, copy]) => (
-                  <div key={verb} style={{
-                    padding: "10px 12px",
-                    borderRadius: 8,
-                    border: "0.5px solid var(--border)",
-                    background: "var(--card-bg)",
-                  }}>
-                    <div style={{
-                      fontSize: 13, fontWeight: 600, color: "var(--text1)",
-                      marginBottom: 2,
-                    }}>{verb}</div>
-                    <div style={{ fontSize: 12, color: "var(--text2)", lineHeight: 1.5 }}>{copy}</div>
                   </div>
                 ))}
               </div>
@@ -247,19 +228,13 @@ export function AboutModal({ open, onClose, primaryCurrency }) {
               </div>
               <div style={{ ...bodyText, marginTop: 8 }}>
                 I'm a non-technical product manager in my day job, seeing
-                how far I can get with AI as a co-author. My aim is to create
-                things that delight watch people, like making "3 watches for
-                $50,000" challenges fun, or helping manage your obsession
-                (/financial situation).
-              </div>
-              <div style={{ ...bodyText, marginTop: 8 }}>
-                Built on the amazing work others have already put into the
-                watch space. If I'm not calling out credit appropriately,
-                please get in touch and I'll sort that out.
-              </div>
-              <div style={{ ...bodyText, marginTop: 8 }}>
-                A public roadmap is coming. Let me know if there's something
-                you'd like to see and I'll give it a go.
+                how far I can get with AI as a co-author. My aim is to
+                create things that delight watch people — and help manage
+                your obsession (/financial situation). Built on the amazing
+                work others have already put into the watch space; if I'm
+                not crediting something properly, get in touch and I'll
+                sort it. And if there's something you'd like to see, tell
+                me and I'll give it a go.
               </div>
 
               <div style={sectionLabel}>Get in touch</div>
@@ -282,32 +257,80 @@ export function AboutModal({ open, onClose, primaryCurrency }) {
               </div>
             </div>
           </div>
-
-          {/* Footer CTA — always shown. Privacy + Terms link to the
-              static pages in /public so they load fast and read clean
-              outside the SPA. 2026-05-10. */}
-          <div style={{
-            display: "flex", gap: 10, justifyContent: "space-between",
-            alignItems: "center",
-            padding: "12px 20px 16px",
-            borderTop: "0.5px solid var(--border)",
-            flexWrap: "wrap",
-          }}>
-            <div style={{ display: "flex", gap: 14, fontSize: 12 }}>
-              <a href="/privacy.html" target="_blank" rel="noopener noreferrer"
-                style={{ color: "var(--text2)", textDecoration: "none" }}>Privacy</a>
-              <a href="/terms.html" target="_blank" rel="noopener noreferrer"
-                style={{ color: "var(--text2)", textDecoration: "none" }}>Terms</a>
-            </div>
-            <button onClick={onClose} style={{
-              border: "none", background: "var(--brand-olive)", color: "#fff",
-              padding: "10px 20px", borderRadius: 10,
-              fontFamily: "inherit", fontSize: 14, fontWeight: 500,
-              cursor: "pointer",
+          </>
+        ) : (
+          /* ── "How it works" view — same shell, swapped content. ── */
+          <div style={{ padding: "16px 24px 20px", position: "relative" }}>
+            <button onClick={close} aria-label="Close" style={{
+              ...modalCloseButton, position: "absolute", top: 12, right: 12,
+            }}>×</button>
+            <button onClick={() => setView("about")} style={{
+              border: "none", background: "none", padding: 0,
+              fontFamily: "inherit", fontSize: 13, fontWeight: 500,
+              color: "var(--text2)", cursor: "pointer",
             }}>
-              Get started →
+              ← About
             </button>
+            <div style={{
+              fontSize: 16, fontWeight: 600, color: "var(--text1)",
+              marginTop: 10, marginBottom: 12,
+            }}>
+              How it works
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {HOW_TO_USE.map(([verb, copy]) => (
+                <div key={verb} style={{
+                  padding: "10px 12px",
+                  borderRadius: 8,
+                  border: "0.5px solid var(--border)",
+                  background: "var(--card-bg)",
+                }}>
+                  <div style={{
+                    fontSize: 13, fontWeight: 600, color: "var(--text1)",
+                    marginBottom: 2,
+                  }}>{verb}</div>
+                  <div style={{ fontSize: 12, color: "var(--text2)", lineHeight: 1.5 }}>{copy}</div>
+                </div>
+              ))}
+            </div>
           </div>
+        )}
+
+        {/* Footer band — always shown. Privacy + Terms link to the
+            static pages in /public so they load fast and read clean
+            outside the SPA. */}
+        <div style={{
+          display: "flex", gap: 10, justifyContent: "space-between",
+          alignItems: "center",
+          padding: "12px 20px 16px",
+          borderTop: "0.5px solid var(--border)",
+          flexWrap: "wrap",
+        }}>
+          <div style={{ display: "flex", gap: 14, fontSize: 12, alignItems: "center" }}>
+            <a href="/privacy.html" target="_blank" rel="noopener noreferrer"
+              style={{ color: "var(--text2)", textDecoration: "none" }}>Privacy</a>
+            <a href="/terms.html" target="_blank" rel="noopener noreferrer"
+              style={{ color: "var(--text2)", textDecoration: "none" }}>Terms</a>
+            {view === "about" && (
+              <button onClick={() => setView("how")} style={{
+                border: "none", background: "none", padding: 0,
+                fontFamily: "inherit", fontSize: 12, fontWeight: 500,
+                color: "var(--text2)", cursor: "pointer",
+                textDecoration: "underline", textUnderlineOffset: 2,
+              }}>
+                How it works
+              </button>
+            )}
+          </div>
+          <button onClick={close} style={{
+            border: "none", background: "var(--brand-olive)", color: "#fff",
+            padding: "10px 20px", borderRadius: 10,
+            fontFamily: "inherit", fontSize: 14, fontWeight: 500,
+            cursor: "pointer",
+          }}>
+            Get started →
+          </button>
+        </div>
       </div>
     </div>
   );
