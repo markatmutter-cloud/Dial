@@ -552,19 +552,19 @@ export function DesktopShell(props) {
             children of the tabs when the two rows share an edge (before,
             sub-tabs sat far-left while tabs floated mid-bar after the
             wordmark). The wordmark centers between two equal flex:1 zones
-            (true centering without absolute positioning — and on narrow
-            desktop widths the zones compress instead of overlapping). */}
-        {/* Left zone — tabs cluster. Hidden on minimal Home top bar (tabs
-            live in the masthead band under the hero on Home).
-            COLLISION GUARD v2 (Mark 2026-06-06, second screenshot): below
-            1280px even the CENTERED ⌂ icon collided with "Reference
-            Guides" at ~750px — anything centered between non-shrinking
-            zones eventually collides. Mark's call: at narrow widths the ⌂
-            home button ANCHORS THE START of the tab row instead (in flow,
-            can't collide with anything), and nothing renders centered. */}
+            (true centering without absolute positioning). */}
+        {/* Left zone — ⌂ home button + tabs cluster. Hidden on minimal
+            Home top bar (tabs live in the masthead band under the hero
+            on Home).
+            The ⌂ leads the tab row at EVERY width (Mark 2026-06-06,
+            third pass): it's the site's "first tab", in flow, so it can
+            never collide with anything — and the home affordance lives
+            in one consistent place instead of teleporting between the
+            tab row (narrow) and the wordmark (wide). The centered
+            wordmark is text-only. */}
         {!minimalTopBar && (
         <div style={{ flex: 1, minWidth: 0, display: "flex", gap: 18, alignItems: "center" }}>
-          {onOlive && vw < 1280 && (
+          {onOlive && (
             <button onClick={() => { setTab("home"); setPage(1); }}
               aria-label="Home" title="Home"
               style={{ background: "none", border: "none", cursor: "pointer",
@@ -590,12 +590,14 @@ export function DesktopShell(props) {
           ))}
         </div>
         )}
-        {/* Center zone — full wordmark, wide widths only (≥1280px: the
-            two flex:1 zones genuinely have room to center it). Hidden on
-            Home (editorial hero in body is the brand mark there) AND on
-            the minimal Home top bar. Below 1280 the home affordance is
-            the ⌂ leading the tab row above — nothing centered, nothing
-            to collide. */}
+        {/* Center zone — text-only wordmark, wide widths only (≥1280px:
+            the two flex:1 zones genuinely have room to center it; below
+            that anything centered collides with the tab row). The ⌂ home
+            affordance lives at the start of the tab row now (Mark
+            2026-06-06) — the 2026-05-28 icon-on-wordmark treatment moved
+            there with it. Wordmark still clicks Home. Hidden on Home
+            (editorial hero in body is the brand mark there) AND on the
+            minimal Home top bar. */}
         {onOlive && !minimalTopBar && vw >= 1280 && (
           <button onClick={() => { setTab("home"); setPage(1); }}
             aria-label="Home" title="Home"
@@ -607,12 +609,7 @@ export function DesktopShell(props) {
                     fontSize: 24, fontWeight: 700, letterSpacing: "0.16em",
                     textTransform: "uppercase",
                     color: "#ffffff", flexShrink: 0,
-                    // Home icon (Mark 2026-05-28): a real user didn't realise
-                    // the wordmark was the home button — the leading house
-                    // outline makes it read as one. Inherits currentColor
-                    // (white on the olive bar).
-                    display: "inline-flex", alignItems: "center", gap: 9 }}>
-            <HomeIcon size={20} />
+                    display: "inline-flex", alignItems: "center" }}>
             <span>Watchlist</span>
           </button>
         )}
