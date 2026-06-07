@@ -1,7 +1,15 @@
 {
   "date": "2026-06-07",
-  "updated_at": "2026-06-07T06:51:28+00:00",
-  "alerts": [],
+  "updated_at": "2026-06-07T15:55:02+00:00",
+  "alerts": [
+    {
+      "source": "Vintage Watch Shop",
+      "level": "ERROR",
+      "today": 0,
+      "previous": 25,
+      "note": "source absent from today's listings (was present yesterday)"
+    }
+  ],
   "counts": {
     "Wind Vintage": 104,
     "Tropical Watch": 81,
@@ -15,7 +23,7 @@
     "Oliver & Clarke": 88,
     "Craft & Tailored": 70,
     "Watch Brothers London": 14,
-    "MVV Watches": 60,
+    "MVV Watches": 57,
     "DB1983": 24,
     "Hairspring": 32,
     "Somlo": 200,
@@ -25,15 +33,15 @@
     "Bob's Watches": 45,
     "Watchfid": 64,
     "Bulang & Sons": 171,
-    "Moonphase": 18,
+    "Moonphase": 17,
     "Huntington Company": 83,
     "The Vintage Watch": 28,
     "Chronoholic": 4,
-    "Vintage Watch Fam": 423,
-    "Shuck the Oyster": 113,
+    "Vintage Watch Fam": 424,
+    "Shuck the Oyster": 147,
     "Central Watch": 175,
     "European Watch": 18,
-    "Vintage Watch Collective": 34,
+    "Vintage Watch Collective": 35,
     "Vision Vintage Watches": 36,
     "Watchurbia": 7,
     "Maunder Watches": 84,
@@ -43,11 +51,10 @@
     "ClassicHeuer": 44,
     "Luna Royster": 32,
     "S.Song Watches": 20,
-    "Swiss Hours": 66,
+    "Swiss Hours": 67,
     "Watch Center": 272,
-    "eBay": 28,
-    "Vintage Watch Shop": 25
+    "eBay": 28
   },
-  "total_listings": 3936,
-  "sources_tracked": 44
+  "total_listings": 3944,
+  "sources_tracked": 43
 }
