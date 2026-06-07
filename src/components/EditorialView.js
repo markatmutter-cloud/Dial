@@ -4,7 +4,7 @@ import { pillBase, clearAllPill, editorialTitle, cardGridStyle } from "../styles
 import { Chip } from "./Chip";
 import { PageHeader } from "./PageHeader";
 import { StandardFilterBar, StandardSearchInput } from "./StandardFilterBar";
-import { shortHash } from "../utils";
+import { shortHash, imgSrc } from "../utils";
 import { HeartIcon } from "./icons";
 
 // Map an editorial article record into the listing-shaped item that
@@ -921,8 +921,13 @@ export function ArticleCard({ article, isMobile, compact, cols, watchlist, handl
           overflow: "hidden",
           marginBottom: 12,
         }}>
+          {/* imgSrc routing (PageSpeed 2026-06-06): article images were the
+              ONE image surface bypassing the wsrv resize proxy — Rolex
+              Magazine's blogger host serves 2MB/2000px originals for a
+              ~360px tile, which was the 33.8s mobile LCP on Home and the
+              12.5s LCP on Articles. Same proxy every listing image uses. */}
           <img
-            src={article.image}
+            src={imgSrc(article.image)}
             alt=""
             loading="lazy"
             decoding="async"
