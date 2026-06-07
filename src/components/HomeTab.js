@@ -752,102 +752,12 @@ function SectionStrip({ heading, descriptor, items, onViewAll, onScreen, screenC
   );
 }
 
-// Guides callout. Single editorial strip between the discovery
-// sections and the footer. Re-anchored from Watchbox to Reference
-// Guides 2026-06-07 (Mark: Watchbox + Challenges de-prioritized for
-// now; the guides are the current strategic push) — Watchbox and
-// Lists stay reachable as secondary pills.
-// Bleed-band rationale (phase 4e, 2026-05-11, still applies): tried
-// the inverted-bleed treatment on the search composite (#232 →
-// reverted) and the Ending Next section (#230 → reverted) and both
-// crashed: too heavy at the top, and white cards on dark read as
-// broken respectively. This callout is the right surface for the
-// bleed band — it's mid-page (visual rhythm break lands cleanly),
-// all text + CTAs (no card photography), and reads as a "pause and
-// think" beat between the discovery sections and the footer.
-// Negative-margin escape via shellPad so the band runs edge-to-edge
-// of the viewport.
-function GuidesCallout({ goToGuides, goToSavedLists, goToMyWatches, isMobile, shellPad }) {
-  return (
-    <section style={{
-      // PR olive-on-home 2026-05-22: switch the Watchbox bleed block
-      // from dark to olive. Brand color carries through the editorial
-      // hero on Home (was: pure dark band; could feel disconnected
-      // from the olive chrome zone everywhere else). Olive + white
-      // text on the same dark-mode contrast curve as the previous
-      // dark + white pairing.
-      background: "var(--brand-olive)",
-      color: "#ffffff",
-      marginLeft: -shellPad,
-      marginRight: -shellPad,
-      marginTop: isMobile ? 8 : 16,
-      marginBottom: isMobile ? 28 : 36,
-      padding: isMobile ? "36px 20px" : "56px 28px",
-      textAlign: "center",
-    }}>
-      {/* Eyebrow — anchors the band to a single named destination
-          (pattern from the 2026-05-15 desktop audit; the band's job
-          is to make one engagement surface discoverable FROM Home). */}
-      <div style={{
-        fontSize: 11, fontWeight: 600,
-        letterSpacing: "0.18em", textTransform: "uppercase",
-        color: "var(--text-on-dark-3)",
-        marginBottom: 12,
-      }}>
-        Reference Guides
-      </div>
-      <h2 style={{ margin: 0, fontSize: isMobile ? 22 : 28, fontWeight: 600, color: "#ffffff", letterSpacing: "-0.3px" }}>
-        Know the reference, not just the listing.
-      </h2>
-      <p style={{ margin: "10px auto 0", maxWidth: 560, fontSize: 14, color: "var(--text-on-dark-2)", lineHeight: 1.5 }}>
-        Hand-built guides to the watches worth knowing. Production history, what to look for, and how examples differ.
-      </p>
-      <div style={{
-        display: "flex", justifyContent: "center", alignItems: "center",
-        gap: 12, marginTop: 26, flexWrap: "wrap",
-      }}>
-        <button onClick={goToGuides} style={calloutPrimaryCta()}>
-          Browse the guides <span aria-hidden style={{ fontSize: 15 }}>→</span>
-        </button>
-      </div>
-      <div style={{
-        display: "flex", justifyContent: "center",
-        gap: 10, marginTop: 16, flexWrap: "wrap",
-      }}>
-        <button onClick={goToMyWatches} style={calloutSecondaryCta()}>Watchbox</button>
-        <button onClick={goToSavedLists} style={calloutSecondaryCta()}>Lists</button>
-      </div>
-    </section>
-  );
-}
-
-// Primary CTA — dominant filled pill (light fill on dark band).
-// Marks the destination this band is anchored to.
-function calloutPrimaryCta() {
-  return {
-    padding: "12px 24px", borderRadius: 999,
-    // Literal white bg + dark text so the CTA reads cleanly on the
-    // olive callout block in BOTH light and dark themes (var(--bg)
-    // would flip to black in dark mode = invisible on olive).
-    border: "none", background: "#ffffff",
-    color: "#1d1d1f", fontFamily: "inherit", fontSize: 14,
-    fontWeight: 600, letterSpacing: "0.02em", cursor: "pointer",
-    display: "inline-flex", alignItems: "center", gap: 8,
-  };
-}
-
-// Secondary CTAs — ghost pills for the related-but-not-primary
-// destinations. Lighter visual weight so the eye lands on the
-// primary first.
-function calloutSecondaryCta() {
-  return {
-    padding: "8px 16px", borderRadius: 999,
-    border: "0.5px solid var(--text-on-dark-3)",
-    background: "transparent",
-    color: "var(--text-on-dark-1)", fontFamily: "inherit", fontSize: 13,
-    fontWeight: 500, letterSpacing: "0.02em", cursor: "pointer",
-  };
-}
+// (Bottom bleed band removed entirely 2026-06-07 per Mark, after a
+// brief Watchbox → Reference Guides re-anchor. History for any future
+// band: phase 4e (2026-05-11) found this mid-page slot the only spot
+// where the inverted-bleed treatment worked (#230/#232 reverted at the
+// top sections); olive-on-home 2026-05-22 set the palette. Home now
+// flows discovery sections straight into the footer.)
 
 // (NewSinceLastVisitBanner retired 2026-05-15 — the grey bar at the
 // top of Home cycled back every few hours as scrapers landed fresh
@@ -894,7 +804,6 @@ export function HomeTab(props) {
     homeDealerSources, homeJumpToDealer,
     goToRecentAdded, goToRecentSold, goToEndingNext,
     homeSearchSubmit,
-    goToSavedLists, goToMyWatches,
     openAbout, signInWithGoogle,
     isMobile,
     watchlist, hidden, handleWish, toggleHide, primaryCurrency,
@@ -926,11 +835,6 @@ export function HomeTab(props) {
   // past that padding to reach the viewport edges — pass shellPad
   // through so the negative-margin escape uses the right value.
   const shellPad = isMobile ? 16 : 20;
-
-  // Guides-callout CTA — reuse the shared top-tab model's "guides"
-  // entry (onSelect lands on tab `references`, sub `references`)
-  // rather than adding a new App.js nav prop.
-  const goToGuides = (homeMastheadTabs || []).find(t => t.key === "guides")?.onSelect;
 
   return (
     <div style={{
@@ -1138,13 +1042,6 @@ export function HomeTab(props) {
           />
         </DeferUntilVisible>
       )}
-      <GuidesCallout
-        goToGuides={goToGuides}
-        goToSavedLists={goToSavedLists}
-        goToMyWatches={goToMyWatches}
-        isMobile={isMobile}
-        shellPad={shellPad}
-      />
       <FooterBand openAbout={openAbout} signInWithGoogle={signInWithGoogle} user={user} />
     </div>
   );
