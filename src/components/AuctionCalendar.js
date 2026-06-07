@@ -448,7 +448,8 @@ function AuctionRow({ a, archive, lotCount = 0, heroImg = "", saved = false, onT
       justifyContent: isMobile ? "flex-start" : "flex-end",
     }}>
       {lotActionsAvailable && onOpenSale && (
-        <ActionButton label="View lots →" onClick={() => onOpenSale(a)} primary />
+        <ActionButton label={archive ? "View results →" : "View lots →"}
+          onClick={() => onOpenSale(a)} primary />
       )}
       {/* Subtle external link to the auction house's own page. */}
       <ActionButton label="↗" onClick={openExternal}
