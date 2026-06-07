@@ -74,11 +74,11 @@ const featureCopy = {
 // Capability cards — count-free copy (counts rot; see header note).
 const FEATURES = [
   ["Browse", "Live listings from independent vintage dealers and the major auction houses, in one feed. Refreshed through the day."],
-  ["Save",   "Heart watches you want to revisit. Build lists by reference, theme, or project — share them or keep them private."],
+  ["Save",   "Heart watches you want to revisit. Build lists by reference, theme, or project. Share them or keep them private."],
   ["Learn",  "Hand-built reference guides on the watches worth knowing, plus a daily feed of articles from across the watch world."],
-  ["Discover", "Auction archives, price movement, and AI-mapped connections between references — part machine, part human, still learning."],
+  ["Discover", "Auction archives, price movement, and AI-mapped connections between references. Part machine, part human, still learning."],
   ["Plan",   "Track what you own, what you've sold, and what you'd buy next. See the cash impact of your moves before you make them."],
-  ["Ask",    "Lumé, the in-house concierge. Ask about a reference, a listing, or what to look for — grounded in the site's own data, and honest when it doesn't know."],
+  ["Ask",    "Lumé, the site's resident watch expert. Ask about a reference, a listing, or what to look for. Grounded in the site's own data, and honest when it doesn't know."],
 ];
 
 // "How it works" — the second view. Each row is a short verb +
@@ -95,7 +95,7 @@ const HOW_TO_USE = [
   ["Track what you own", "Open Watchbox from the account menu. + Add a watch (off-platform, with photo) or + From feed (an existing dealer listing). Tap a watch for the detail sheet: your thoughts, buy/sell numbers, journal."],
   ["Plan a move",   "Watchbox → Plan. Tap ↑ on a watch in your Collection to flag it for sale; pick from the picker below to add to your shortlist. Net cash impact updates live."],
   ["Read the guides", "Reference Guides tab → open a guide. A guide covers the reference's history, what to look for, and how examples differ."],
-  ["Ask Lumé",      "Tap the speech bubble in the corner of any page. Ask about a reference, a listing, or what to look for — answers come from the site's own data."],
+  ["Ask Lumé",      "Tap the speech bubble in the corner of any page. Ask about a reference, a listing, or what to look for. Answers come from the site's own data."],
 ];
 
 export function AboutModal({ open, onClose, primaryCurrency }) {
@@ -193,7 +193,7 @@ export function AboutModal({ open, onClose, primaryCurrency }) {
             <div style={bodyText}>
               Search, save, and follow listings from across the vintage
               watch world. Dealer inventory, auction lots, sold results,
-              reference guides, and saved searches — in one place.
+              reference guides, and saved searches, all in one place.
             </div>
             <div style={{ ...bodyText, marginTop: 10 }}>
               Built by a watch enthusiast as a passion project, not a
@@ -229,7 +229,7 @@ export function AboutModal({ open, onClose, primaryCurrency }) {
               <div style={{ ...bodyText, marginTop: 8 }}>
                 I'm a non-technical product manager in my day job, seeing
                 how far I can get with AI as a co-author. My aim is to
-                create things that delight watch people — and help manage
+                create things that delight watch people, and help manage
                 your obsession (/financial situation). Built on the amazing
                 work others have already put into the watch space; if I'm
                 not crediting something properly, get in touch and I'll
