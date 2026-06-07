@@ -2025,7 +2025,12 @@ export default function Watchlist() {
     const m = new Map();
     for (const it of auctionLotItems) {
       if (!it.auction_url) continue;
-      if (it.sold || hidden[it.id]) continue;
+      // Sold lots STAY in the map (Mark 2026-06-06): past sales' scraped
+      // results are their catalog — excluding them zeroed the lot count,
+      // so archive rows never showed the "View results" door even though
+      // handleOpenSale already routes past sales to the Sold sub-tab.
+      // Hero images + the shared-catalog receiver want them too.
+      if (hidden[it.id]) continue;
       const arr = m.get(it.auction_url) || [];
       arr.push(it);
       m.set(it.auction_url, arr);
