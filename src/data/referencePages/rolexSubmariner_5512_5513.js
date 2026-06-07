@@ -121,13 +121,21 @@ const node = {
   // The rabbit hole — lateral discovery, NOT a ladder.
   whereNext:
     "The 5512 and 5513 are anchor references. Once they start making sense, the rest of the map opens quickly — earlier to the big-crown era, sideways to the date, military and COMEX branches, later into the modern no-date line, or out to the wider dive-watch world.",
+  // Buckets per Mark's collecting-arcs doc (2026-06-06 — see
+  // docs/RECOMMENDER_STRATEGY.md "Reference-page connection buckets"):
+  // the why-line explains the BRIDGE, not the resemblance.
   connections: [
+    { label: "Explorer 1016", distance: "similar", why: "The most natural bridge there is: nothing unnecessary, pure function, timeless proportions — the same philosophy without the bezel.", match: { refs: ["1016"], brand: "rolex" } },
     { label: "Submariner 1680", distance: "similar", why: "The date Submariner, introduced alongside the no-date 5512/5513; the earliest carry the red “Submariner” text.", match: { refs: ["1680"], brand: "rolex" } },
-    { label: "Explorer 1016", distance: "similar", why: "Rolex's other matte-dial tool watch of the same years — no rotating bezel, the same quiet legibility.", match: { refs: ["1016"], brand: "rolex" } },
+    { label: "Blancpain Fifty Fathoms", distance: "similar", why: "The other founding military diver of 1953 — the same brief answered from a different lineage.", match: { text: ["fifty fathoms"], brand: "blancpain" } },
+    { label: "Tudor Submariner", distance: "similar", why: "The same case and dive-watch architecture from the sibling brand — its own dials, snowflake hands and movements (7016 / 7021 / 9401).", match: { text: ["submariner"], brand: "tudor" } },
+    { label: "Omega Seamaster 300 · 165.024", distance: "adjacent", why: "The same professional-diver job in a different idiom — broad-arrow hands, a fully graduated bezel, an in-house feel.", match: { text: ["165.024", "165024", "seamaster 300"], brand: "omega" } },
+    { label: "JLC Memovox Polaris E859", distance: "adjacent", why: "A dive watch that timed the dive by sound — the alarm-diver answer to the bezel the Submariner standardised.", match: { text: ["polaris"], brand: "jaeger" } },
+    { label: "Longines Legend Diver lineage", distance: "adjacent", why: "The internal-bezel compressor diver — the other major school of 1960s dive-case engineering.", match: { text: ["legend diver", "7042", "7150"], brand: "longines" } },
     { label: "GMT-Master 1675", distance: "adjacent", why: "Shares the crown-guard case; swaps the dive bezel for a 24-hour travel bezel, with its own deep dial-variant story.", match: { refs: ["1675"], brand: "rolex" } },
-    { label: "Tudor Submariner 7016", distance: "adjacent", why: "Tudor's Submariner of the era — the same case and dive-watch architecture, its own dials, references and movements.", match: { text: ["submariner"], brand: "tudor" } },
-    { label: "Omega Seamaster 300 · 165.024", distance: "adjacent", why: "The same job in a different idiom — broad-arrow hands, a fully graduated bezel, an in-house feel.", match: { text: ["165.024", "165024"] } },
-    { label: "Blancpain Fifty Fathoms", distance: "edge", why: "An earlier answer to the same brief — military dive history from a different lineage.", match: { text: ["fifty fathoms"], brand: "blancpain" } },
+    { label: "Omega Railmaster", distance: "edge", why: "What if what you love is professional tools, not diving? The anti-magnetic field watch asks exactly that question.", match: { text: ["railmaster"], brand: "omega" } },
+    { label: "Rolex Milgauss", distance: "edge", why: "The same question from inside Rolex — a scientist's instrument instead of a diver's, with the same engineering-led restraint.", match: { text: ["milgauss"], brand: "rolex" } },
+    { label: "Cartier Tank", distance: "edge", why: "Not because it looks like a 5513 — because collectors drawn to timeless design, proportion and objects that outlive trends often end up appreciating both.", match: { text: ["tank"], brand: "cartier" } },
   ],
 
   // Cultural / visual pieces — the lower editorial tier.

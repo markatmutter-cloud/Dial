@@ -353,6 +353,58 @@ The same user may move between these states depending on category, price point, 
 
 ---
 
+## Reference-Page Connection Buckets (the graph, not the catalog)
+
+Mark, 2026-06-06 — written against the first five reference guides (Submariner
+5512/5513, JLC Polaris E859, JLC Shark/Vogue E2643, Railmaster CK2914,
+Seamaster 300 165.024). The implementation lives in each node's `connections`
+array (`src/data/referencePages/*.js`); this section owns the rationale.
+
+**The reframe.** The wrong question is "what watches are similar to this one?"
+The right question is "what collecting worlds does this reference represent,
+and what are the bridges out of those worlds?" A set of saved references isn't
+a list of objects — it's evidence of arcs running simultaneously.
+
+**The arcs the seed set surfaced** (one watch can sit in several):
+
+1. **Scientific & professional tool watches** — purpose-built, engineering-led,
+   understated, anti-hype, historically legitimate (Railmaster, 5513, 165.024).
+2. **Compressor divers & adventure instruments** — EPSA cases, internal bezels,
+   purpose-built eccentricity (Polaris, 165.024). The EPSA Super Compressor
+   family is a *category* rabbit hole, not a watch.
+3. **Tool chronographs** — diving × chronograph × 1960s tool aesthetics ×
+   underappreciated references (E2643).
+4. **Underappreciated important watches** — possibly the strongest signal:
+   none of the seeds are Daytona/Nautilus/Royal Oak hype pieces. Historically
+   significant, slightly outside mainstream attention. This arc is its own
+   collecting identity and eventually leads somewhere surprising (King Seiko,
+   1960s dress pieces, even early quartz — significance over mechanical
+   orthodoxy).
+
+**Three buckets per reference page:**
+
+- **Similar** — more of the same.
+- **Adjacent** — shares important DNA, but opens a new door.
+- **Edge** — "this may seem unrelated, but collectors who understand this
+  watch often eventually appreciate this too." The edge bucket is where the
+  product becomes interesting.
+
+**The explanation is the bridge.** A rec must say *why* it follows — "not
+because it looks like a 5513; because collectors who become obsessed with
+timeless design, proportion, and objects that outlive trends often find
+themselves appreciating both." The explanation teaches taste; it is often more
+important than the recommendation itself. (Implemented as the `why` line on
+every connection.)
+
+**Edge recs as hypothesis tests.** A "surprise me" rec (King Seiko 44-9990,
+Piaget Polo) exists to find out *which* value the collector actually holds —
+do they love tool watches, or do they love restraint, engineering honesty and
+objects that reward deeper knowledge? Different answers, different graphs. The
+recommender's job is to find out which is true. This connects directly to the
+Taste Former / Edge Explorer arc states above.
+
+---
+
 ## Cold Starts and Persona Inference
 
 The product should avoid forcing users into a boring onboarding quiz.
