@@ -307,7 +307,7 @@ export function ReferencePage({
       <section id="overview" data-refsection style={{ scrollMarginTop: "calc(var(--sticky-top, 0px) + 70px)", marginTop: sectionGap }}>
         {readShell(
           <div>
-            <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--brand-olive-text)", marginBottom: 8 }}>Start here</div>
+            <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--brand-olive-text)", marginBottom: 8 }}>Overview</div>
             <h2 style={{ ...editorialHeading({ isMobile }), color: "var(--text1)", margin: "0 0 12px" }}>The {node.group}</h2>
             {node.modelIntro && (
               <p style={{ fontFamily: SERIF, fontSize: isMobile ? 17 : 19, lineHeight: 1.6, color: "var(--text1)", margin: 0 }}>{node.modelIntro}</p>
@@ -500,9 +500,11 @@ export function ReferencePage({
           )}
           {synthesis?.module_candidates?.length > 0 && shell(
             <div style={{ marginTop: 16 }}>
-              <div style={{ fontSize: 11, color: "var(--text3)", lineHeight: 1.6 }}>
-                <span style={{ fontWeight: 600 }}>Also in this family, coming as their own pages:</span>{" "}
-                {synthesis.module_candidates.map((m) => m.module).join(" · ")}
+              <div style={{ fontSize: 11, fontWeight: 600, color: "var(--text3)", marginBottom: 6 }}>Also in this family, coming as their own pages</div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                {synthesis.module_candidates.map((m, i) => (
+                  <span key={i} style={{ fontSize: 11, color: "var(--text2)", border: "0.5px solid var(--border)", borderRadius: 999, padding: "2px 9px" }}>{m.module}</span>
+                ))}
               </div>
             </div>
           )}
@@ -540,7 +542,7 @@ export function ReferencePage({
               <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--text3)", marginBottom: 8 }}>Scope &amp; sourcing</div>
               <div style={{ fontSize: 12, lineHeight: 1.6, color: "var(--text2)" }}>{node.scopeNote}</div>
               <div style={{ fontSize: 12, lineHeight: 1.6, color: "var(--text3)", marginTop: 8 }}>
-                Compiled from thousands of dealer listings and write-ups, reviewed by hand. Spot something off?{" "}
+                Compiled from dealer listings, auction records, reference articles and collector write-ups, then reviewed by hand. Spot something off?{" "}
                 <a href="mailto:mark@mutter.co.uk?subject=Reference%20note" style={{ color: "var(--brand)", textDecoration: "none" }}>Suggest a fix</a>.
               </div>
             </div>
