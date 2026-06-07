@@ -232,7 +232,11 @@ function endingSoonComparator(a, b) {
 export default function Watchlist() {
   const screenWidth = useWidth();
   const sysDark = useSystemDark();
-  const isMobile = screenWidth < 640;
+  // 760, was 640 (Mark 2026-06-06): half-screen laptop windows got the
+  // desktop chrome at widths where it can't lay out — phone-ish windows
+  // now get the real mobile view; 760+ gets desktop with the filter
+  // bar's narrow stacked mode (StandardFilterBar).
+  const isMobile = screenWidth < 760;
   // Per-device display chrome (theme override, column counts, view-menu
   // open flag). Lives in useViewSettings so localStorage persistence +
   // option validation stay co-located with the state itself.

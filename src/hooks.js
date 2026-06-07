@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 // Window inner-width tracker. Used to switch between mobile and desktop
-// layouts (the breakpoint is hard-coded at 640 in App.js).
+// layouts (the breakpoint is hard-coded at 760 in App.js).
 export function useWidth() {
   const [w, setW] = useState(window.innerWidth);
   useEffect(() => {

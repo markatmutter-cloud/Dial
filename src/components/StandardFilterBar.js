@@ -1,6 +1,7 @@
 import React from "react";
 import { SearchIcon } from "./icons";
 import { CHROME } from "../styles";
+import { useWidth } from "../hooks";
 
 // StandardFilterBar — THE one filter-bar layout for named, finite surfaces
 // (Mark 2026-06-03, the "standard library" chrome pass — P-2/P-4/P-8/P-13).
@@ -21,6 +22,14 @@ import { CHROME } from "../styles";
 // The caller provides the horizontal inset (portal/sticky wrappers already
 // carry the surface's edge padding) — the bar itself is inset-agnostic.
 export function StandardFilterBar({ pills, search, right, count, isMobile, background = "var(--bg)", expanded = false }) {
+  // Narrow-desktop guard (Mark 2026-06-06, B-64): below ~1250px the
+  // single-line grid can't fit — the right zone (Min/Max · Date · Price ·
+  // count) overflowed INTO the centered search slot (half-screen Safari
+  // windows). Self-measured here so every consumer surface inherits the
+  // stacked layout: search on its own full-width line, pills + sort
+  // wrapping beneath.
+  const vw = useWidth();
+  const narrow = !isMobile && vw < 1250;
   const countSlot = (
     <span style={{
       minWidth: 86, textAlign: "right", flexShrink: 0,
@@ -38,6 +47,21 @@ export function StandardFilterBar({ pills, search, right, count, isMobile, backg
         <span style={{ marginLeft: "auto" }} />
         {right}
         {countSlot}
+      </div>
+    );
+  }
+  if (narrow) {
+    return (
+      <div style={{ padding: "6px 0", background, borderBottom }}>
+        {search && (
+          <div style={{ marginBottom: 8 }}>{search}</div>
+        )}
+        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+          {pills}
+          <span style={{ marginLeft: "auto" }} />
+          {right}
+          {countSlot}
+        </div>
       </div>
     );
   }
