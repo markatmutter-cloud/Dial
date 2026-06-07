@@ -25,11 +25,19 @@ is sorted newest-by-post-date, NOT newest-by-activity — Shuck keeps
 active inventory live indefinitely without re-dating, so a listing
 posted 6+ months ago can still be current stock. The earlier 10-page
 cap missed real inventory (e.g. a 2025-10 JLC Polaris Tribute was on
-page 33). Active inventory currently lives across roughly the first
-50 pages; 50 also picks up the long-tail active listings while still
-cutting out the deepest sold-archive pages. Detail-page parsing
-filters SOLD anyway, so a few extra pages cost runtime but never
-pollute the feed.
+page 33), and a 2026-06-07 full-site sweep (B-65) found ~35 available
+watches scattered from page 53 to page 157 — slow-moving stock drifts
+arbitrarily deep, so no fixed cap is ever sufficient on its own.
+
+DEEP-TAIL RETENTION (B-65): items only become deep by aging through
+the capped walk, so the prior CSV (data/shucktheoyster.csv) is the
+persistence layer. After the 50-page walk, every prior-CSV URL the
+walk did NOT see is appended to the detail queue and re-verified like
+any other listing: available items stay tracked for life (price/spec
+refreshed each run), SOLD ones drop. The tail is self-limiting (only
+currently-available deep items survive). The one-time seed of the
+already-deep items found by the sweep was committed directly into
+data/shucktheoyster.csv alongside this logic.
 
 Run: python3 shucktheoyster_scraper.py
 Output: shucktheoyster_listings.csv
@@ -228,11 +236,38 @@ def parse_detail(html, url):
     }
 
 
+PRIOR_CSV = "data/shucktheoyster.csv"
+
+
+def prior_unseen_urls(seen_urls):
+    """Deep-tail retention (B-65): URLs from the prior committed CSV that
+    the capped walk didn't surface. They get re-verified through the same
+    detail loop, so sold ones drop and available ones stay tracked for life."""
+    import os
+    if not os.path.exists(PRIOR_CSV):
+        return []
+    tail = []
+    try:
+        with open(PRIOR_CSV, newline="", encoding="utf-8") as f:
+            for row in csv.DictReader(f):
+                u = (row.get("url") or "").strip()
+                if u and u not in seen_urls:
+                    tail.append(u)
+    except Exception as e:
+        print(f"  prior-CSV read failed ({e}) — continuing without tail")
+        return []
+    return tail
+
+
 def main():
     print(f"Fetching {SOURCE_NAME} listings (Wordpress portfolio CPT)...")
     detail_urls = collect_detail_urls()
     print(f"\nCollected {len(detail_urls)} portfolio URLs across "
           f"up to {MAX_LISTING_PAGES} pages")
+    tail = prior_unseen_urls(set(detail_urls))
+    if tail:
+        print(f"  + {len(tail)} deep-tail URLs from prior CSV (B-65 retention)")
+        detail_urls.extend(tail)
 
     results = []
     skipped_sold = skipped_no_title = 0
