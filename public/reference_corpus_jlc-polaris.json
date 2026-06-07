@@ -1,4 +1,18 @@
 {
+  "https://blommanwatchreport.com/2019/08/19/on-the-wooden-beam-lecoultre-e-859-polaris-1965/": {
+    "author": null,
+    "excerpt": "With the new Polaris series launched by Jaeger-LeCoultre which is based on the Polaris 1968, it is easy to forget the Polaris 1965!\nBut yes, the “Polaris 1965” was the first. Back in 1963 the very first prototypes very made but according",
+    "flags": {},
+    "focus": "first-generation 1965: 'Deep sea skin diver' naming, gilt dial detail, dauphine vs sword hands, 1965 vs 1969 bracelet",
+    "image": "https://blommanwatchreport.com/wp-content/uploads/2019/08/p1110870.jpg",
+    "node": "jlc-polaris",
+    "origin": "scraped",
+    "publication": "Blomman Watch Report",
+    "source": "Blomman Watch Report",
+    "title": "On the Wooden Beam: LeCoultre E 859 Polaris 1965",
+    "type": "collector-deep-dive",
+    "word_count": 760
+  },
   "https://bulangandsons.com/products/jaeger-lecoultre-polaris-memovox-tropical-dial-ref-e859-68-w2680": {
     "author": null,
     "excerpt": "Jaeger LeCoultre Polaris Memovox Tropical Dial Ref E859 '68\nSOLD\nService & Warranty\nOur Service\nEach vintage timepiece is individually selected and carefully inspected by our team of experts. After we buy a watch it is mechanically",
@@ -67,17 +81,16 @@
   },
   "https://le-monde-edmond.com/polaris-e859-jaeger-indepthreview/": {
     "author": null,
-    "excerpt": "The diving watch category is perhaps the most exciting of all categories in the watch industry.\nMaybe because it was started by two great brands, Blancpain (with Aqualung FF) and Rolex (submariner) in 1954. The Submariner by Rolex",
+    "excerpt": "The diving watch category is perhaps the most exciting of all categories in the watch industry. Maybe because it was started by two great brands, Blancpain (with Aqualung FF) and Rolex (submariner) in 1954. The Submariner by Rolex",
     "flags": {},
     "focus": "production breakdown (50 prototypes / 500 in 1965 / 1,214 in 1968-style / 55 Calypso 1970), E857 lineage, JB Champion bracelet, dial signatures",
-    "image": "https://le-monde-edmond.com/wp-content/uploads/2017/01/Polaris.jpg",
     "node": "jlc-polaris",
-    "origin": "scraped",
+    "origin": "corpus-reuse",
     "publication": "Le Monde Edmond",
     "source": "Le Monde Edmond",
     "title": "Polaris: E859 — In-Depth Review (Mstanga interview)",
     "type": "deep-research",
-    "word_count": 2339
+    "word_count": 2345
   },
   "https://monochrome-watches.com/jaeger-lecoultre-polaris-2018-collection-sihh-2018-memovox-automatic-date-chronograph-price/": {
     "author": null,
@@ -478,6 +491,20 @@
     "title": "Collector's Guide: Memovox Reference E 855",
     "type": "lineage-context",
     "word_count": 4016
+  },
+  "https://www.windvintage.com/lecoultre-polaris": {
+    "author": null,
+    "excerpt": "LeCoultre Polaris reference E859 with Box and Papers\nThe Polaris is a legendary watch made by Jaeger-LeCoultre starting in 1965. This is the 1967/1968 version with more aggressive lume and this dial is signed simple “LeCoultre” for the",
+    "flags": {},
+    "focus": "sold-example write-up; sword-hands first-generation detail",
+    "image": "",
+    "node": "jlc-polaris",
+    "origin": "scraped",
+    "publication": "Wind Vintage",
+    "source": "Wind Vintage",
+    "title": "LeCoultre Polaris",
+    "type": "dealer-editorial",
+    "word_count": 132
   },
   "https://www.windvintage.com/lecoultre-polaris-ref-e-859-unpolished": {
     "author": null,

@@ -4,83 +4,75 @@
       "applies_to": [
         "E859"
       ],
-      "note": "The most defensible synthesis: prototypes 1963, production from 1965, updated dial 1968, ended 1970. Use this and footnote the brand's '1968' framing as marketing shorthand for the best-known dial.",
+      "note": "Best resolved by separating 'introduction of the model' (1965 production / 1963 prototypes) from 'best-known generation' (1968-style dial). The Blomman piece explicitly flags JLC's own brand narrative as imprecise.",
       "positions": [
-        "JLC's own communications repeatedly use 1968 as the launch year of the Memovox Polaris (e.g. the brand history page).",
-        "Independent scholarship (Mstanga via Le Monde Edmond, Hairspring, Fratello, Christie's) documents 50 prototypes in 1963 and series production from 1965, with 1968 simply being the largest production year and the year of the bolder updated dial."
+        "Several sources say production began in 1965 after 1963 prototypes (Mstanga, Blomman, Hairspring, Fratello, S.Song).",
+        "Hour Markers and a few brand summaries cite 1968 / 1962 as the 'introduction' year — JLC's own marketing has historically framed 1968 as the launch."
       ],
-      "topic": "When was the Polaris launched — 1965 or 1968?"
-    },
-    {
-      "applies_to": [
-        "E859"
-      ],
-      "note": "Consensus is 42mm; treat 41mm as a Hairspring measurement variance rather than a separate case size.",
-      "positions": [
-        "Christie's, JLC, Le Monde Edmond, Fratello, S.Song Watches and Watchonista all cite 42mm.",
-        "Hairspring's two E859 features cite 41mm."
-      ],
-      "topic": "Original case diameter — 41mm or 42mm?"
-    },
-    {
-      "applies_to": [
-        "E859"
-      ],
-      "note": "Use 1,714 production examples + ~50 separate prototypes as the canonical figure.",
-      "positions": [
-        "Most sources cite 1,714 pieces total across all variants (1965–1970), excluding the 50 prototypes (Le Monde Edmond, Christie's, Hairspring, S.Song, Watchesbysjx, Hodinkee).",
-        "Fratello phrases it as 1,714 'units of the Memovox Polaris' including both generations, but does not exclude prototypes explicitly."
-      ],
-      "topic": "Total production count"
+      "topic": "Year of introduction"
     },
     {
       "applies_to": [
         "E859",
         "model-wide"
       ],
-      "note": "Both framings can coexist — the US arm wanted exploration-era resonance, and the Polaris missile name was part of that cultural backdrop.",
+      "note": "Both accounts agree the name was a US-market choice and was not used in period European catalogues (the 1965 doc calls it a 'Deep Sea Skin Diver').",
       "positions": [
-        "Fratello attributes it directly to the Cold War Polaris submarine-launched ballistic missile, which was prominent in 1960s US culture.",
-        "Le Monde Edmond's interviewee Mstanga frames it more broadly as the US division wanting a name to convey the spirit of polar, oceanic and space adventure."
+        "Mstanga: the US division wanted a name evoking the spirit of adventure (water, polar, space).",
+        "Fratello and Watchonista: the name was chosen for the US market and was likely inspired by the Cold War-era Polaris submarine-launched ballistic missile."
       ],
-      "topic": "Was the Polaris named after the missile, the star or the polar/space exploration era?"
+      "topic": "Origin of the 'Polaris' name"
     },
     {
       "applies_to": [
         "E859"
       ],
-      "note": "The 'two generations + Calypso' framing is the most useful collector shorthand; the 1967 examples are transitional.",
+      "note": "The detailed archival numbers come from a single collector source; treat the year-by-year split as best-available rather than canonical.",
       "positions": [
-        "Fratello argues for two clear generations (1965 first-gen with small plots, 1966+ second-gen with trapezoidal plots and matte dial).",
-        "Christie's frames the 1967 production as a small test batch for the new bolder dial that defined 1968.",
-        "Le Monde Edmond enumerates the model years (1965, 1966, 1967, 1968, plus 1970 Calypso) without sharply dividing into two generations."
+        "Mstanga's archival breakdown: 1,150 pieces in 1968 (plus the 9 from 1967 and 55 Calypso in 1970), summing to 1,214 'second-generation' style.",
+        "Some general references describe the 1968 batch as 'the lion's share' without itemising."
       ],
-      "topic": "How many generations of vintage Polaris dial exist?"
+      "topic": "1968 production count"
     },
     {
       "applies_to": [
         "E870"
       ],
-      "note": "Treat as roughly 1970–1971/72; if precision is needed, Fratello's archival sourcing is the most reliable.",
+      "note": "Minor discrepancy in end-of-production date; both agree it was a brief, design-radically-different successor on calibre 916.",
       "positions": [
-        "Fratello: produced 1970 and 1971.",
-        "Swisswatches Magazine: introduced 1970 as successor.",
-        "Watchonista: 1970–1972."
+        "Watchonista: Polaris II made 1970–1972.",
+        "Fratello / Swisswatches: Memovox Polaris II / E870 produced 1970–1971, with the broader Plongeur platform continuing slightly later."
       ],
-      "topic": "Polaris II (E870) production years"
+      "topic": "Polaris II naming and chronology"
     }
   ],
   "consensus": [
     {
       "applies_to": [
+        "E859",
+        "model-wide"
+      ],
+      "claim": "The Memovox Polaris reference E859 entered serial production in 1965 after roughly 50 prototypes were built in 1963, and remained in production until around 1970.",
+      "confidence": "high",
+      "sources": [
+        "https://blommanwatchreport.com/2019/08/19/on-the-wooden-beam-lecoultre-e-859-polaris-1965/",
+        "https://le-monde-edmond.com/polaris-e859-jaeger-indepthreview/",
+        "https://hairspring.com/blogs/finds/e859-jaeger-lecoultre-polaris",
+        "https://www.fratellowatches.com/a-historical-overview-of-the-jaeger-lecoultre-memovox-polaris/",
+        "https://www.ssongwatches.com/products/jaeger-lecoultre-polaris-e-859"
+      ]
+    },
+    {
+      "applies_to": [
         "E859"
       ],
-      "claim": "The Memovox Polaris ref. E859 was prototyped in 1963 (50 prototypes) and entered series production in 1965, running through 1970, with a total of 1,714 pieces produced across all variants.",
+      "claim": "Total E859 production was 1,714 watches (not counting the ~50 prototypes), making it a genuinely rare model despite its outsized cultural footprint.",
       "confidence": "high",
       "sources": [
         "https://le-monde-edmond.com/polaris-e859-jaeger-indepthreview/",
         "https://hairspring.com/blogs/finds/e859-jaeger-lecoultre-polaris",
         "https://hairspring.com/blogs/finds/tropical-e859-lecoultre-memovox-polaris",
+        "https://www.christies.com/en/stories/deconstructed-jaeger-lecoultre-1967-memovox-polaris-e859-f4c07e3f1a7640c0b9c5c0bb405bc1db",
         "https://www.fratellowatches.com/a-historical-overview-of-the-jaeger-lecoultre-memovox-polaris/",
         "https://www.hodinkee.com/articles/just-because-hands-on-with-a-1968-jaeger-lecoultre-polaris",
         "https://www.ssongwatches.com/products/jaeger-lecoultre-polaris-e-859"
@@ -90,38 +82,38 @@
       "applies_to": [
         "E859"
       ],
-      "claim": "The E859 case is a 42mm Piquerez (EPSA) Compressor design whose sealing tightens with increasing water pressure, rated to 200m.",
-      "confidence": "high",
+      "claim": "Mstanga's archival breakdown gives 500 units in 1965, 9 in 1967, 1,150 in 1968 and 55 of the controversial Calypso-hand variant in 1970, with the 1968 batch the dominant production year.",
+      "confidence": "medium",
       "sources": [
         "https://le-monde-edmond.com/polaris-e859-jaeger-indepthreview/",
-        "https://www.christies.com/en/stories/deconstructed-jaeger-lecoultre-1967-memovox-polaris-e859-f4c07e3f1a7640c0b9c5c0bb405bc1db",
-        "https://www.fratellowatches.com/a-historical-overview-of-the-jaeger-lecoultre-memovox-polaris/",
-        "https://www.jaeger-lecoultre.com/us-en/watches/collectibles/qve85901",
-        "https://www.ssongwatches.com/products/jaeger-lecoultre-polaris-e-859"
+        "https://hairspring.com/blogs/finds/e859-jaeger-lecoultre-polaris"
       ]
     },
     {
       "applies_to": [
         "E859"
       ],
-      "claim": "To make the alarm audible underwater, JLC engineered a multi-layer (triple) caseback whose outer steel layer is pierced with 16 holes, with an inner resonator that lets the alarm be heard and felt on the wrist beneath the surface.",
+      "claim": "The case is a 42mm Piquerez (EPSA) compressor design whose seals tighten under pressure, with water resistance rated to 200 metres.",
       "confidence": "high",
       "sources": [
+        "https://le-monde-edmond.com/polaris-e859-jaeger-indepthreview/",
         "https://hairspring.com/blogs/finds/e859-jaeger-lecoultre-polaris",
-        "https://le-monde-edmond.com/polaris-e859-jaeger-indepthreview/",
+        "https://hairspring.com/blogs/finds/tropical-e859-lecoultre-memovox-polaris",
         "https://www.christies.com/en/stories/deconstructed-jaeger-lecoultre-1967-memovox-polaris-e859-f4c07e3f1a7640c0b9c5c0bb405bc1db",
         "https://www.fratellowatches.com/a-historical-overview-of-the-jaeger-lecoultre-memovox-polaris/",
-        "https://www.hodinkee.com/articles/just-because-hands-on-with-a-1968-jaeger-lecoultre-polaris"
+        "https://www.jaeger-lecoultre.com/us-en/watches/collectibles/qve85901"
       ]
     },
     {
       "applies_to": [
         "E859"
       ],
-      "claim": "The E859 carries three crowns with a quadrille (cross-hatched) pattern: alarm winding/setting at 2, internal bezel at 3, and time/date at 4.",
+      "claim": "The case is fitted with a three-layer ('triple') caseback: an inner sealing layer, a brass resonator and an outer shield perforated with 16 holes, designed so the alarm can be heard and felt underwater.",
       "confidence": "high",
       "sources": [
         "https://le-monde-edmond.com/polaris-e859-jaeger-indepthreview/",
+        "https://hairspring.com/blogs/finds/e859-jaeger-lecoultre-polaris",
+        "https://www.christies.com/en/stories/deconstructed-jaeger-lecoultre-1967-memovox-polaris-e859-f4c07e3f1a7640c0b9c5c0bb405bc1db",
         "https://www.fratellowatches.com/a-historical-overview-of-the-jaeger-lecoultre-memovox-polaris/",
         "https://www.hodinkee.com/articles/just-because-hands-on-with-a-1968-jaeger-lecoultre-polaris",
         "https://www.ssongwatches.com/products/jaeger-lecoultre-polaris-e-859"
@@ -131,10 +123,21 @@
       "applies_to": [
         "E859"
       ],
-      "claim": "The movement is the automatic calibre K825 (a bumper automatic with separate barrels for timekeeping and alarm), an evolution of the K815 used in the 1959 Deep Sea Alarm, with date added.",
+      "claim": "The E859 has three quadrille-decorated crowns: top for winding/setting the alarm (and quick-set date), middle for the internal rotating dive bezel, lower for winding the movement and setting time.",
       "confidence": "high",
       "sources": [
-        "https://hairspring.com/blogs/finds/tropical-e859-lecoultre-memovox-polaris",
+        "https://le-monde-edmond.com/polaris-e859-jaeger-indepthreview/",
+        "https://www.fratellowatches.com/a-historical-overview-of-the-jaeger-lecoultre-memovox-polaris/",
+        "https://hairspring.com/blogs/finds/ebays-finest-1st-generation-lecoultre-polaris-diving-alarm"
+      ]
+    },
+    {
+      "applies_to": [
+        "E859"
+      ],
+      "claim": "The E859 is powered by the automatic bumper-rotor calibre K825, a 17-jewel movement shared with other Memovox alarm models of the era.",
+      "confidence": "high",
+      "sources": [
         "https://le-monde-edmond.com/polaris-e859-jaeger-indepthreview/",
         "https://www.christies.com/en/stories/deconstructed-jaeger-lecoultre-1967-memovox-polaris-e859-f4c07e3f1a7640c0b9c5c0bb405bc1db",
         "https://www.fratellowatches.com/a-historical-overview-of-the-jaeger-lecoultre-memovox-polaris/",
@@ -145,13 +148,41 @@
       "applies_to": [
         "E859"
       ],
-      "claim": "Dials are signed either 'Jaeger-LeCoultre' (European market) or simply 'LeCoultre' (US market); both are correct for the E859.",
+      "claim": "Dials were signed either 'Jaeger-LeCoultre' (Europe) or 'LeCoultre' (US market); the LeCoultre signature was never the basis for the 2008 Tribute to Polaris re-edition.",
       "confidence": "high",
       "sources": [
-        "https://hairspring.com/blogs/finds/e859-jaeger-lecoultre-polaris",
         "https://le-monde-edmond.com/polaris-e859-jaeger-indepthreview/",
+        "https://hairspring.com/blogs/finds/e859-jaeger-lecoultre-polaris",
         "https://www.christies.com/en/stories/deconstructed-jaeger-lecoultre-1967-memovox-polaris-e859-f4c07e3f1a7640c0b9c5c0bb405bc1db",
-        "https://www.hodinkee.com/articles/just-because-hands-on-with-a-1968-jaeger-lecoultre-polaris"
+        "https://www.hodinkee.com/articles/just-because-a-1968-lecoultre-polaris",
+        "https://www.hodinkee.com/articles/just-because-hands-on-with-a-1968-jaeger-lecoultre-polaris",
+        "https://www.windvintage.com/lecoultre-polaris"
+      ]
+    },
+    {
+      "applies_to": [
+        "E859"
+      ],
+      "claim": "The original Polaris had no external bezel; the elapsed-time scale rotates internally under the deeply domed Hesalite crystal, giving the dial its characteristic 'aquarium' appearance.",
+      "confidence": "high",
+      "sources": [
+        "https://le-monde-edmond.com/polaris-e859-jaeger-indepthreview/",
+        "https://hairspring.com/blogs/finds/e859-jaeger-lecoultre-polaris",
+        "https://www.jaeger-lecoultre.com/us-en/watches/collectibles/qve85901",
+        "https://www.fratellowatches.com/a-historical-overview-of-the-jaeger-lecoultre-memovox-polaris/"
+      ]
+    },
+    {
+      "applies_to": [
+        "E859"
+      ],
+      "claim": "The 1965 first-generation dial uses thin applied indices with small lume plots and gilt printing, while the later (1968-style) dial introduces large trapezoidal tritium markers for stronger underwater legibility.",
+      "confidence": "high",
+      "sources": [
+        "https://blommanwatchreport.com/2019/08/19/on-the-wooden-beam-lecoultre-e-859-polaris-1965/",
+        "https://hairspring.com/blogs/finds/ebays-finest-1st-generation-lecoultre-polaris-diving-alarm",
+        "https://www.christies.com/en/stories/deconstructed-jaeger-lecoultre-1967-memovox-polaris-e859-f4c07e3f1a7640c0b9c5c0bb405bc1db",
+        "https://www.fratellowatches.com/a-historical-overview-of-the-jaeger-lecoultre-memovox-polaris/"
       ]
     },
     {
@@ -159,9 +190,40 @@
         "E859",
         "model-wide"
       ],
-      "claim": "The Polaris name was created by JLC's US arm to evoke the era's spirit of polar, oceanic and space exploration, and is widely associated with the Cold War-era Polaris submarine-launched missile.",
+      "claim": "The E859 was conceived as a true tool dive watch: the alarm was meant as a dive-time / decompression reminder, audible and tactile underwater — a different solution to the same problem solved by external rotating bezels on competitors.",
       "confidence": "high",
       "sources": [
+        "https://www.christies.com/en/stories/deconstructed-jaeger-lecoultre-1967-memovox-polaris-e859-f4c07e3f1a7640c0b9c5c0bb405bc1db",
+        "https://hairspring.com/blogs/finds/e859-jaeger-lecoultre-polaris",
+        "https://www.fratellowatches.com/a-historical-overview-of-the-jaeger-lecoultre-memovox-polaris/",
+        "https://www.watchfinder.com/articles/review-jaeger-lecoultre-polaris-mariner-memovox",
+        "https://swisswatches-magazine.com/jaeger-lecoultre-polaris-toolwatch-history/"
+      ]
+    },
+    {
+      "applies_to": [
+        "E859",
+        "model-wide"
+      ],
+      "claim": "The Polaris was lineage-descended from the Memovox Deep Sea (ref. E857) of 1959, the first automatic dive alarm wristwatch, of which roughly 1,000+ pieces were made.",
+      "confidence": "high",
+      "sources": [
+        "https://le-monde-edmond.com/polaris-e859-jaeger-indepthreview/",
+        "https://monochrome-watches.com/jaeger-lecoultre-polaris-2018-collection-sihh-2018-memovox-automatic-date-chronograph-price/",
+        "https://www.fratellowatches.com/a-historical-overview-of-the-jaeger-lecoultre-memovox-polaris/",
+        "https://swisswatches-magazine.com/jaeger-lecoultre-polaris-toolwatch-history/",
+        "https://www.windvintage.com/lecoultre-polaris-ref-e-859-unpolished"
+      ]
+    },
+    {
+      "applies_to": [
+        "E859",
+        "model-wide"
+      ],
+      "claim": "The 'Polaris' name was a US-market designation; period LeCoultre catalogues from 1965 referred to the watch as a 'Deep Sea Skin Diver,' and the name was reportedly chosen to evoke an adventurous, Cold-War-era spirit (and is widely tied to the Polaris submarine-launched missile).",
+      "confidence": "medium",
+      "sources": [
+        "https://blommanwatchreport.com/2019/08/19/on-the-wooden-beam-lecoultre-e-859-polaris-1965/",
         "https://le-monde-edmond.com/polaris-e859-jaeger-indepthreview/",
         "https://www.fratellowatches.com/a-historical-overview-of-the-jaeger-lecoultre-memovox-polaris/",
         "https://www.watchonista.com/articles/novelties/sihh-2018-introducing-jaeger-lecoultre-polaris-collection"
@@ -171,50 +233,33 @@
       "applies_to": [
         "E859"
       ],
-      "claim": "The E859's two main dial generations differ visibly: the 1965 first-generation dial has small lume plots and silver indices on a glossier black, while the 1968 second-generation dial uses matte black with large trapezoidal/exploding tritium plots for stronger underwater legibility.",
+      "claim": "The original Polaris was usually delivered on a Tropic-style rubber strap; a steel bracelet by J.B. Champion (USA) was offered, primarily for the US market, and is now hard to find.",
       "confidence": "high",
       "sources": [
-        "https://hairspring.com/blogs/finds/ebays-finest-1st-generation-lecoultre-polaris-diving-alarm",
-        "https://www.christies.com/en/stories/deconstructed-jaeger-lecoultre-1967-memovox-polaris-e859-f4c07e3f1a7640c0b9c5c0bb405bc1db",
-        "https://www.fratellowatches.com/a-historical-overview-of-the-jaeger-lecoultre-memovox-polaris/"
-      ]
-    },
-    {
-      "applies_to": [
-        "E859"
-      ],
-      "claim": "The E859 was originally delivered on a 22mm 'Tropic' style rubber strap, with an optional steel bracelet by J.B. Champion (USA) — the latter is now scarce.",
-      "confidence": "high",
-      "sources": [
+        "https://blommanwatchreport.com/2019/08/19/on-the-wooden-beam-lecoultre-e-859-polaris-1965/",
         "https://le-monde-edmond.com/polaris-e859-jaeger-indepthreview/",
         "https://www.fratellowatches.com/a-historical-overview-of-the-jaeger-lecoultre-memovox-polaris/",
-        "https://www.hodinkee.com/articles/bring-a-loupe-july-10-2015",
+        "https://www.windvintage.com/lecoultre-polaris",
         "https://www.hodinkee.com/articles/just-because-hands-on-with-a-1968-jaeger-lecoultre-polaris"
       ]
     },
     {
       "applies_to": [
-        "E859",
-        "E857",
-        "model-wide"
+        "E859"
       ],
-      "claim": "The Polaris is the direct successor of the 1959 Memovox Deep Sea (ref. E857), which was the first automatic dive watch with an alarm; the project began with a 1959 proposal from LeCoultre USA president Bertram (B.S.) Lowe.",
-      "confidence": "high",
+      "claim": "Service crowns can be distinguished from originals by a circle around the quadrille decoration; original crowns have the cross-hatched pattern without that surrounding ring.",
+      "confidence": "medium",
       "sources": [
-        "https://le-monde-edmond.com/polaris-e859-jaeger-indepthreview/",
-        "https://www.fratellowatches.com/a-historical-overview-of-the-jaeger-lecoultre-memovox-polaris/",
-        "https://monochrome-watches.com/jaeger-lecoultre-polaris-2018-collection-sihh-2018-memovox-automatic-date-chronograph-price/",
-        "https://swisswatches-magazine.com/jaeger-lecoultre-polaris-toolwatch-history/"
+        "https://le-monde-edmond.com/polaris-e859-jaeger-indepthreview/"
       ]
     },
     {
       "applies_to": [
         "E859"
       ],
-      "claim": "A controversial 1970 sub-variant known as the 'Calypso-hands' Polaris exists, with only around 55 examples produced.",
-      "confidence": "high",
+      "claim": "For collectability, the dial signature should be matched by the movement bridge signature (LeCoultre with LeCoultre, Jaeger-LeCoultre with Jaeger-LeCoultre); the inner caseback is always marked 'LeCoultre' regardless of the dial.",
+      "confidence": "medium",
       "sources": [
-        "https://hairspring.com/blogs/finds/e859-jaeger-lecoultre-polaris",
         "https://le-monde-edmond.com/polaris-e859-jaeger-indepthreview/"
       ]
     },
@@ -222,28 +267,30 @@
       "applies_to": [
         "E870"
       ],
-      "claim": "The Polaris II (ref. E870 / 14.2320), produced 1970–1971, replaced the third crown with an external rotating bezel, used an oval case and the new high-beat calibre 916, and ran alongside — not as a replacement for — the E859.",
+      "claim": "The Memovox Polaris II (ref. E870 / 14.2320) succeeded the original in 1970–71 with an oval case, external bezel and the new high-beat calibre 916; it ran alongside, then replaced, the E859.",
       "confidence": "high",
       "sources": [
+        "https://swisswatches-magazine.com/jaeger-lecoultre-polaris-toolwatch-history/",
         "https://www.fratellowatches.com/a-historical-overview-of-the-jaeger-lecoultre-memovox-polaris/",
-        "https://swisswatches-magazine.com/jaeger-lecoultre-polaris-toolwatch-history/"
+        "https://www.watchonista.com/articles/novelties/sihh-2018-introducing-jaeger-lecoultre-polaris-collection"
       ]
     },
     {
       "applies_to": [
         "190.8.96"
       ],
-      "claim": "JLC revived the Polaris in 2008 with the Memovox Tribute to Polaris (ref. 190.8.96), a faithful 42mm re-edition with the calibre 956 alarm movement, limited to 768 pieces.",
+      "claim": "JLC revived the Polaris name in 2008 with the Memovox Tribute to Polaris, a faithful 42mm re-edition limited to 768 pieces, which served as the bridge between the vintage and modern eras.",
       "confidence": "high",
       "sources": [
-        "https://hairspring.com/blogs/finds/1-of-768-jaeger-lecoultre-polaris-limited-190-8-96",
         "https://monochrome-watches.com/jaeger-lecoultre-polaris-2018-collection-sihh-2018-memovox-automatic-date-chronograph-price/",
-        "https://monochrome-watches.com/new-jaeger-lecoultre-polaris-date-green-gradient-boutique-edition-q906863j-hands-on-price/",
-        "https://www.fratellowatches.com/a-historical-overview-of-the-jaeger-lecoultre-memovox-polaris/"
+        "https://hairspring.com/blogs/finds/1-of-768-jaeger-lecoultre-polaris-limited-190-8-96",
+        "https://www.fratellowatches.com/a-historical-overview-of-the-jaeger-lecoultre-memovox-polaris/",
+        "https://swisswatches-magazine.com/jaeger-lecoultre-polaris-toolwatch-history/"
       ]
     },
     {
       "applies_to": [
+        "modern",
         "Q9008470",
         "Q9008170",
         "Q9038670",
@@ -251,7 +298,7 @@
         "Q9068670",
         "Q9028180"
       ],
-      "claim": "At SIHH 2018 JLC relaunched Polaris as a full collection — Polaris Automatic (cal. 898/1, 41mm, 100m), Date (cal. 899/1, 42mm, 200m), Chronograph (cal. 751, 42mm, 100m), Chronograph WT (cal. 752, 44mm titanium, 100m) and Memovox LE (cal. 956, 42mm, 200m, 1,000 pieces).",
+      "claim": "At SIHH 2018 JLC relaunched Polaris as a full collection: Automatic (41mm, cal. 898/1), Date (42mm, cal. 899/1, 200m), Memovox (42mm, cal. 956, 200m, 1,000-piece LE), Chronograph (42mm, cal. 751) and Chronograph World Time (44mm titanium, cal. 752).",
       "confidence": "high",
       "sources": [
         "https://monochrome-watches.com/jaeger-lecoultre-polaris-2018-collection-sihh-2018-memovox-automatic-date-chronograph-price/",
@@ -262,21 +309,23 @@
     },
     {
       "applies_to": [
-        "Q9038670"
+        "Q9038670",
+        "modern"
       ],
-      "claim": "The 2018 Polaris Memovox (ref. 9038670) is limited to 1,000 pieces, runs the cal. 956 automatic alarm with date, 42mm steel case and 200m water resistance, and is priced around EUR 10,700 / USD 12,600.",
+      "claim": "The modern Polaris Memovox (Q9038670) retains the alarm function via calibre 956, with 200m water resistance and triple-crown layout, and was issued as a 1,000-piece limited edition to mark the 50th anniversary.",
       "confidence": "high",
       "sources": [
         "https://monochrome-watches.com/jaeger-lecoultre-polaris-2018-collection-sihh-2018-memovox-automatic-date-chronograph-price/",
-        "https://watchesbysjx.com/2018/01/sihh-2018-introducing-the-jaeger-lecoultre-polaris-collection-a-whole-line-of-retro-inspired-watches.html",
-        "https://www.fratellowatches.com/jaeger-lecoultre-polaris-memovox-review/"
+        "https://revolutionwatch.com/sihh-2018-jaeger-lecoultre-introduces-polaris-new-icon/",
+        "https://www.fratellowatches.com/jaeger-lecoultre-polaris-memovox-review/",
+        "https://watchesbysjx.com/2018/01/sihh-2018-introducing-the-jaeger-lecoultre-polaris-collection-a-whole-line-of-retro-inspired-watches.html"
       ]
     },
     {
       "applies_to": [
-        "Q9028471"
+        "modern"
       ],
-      "claim": "The Polaris Mariner Memovox (introduced 2020) is the modern collection's true dive watch: 42mm steel, 300m water resistance, blue sunray dial with orange accents, redesigned cal. 956 with side-mounted gong visible through a sapphire caseback.",
+      "claim": "The 2020 Polaris Mariner Memovox pushed the line back into proper professional dive territory with 300m water resistance, a screw-down crown, a blue sunray-and-grained dial with orange accents, and a sapphire caseback exposing the calibre 956's alarm hammer.",
       "confidence": "high",
       "sources": [
         "https://www.fratellowatches.com/hands-on-jaeger-lecoultre-polaris-mariner-memovox-review/",
@@ -286,61 +335,60 @@
     },
     {
       "applies_to": [
-        "Q9008470",
-        "Q9008170",
-        "Q9038670",
         "Q9068670",
-        "Q9028471",
-        "Q9028180"
+        "modern"
       ],
-      "claim": "The modern Polaris dial language is built on three contrasting finishes — sunray centre, grained hour chapter, opaline inner bezel — paired with applied trapezoidal indices, four applied Arabic numerals and vanilla Super-LumiNova evoking aged tritium.",
+      "claim": "The modern Polaris Date (Q9068670 series) follows the vintage cues most closely: trapezoidal indices, four Arabic numerals, vanilla-toned lume, internal bezel, dual compressor-style crowns, and an engraved scuba diver on the caseback echoing the period inner caseback marking.",
       "confidence": "high",
       "sources": [
         "https://monochrome-watches.com/jaeger-lecoultre-polaris-2018-collection-sihh-2018-memovox-automatic-date-chronograph-price/",
         "https://revolutionwatch.com/sihh-2018-jaeger-lecoultre-introduces-polaris-new-icon/",
-        "https://www.jaeger-lecoultre.com/us-en/jaeger-lecoultre-polaris-history",
-        "https://swisswatches-magazine.com/jaeger-lecoultre-polaris-toolwatch-history/"
+        "https://watchesbysjx.com/2018/01/sihh-2018-introducing-the-jaeger-lecoultre-polaris-collection-a-whole-line-of-retro-inspired-watches.html",
+        "https://monochrome-watches.com/new-jaeger-lecoultre-polaris-date-green-gradient-boutique-edition-q906863j-hands-on-price/"
       ]
     },
     {
       "applies_to": [
-        "model-wide",
-        "dive-watch-context"
+        "modern"
       ],
-      "claim": "JLC entered the dive-watch category late relative to Blancpain (1953) and Rolex Submariner (1953/54), differentiating itself by using an audible alarm rather than the now-standard external rotating bezel to mark dive time.",
+      "claim": "The modern Polaris dial architecture combines three textures — sunray-brushed centre, grained hour chapter, opaline inner bezel — a deliberate signature across the 2018+ collection.",
       "confidence": "high",
       "sources": [
-        "https://hairspring.com/blogs/finds/e859-jaeger-lecoultre-polaris",
-        "https://hairspring.com/blogs/finds/tropical-e859-lecoultre-memovox-polaris",
-        "https://le-monde-edmond.com/polaris-e859-jaeger-indepthreview/",
-        "https://swisswatches-magazine.com/jaeger-lecoultre-polaris-toolwatch-history/"
+        "https://monochrome-watches.com/jaeger-lecoultre-polaris-2018-collection-sihh-2018-memovox-automatic-date-chronograph-price/",
+        "https://revolutionwatch.com/sihh-2018-jaeger-lecoultre-introduces-polaris-new-icon/",
+        "https://monochrome-watches.com/new-jaeger-lecoultre-polaris-date-green-gradient-boutique-edition-q906863j-hands-on-price/",
+        "https://www.jaeger-lecoultre.com/us-en/jaeger-lecoultre-polaris-history"
       ]
     }
   ],
   "gaps": [
     {
-      "gap": "Specific service-history / parts-availability issues for vintage E859 (alarm hammers, crowns, resonator backs)",
-      "suggestion": "Add a watchmaker- or specialist-sourced piece on what wears out on these and what JLC can/can't service today."
+      "gap": "Pricing/market data for vintage E859 is thin and dated",
+      "suggestion": "Add recent (post-2020) auction results — Phillips, Christie's, Sotheby's — to give a realistic current market band beyond Hodinkee's $15k–$30k guidance from the mid-2010s."
     },
     {
-      "gap": "Auction price arc 2015 → present",
-      "suggestion": "Bring in newer auction results (Phillips, Christie's, Sotheby's) post-2019 to update the Hodinkee 2015 USD 15–30k band."
+      "gap": "No detailed coverage of the 2008 Tribute (190.8.96) and 2013 platinum Tribute",
+      "suggestion": "Add a dedicated piece on the 2008 LE 768 and the 2013 platinum Tribute — these are explicitly named as 'where_next_refs' but only one corpus piece treats the 190.8.96 in any depth."
     },
     {
-      "gap": "Original-owner stories and period advertising",
-      "suggestion": "Source period catalogues and ads (US LeCoultre print campaigns) to support the 'Polaris' naming story and document the JB Champion bracelet's original sale context."
+      "gap": "Caliber-level depth on modern Polaris movements is shallow",
+      "suggestion": "Add a JLC manufacture/movement source covering cal. 898/1, 899/1, 899AB, 956, 751, 752, 761 in proper detail — useful for the modern-line references."
     },
     {
-      "gap": "Calypso-hands 1970 variant detail",
-      "suggestion": "Find a dedicated source with imagery of an authenticated Calypso variant — currently only Le Monde Edmond and Hairspring mention it, and dismissively."
+      "gap": "Period advertising, brochures and archive imagery are barely represented",
+      "suggestion": "Add scans/citations of original LeCoultre catalogues (Blomman cites two but doesn't reproduce them) and JLC archive documents to back up dating claims."
     },
     {
-      "gap": "Polaris II (E870) coverage",
-      "suggestion": "The 1970–71 second-generation Polaris is underdocumented in this corpus — add a dedicated reference (Fratello and Swisswatches give the outline but no deep dive)."
+      "gap": "Real first-hand owner / professional-diver stories are largely absent",
+      "suggestion": "Source interviews or articles about period owners — divers who actually used the watch in the 60s/70s — to ground the tool-watch claim in something beyond marketing copy."
     },
     {
-      "gap": "Modern collection evolution beyond Mariner / Green Gradient",
-      "suggestion": "Add sources on the Polaris Geographic and Polaris Perpetual Calendar (mentioned in Swisswatches and Fratello but not detailed)."
+      "gap": "The Calypso-hands 1970 variant is only described in passing",
+      "suggestion": "Find a dedicated piece (or auction lot) on the 55 Calypso-hand examples so it can be addressed properly rather than dismissed."
+    },
+    {
+      "gap": "Coverage of the Polaris II / E870 is thin and mostly secondary",
+      "suggestion": "Add a primary deep-dive on the E870 — there is clear collector interest but only Fratello and Swisswatches treat it in real depth."
     }
   ],
   "marks": [
@@ -348,12 +396,23 @@
       "applies_to": [
         "E859"
       ],
-      "explanation": "Outer caseback layer perforated with 16 circular holes that allow the alarm sound to project underwater — paired with an inner resonator core. Often described as a 'gong made of the entire back'.",
-      "name": "16-hole caseback",
+      "explanation": "Inner sealing layer, brass resonator and an outer shield drilled with 16 holes — purpose-built to let the alarm sound out underwater. The caseback bears the Compressor diving-helmet logo.",
+      "name": "Triple caseback with 16 perforations",
       "sources": [
-        "https://hairspring.com/blogs/finds/e859-jaeger-lecoultre-polaris",
         "https://le-monde-edmond.com/polaris-e859-jaeger-indepthreview/",
         "https://www.christies.com/en/stories/deconstructed-jaeger-lecoultre-1967-memovox-polaris-e859-f4c07e3f1a7640c0b9c5c0bb405bc1db",
+        "https://www.fratellowatches.com/a-historical-overview-of-the-jaeger-lecoultre-memovox-polaris/",
+        "https://hairspring.com/blogs/finds/e859-jaeger-lecoultre-polaris"
+      ]
+    },
+    {
+      "applies_to": [
+        "E859"
+      ],
+      "explanation": "Top = alarm wind/set (and quick-set date), middle = internal rotating bezel, bottom = movement winding and time-setting. Originals have a clean cross-hatched 'quadrille' field; service replacements are recognisable by an extra ring around the pattern.",
+      "name": "Three quadrille-decorated crowns",
+      "sources": [
+        "https://le-monde-edmond.com/polaris-e859-jaeger-indepthreview/",
         "https://www.fratellowatches.com/a-historical-overview-of-the-jaeger-lecoultre-memovox-polaris/"
       ]
     },
@@ -361,8 +420,44 @@
       "applies_to": [
         "E859"
       ],
-      "explanation": "All three E859 crowns share a fine cross-hatched 'quadrille' decoration; service-replacement crowns are recognisable by a raised circular border around the pattern.",
-      "name": "Quadrille (cross-hatched) crowns",
+      "explanation": "The elapsed-time/dive scale rotates inside the case under a deeply domed Hesalite crystal, giving the dial its often-cited 'aquarium' look — set via the middle crown.",
+      "name": "No external bezel — internal rotating dive scale",
+      "sources": [
+        "https://le-monde-edmond.com/polaris-e859-jaeger-indepthreview/",
+        "https://hairspring.com/blogs/finds/e859-jaeger-lecoultre-polaris",
+        "https://www.jaeger-lecoultre.com/us-en/watches/collectibles/qve85901"
+      ]
+    },
+    {
+      "applies_to": [
+        "E859"
+      ],
+      "explanation": "42mm super-compressor case where the caseback sealing rings tighten as ambient pressure rises — more secure with depth.",
+      "name": "Piquerez (EPSA) compressor case",
+      "sources": [
+        "https://www.christies.com/en/stories/deconstructed-jaeger-lecoultre-1967-memovox-polaris-e859-f4c07e3f1a7640c0b9c5c0bb405bc1db",
+        "https://www.fratellowatches.com/a-historical-overview-of-the-jaeger-lecoultre-memovox-polaris/",
+        "https://hairspring.com/blogs/finds/tropical-e859-lecoultre-memovox-polaris"
+      ]
+    },
+    {
+      "applies_to": [
+        "E859"
+      ],
+      "explanation": "European/Swiss-market dials are signed 'Jaeger-LeCoultre'; US-market dials are signed 'LeCoultre' only. The inner caseback is marked 'LeCoultre' regardless, and the movement bridge should ideally match the dial signature.",
+      "name": "Dial signature: 'Jaeger-LeCoultre' vs 'LeCoultre'",
+      "sources": [
+        "https://le-monde-edmond.com/polaris-e859-jaeger-indepthreview/",
+        "https://www.christies.com/en/stories/deconstructed-jaeger-lecoultre-1967-memovox-polaris-e859-f4c07e3f1a7640c0b9c5c0bb405bc1db",
+        "https://www.hodinkee.com/articles/just-because-a-1968-lecoultre-polaris"
+      ]
+    },
+    {
+      "applies_to": [
+        "E859"
+      ],
+      "explanation": "The inner caseback carries a month-year stamp (e.g. '5-65' for May 1965, '5-68' for May 1968) — a key authenticity marker, with the 1967 batch of just 9 pieces stamped accordingly.",
+      "name": "Inner caseback date stamp",
       "sources": [
         "https://le-monde-edmond.com/polaris-e859-jaeger-indepthreview/",
         "https://hairspring.com/blogs/finds/e859-jaeger-lecoultre-polaris"
@@ -372,252 +467,213 @@
       "applies_to": [
         "E859"
       ],
-      "explanation": "Inside the caseback, the year of production is engraved preceded by a hyphen and the month (e.g. '5-68' for May 1968). The inner caseback is signed 'LeCoultre' regardless of dial market.",
-      "name": "Inner caseback dating mark",
+      "explanation": "First-generation (1965) dials use thin applied indices, small lume plots, and either dauphine or sword hands. The 1968-style dial introduces large trapezoidal tritium markers and consistent baton hands for stronger underwater legibility.",
+      "name": "Dial-generation hand and index shift",
       "sources": [
-        "https://le-monde-edmond.com/polaris-e859-jaeger-indepthreview/"
-      ]
-    },
-    {
-      "applies_to": [
-        "E859"
-      ],
-      "explanation": "US-market dials read 'LeCoultre'; European-market dials read 'Jaeger-LeCoultre'. Matching applies to the movement bridge and box. Alarm-disc text follows the dial: LeCoultre dials show 'Memovox' (or rarely 'Memodate') on the central disc; Jaeger-LeCoultre dials typically have a plain disc.",
-      "name": "Dial market signature: 'LeCoultre' vs 'Jaeger-LeCoultre'",
-      "sources": [
-        "https://le-monde-edmond.com/polaris-e859-jaeger-indepthreview/",
-        "https://www.christies.com/en/stories/deconstructed-jaeger-lecoultre-1967-memovox-polaris-e859-f4c07e3f1a7640c0b9c5c0bb405bc1db",
-        "https://www.hodinkee.com/articles/just-because-hands-on-with-a-1968-jaeger-lecoultre-polaris"
-      ]
-    },
-    {
-      "applies_to": [
-        "E859"
-      ],
-      "explanation": "Index lume on original dials varies legitimately from pale green through yellow to orange tones; the hour and minute hands, however, should be a darker green creating a deliberate non-matching effect.",
-      "name": "Tritium plot colour variation",
-      "sources": [
-        "https://le-monde-edmond.com/polaris-e859-jaeger-indepthreview/"
-      ]
-    },
-    {
-      "applies_to": [
-        "E859"
-      ],
-      "explanation": "Carries the EPSA compressor diving-helmet emblem indicating the patented compression sealing; the same logo was later reused by JLC for the Master Compressor line.",
-      "name": "Piquerez Compressor logo on caseback",
-      "sources": [
-        "https://le-monde-edmond.com/polaris-e859-jaeger-indepthreview/",
-        "https://www.fratellowatches.com/a-historical-overview-of-the-jaeger-lecoultre-memovox-polaris/"
-      ]
-    },
-    {
-      "applies_to": [
-        "E859"
-      ],
-      "explanation": "For 1968 examples, K825 movement serials commonly fall between 1,925,000 and 2,100,000 and case serials (engraved inside the caseback) between 1,115,000 and 1,160,000 — guidance based on collector data, to be applied with care rather than strictly.",
-      "name": "Movement and case serial ranges (1968 production)",
-      "sources": [
-        "https://le-monde-edmond.com/polaris-e859-jaeger-indepthreview/"
-      ]
-    },
-    {
-      "applies_to": [
-        "E859"
-      ],
-      "explanation": "Common issues that depress an E859: relumed dials, water damage to the dial, polished cases (the angular bezel softens quickly), service-replaced crowns (visible by the raised border), and refinished or reprinted dials.",
-      "name": "Condition red-flags",
-      "sources": [
-        "https://hairspring.com/blogs/finds/e859-jaeger-lecoultre-polaris",
-        "https://hairspring.com/blogs/finds/ebays-finest-1st-generation-lecoultre-polaris-diving-alarm"
-      ]
-    },
-    {
-      "applies_to": [
-        "E859"
-      ],
-      "explanation": "Original delivery was on a 22mm Tropic-style rubber strap; an optional steel bracelet by J.B. Champion (USA) was offered, and full-set examples with the original Champion bracelet command a premium today.",
-      "name": "22mm Tropic rubber strap / J.B. Champion bracelet option",
-      "sources": [
-        "https://le-monde-edmond.com/polaris-e859-jaeger-indepthreview/",
-        "https://www.hodinkee.com/articles/bring-a-loupe-july-10-2015",
-        "https://www.hodinkee.com/articles/just-because-hands-on-with-a-1968-jaeger-lecoultre-polaris"
-      ]
-    },
-    {
-      "applies_to": [
-        "E859"
-      ],
-      "explanation": "First-generation dials have straight/silver indices with small lume plots and a glossier black surface; second-generation dials are matte black with large trapezoidal tritium plots and bolder Arabic 6/9/12. Hand styles also shift across the run (dauphine, syringe, baton — baton-only by gen 2).",
-      "name": "Generation tells: gen-1 (1965) vs gen-2 (1968)",
-      "sources": [
+        "https://blommanwatchreport.com/2019/08/19/on-the-wooden-beam-lecoultre-e-859-polaris-1965/",
         "https://hairspring.com/blogs/finds/ebays-finest-1st-generation-lecoultre-polaris-diving-alarm",
         "https://www.christies.com/en/stories/deconstructed-jaeger-lecoultre-1967-memovox-polaris-e859-f4c07e3f1a7640c0b9c5c0bb405bc1db",
         "https://www.fratellowatches.com/a-historical-overview-of-the-jaeger-lecoultre-memovox-polaris/"
       ]
+    },
+    {
+      "applies_to": [
+        "E859"
+      ],
+      "explanation": "Optional 22mm steel bracelet produced by J.B. Champion USA, originally a US-market accessory; complete sets with the period bracelet are uncommon and carry a market premium.",
+      "name": "Original J.B. Champion bracelet",
+      "sources": [
+        "https://blommanwatchreport.com/2019/08/19/on-the-wooden-beam-lecoultre-e-859-polaris-1965/",
+        "https://le-monde-edmond.com/polaris-e859-jaeger-indepthreview/",
+        "https://www.windvintage.com/lecoultre-polaris",
+        "https://www.hodinkee.com/articles/just-because-hands-on-with-a-1968-jaeger-lecoultre-polaris"
+      ]
+    },
+    {
+      "applies_to": [
+        "E859"
+      ],
+      "explanation": "17-jewel automatic bumper-rotor alarm movement; the Polaris uses the same calibre family as other Memovox alarms of the era — the 'bumper' rotor was retained because a free rotor would interfere with the alarm hammer striking the caseback.",
+      "name": "Calibre K825",
+      "sources": [
+        "https://le-monde-edmond.com/polaris-e859-jaeger-indepthreview/",
+        "https://www.fratellowatches.com/a-historical-overview-of-the-jaeger-lecoultre-memovox-polaris/",
+        "https://www.christies.com/en/stories/deconstructed-jaeger-lecoultre-1967-memovox-polaris-e859-f4c07e3f1a7640c0b9c5c0bb405bc1db"
+      ]
     }
   ],
-  "model_context": "The Jaeger-LeCoultre Polaris sits in JLC's catalogue as the maison's most recognisable sports/dive line, anchored by the vintage Memovox Polaris ref. E859 of the late 1960s and revived as a full collection in 2018. The line traces directly from the Memovox alarm wristwatch of 1950, through the Memovox Deep Sea (E857) of 1959 — the first automatic dive watch with an alarm — to the E859 prototypes of 1963 and the production E859 from 1965. The Polaris name itself originated with JLC's US distributor, evoking Cold War-era polar/space/undersea adventure (the Polaris submarine-launched missile is widely cited as the inspiration). The vintage E859 was an answer to the dive-watch boom of the 1950s on JLC's own terms: rather than copy the external rotating bezel of the Submariner or Fifty Fathoms, JLC used an audible alarm as a dive-time warning, paired with an internal rotating bezel, a Piquerez (EPSA) Compressor case, and a multi-layer caseback engineered to make the alarm audible underwater. Total vintage production was tiny — 1,714 pieces across 1965–1970 — which combined with the boldly legible 42mm dial, three crowns and oversized Hesalite crystal to make it a cult collector watch by the 2000s. JLC tested the demand with the 2008 Memovox Tribute to Polaris (ref. 190.8.96, 768 pieces), then in 2018 used the 50th anniversary of the 1968 dial as the launch point for a full modern Polaris range — three-hand, date, chronograph, world-time chronograph and Memovox LE — repositioning Polaris as JLC's everyday sport-elegance line alongside the dressier Reverso and Master collections. The line has since expanded to include Mariner (true 300m dive) models, gradient-dial editions, a Geographic and a Perpetual Calendar, treating the Polaris case as a platform for JLC's broader watchmaking rather than only an alarm diver.",
+  "model_context": "The Jaeger-LeCoultre Polaris sits within JLC's sports-watch lineage, anchored by the reference E859 — a Memovox-based dive watch developed from 1963, with serial production from 1965 to roughly 1970. It grew out of the Memovox Deep Sea (ref. E857) of 1959, the first automatic dive alarm wristwatch, and used JLC's expertise in the alarm complication to solve a diver's core problem: how do you know when to surface? The Polaris answered with an audible alarm that could be heard and felt underwater, housed in a 42mm Piquerez (EPSA) compressor case with a three-layer caseback featuring 16 holes drilled in the outermost layer to let the sound escape. Three crowns — alarm, internal bezel, time/date — and a bezel-less, deeply domed Hesalite crystal gave the dial an unusual 'aquarium' look that has defined the watch's identity ever since. Total E859 production was modest at 1,714 pieces (plus around 50 prototypes), split across dial generations and the two market signatures: 'Jaeger-LeCoultre' (Europe/Switzerland) and 'LeCoultre' (US, where the Polaris name actually originated, reportedly evoking the Cold-War spirit of adventure and the Polaris missile). After the original Polaris faded in the early 1970s — succeeded briefly by the radically different Polaris II / E870 — the name slept for decades, surfacing only in tribute editions (notably the 2008 Memovox Tribute to Polaris, 768 pieces, and a 2013 platinum tribute) before JLC relaunched Polaris as a full sports-watch collection at SIHH 2018. Today the Polaris is positioned as JLC's sportier, more accessible everyday line alongside the Reverso and Master Control, with Date, Automatic, Chronograph, World Time, Memovox, and more recently Mariner, Geographic and Perpetual Calendar variants.",
   "module_candidates": [
     {
-      "module": "Memovox Deep Sea (ref. E857)",
-      "rationale": "The direct ancestor of the Polaris — the 1959 watch that first combined automatic winding with a dive alarm. Deserves its own page; repeatedly cited in every Polaris history."
+      "module": "Memovox Deep Sea (E857)",
+      "rationale": "The 1959 ancestor of the Polaris — the first automatic dive alarm wristwatch and the direct lineage step into the E859. Deserves its own page covering Mr Lowe's proposal, the US-market 'playful script' dial, the I.C. Rapoport ownership story, and the way it defined JLC's alternative answer to the dive watch (alarm instead of bezel)."
     },
     {
-      "module": "Memovox Polaris II (ref. E870 / 14.2320)",
-      "rationale": "The 1970–71 oval-cased high-beat (cal. 916) successor with external rotating bezel — a radically different design that deserves its own treatment rather than being a footnote on the E859 page."
+      "module": "Memovox Polaris II / E870",
+      "rationale": "The radically different 1970–71 successor: oval Nardin/Narval case, calibre 916 high-beat with free rotor, external bezel, single-layer resonator caseback. Distinct enough mechanically and stylistically to warrant its own reference page."
     },
     {
-      "module": "Memovox Tribute to Polaris 2008 (ref. 190.8.96)",
-      "rationale": "The 768-piece 2008 re-edition is the bridge between vintage and modern Polaris and a collectible in its own right; warrants a standalone page."
+      "module": "2008 Memovox Tribute to Polaris (190.8.96)",
+      "rationale": "The 768-piece bridge between vintage and modern — the watch that re-established the Polaris name a full decade before the 2018 relaunch. Documented market behaviour, Goodwood-replica framing, and concrete reference number make it a clean standalone page."
     },
     {
-      "module": "Modern Polaris Memovox 2018 (ref. Q9038670)",
-      "rationale": "The 1,000-piece SIHH 2018 limited edition that anchored the modern line — distinct enough in design, mechanics and pricing to merit its own page."
+      "module": "Modern Polaris Memovox (Q9038670 / Mariner Memovox Q9028471)",
+      "rationale": "The two modern alarm divers — the 2018 1,000-piece LE and the 2020 Mariner with 300m WR and sapphire caseback — share the calibre 956 but differ enough in spec and intent to anchor their own page on how the alarm complication was re-engineered for the modern era."
     },
     {
-      "module": "Polaris Mariner Memovox (ref. Q9028471)",
-      "rationale": "The 2020 true-300m diver with relocated gong and sapphire caseback is a meaningful sub-line shift from the dressier 2018 collection and deserves separate coverage."
+      "module": "JLC Memovox family (alarm-watch lineage)",
+      "rationale": "The Polaris is the sports child of a much larger family that includes the Memovox Wrist Alarm (1950), the E853/E855 calendar Memovox, the Snowdrop, the TV-Screen, the Master Compressor Memovox (2002) and today's Master Control Memovox. A family-level page gives the Polaris its proper context."
     },
     {
-      "module": "Memovox (calibre) family",
-      "rationale": "A page on the alarm complication itself — cal. 489 → 815 → 825 → 916 → 956 — would unify Polaris with the wider Memovox catalogue (Snowdrop E877, Egg, TV Screen E871, dress E853/E855)."
-    },
-    {
-      "module": "Piquerez (EPSA) Super Compressor case",
-      "rationale": "The pressure-tightening compressor case used by JLC, Longines, Universal Geneve, Enicar and others is a cross-brand topic worth its own reference page."
+      "module": "Compressor case / EPSA-Piquerez",
+      "rationale": "The compressor patent shaped a generation of dive watches across many brands; a module on EPSA Piquerez compressor cases — what they are, how the seal-under-pressure system works, who else used them — would support both the E859 page and adjacent dive-watch pages."
     }
   ],
   "source_contributions": [
     {
       "publication": "Le Monde Edmond",
       "source": "https://le-monde-edmond.com/polaris-e859-jaeger-indepthreview/",
-      "unique_contribution": "The most granular E859 reference document in the corpus: production breakdown (50 prototypes 1963 / 500 in 1965 / 9 in 1967 / 1,150 in 1968 / 55 Calypso 1970), serial-number ranges, Memovox/Memodate alarm-disc rules, original vs service crown identification, J.B. Champion bracelet, and the origin of the Polaris name via LeCoultre USA."
+      "unique_contribution": "In-depth Mstanga interview: archival production breakdown by year (50 prototypes, 500 in '65, 1,150 in '68, 9 in '67, 55 Calypso in '70), original-vs-service crown identification, dial/movement/inner-caseback matching rules, lume colour tolerance, and the J.B. Champion bracelet detail."
+    },
+    {
+      "publication": "Blomman Watch Report",
+      "source": "https://blommanwatchreport.com/2019/08/19/on-the-wooden-beam-lecoultre-e-859-polaris-1965/",
+      "unique_contribution": "Period catalogue evidence that 'Polaris' was not used in 1965 ('Deep Sea Skin Diver'), gilt-on-LeCoultre dial detail, and the dauphine-to-sword hand transition between earlier and later first-generation pieces."
+    },
+    {
+      "publication": "Hairspring Finds",
+      "source": "https://hairspring.com/blogs/finds/e859-jaeger-lecoultre-polaris",
+      "unique_contribution": "Frames the 1967 mini-batch of 9 pieces (year stamped inside caseback), describes the cult/under-the-radar market position, and lists common condition issues (relume, water damage, polished cases, replaced crowns)."
+    },
+    {
+      "publication": "Hairspring Finds",
+      "source": "https://hairspring.com/blogs/finds/tropical-e859-lecoultre-memovox-polaris",
+      "unique_contribution": "Detailed walkthrough of a tropical chocolate-toned dial example, sharp bevels and correct crowns as condition reference."
+    },
+    {
+      "publication": "Hairspring Finds",
+      "source": "https://hairspring.com/blogs/finds/ebays-finest-1st-generation-lecoultre-polaris-diving-alarm",
+      "unique_contribution": "First-generation dial vocabulary: solid (not pierced) caseback, straight indices, small lume plots, silver indices — the original 1965 look."
+    },
+    {
+      "publication": "Hairspring Finds",
+      "source": "https://hairspring.com/blogs/finds/1-of-768-jaeger-lecoultre-polaris-limited-190-8-96",
+      "unique_contribution": "Frames the 2008 Memovox Tribute to Polaris ref. 190.8.96 (LE 768) as the bridge between vintage and modern Polaris, with a Goodwood-replica analogy for its place in collections."
     },
     {
       "publication": "Christie's",
       "source": "https://www.christies.com/en/stories/deconstructed-jaeger-lecoultre-1967-memovox-polaris-e859-f4c07e3f1a7640c0b9c5c0bb405bc1db",
-      "unique_contribution": "Auction-house technical breakdown of a 1967 example, framing the 1967 production as a small test batch for the bolder 1968 dial and explaining the super-compressor pressure-seal principle."
+      "unique_contribution": "Auction-grade technical write-up: super-compressor mechanism (caseback rings compress under depth), 1967 'test' theory for the bolder dial, and dial-signature/market split."
     },
     {
       "publication": "Fratello",
       "source": "https://www.fratellowatches.com/a-historical-overview-of-the-jaeger-lecoultre-memovox-polaris/",
-      "unique_contribution": "Best single line-history piece — covers the 1961 proposal from B.S. Lowe to use a Piquerez compressor case, the EPSA collaboration, the difference between gen-1 and gen-2 dials, and the technical leap from cal. 825 to cal. 916 in the Polaris II."
-    },
-    {
-      "publication": "Hairspring",
-      "source": "https://hairspring.com/blogs/finds/e859-jaeger-lecoultre-polaris",
-      "unique_contribution": "Pushes back on JLC's own marketing date of 1968 with the documented production timeline, and surfaces market-condition tells (relumes, water damage, polished cases, replaced crowns)."
-    },
-    {
-      "publication": "Hairspring",
-      "source": "https://hairspring.com/blogs/finds/ebays-finest-1st-generation-lecoultre-polaris-diving-alarm",
-      "unique_contribution": "Detailed look at a first-generation (1965-style) example with straight indices, small lume plots and a solid caseback — the configuration that's easy to overlook in favour of the 1968 dial."
-    },
-    {
-      "publication": "Hairspring",
-      "source": "https://hairspring.com/blogs/finds/tropical-e859-lecoultre-memovox-polaris",
-      "unique_contribution": "Notes tropical-dial behaviour on the gen-2 dial and characterises the K825 as a derivative of the K815 with added date."
-    },
-    {
-      "publication": "Hairspring",
-      "source": "https://hairspring.com/blogs/finds/1-of-768-jaeger-lecoultre-polaris-limited-190-8-96",
-      "unique_contribution": "Frames the 2008 Tribute to Polaris (190.8.96, 768 pieces, 42mm, acrylic, cal. 956) as the bridge between vintage E859 and the 2018 collection."
-    },
-    {
-      "publication": "Monochrome",
-      "source": "https://monochrome-watches.com/jaeger-lecoultre-polaris-2018-collection-sihh-2018-memovox-automatic-date-chronograph-price/",
-      "unique_contribution": "Full specs and EUR prices for every 2018 reference, including the modern caseback diver engraving and the design intent of bringing JLC back into the sports-watch conversation after Master Compressor's discontinuation."
-    },
-    {
-      "publication": "Monochrome",
-      "source": "https://monochrome-watches.com/new-jaeger-lecoultre-polaris-date-green-gradient-boutique-edition-q906863j-hands-on-price/",
-      "unique_contribution": "Documents the post-2018 evolution: Double Gradient blue, Mariner sub-line (2020), and the green gradient Date (Q906863J) with the updated cal. 899AB (70h power reserve)."
-    },
-    {
-      "publication": "Revolution",
-      "source": "https://revolutionwatch.com/sihh-2018-jaeger-lecoultre-introduces-polaris-new-icon/",
-      "unique_contribution": "50th-anniversary framing of the 2018 launch and confirmation that the cal. 956 in the Memovox LE descends from JLC's 1950s automatic alarm movement."
-    },
-    {
-      "publication": "Swisswatches Magazine",
-      "source": "https://swisswatches-magazine.com/jaeger-lecoultre-polaris-toolwatch-history/",
-      "unique_contribution": "Traces JLC's tool-watch lineage back to wartime supply (Mark X, Mark XI), through Geophysic 1958 and Memovox Deep Sea, to the modern Polaris — useful broader context for the line."
-    },
-    {
-      "publication": "SJX Watches",
-      "source": "https://watchesbysjx.com/2018/01/sihh-2018-introducing-the-jaeger-lecoultre-polaris-collection-a-whole-line-of-retro-inspired-watches.html",
-      "unique_contribution": "USD pricing for the 2018 line at launch and the observation that the 2018 Memovox deliberately departs from the gen-2 dial because the 2008 tribute had already covered that ground."
-    },
-    {
-      "publication": "The Hour Markers",
-      "source": "https://thehourmarkers.com/articles/retracing-the-journey-of-the-jaegerlecoultre-polaris",
-      "unique_contribution": "Surfaces auction examples (a rare Memodate Polaris at Phillips Geneva 2019, the unique 'Lucky 13' Polaris Date) and the Benedict Cumberbatch / 'In a Breath' connection. Note: contains date errors (calls the 1968 watch a 1962 introduction) that must not be carried forward."
+      "unique_contribution": "Most thorough corpus history: bumper-rotor explanation, EPSA collaboration story (Bertram S. Lowe's 1961 proposal), three-layer caseback construction broken down, Polaris II / E870 mechanical differences (cal. 916, external bezel, Nardin/Narval cases)."
     },
     {
       "publication": "Fratello",
       "source": "https://www.fratellowatches.com/jaeger-lecoultre-polaris-memovox-review/",
-      "unique_contribution": "Wrist-feel review of the modern Memovox LE (Q9038670) — notes its 15.9mm thickness, Clous-de-Paris rubber strap and the choice not to engrave individual numbers on the limited edition."
+      "unique_contribution": "Hands-on with the 2018 Memovox LE (Q9038670): wrist feel of 42mm × 15.9mm thickness, Clous-de-Paris rubber strap, JLC's 'One of 1000' caseback marking choice."
     },
     {
       "publication": "Fratello",
       "source": "https://www.fratellowatches.com/hands-on-jaeger-lecoultre-polaris-mariner-memovox-review/",
-      "unique_contribution": "Detailed Mariner Memovox (Q9028471) review — relocated gong on the side of the case for sapphire caseback, orange security-ring crown signals, 300m rating."
+      "unique_contribution": "Mariner Memovox details: gong relocated to case side to allow sapphire caseback, 300m WR, orange safety ring under crowns, €17,545 positioning."
     },
     {
-      "publication": "Watchfinder",
-      "source": "https://www.watchfinder.com/articles/review-jaeger-lecoultre-polaris-mariner-memovox",
-      "unique_contribution": "Reads the Mariner Memovox as a deliberate refusal to follow the post-1953 dive-watch blueprint — JLC's alternative to the external-bezel orthodoxy."
+      "publication": "Monochrome",
+      "source": "https://monochrome-watches.com/jaeger-lecoultre-polaris-2018-collection-sihh-2018-memovox-automatic-date-chronograph-price/",
+      "unique_contribution": "Full SIHH 2018 launch specs and Euro pricing across all five 2018 models; reference numbers and dial/strap options."
+    },
+    {
+      "publication": "Monochrome",
+      "source": "https://monochrome-watches.com/new-jaeger-lecoultre-polaris-date-green-gradient-boutique-edition-q906863j-hands-on-price/",
+      "unique_contribution": "Modern Polaris Date evolution: 70-hour cal. 899AB upgrade, Mariner sub-collection introduction, green double-gradient lacquered dial."
+    },
+    {
+      "publication": "Swisswatches Magazine",
+      "source": "https://swisswatches-magazine.com/jaeger-lecoultre-polaris-toolwatch-history/",
+      "unique_contribution": "Wider tool-watch heritage: Mark X/XI military pilot watches, 1958 Geophysic and USS Nautilus story, Shark Deep Sea (1969), Snowdrop/Speed Beat GT context — situating Polaris in JLC's broader sports lineage."
     },
     {
       "publication": "Watchonista",
       "source": "https://www.watchonista.com/articles/depth/jaeger-lecoultre-memovox-collectors-notes",
-      "unique_contribution": "Places the Polaris in the wider Memovox family (Snowdrop E877, Egg, TV Screen E871, Speed Beat) — useful for understanding that Polaris is one branch of a much larger alarm-watch line."
+      "unique_contribution": "Memovox family overview from 1950, situating the Polaris as one variant in a long-running line, with notable owners (Miles Davis, Charlie Chaplin, Robert De Niro, Tony Bennett, Stirling Moss, Steve McQueen) of Memovox family pieces generally."
     },
     {
       "publication": "Wind Vintage",
       "source": "https://www.windvintage.com/blog/collectors-guide-jaeger-lecoultre-memovox-reference-e-855",
-      "unique_contribution": "Deep dive on the sibling E855 dress Memovox, including the analogy that the E855 is to the E853 what the Submariner 1680 is to the 5512 — useful lateral context for the Polaris in the Memovox line."
+      "unique_contribution": "Memovox E855 collector's guide: positions the Polaris (E859) as the sports/dive cousin within a much wider Memovox catalogue and explains the 'E' for étanche case prefix."
+    },
+    {
+      "publication": "Wind Vintage",
+      "source": "https://www.windvintage.com/lecoultre-polaris",
+      "unique_contribution": "Documented example with JB Champion bracelet, box and papers, and an Extract from the Archives — useful reference for full-set provenance."
     },
     {
       "publication": "Wind Vintage",
       "source": "https://www.windvintage.com/lecoultre-polaris-ref-e-859-unpolished",
-      "unique_contribution": "Confirms EPSA (Ervin Piquerez) as the case maker and treats US-market LeCoultre dials as a distinct collecting category."
-    },
-    {
-      "publication": "Hodinkee",
-      "source": "https://www.hodinkee.com/articles/just-because-hands-on-with-a-1968-jaeger-lecoultre-polaris",
-      "unique_contribution": "Market price band for vintage examples (USD 15–30k as of writing) and the note that US-market 'LeCoultre' style was specifically the variant JLC chose not to re-edition in 2008."
+      "unique_contribution": "Frames the Deep Sea Alarm and E859 together as 'the ultimate JLC sports models' — useful framing for the dive-watch lineage page."
     },
     {
       "publication": "Hodinkee",
       "source": "https://www.hodinkee.com/articles/just-because-a-1968-lecoultre-polaris",
-      "unique_contribution": "Specifically calls out the US-market LeCoultre-signed Polaris as the configuration that has never been re-issued."
+      "unique_contribution": "Specific note that the LeCoultre-signed US-market dial style was NOT used as the basis for the 2008 Tribute re-edition."
+    },
+    {
+      "publication": "Hodinkee",
+      "source": "https://www.hodinkee.com/articles/just-because-hands-on-with-a-1968-jaeger-lecoultre-polaris",
+      "unique_contribution": "Approximate market guidance for vintage E859 ($15k–$30k by condition) and the bracelet/papers premium."
     },
     {
       "publication": "Hodinkee",
       "source": "https://www.hodinkee.com/articles/bring-a-loupe-july-10-2015",
-      "unique_contribution": "Snapshot of mid-2010s market: a full-set Polaris with original JB Champion bracelet and boxes/papers framed as a top-tier sixties dive watch."
-    },
-    {
-      "publication": "S.Song Watches",
-      "source": "https://www.ssongwatches.com/products/jaeger-lecoultre-polaris-e-859",
-      "unique_contribution": "Dealer framing of the E859 as a 'museum piece' alarm diver, emphasising the felt as well as audible alarm underwater."
+      "unique_contribution": "Mid-2010s market snapshot: full-set Polaris with JB Champion bracelet via Davide Parmegiani — useful for tracking value/availability over time."
     },
     {
       "publication": "Jaeger-LeCoultre",
       "source": "https://www.jaeger-lecoultre.com/us-en/watches/collectibles/qve85901",
-      "unique_contribution": "Brand's own canonical specs for the Memovox Polaris in The Collectibles programme — 42mm, cal. 825, three crowns, Compressor case, 200m."
+      "unique_contribution": "Brand's own official spec sheet for the Memovox Polaris and Collectibles book reference."
     },
     {
       "publication": "Jaeger-LeCoultre",
       "source": "https://www.jaeger-lecoultre.com/us-en/jaeger-lecoultre-polaris-history",
-      "unique_contribution": "Official brand framing of the modern Polaris design language and the 1968 origin story (note: brand cites 1968 launch, contradicted by other sources who document 1965 start of production)."
+      "unique_contribution": "Brand's own framing: positions the 1968 Memovox Polaris as origin point and the modern line as 'sport-inspired everyday adventure'."
     },
     {
       "publication": "Bulang & Sons",
       "source": "https://bulangandsons.com/products/jaeger-lecoultre-polaris-memovox-tropical-dial-ref-e859-68-w2680",
-      "unique_contribution": "Dealer listing for a tropical-dial US-market LeCoultre-signed example — corroborates the alarm-as-dive-timer concept and the existence of tropical gen-2 dials. (Body text is mostly boilerplate.)"
+      "unique_contribution": "Sold reference for a 1968 tropical-dial example; market evidence."
+    },
+    {
+      "publication": "S.Song Watches",
+      "source": "https://www.ssongwatches.com/products/jaeger-lecoultre-polaris-e-859",
+      "unique_contribution": "Dealer write-up reiterating 1,714 production, EPSA case, 16-hole caseback acoustic role."
+    },
+    {
+      "publication": "Watchfinder",
+      "source": "https://www.watchfinder.com/articles/review-jaeger-lecoultre-polaris-mariner-memovox",
+      "unique_contribution": "Editorial framing of the alarm-as-dive-timer concept and what makes the Mariner Memovox different from the genre-standard dive watch."
+    },
+    {
+      "publication": "The Hour Markers",
+      "source": "https://thehourmarkers.com/articles/retracing-the-journey-of-the-jaegerlecoultre-polaris",
+      "unique_contribution": "Mention of Benedict Cumberbatch as a modern JLC ambassador wearing the Polaris Mariner Memovox in the short film 'In a Breath' and notes the rare auctioned Memodate Polaris and one-off Lucky 13 Polaris Date."
+    },
+    {
+      "publication": "Revolution",
+      "source": "https://revolutionwatch.com/sihh-2018-jaeger-lecoultre-introduces-polaris-new-icon/",
+      "unique_contribution": "SIHH 2018 line-up summary with specs across all five 2018 models."
+    },
+    {
+      "publication": "SJX Watches",
+      "source": "https://watchesbysjx.com/2018/01/sihh-2018-introducing-the-jaeger-lecoultre-polaris-collection-a-whole-line-of-retro-inspired-watches.html",
+      "unique_contribution": "SIHH 2018 USD pricing reference and analysis of the chronograph as a 'driver's' cousin to the diving alarm."
+    },
+    {
+      "publication": "Watchonista",
+      "source": "https://www.watchonista.com/articles/novelties/sihh-2018-introducing-jaeger-lecoultre-polaris-collection",
+      "unique_contribution": "Notes the Polaris II overlap (1970–72) and explicit Cold-War missile naming origin."
     }
   ],
   "stories": [
@@ -626,73 +682,66 @@
         "E859",
         "model-wide"
       ],
-      "source": "https://le-monde-edmond.com/polaris-e859-jaeger-indepthreview/",
-      "title": "The American who asked for a dive alarm",
-      "why": "Bertram S. Lowe, president of LeCoultre Watch Inc. in New York, wrote to the JLC board in 1959 proposing a dive watch with an alarm — and again in 1961 specifically suggesting a Piquerez compressor case. The Polaris exists because of an American distributor's idea."
+      "source": "https://www.fratellowatches.com/a-historical-overview-of-the-jaeger-lecoultre-memovox-polaris/",
+      "title": "Bertram S. Lowe and the New York proposal",
+      "why": "The Polaris exists because the US head of LeCoultre Watch Inc., Bertram S. Lowe, wrote to the JLC board in 1959/1961 proposing a diver's watch with an alarm — and later proposed using a compressor case. The watch's identity was literally shaped by its American market."
+    },
+    {
+      "applies_to": [
+        "E859"
+      ],
+      "source": "https://blommanwatchreport.com/2019/08/19/on-the-wooden-beam-lecoultre-e-859-polaris-1965/",
+      "title": "The 1965 catalogue calls it a 'Deep Sea Skin Diver'",
+      "why": "Period catalogue evidence shows the 'Polaris' name was a later, US-driven label. The watch was originally pitched in print as 'the only one of its kind in the world' — the only dive watch with both alarm AND automatic winding, contrasted with the Vulcain diver's manual alarm."
     },
     {
       "applies_to": [
         "E859"
       ],
       "source": "https://hairspring.com/blogs/finds/e859-jaeger-lecoultre-polaris",
-      "title": "The 1967 'test dial' batch of nine",
-      "why": "A documented sub-run of just nine pieces produced in 1967 carries '67' inside the caseback and is thought to have been a small trial of the bolder 1968 dial — exceptional rarity inside an already rare reference."
+      "title": "The 9 pieces of 1967",
+      "why": "Out of 1,714 total E859s, just 9 were assembled in 1967 — reportedly as test pieces for the bolder, more legible dial that would become the dominant 1968 look. Cases from that year carry '67' stamped on the inner caseback."
     },
     {
       "applies_to": [
         "E859"
       ],
       "source": "https://le-monde-edmond.com/polaris-e859-jaeger-indepthreview/",
-      "title": "The Calypso-hands oddity",
-      "why": "In 1970 JLC produced approximately 55 E859s with an unusual 'Calypso' hand set; collectors regard them as a controversial footnote to the run — small enough in number to be a curiosity rather than a desired variant."
+      "title": "The Calypso-hands variant of 1970",
+      "why": "A controversial 55-piece run with unusual 'Calypso' hands was produced in 1970 — collectors generally treat it as the awkward outlier of the line."
     },
     {
       "applies_to": [
-        "E859"
+        "E859",
+        "model-wide"
       ],
-      "source": "https://hairspring.com/blogs/finds/e859-jaeger-lecoultre-polaris",
-      "title": "The dial that became an aquarium",
-      "why": "The bezel-less construction under an oversized domed Hesalite crystal makes the matte black gen-2 dial appear to float beneath a pool of glass — a much-repeated descriptor that captures the watch's visual signature."
+      "source": "https://www.fratellowatches.com/a-historical-overview-of-the-jaeger-lecoultre-memovox-polaris/",
+      "title": "Why a bumper rotor — and not a full rotor",
+      "why": "The Memovox alarm works by a hammer striking a post connected to the caseback; a full 360° rotor would foul that mechanism. JLC stuck with a bumper-style oscillating weight (limited swing, coiled springs to bounce off) — also useful as a way to enter automatic territory without infringing Rolex's full-rotor patent."
     },
     {
       "applies_to": [
-        "E859"
-      ],
-      "source": "https://www.hodinkee.com/articles/just-because-a-1968-lecoultre-polaris",
-      "title": "Why the modern Polaris US dial side was never re-issued",
-      "why": "The 2008 Memovox Tribute to Polaris faithfully copied the European 'Jaeger-LeCoultre' dial; the US-market 'LeCoultre'-signed configuration has never been re-issued, making originals quietly distinctive among collectors."
-    },
-    {
-      "applies_to": [
-        "Q9028471"
+        "modern"
       ],
       "source": "https://thehourmarkers.com/articles/retracing-the-journey-of-the-jaegerlecoultre-polaris",
       "title": "Benedict Cumberbatch and 'In a Breath'",
-      "why": "As a JLC ambassador, Benedict Cumberbatch wore the Polaris Mariner Memovox for the short film 'In a Breath' — a notable modern wrist for the line."
+      "why": "Cumberbatch, a JLC brand ambassador, wore the modern Polaris Mariner Memovox while making the short film 'In a Breath', and has called it one of his favourite timepieces."
     },
     {
       "applies_to": [
-        "Q9068670"
+        "modern"
       ],
       "source": "https://thehourmarkers.com/articles/retracing-the-journey-of-the-jaegerlecoultre-polaris",
-      "title": "The 'Lucky 13' one-off",
-      "why": "In 2019, JLC made a one-off Polaris Date (cal. 899AA) with the number 13 engraved on the rotor to commemorate the 13 complications of the Hybris Mechanica à Grande Sonnerie; auctioned that December."
+      "title": "The Lucky 13 Polaris Date",
+      "why": "A unique Polaris Date created in 2019 to celebrate the 13 complications of JLC's Hybris Mechanica à Grande Sonnerie, with a '13' engraved on the rotor — a one-off auctioned that December."
     },
     {
       "applies_to": [
-        "190.8.96"
+        "E870"
       ],
-      "source": "https://hairspring.com/blogs/finds/1-of-768-jaeger-lecoultre-polaris-limited-190-8-96",
-      "title": "The 768-piece bridge",
-      "why": "The 2008 Tribute to Polaris (190.8.96) was the watch that proved there was real modern demand for the design — its 768-piece run sold through and set the stage for the 2018 collection."
-    },
-    {
-      "applies_to": [
-        "Q9028471"
-      ],
-      "source": "https://www.fratellowatches.com/hands-on-jaeger-lecoultre-polaris-mariner-memovox-review/",
-      "title": "Putting the alarm where you can see it",
-      "why": "For the 2020 Mariner Memovox, JLC re-engineered the cal. 956 so the gong attaches to the side of the case rather than the caseback — allowing a sapphire window onto the hammer in motion while preserving 300m water resistance."
+      "source": "https://www.fratellowatches.com/a-historical-overview-of-the-jaeger-lecoultre-memovox-polaris/",
+      "title": "The Memovox Polaris II — the strange one",
+      "why": "Often forgotten, the 1970–71 Polaris II / E870 swapped the iconic look for an oval case, vivid blue 70s-style dial, external bezel and the new high-beat calibre 916 — radically different in spirit from the E859 it ran alongside."
     }
   ]
 }
