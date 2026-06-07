@@ -25,7 +25,7 @@ export async function dispatchAction(action) {
   }
   const fn = handlers && handlers[action.type];
   if (typeof fn !== "function") {
-    return { ok: false, message: "Can't do that just yet — try again in a moment." };
+    return { ok: false, message: "Can't do that just yet. Try again in a moment." };
   }
   try {
     const res = await fn(action.payload || {});

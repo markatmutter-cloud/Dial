@@ -1024,7 +1024,7 @@ export function ArticleCard({ article, isMobile, compact, cols, watchlist, handl
           <button
             onClick={onHeartClick}
             aria-label={wished ? "Remove from saved articles" : "Save article"}
-            title={wished ? "Saved — tap to remove" : "Save to articles"}
+            title={wished ? "Saved · tap to remove" : "Save to articles"}
             style={{
               width: 32, height: 32,
               borderRadius: "50%", border: "none", cursor: "pointer",

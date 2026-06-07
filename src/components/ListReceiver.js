@@ -102,7 +102,7 @@ export function ListReceiver({
         if (cancelled) return;
         if (rpcError) { setError(rpcError.message || "Failed to load."); return; }
         if (!rpcData) {
-          setError("This list isn't available — the link might be wrong, or the list isn't shareable.");
+          setError("This list isn't available. The link might be wrong, or the list isn't shareable.");
           return;
         }
         setData(rpcData);
@@ -305,7 +305,7 @@ export function ListReceiver({
             <h2 style={frameTitle}>Saved to your lists</h2>
             <div style={frameSub}>
               A copy of <strong style={{ color: "var(--text1)" }}>{data.name}</strong> is now in
-              your lists — open it to browse, edit, or share.
+              your lists. Open it to browse, edit, or share.
             </div>
           </>
         }
@@ -328,7 +328,7 @@ export function ListReceiver({
             <h2 style={frameTitle}>You're in</h2>
             <div style={frameSub}>
               <strong style={{ color: "var(--text1)" }}>{data.name}</strong> now lives under
-              Lists ▸ Shared with you — anything either of you adds stays in sync.
+              Lists ▸ Shared with you. Anything either of you adds stays in sync.
             </div>
           </>
         }
@@ -355,13 +355,13 @@ export function ListReceiver({
       {/* What a list IS + what you can do — the recipient's first impression
           used to explain nothing (P-23, Mark 2026-06-03). */}
       <div style={{ fontSize: 12.5, color: "var(--text2)", marginTop: 8, lineHeight: 1.55 }}>
-        A list on Watchlist — watches {sender ? `${sender} collected` : "someone collected"} from
+        A list on Watchlist: watches {sender ? `${sender} collected` : "someone collected"} from
         dealers and auctions. Browse it below{user ? ", or save your own copy to keep and edit" : ""}.
       </div>
       {isCollab && (
         <div style={{ fontSize: 12, color: "var(--text2)", marginTop: 8, lineHeight: 1.5 }}>
           Invited to <strong style={{ color: "var(--text1)" }}>collaborate</strong> as a{" "}
-          {matchedInvite.role} — you'll both add and remove watches in one synced list.
+          {matchedInvite.role}, and you'll both add and remove watches in one synced list.
         </div>
       )}
     </>

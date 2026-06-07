@@ -214,7 +214,7 @@ export function ReferencePage({
           <div style={{ display: "flex", alignItems: "center", gap: 8, padding: isMobile ? "12px 0 2px" : "14px 0 2px" }}>
             {handleWish && (
               <button onClick={() => handleWish(asListing)}
-                aria-label={wished ? "Saved — tap to remove" : "Save this guide"}
+                aria-label={wished ? "Saved (tap to remove)" : "Save this guide"}
                 style={{
                   display: "inline-flex", alignItems: "center", gap: 7, cursor: "pointer",
                   fontFamily: "inherit", fontSize: 13, fontWeight: 600, padding: "7px 14px",
@@ -287,7 +287,7 @@ export function ReferencePage({
       </section>
 
       {/* GUIDES — read it first */}
-      {has.guides && Section("guides", "Read it first", "The guides to read first", "If you're looking to understand this reference, start here — deeper cuts follow, but these give you the basis to build from.",
+      {has.guides && Section("guides", "Read it first", "The guides to read first", "If you're looking to understand this reference, start here. Deeper cuts follow, but these give you the basis to build from.",
         shell(
           <div>
             {node.guides.map((g, i) => paired(
@@ -307,7 +307,7 @@ export function ReferencePage({
       )}
 
       {/* MARKS — learn to see it (image left) */}
-      {has.marks && Section("marks", "Learn to see it", "Reading the marks", "The small details that tell you which watch you're looking at — and when something deserves a closer look.",
+      {has.marks && Section("marks", "Learn to see it", "Reading the marks", "The small details that tell you which watch you're looking at, and when something deserves a closer look.",
         shell(
           <div>
             {node.marks.map((m, i) => paired(
@@ -324,7 +324,7 @@ export function ReferencePage({
       )}
 
       {/* VARIANTS — learn by example */}
-      {has.variants && Section("variants", "Learn by example", "Variants worth seeing", "A few real examples that show the range this reference runs — once you've seen them, you can place almost any dial.",
+      {has.variants && Section("variants", "Learn by example", "Variants worth seeing", "A few real examples that show the range this reference runs. Once you've seen them, you can place almost any dial.",
         shell(
           <div>
             {node.variants.map((v, i) => paired(
@@ -386,7 +386,7 @@ export function ReferencePage({
       </section>
 
       {/* DEBATED — go deeper: real debates, both sides */}
-      {has.debated && Section("debated", "Go deeper", "Debated & contested", "The questions still being argued — here's where each side stands, so you can make up your own mind.",
+      {has.debated && Section("debated", "Go deeper", "Debated & contested", "The questions still being argued, and where each side stands, so you can make up your own mind.",
         shell(
           <div>
             {realConflicts.map((c, i) => (
@@ -407,7 +407,7 @@ export function ReferencePage({
       )}
 
       {/* STORIES — moved down; the lore */}
-      {has.stories && Section("stories", "The lore", "Stories", `Where the ${node.group} turns up — in service, on screen, and in the stories that get retold.`,
+      {has.stories && Section("stories", "The lore", "Stories", `Where the ${node.group} turns up: in service, on screen, and in the stories that get retold.`,
         <>
           {node.storiesAndImages?.length > 0 && shell(<div style={{ margin: "0 -8px" }}><CardStrip items={node.storiesAndImages} isMobile={isMobile} inset={false} background="transparent" renderCard={renderEditorialCard} /></div>)}
           {synStories.length > 0 && shell(

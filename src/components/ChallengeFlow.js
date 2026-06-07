@@ -230,7 +230,7 @@ export function CreateStage({ challenge, onSubmit, onCancel, onDelete }) {
           placeholder="$50,000"
           style={inputStyle}
         />
-        <p style={hintStyle}>Soft cap of 20% over budget — you can complete with a confirm above that, but no further.</p>
+        <p style={hintStyle}>Soft cap of 20% over budget. You can complete with a confirm above that, but no further.</p>
       </div>
 
       <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
@@ -507,12 +507,12 @@ function PickingStage({
         )}
         {allFilled && hardBlocked && (
           <p style={{ fontSize: 12, color: "var(--danger)", marginTop: 10 }}>
-            Too far over budget — remove a pick to continue.
+            Too far over budget. Remove a pick to continue.
           </p>
         )}
         {allFilled && overBudget && !hardBlocked && (
           <p style={{ fontSize: 12, color: "var(--accent-warn)", marginTop: 10 }}>
-            Over budget — soft warn. You can complete with explicit confirmation.
+            Over budget (soft warn). You can complete with explicit confirmation.
           </p>
         )}
       </div>
@@ -858,7 +858,7 @@ function CompleteStage({ challenge, items, onShareSpec, onShareComplete, onBack,
         )}
         {onShareSpec && (
           <button onClick={() => handleShareClick(onShareSpec, "spec")}
-            title="Send just the constraints — recipient builds their own answer"
+            title="Send just the constraints; recipient builds their own answer"
             style={{
               padding: "10px 14px", borderRadius: 8,
               border: "0.5px solid var(--border)", background: "transparent",
@@ -868,7 +868,7 @@ function CompleteStage({ challenge, items, onShareSpec, onShareComplete, onBack,
         )}
         {onShareComplete && (
           <button onClick={() => handleShareClick(onShareComplete, "complete")}
-            title="Send with your picks visible — recipient sees what you chose"
+            title="Send with your picks visible; recipient sees what you chose"
             style={{
               padding: "10px 16px", borderRadius: 8, border: "none",
               background: "var(--brand-olive)", color: "#fff", cursor: "pointer",
@@ -946,7 +946,7 @@ function CompleteStage({ challenge, items, onShareSpec, onShareComplete, onBack,
         marginTop: 12, fontSize: 11, color: "var(--text3)",
         textAlign: "center", lineHeight: 1.5,
       }}>
-        <strong style={{ color: "var(--text2)" }}>Share the challenge</strong> sends only the spec — recipient builds their own answer.
+        <strong style={{ color: "var(--text2)" }}>Share the challenge</strong> sends only the spec; recipient builds their own answer.
         {" "}<strong style={{ color: "var(--text2)" }}>Share my collection</strong> reveals your picks.
       </p>
     </div>

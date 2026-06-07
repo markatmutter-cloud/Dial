@@ -47,13 +47,13 @@ export function LumeMemorySettings() {
     const next = !enabled;
     setBusy(true); setStatus("");
     try { await supabase.rpc("set_ai_memory_enabled", { p_enabled: next }); setEnabled(next); }
-    catch { setStatus("Couldn't update — try again."); }
+    catch { setStatus("Couldn't update. Try again."); }
     setBusy(false);
   };
   const reset = async () => {
     setBusy(true); setStatus("");
-    try { await supabase.rpc("reset_ai_profile"); setProfile(null); setStatus("Cleared — Lumé starts fresh."); }
-    catch { setStatus("Couldn't reset — try again."); }
+    try { await supabase.rpc("reset_ai_profile"); setProfile(null); setStatus("Cleared. Lumé starts fresh."); }
+    catch { setStatus("Couldn't reset. Try again."); }
     setBusy(false);
   };
 
@@ -75,14 +75,14 @@ export function LumeMemorySettings() {
         display: "flex", justifyContent: "space-between", alignItems: "center",
       }}>
         <span>{enabled ? "Remembering your taste" : "Memory is off"}</span>
-        <span style={{ fontSize: 12, opacity: 0.85 }}>{enabled ? "On — tap to turn off" : "Off — tap to turn on"}</span>
+        <span style={{ fontSize: 12, opacity: 0.85 }}>{enabled ? "On · tap to turn off" : "Off · tap to turn on"}</span>
       </button>
 
       {loaded && (
         <div style={{ fontSize: 12, color: "var(--text3)", margin: "10px 0", lineHeight: 1.5 }}>
           {summary
             ? <>What it remembers: <span style={{ color: "var(--text2)" }}>{summary.slice(0, 400)}</span></>
-            : "Nothing yet — chat a few messages with Lumé and it'll start learning your taste."}
+            : "Nothing yet. Chat a few messages with Lumé and it'll start learning your taste."}
         </div>
       )}
 

@@ -103,7 +103,7 @@ function formatLastRun(updatedAt, fallbackDate) {
   else if (diffHr < 48) rel = `${diffHr}h ago`;
   else rel = `${Math.floor(diffHr / 24)}d ago`;
   return {
-    label: stale ? `STALE — last run ${rel}` : `Updated ${rel}`,
+    label: stale ? `STALE · last run ${rel}` : `Updated ${rel}`,
     stale,
   };
 }
@@ -417,7 +417,7 @@ export function AdminTab({ watchItems, hiddenItems }) {
     if (!count) return;
     const ok = await confirm({
       title: `Delete ${count} item${count === 1 ? "" : "s"}?`,
-      message: `From "${row.name}" — items with source_of_entry = "${source}". This cannot be undone.`,
+      message: `From "${row.name}": items with source_of_entry = "${source}". This cannot be undone.`,
       confirmLabel: `Delete ${count}`,
       tone: "danger",
     });
@@ -1090,7 +1090,7 @@ export function AdminTab({ watchItems, hiddenItems }) {
         <strong style={{ color: "var(--text2)" }}>Earning?</strong> rule:
         🟢 if heart-rate ≥ 5% or (new-per-week ≥ 5 and health OK).
         🔴 if (heart-rate &lt; 1% and hide-rate &gt; 5%) or stale &gt; 30 days.
-        🟡 otherwise. Override manually — these are suggestions.
+        🟡 otherwise. Override manually. These are suggestions.
         <br />
         <strong style={{ color: "var(--text2)" }}>Caveats:</strong> hide counts cover only currently-active listings (the schema doesn't snapshot at hide time);
         heart/hide rates use max(live, hearts+hides) as the denominator (proxy for "ever seen") to avoid loading state.json. Both reasonable for v1.
@@ -1192,19 +1192,19 @@ export function AdminTab({ watchItems, hiddenItems }) {
           Curation rules
         </h1>
         <span style={{ fontSize: 12, color: "var(--text2)" }}>
-          Brand lists you've set in code — read-only mirror
+          Brand lists you've set in code · read-only mirror
         </span>
       </div>
       {[
         {
           title: "Excluded brands",
-          subtitle: "Dropped at scrape-merge — listings never reach the feed",
+          subtitle: "Dropped at scrape-merge: listings never reach the feed",
           items: Array.from(EXCLUDED_BRANDS).sort(),
           source: "merge.py · EXCLUDED_BRANDS",
         },
         {
           title: "Forced into Other",
-          subtitle: "Brand chip rolled into Other (frontend-only) — listings still appear",
+          subtitle: "Brand chip rolled into Other (frontend-only); listings still appear",
           items: Array.from(FORCE_OTHER_BRANDS).sort(),
           source: "src/utils.js · FORCE_OTHER_BRANDS",
         },
@@ -1440,7 +1440,7 @@ export function AdminTab({ watchItems, hiddenItems }) {
       <div style={{ marginTop: 16, fontSize: 11, color: "var(--text3)", lineHeight: 1.6 }}>
         <strong style={{ color: "var(--text2)" }}>Scrape mode:</strong> "lot-level" houses (Antiquorum, Christie's,
         Sotheby's, Phillips) have working detail scrapers; "calendar-only" houses (Bonhams,
-        Monaco Legend) only contribute upcoming-sale tiles, no per-lot data — the lots/sold
+        Monaco Legend) only contribute upcoming-sale tiles, no per-lot data, so the lots/sold
         columns will read 0 for them.
         <br />
         <strong style={{ color: "var(--text2)" }}>Hammer/Low</strong> is the median ratio of
@@ -1449,7 +1449,7 @@ export function AdminTab({ watchItems, hiddenItems }) {
         &gt;1.3 systematically conservative.
         <br />
         <strong style={{ color: "var(--text2)" }}>$ sold (90d)</strong> is rolling 90 days
-        (vs 30 on dealers) — auction calendars run at lower cadence so a 30-day window
+        (vs 30 on dealers) because auction calendars run at lower cadence, so a 30-day window
         is usually empty for any given house.
       </div>
 
@@ -1568,7 +1568,7 @@ export function AdminTab({ watchItems, hiddenItems }) {
         Default cap: <strong>2,500</strong> hearts per user. Soft warning fires at 80%
         of cap (2,000 by default). The DB enforces the cap via a BEFORE INSERT trigger
         on watchlist_items, so a malicious or buggy frontend can't bypass it.
-        Lowering a user's cap below their current count doesn't remove existing items —
+        Lowering a user's cap below their current count doesn't remove existing items;
         they just can't add more until they un-favorite.
       </div>
 

@@ -93,7 +93,7 @@ export function ManageListSheet({
     try {
       if (navigator.share) {
         await navigator.share({
-          title: `${collection.name} — Watchlist`,
+          title: `${collection.name}: Watchlist`,
           text: `I'd like to share "${collection.name}" with you on Watchlist. Tap the link to join:`,
           url,
         });
@@ -157,8 +157,8 @@ export function ManageListSheet({
     try {
       if (navigator.share) {
         await navigator.share({
-          title: `${collection.name} — Watchlist`,
-          text: `${collection.name} — a list on Watchlist`,
+          title: `${collection.name}: Watchlist`,
+          text: `${collection.name}: a list on Watchlist`,
           url,
         });
         setShareCopyState("shared-readonly");
@@ -232,7 +232,7 @@ export function ManageListSheet({
           marginBottom: 22, lineHeight: 1.5,
         }}>
           Anyone with the link can preview it; they sign in to save their own
-          editable copy. Your list stays separate — changes don't sync.
+          editable copy. Your list stays separate; changes don't sync.
         </div>
 
         {/* Section 2 — Collaborate (invite form + roster). */}
@@ -278,7 +278,7 @@ export function ManageListSheet({
              : "Send invite"}
           </button>
           <div style={{ fontSize: 11, color: "var(--text3)", marginTop: 8, lineHeight: 1.5 }}>
-            You'll share one synced list — it shows up under their Lists ▸ Shared
+            You'll share one synced list. It shows up under their Lists ▸ Shared
             with you. Editors add and remove watches; viewers see read-only.
           </div>
         </div>

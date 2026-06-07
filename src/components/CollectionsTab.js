@@ -302,7 +302,7 @@ function EmptyListOnboarding({ name, isMobile, goToTab }) {
   // duplication (Mark 2026-06-02).
   const rows = [
     { icon: "♡", label: "Add a watch", help: "Heart a listing on the Watches tab to file it here.", go: () => goToTab && goToTab("listings", "live") },
-    { icon: "📰", label: "Add an article", help: "Save an article on the Collecting tab — it lands in this list.", go: () => goToTab && goToTab("references", "editorial") },
+    { icon: "📰", label: "Add an article", help: "Save an article on the Collecting tab, and it lands in this list.", go: () => goToTab && goToTab("references", "editorial") },
   ];
   return (
     <div style={{ padding: isMobile ? "8px 0 4px" : "10px 0 6px" }}>
@@ -314,7 +314,7 @@ function EmptyListOnboarding({ name, isMobile, goToTab }) {
         {name || "Untitled list"}
       </div>
       <div style={{ fontSize: 13.5, color: "var(--text2)", lineHeight: 1.55, maxWidth: 460, marginBottom: 18 }}>
-        A list collects what you're tracking on one watch or idea — the watches, the
+        A list collects what you're tracking on one watch or idea: the watches, the
         writing, the references, and your own notes. Start with whatever you have.
       </div>
       <div style={{ border: "0.5px solid var(--border)", borderRadius: 12, overflow: "hidden", maxWidth: 520 }}>
@@ -584,7 +584,7 @@ export function CollectionsTab({
       <EmptyState
         size="tall"
         heading="Sign in to organize your watches"
-        blurb="Owned watches, watches you've sold, your wishlist, custom lists, challenges — all in one place. Sync across every device."
+        blurb="Owned watches, watches you've sold, your wishlist, custom lists, challenges, all in one place. Sync across every device."
         action={isAuthConfigured && (
           <button onClick={signInWithGoogle} style={signInButton}>Sign in</button>
         )}
@@ -1278,7 +1278,7 @@ function PlanView({
         label={`Selling · ${selling.length}${sellingValue > 0 ? ` · ${fmtUSD(sellingValue)} expected` : ""}`}
         show={true}
       >
-        <SectionExplain text="Owned watches you've flagged for sale. Tap ↑ (red) to keep instead. The detail sheet has the assumed sell value field — set it so the proceeds total reads accurately." />
+        <SectionExplain text="Owned watches you've flagged for sale. Tap ↑ (red) to keep instead. The detail sheet has the assumed sell value field; set it so the proceeds total reads accurately." />
         {selling.length === 0 ? (
           <EmptyHardListSection text="Tap ↑ on a Keeping card to move it here when you're thinking about letting it go." />
         ) : (
@@ -1314,12 +1314,12 @@ function PlanView({
       >
         <SectionExplain text="Watches you're considering buying next. Pick from your lists below, or use + From feed for the global feed." />
         {!wishlist ? (
-          <EmptyHardListSection text="Plan not ready — refresh to retry the auto-create." />
+          <EmptyHardListSection text="Plan not ready. Refresh to retry the auto-create." />
         ) : wishlistItems.length === 0 ? (
           <EmptyState
             icon="★"
             heading="Nothing on your wishlist"
-            blurb="Build the hunt list — references you're chasing, dial variants you'd buy if one surfaced. Pick from a list below or + From feed."
+            blurb="Build the hunt list: references you're chasing, dial variants you'd buy if one surfaced. Pick from a list below or + From feed."
             action={
               <button onClick={onShortlistAddFromFeed} style={actionButton({ variant: "primary" })}>+ From feed</button>
             }
@@ -1905,8 +1905,8 @@ function ListsView({
       if (cover) shareU.searchParams.set("img", cover);
       const url = shareU.toString();
       const shareData = {
-        title: `${selected.name} — Watchlist`,
-        text: `${selected.name} — a list on Watchlist`,
+        title: `${selected.name} · Watchlist`,
+        text: `${selected.name}: a list on Watchlist`,
         url,
       };
       try {
@@ -1985,7 +1985,7 @@ function ListsView({
                 onDelete={deleteCollection ? async () => {
                   if (await confirm({
                     title: "Delete list?",
-                    message: `"${selected.name}" will be removed. Items inside aren't deleted from your watchlist — they're just unbundled from this list.`,
+                    message: `"${selected.name}" will be removed. Items inside aren't deleted from your watchlist; they're just unbundled from this list.`,
                     confirmLabel: "Delete", tone: "danger",
                   })) { await deleteCollection(selected.id); setSelectedListId(null); }
                 } : undefined}
@@ -2045,7 +2045,7 @@ function ListsView({
               blurb={isHiddenColl
                 ? "Listings you hide from the Available feed land here. Use the \"…\" menu on any card to unhide it."
                 : isSavedColl
-                  ? "Browse the Listings tab and tap the heart on any item — it'll appear here with the price you saved at, even after the dealer takes the URL down."
+                  ? "Browse the Listings tab and tap the heart on any item, and it'll appear here with the price you saved at, even after the dealer takes the URL down."
                   : "Lists other collectors share with you appear here."}
             />
           )
@@ -2368,7 +2368,7 @@ function ListsView({
                   onDelete={deleteCollection ? async () => {
                     if (await confirm({
                       title: "Delete list?",
-                      message: `"${c.name}" will be removed. Items inside aren't deleted from your watchlist — they're just unbundled from this list.`,
+                      message: `"${c.name}" will be removed. Items inside aren't deleted from your watchlist; they're just unbundled from this list.`,
                       confirmLabel: "Delete", tone: "danger",
                     })) await deleteCollection(c.id);
                   } : undefined} />
@@ -2442,7 +2442,7 @@ function ListsView({
               </div>
             ) : (
               <EmptyState icon="🔍" heading="No saved searches yet" size="compact"
-                blurb="Search Listings, then tap the heart by the search bar to save it. Saved searches re-run across every dealer — jump straight back to them here." />
+                blurb="Search Listings, then tap the heart by the search bar to save it. Saved searches re-run across every dealer, so you can jump straight back to them here." />
             )}
           </div>
         </>
@@ -2922,7 +2922,7 @@ function SavedAuctionsView({ items, isWide, gridStyle, onOpenSale, onToggleSave,
                     <button
                       onClick={(e) => { e.stopPropagation(); onToggleSave(a.url); }}
                       aria-label="Remove this auction from saved"
-                      title="Saved — tap to remove"
+                      title="Saved · tap to remove"
                       style={{
                         position: "absolute", top: 8, right: 8,
                         width: 30, height: 30, borderRadius: "50%",

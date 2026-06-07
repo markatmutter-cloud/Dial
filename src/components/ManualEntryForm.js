@@ -145,8 +145,8 @@ export function ManualEntryForm({
         </div>
         <div style={{ fontSize: 12, color: "var(--text2)", marginBottom: 12, lineHeight: 1.5 }}>
           {kind === "sold"
-            ? "Add a watch you've sold. Photo, sold price, and date are optional — you can leave any of them blank if you don't have them yet."
-            : "Add a watch you own. Photo is optional — you can add one later. Brand is required; everything else fills in over time."}
+            ? "Add a watch you've sold. Photo, sold price, and date are optional: you can leave any of them blank if you don't have them yet."
+            : "Add a watch you own. Photo is optional; you can add one later. Brand is required; everything else fills in over time."}
         </div>
 
         {/* Photo */}
@@ -211,7 +211,7 @@ export function ManualEntryForm({
             type="url"
             value={sourceUrl}
             onChange={e => setSourceUrl(e.target.value)}
-            placeholder="https://example.com/listing — dealer / eBay / auction lot"
+            placeholder="https://example.com/listing · dealer / eBay / auction lot"
             style={{ ...inputBase, fontSize: 14 }} />
         </div>
 

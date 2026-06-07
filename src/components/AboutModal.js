@@ -86,7 +86,7 @@ const HOW_TO_USE = [
   ["Save searches", "Type a query in the Listings tab, then tap the heart next to the search bar. Saved searches re-run across every dealer."],
   ["Build a list",  "Saved → Lists → + New list. Or hit ⋯ on any card → Add to… to add to an existing list."],
   ["Share a list",  "Open the list, tap Manage. Share a View Only Link, or invite by email for a Collaboration Link (they can add watches alongside you)."],
-  ["Track what you own", "Saved → My Watches → + Add a watch (off-platform, with photo) or + From feed (an existing dealer listing). Tap a watch for the detail sheet — your thoughts, buy/sell numbers, journal."],
+  ["Track what you own", "Saved → My Watches → + Add a watch (off-platform, with photo) or + From feed (an existing dealer listing). Tap a watch for the detail sheet: your thoughts, buy/sell numbers, journal."],
   ["Plan a move",   "My Watches → Plan. Tap ↑ on a Keeping watch to flag it for sale; pick from the picker below to add to your shortlist. Net cash impact updates live."],
 ];
 

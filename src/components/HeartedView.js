@@ -140,7 +140,7 @@ export default function HeartedView({
         <EmptyState
           icon="♡"
           heading="Nothing hearted yet"
-          blurb="Tap the heart on any watch, article or auction as you browse — it lands here, with the price you saved at even after the dealer takes the listing down."
+          blurb="Tap the heart on any watch, article or auction as you browse, and it lands here, with the price you saved at even after the dealer takes the listing down."
           size="compact"
         />
       ) : type === "articles" ? (
@@ -159,7 +159,7 @@ export default function HeartedView({
           {activeFiltersStripJSX}
           {items.length === 0 ? (
             <EmptyState icon="♡" heading="No hearted watches yet" size="compact"
-              blurb="Tap the heart on any watch as you browse — it lands here." />
+              blurb="Tap the heart on any watch as you browse, and it lands here." />
           ) : (
             <div style={gridStyle}>{items.map(renderCard)}</div>
           )}

@@ -16,7 +16,7 @@ function describeItem(it) {
   const price = it.priceUSD ? `, $${Number(it.priceUSD).toLocaleString()}` : "";
   const src = it.source ? ` (${it.source})` : "";
   const url = it.url ? ` ${it.url}` : "";
-  return `I'm looking at this listing — ${title}${price}${src}. What should I know about it?${url}`;
+  return `I'm looking at this listing: ${title}${price}${src}. What should I know about it?${url}`;
 }
 
 // Lumé — the watch-expert concierge bubble (Epic 9 "AI spine").
@@ -203,7 +203,7 @@ export function ChatBubbleHost({ seedItem = null }) {
           body: JSON.stringify({ messages: next }),
         });
         if (res.status === 429) { setCapped(true); setLoading(false); return; }
-        if (!res.ok) { setError("Something went wrong — try again in a moment."); setLoading(false); return; }
+        if (!res.ok) { setError("Something went wrong. Try again in a moment."); setLoading(false); return; }
         const body = await res.json();
         setMessages([...next, {
           role: "assistant",
@@ -211,7 +211,7 @@ export function ChatBubbleHost({ seedItem = null }) {
           actions: Array.isArray(body.actions) ? body.actions : [],
         }]);
       } catch {
-        setError("Couldn't reach Lumé — check your connection.");
+        setError("Couldn't reach Lumé. Check your connection.");
       } finally {
         setLoading(false);
       }
@@ -339,7 +339,7 @@ export function ChatBubbleHost({ seedItem = null }) {
         {header}
         <div style={{ padding: 18, display: "flex", flexDirection: "column", gap: 14 }}>
           <div style={{ fontSize: 14, lineHeight: 1.5, color: "var(--text1)" }}>
-            Sign in to chat with <strong>Lumé</strong> — your watch guide. It digs through live
+            Sign in to chat with <strong>Lumé</strong>, your watch guide. It digs through live
             listings and auctions, pulls up reference guides, and saves things to your lists.
           </div>
           <button onClick={() => { try { signInWithGoogle && signInWithGoogle(); } catch {} }} style={{
@@ -429,7 +429,7 @@ export function ChatBubbleHost({ seedItem = null }) {
           {error && <div style={{ fontSize: 13, color: "var(--danger)", padding: "2px" }}>{error}</div>}
           {capped && (
             <div style={{ fontSize: 13, color: "var(--text2)", padding: "2px" }}>
-              You've used today's messages with {NAME} — back tomorrow.
+              You've used today's messages with {NAME}. Back tomorrow.
             </div>
           )}
         </div>

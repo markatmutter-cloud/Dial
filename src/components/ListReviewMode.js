@@ -960,7 +960,7 @@ function OnboardingCard({ ownerName, total, onDismiss }) {
           lineHeight: 1.55, marginBottom: 18,
         }}>
           Go through the list one watch at a time and save the ones
-          worth coming back to. Saves land in your watchlist — skip
+          worth coming back to. Saves land in your watchlist; skip
           the rest.
         </div>
         <div style={{
@@ -978,13 +978,13 @@ function OnboardingCard({ ownerName, total, onDismiss }) {
           marginBottom: 24,
         }}>
           <IntroRow color="var(--heart)" glyph="♥">
-            <strong>Save</strong> — swipe right or tap Save. Adds the watch to your watchlist.
+            <strong>Save</strong>: swipe right or tap Save. Adds the watch to your watchlist.
           </IntroRow>
           <IntroRow color="var(--text2)" glyph="←">
-            <strong>Skip</strong> — swipe left or tap Skip. Moves on, saves nothing.
+            <strong>Skip</strong>: swipe left or tap Skip. Moves on, saves nothing.
           </IntroRow>
           <IntroRow color="var(--text2)" glyph="↗">
-            <strong>Details</strong> — tap the card to read the full listing.
+            <strong>Details</strong>: tap the card to read the full listing.
           </IntroRow>
         </ul>
         <button onClick={onDismiss} style={primaryBtnStyle()}>
@@ -1043,7 +1043,7 @@ function BreakInterstitial({ idx, total, onContinue, onPause }) {
           fontSize: 14, color: "var(--text2)",
           lineHeight: 1.5, marginBottom: 24,
         }}>
-          {idx} of {total} reviewed. Come back anytime — your place is saved.
+          {idx} of {total} reviewed. Come back anytime; your place is saved.
         </div>
         <div style={{ display: "flex", gap: 10 }}>
           <button onClick={onPause} style={ghostBtnStyle()}>

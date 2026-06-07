@@ -513,7 +513,7 @@ function AuctionRow({ a, archive, lotCount = 0, heroImg = "", saved = false, onT
           <button
             onClick={(e) => { e.stopPropagation(); onToggleSave(a.url); }}
             aria-label={saved ? "Remove this auction from saved" : "Save this auction"}
-            title={saved ? "Saved — tap to remove" : "Save this auction"}
+            title={saved ? "Saved · tap to remove" : "Save this auction"}
             style={{
               position: "absolute", top: 8, right: 8,
               width: 30, height: 30, borderRadius: "50%",

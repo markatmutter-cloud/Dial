@@ -58,7 +58,7 @@ export function CollectionEditModal({ editing, setEditing, createCollection, ren
         </div>
         <div style={{ fontSize: 12, color: "var(--text2)", marginBottom: 10 }}>
           {isNew
-            ? "Group watches by reference, theme, or research thread — \"Rolex 5513s\", \"Vintage divers\", \"Reference comps\"."
+            ? "Group watches by reference, theme, or research thread: \"Rolex 5513s\", \"Vintage divers\", \"Reference comps\"."
             : "Renaming doesn't move any items."}
         </div>
         <input

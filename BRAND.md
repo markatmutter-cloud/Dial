@@ -51,6 +51,13 @@ miss* what just dropped, *file* what they've found, and eventually
 - **No emoji as decoration.** Emoji appear only where they carry
   semantic weight (👍 / ❌ / ❤️ in reactions, 📋 in the To-review
   bucket, 🎉 on screening completion). Never as ornament.
+- **No em-dashes (—) in product copy.** An LLM tell that costs
+  credibility even when the sentence is right (Mark, 2026-06-06).
+  Rewrite with a colon, comma, period, or parentheses. En-dashes in
+  numeric ranges (1965–1970) are fine; the lone "—" as a missing-value
+  placeholder glyph in data slots is fine. Applies to UI strings,
+  guide prose, AND Lumé's generated replies (rule lives in
+  public/lume_system_prompt.txt).
 
 ## What it sounds like (vs doesn't)
 

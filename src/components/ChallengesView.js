@@ -137,7 +137,7 @@ export function ChallengesView({
             border: "0.5px solid var(--danger)", borderRadius: 8,
             background: "var(--card-bg)",
           }}>
-            Challenge didn't save — {createError}
+            Challenge didn't save: {createError}
           </div>
         )}
         <CreateStage

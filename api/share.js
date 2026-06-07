@@ -170,7 +170,7 @@ module.exports = function handler(req, res) {
   if (id.startsWith('list_')) {
     // ── Shared LIST (/share/list_<uuid>?t&n&img[&invite]) ──────────
     const rawId = id.slice(5);
-    ogTitle = metaTitle ? `${metaTitle} — a list on Watchlist` : 'A list on Watchlist';
+    ogTitle = metaTitle ? `${metaTitle}: a list on Watchlist` : 'A list on Watchlist';
     ogDesc = Number.isFinite(metaCount) && metaCount > 0
       ? `${metaCount} watch${metaCount === 1 ? '' : 'es'} · a shared list of vintage watches`
       : 'A shared list of vintage watches';
@@ -183,7 +183,7 @@ module.exports = function handler(req, res) {
     // surface there is); bots get a guide-typed card.
     const nodeId = id.slice(4);
     ogTitle = metaTitle ? `${metaTitle} · Reference guide on Watchlist` : 'A reference guide on Watchlist';
-    ogDesc = 'Collector reference guide — the marks, the variants, real examples.';
+    ogDesc = 'Collector reference guide: the marks, the variants, real examples.';
     if (metaImg) { ogImage = resolveOgImage(metaImg, siteUrl); twitterCard = 'summary_large_image'; }
     redirectUrl = `${siteUrl}/?tab=learn&sub=references&ref=${encodeURIComponent(nodeId)}${fromName}`;
   } else {
@@ -196,14 +196,14 @@ module.exports = function handler(req, res) {
       ogImage = resolveOgImage(img, siteUrl);
       if (kind === 'article') {
         // P-25: say it's an ARTICLE, carry the article header.
-        ogTitle = title ? `${String(title).slice(0, 90)} — an article on Watchlist` : 'An article on Watchlist';
+        ogTitle = title ? `${String(title).slice(0, 90)}: an article on Watchlist` : 'An article on Watchlist';
         ogDesc = 'Watch journalism, collected on Watchlist';
       } else if (title) {
         ogTitle = `${String(title).slice(0, 90)} · Watchlist`;
         // Mark-specified caption (2026-05-06): keep it about the site,
         // not the watch — recipient should know what app they're being
         // sent to before opening.
-        ogDesc = 'Watchlist — Vintage watches in one feed';
+        ogDesc = 'Watchlist: Vintage watches in one feed';
       }
       twitterCard = img ? 'summary_large_image' : 'summary';
     }

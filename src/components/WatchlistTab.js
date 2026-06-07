@@ -182,7 +182,7 @@ export function WatchlistTab(props) {
   const SIGNED_OUT_BY_SUBTAB = {
     listings: {
       heading: "Sign in to save listings",
-      blurb: "Heart any dealer listing to save it here. Your saved set syncs across every device you use, and each entry keeps the price you saved at — even after the dealer takes the listing down.",
+      blurb: "Heart any dealer listing to save it here. Your saved set syncs across every device you use, and each entry keeps the price you saved at, even after the dealer takes the listing down.",
     },
     auctions: {
       heading: "Sign in to follow auctions",
@@ -190,11 +190,11 @@ export function WatchlistTab(props) {
     },
     sold: {
       heading: "Sign in to track what sold",
-      blurb: "When something in your saved set sells — at a dealer or under the hammer — it lands here with the sold price preserved. A running reference for what comparable watches actually cleared at.",
+      blurb: "When something in your saved set sells (at a dealer or under the hammer) it lands here with the sold price preserved. A running reference for what comparable watches actually cleared at.",
     },
     searches: {
       heading: "Sign in to use saved searches",
-      blurb: "Save the queries you keep coming back to — a reference, a brand cut, a phrase you scan for. Each one runs across every dealer in the feed and tells you when something new matches.",
+      blurb: "Save the queries you keep coming back to: a reference, a brand cut, a phrase you scan for. Each one runs across every dealer in the feed and tells you when something new matches.",
     },
   };
   const signedOutCopy = SIGNED_OUT_BY_SUBTAB[watchTopTab] || SIGNED_OUT_BY_SUBTAB.listings;
@@ -303,7 +303,7 @@ export function WatchlistTab(props) {
       </div>
       {importError && (
         <div style={{ fontSize: 12, color: "var(--danger)", marginTop: 4 }}>
-          Import didn't go through — {importError}
+          Import didn't go through: {importError}
         </div>
       )}
     </div>
@@ -480,7 +480,7 @@ export function WatchlistTab(props) {
             <EmptyState
               icon="♡"
               heading="No watches saved yet"
-              blurb="Browse the Listings tab and tap the heart on any item — it'll appear here with the price you saved at, even after the dealer takes the URL down."
+              blurb="Browse the Listings tab and tap the heart on any item; it'll appear here with the price you saved at, even after the dealer takes the URL down."
               action={
                 <button onClick={() => { setTab("listings"); setPage(1); }} style={actionButton()}>Browse Listings</button>
               }

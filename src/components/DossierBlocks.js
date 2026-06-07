@@ -242,7 +242,7 @@ function AddBlockBar({ adding, setAdding, savedSearches, referenceNodes, onAdd }
         options={(savedSearches || []).map((s) => ({ value: s.id, label: s.label }))}
         onPick={(value) => onAdd("saved_search", { savedSearchId: value })}
         onCancel={() => setAdding(null)}
-        emptyHint="No saved searches yet — save one from the search bar first."
+        emptyHint="No saved searches yet. Save one from the search bar first."
       />
     );
   }
