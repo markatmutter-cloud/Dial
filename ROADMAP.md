@@ -378,6 +378,14 @@ per-model/reference data substrate (Epic 0). UI label: **Collecting**.
   norm" chips (cross-references Epic 8's per-dealer price substrate).
 - **Comparison view** for similar saved items — side-by-side specs/price/
   condition/dealer.
+- **Guide market-strip segmentation** (from the 2026-06-06 E859 review) — on
+  pages whose model line spans eras, split the matched-listings strip into tabs
+  (e.g. Vintage E859 · Tribute/re-editions · Modern Polaris · related alarm
+  divers) so the reference object stays sharp while discovery stays broad.
+- **Source-confidence model as a visible element** — guides already follow the
+  invisible rule (official for specs, auction houses for examples, collector
+  scholarship flagged for nuance, dealers for images/condition); surface it as
+  a compact per-guide "how this page knows what it knows" affordance.
 
 ### Reference-number encyclopedia (job #5 — the headline learning feature)
 
