@@ -183,7 +183,7 @@ export function ReferenceBrowse(props) {
             <StandardSearchInput
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Search guides — brand, model, reference…"
+              placeholder="Search guides: brand, model, reference…"
               ariaLabel="Search guides"
             />
           </div>
@@ -196,7 +196,7 @@ export function ReferenceBrowse(props) {
             <StandardSearchInput
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Search guides — brand, model, reference…"
+              placeholder="Search guides: brand, model, reference…"
               ariaLabel="Search guides"
             />
           )}
@@ -312,7 +312,7 @@ function RefGuideCard({ node, isMobile, onClick, watchlist, handleWish, openColl
         <div style={{ position: "absolute", top: 8, right: 8, display: "flex", gap: 6 }}>
           {handleWish && (
             <button onClick={(e) => { stop(e); handleWish(asListing); }}
-              aria-label={wished ? "Saved — tap to remove" : "Save guide"}
+              aria-label={wished ? "Saved: tap to remove" : "Save guide"}
               style={{ ...overlayBtn, color: wished ? "var(--heart)" : "#fff" }}>{wished ? "♥" : "♡"}</button>
           )}
           {((openCollectionPicker && user) || handleShare) && (
@@ -366,7 +366,7 @@ function ComingSoon({ node }) {
         </div>
         {noted ? (
           <div style={{ fontSize: 13, color: "var(--text1)", fontWeight: 600 }}>
-            ✓ Thanks — we'll let you know when it's live.
+            ✓ Thanks. We'll let you know when it's live.
           </div>
         ) : (
           <button onClick={() => setNoted(true)} style={{

@@ -418,7 +418,7 @@ export default async function handler(req, res) {
     const { error } = await sb.rpc("consume_chat_quota");
     if (error) {
       if (error.code === "P0001") {
-        res.status(429).json({ error: "cap_exceeded", message: "Daily chat limit reached — back tomorrow." });
+        res.status(429).json({ error: "cap_exceeded", message: "Daily chat limit reached. Back tomorrow." });
         return;
       }
       res.status(500).json({ error: "quota_check_failed" });
@@ -581,7 +581,7 @@ export default async function handler(req, res) {
   }
 
   if (!finalText) {
-    finalText = "I hit my limit working that one out — try asking a bit more narrowly.";
+    finalText = "I hit my limit working that one out. Try asking a bit more narrowly.";
   }
 
   // Lumé memory: occasionally refresh the user's taste profile from the exchange.

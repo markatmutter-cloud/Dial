@@ -593,7 +593,7 @@ export function buildFeedbackMailto({
   contextLines = [],
 } = {}) {
   const ctxBlock = contextLines.length
-    ? `\n\n— Context (helps with debugging, edit if you'd rather not share) —\n${contextLines.join("\n")}\n`
+    ? `\n\nContext (helps with debugging, edit if you'd rather not share):\n${contextLines.join("\n")}\n`
     : "";
   const body = `${opening}${ctxBlock}`;
   return `mailto:${FEEDBACK_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;

@@ -50,7 +50,7 @@ export function SettingsModal({
     }
     setNameStatus("Saving…");
     const res = await setDisplayName(trimmed);
-    setNameStatus(res?.error ? `Didn't save — ${res.error}` : "Saved");
+    setNameStatus(res?.error ? `Didn't save: ${res.error}` : "Saved");
     setTimeout(() => setNameStatus(""), 1800);
   };
 
@@ -82,7 +82,7 @@ export function SettingsModal({
           <>
             <div style={{ ...sectionLabel, marginTop: 6 }}>Display name</div>
             <div style={{ fontSize: 12, color: "var(--text2)", marginBottom: 8, lineHeight: 1.5 }}>
-              How you appear to people you share lists with — on attribution chips and journal entries.
+              How you appear to people you share lists with, on attribution chips and journal entries.
             </div>
             <div style={{ display: "flex", gap: 6 }}>
               <input

@@ -141,7 +141,7 @@ export function LotMigrationBanner({
     }}>
       <div style={{ flex: 1, lineHeight: 1.4 }}>
         Moved {bannerCount} of your tracked auction lots into Favorites.
-        Auction lots are now hearted just like dealer listings — no more
+        Auction lots are now hearted just like dealer listings: no more
         +Track button for auction houses. eBay items still work via +Track.
       </div>
       <button onClick={() => setDismissed(true)} aria-label="Dismiss" style={{

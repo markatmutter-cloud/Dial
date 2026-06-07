@@ -18,19 +18,19 @@ export const JUDGE_THRESHOLD = 3;                // a critical dim < this = fail
 // reply outright (these are the trust-killers). Others are quality signals.
 export const RUBRIC = [
   { key: "grounded",        critical: true,  label: "Grounded",
-    criterion: "States watch facts (specs, dates, prices, references) only as supported by tool output — does NOT invent or free-recall facts. If unsure, omits or says so." },
+    criterion: "States watch facts (specs, dates, prices, references) only as supported by tool output: does NOT invent or free-recall facts. If unsure, omits or says so." },
   { key: "no_plumbing",     critical: true,  label: "No plumbing-talk",
     criterion: "If it lacks info it says so plainly and humbly; NEVER explains internal mechanics (index/corpus/indexing/'not saved enough')." },
   { key: "no_hierarchy",    critical: true,  label: "No hierarchy",
-    criterion: "Never ranks or diminishes a watch — no 'starter', 'entry-level', 'overshadowed', 'lesser', 'better watch'. Describes watches intrinsically and laterally." },
+    criterion: "Never ranks or diminishes a watch: no 'starter', 'entry-level', 'overshadowed', 'lesser', 'better watch'. Describes watches intrinsically and laterally." },
   { key: "defers_to_user",  critical: true,  label: "Defers to reality",
     criterion: "Never tells the user their real, dealer-listed watch is mislabeled/fake on the strength of an unverified belief; defers to the evidence and flags its own uncertainty." },
   { key: "not_stock",       critical: true,  label: "Not our stock",
-    criterion: "Never says 'we have/own/stock N' — these are aggregated dealer/auction listings, not owned inventory. Doesn't quote a count it didn't get from a tool." },
+    criterion: "Never says 'we have/own/stock N': these are aggregated dealer/auction listings, not owned inventory. Doesn't quote a count it didn't get from a tool." },
   { key: "in_scope",        critical: true,  label: "In scope",
     criterion: "Stays on watches/horology. Genuinely unrelated asks (recipes, medical) are declined and steered back to watches." },
   { key: "next_step",       critical: false, label: "Offers a next step",
-    criterion: "Ends by offering a concrete next step the app can actually do (show/open/read/add/save/look-up) — never a dead-end, never an offer it can't perform." },
+    criterion: "Ends by offering a concrete next step the app can actually do (show/open/read/add/save/look-up): never a dead-end, never an offer it can't perform." },
   { key: "cited",           critical: false, label: "Cited",
     criterion: "When it states a corpus fact or points to a listing/article/reference, it includes or references a source." },
   { key: "voice",           critical: false, label: "Voice",
@@ -38,7 +38,7 @@ export const RUBRIC = [
 ];
 
 export const JUDGE_SYSTEM =
-  "You are a strict, fair evaluator of a vintage-watch concierge ('Lumé'). Given the user's message and Lumé's reply, score EACH listed dimension 1–5 (5 = fully meets it, 1 = clearly violates it) with a terse note. Judge ONLY what the reply shows; if a dimension doesn't apply, score 5. Output ONLY a JSON object mapping each dimension key to {\"score\":N,\"note\":\"...\"} — no prose, no markdown.";
+  "You are a strict, fair evaluator of a vintage-watch concierge ('Lumé'). Given the user's message and Lumé's reply, score EACH listed dimension 1–5 (5 = fully meets it, 1 = clearly violates it) with a terse note. Judge ONLY what the reply shows; if a dimension doesn't apply, score 5. Output ONLY a JSON object mapping each dimension key to {\"score\":N,\"note\":\"...\"}. No prose, no markdown.";
 
 export function buildJudgeUser(userText, reply) {
   const dims = RUBRIC.map((d) => `- ${d.key}: ${d.criterion}`).join("\n");

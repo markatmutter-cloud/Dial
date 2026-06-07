@@ -816,7 +816,7 @@ function ManageCallout({ goToSavedLists, goToMyWatches, goToChallenges, isMobile
         Your collecting space.
       </h2>
       <p style={{ margin: "10px auto 0", maxWidth: 560, fontSize: 14, color: "var(--text-on-dark-2)", lineHeight: 1.5 }}>
-        Shortlists, ownership history, references worth revisiting — kept together thoughtfully.
+        Shortlists, ownership history, references worth revisiting, kept together thoughtfully.
       </p>
       <div style={{
         display: "flex", justifyContent: "center", alignItems: "center",

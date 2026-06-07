@@ -104,7 +104,7 @@ export function ChallengeReceiver({
       .then(({ data, error }) => {
         if (cancelled) return;
         if (error) { setCompleteError(error.message || "Failed to load."); return; }
-        if (!data) { setCompleteError("This challenge isn't available — it might still be a draft, or the link is wrong."); return; }
+        if (!data) { setCompleteError("This challenge isn't available. It might still be a draft, or the link is wrong."); return; }
         setCompleteData(data);
       });
     return () => { cancelled = true; };
@@ -347,7 +347,7 @@ export function ChallengeReceiver({
             </div>
           ) : isSpec ? (
             <div style={{ padding: "16px 20px", color: "var(--text2)", fontSize: 14, lineHeight: 1.55 }}>
-              The sender wants you to build your own answer under the same constraints —
+              The sender wants you to build your own answer under the same constraints:
               <strong style={{ color: "var(--text1)" }}> pick {targetCount} {targetCount === 1 ? "watch" : "watches"} for {fmtUSD(budget)}</strong>.
               You can still go over by 20% (soft cap).
               {spec?.descriptionLong && (
@@ -369,8 +369,8 @@ export function ChallengeReceiver({
             </p>
             <p style={{ fontSize: 13, color: "var(--text2)", lineHeight: 1.5, margin: 0 }}>
               {isSpec
-                ? "Pick the watches you'd choose under these constraints — share back when you're done."
-                : "Build your own answer under the same constraints — pick your watches, share back."
+                ? "Pick the watches you'd choose under these constraints, then share back when you're done."
+                : "Build your own answer under the same constraints: pick your watches, share back."
               }
             </p>
             {user ? (
@@ -387,7 +387,7 @@ export function ChallengeReceiver({
             </button>
             {!user && (
               <p style={{ fontSize: 12, color: "var(--text3)", lineHeight: 1.5, margin: "4px 0 0" }}>
-                No account is needed to browse — sign in only if you want to take the challenge.
+                No account is needed to browse. Sign in only if you want to take the challenge.
               </p>
             )}
           </div>

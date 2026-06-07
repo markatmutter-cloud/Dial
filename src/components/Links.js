@@ -54,7 +54,7 @@ const TOPIC_SECTIONS = [
       "https://monochrome-watches.com/",
       {
         url: "https://www.heuerpriceguide.com/heuervintage-blog",
-        name: "Heuer Price Guide — Vintage Heuer blog",
+        name: "Heuer Price Guide: Vintage Heuer blog",
       },
     ],
   },
@@ -69,43 +69,43 @@ const TOPIC_SECTIONS = [
     links: [
       {
         url: "https://www.heuerpriceguide.com/price-guide",
-        name: "Vintage Heuer Price Guide — index",
+        name: "Vintage Heuer Price Guide: index",
       },
       {
         url: "https://www.heuerpriceguide.com/carrera-1960s-price-guide",
-        name: "Heuer Carrera 1963–85 — refs 2447S/N/SF/SD/ST, 3647, 3147, 2547, 7753, 1153, 1158, 73353, 73653",
+        name: "Heuer Carrera 1963–85: refs 2447S/N/SF/SD/ST, 3647, 3147, 2547, 7753, 1153, 1158, 73353, 73653",
       },
       {
         url: "https://www.heuerpriceguide.com/carrera-1970s---cushion-case",
-        name: "Heuer Carrera 1970s cushion case — refs 1153, 1158, 73653",
+        name: "Heuer Carrera 1970s cushion case: refs 1153, 1158, 73653",
       },
       {
         url: "https://www.heuerpriceguide.com/autavia-1960s-price-guide",
-        name: "Heuer Autavia 1960s — refs 2446, 3646, 2446c, 7763c, 7863c (+ Skipper, Seafarer, Mareographe)",
+        name: "Heuer Autavia 1960s: refs 2446, 3646, 2446c, 7763c, 7863c (+ Skipper, Seafarer, Mareographe)",
       },
       {
         url: "https://www.heuerpriceguide.com/autavia-70-80s-price-guide",
-        name: "Heuer Autavia 70s/80s — refs 1163, 1563, 11063, 11630, 73363, 73463, 73663, 1564/15640",
+        name: "Heuer Autavia 70s/80s: refs 1163, 1563, 11063, 11630, 73363, 73463, 73663, 1564/15640",
       },
       {
         url: "https://www.heuerpriceguide.com/autavia-compressor-case",
-        name: "Heuer Autavia compressor case — refs 2446c, 7763c, 7863c",
+        name: "Heuer Autavia compressor case: refs 2446c, 7763c, 7863c",
       },
       {
         url: "https://www.heuerpriceguide.com/heuer-monaco-price-guide",
-        name: "Heuer Monaco — refs 1133B/G, 1533B/G, 73633B/G, 740303",
+        name: "Heuer Monaco: refs 1133B/G, 1533B/G, 73633B/G, 740303",
       },
       {
         url: "https://www.heuerpriceguide.com/vintage-heuer-rarity",
-        name: "Vintage Heuer — production & rarity",
+        name: "Vintage Heuer: production & rarity",
       },
       {
         url: "https://www.heuerpriceguide.com/about-the-price-guide",
-        name: "About the Heuer Price Guide — methodology + condition tiers",
+        name: "About the Heuer Price Guide: methodology + condition tiers",
       },
       {
         url: "https://www.heuerpriceguide.com/heuer-price-guide-update-december-2024",
-        name: "Heuer Price Guide — latest update (Dec 2024)",
+        name: "Heuer Price Guide: latest update (Dec 2024)",
       },
     ],
   },
@@ -137,36 +137,36 @@ const REFERENCE_SECTIONS = [
       // gmtmaster1675.com — promoted from home bookmark to deep
       // per-dial-mark + per-component cluster. WordPress reference
       // site by t_swiss_t, no dates / authors — Links-only treatment.
-      { url: "https://gmtmaster1675.com/",                    name: "gmtmaster1675 — home" },
-      { url: "https://gmtmaster1675.com/gmthistory/",         name: "gmtmaster1675 — GMT history" },
-      { url: "https://gmtmaster1675.com/dial-catalogue/",     name: "gmtmaster1675 — dial catalogue (index)" },
+      { url: "https://gmtmaster1675.com/",                    name: "gmtmaster1675: home" },
+      { url: "https://gmtmaster1675.com/gmthistory/",         name: "gmtmaster1675: GMT history" },
+      { url: "https://gmtmaster1675.com/dial-catalogue/",     name: "gmtmaster1675: dial catalogue (index)" },
       // Dial marks (the core taxonomy)
-      { url: "https://gmtmaster1675.com/mark-0/",             name: "gmtmaster1675 — Mark 0" },
-      { url: "https://gmtmaster1675.com/mark-1/",             name: "gmtmaster1675 — Mark 1" },
-      { url: "https://gmtmaster1675.com/mark-1-5/",           name: "gmtmaster1675 — Mark 1.5" },
-      { url: "https://gmtmaster1675.com/mark-2/",             name: "gmtmaster1675 — Mark 2" },
-      { url: "https://gmtmaster1675.com/mark-2-5/",           name: "gmtmaster1675 — Mark 2.5" },
-      { url: "https://gmtmaster1675.com/mark-3/",             name: "gmtmaster1675 — Mark 3" },
-      { url: "https://gmtmaster1675.com/mark-4/",             name: "gmtmaster1675 — Mark 4" },
-      { url: "https://gmtmaster1675.com/mark-5/",             name: "gmtmaster1675 — Mark 5" },
-      { url: "https://gmtmaster1675.com/mark-6/",             name: "gmtmaster1675 — Mark 6" },
+      { url: "https://gmtmaster1675.com/mark-0/",             name: "gmtmaster1675: Mark 0" },
+      { url: "https://gmtmaster1675.com/mark-1/",             name: "gmtmaster1675: Mark 1" },
+      { url: "https://gmtmaster1675.com/mark-1-5/",           name: "gmtmaster1675: Mark 1.5" },
+      { url: "https://gmtmaster1675.com/mark-2/",             name: "gmtmaster1675: Mark 2" },
+      { url: "https://gmtmaster1675.com/mark-2-5/",           name: "gmtmaster1675: Mark 2.5" },
+      { url: "https://gmtmaster1675.com/mark-3/",             name: "gmtmaster1675: Mark 3" },
+      { url: "https://gmtmaster1675.com/mark-4/",             name: "gmtmaster1675: Mark 4" },
+      { url: "https://gmtmaster1675.com/mark-5/",             name: "gmtmaster1675: Mark 5" },
+      { url: "https://gmtmaster1675.com/mark-6/",             name: "gmtmaster1675: Mark 6" },
       // Dial categories
-      { url: "https://gmtmaster1675.com/gilt-dials/",         name: "gmtmaster1675 — gilt dials" },
-      { url: "https://gmtmaster1675.com/matte-dials/",        name: "gmtmaster1675 — matte dials" },
-      { url: "https://gmtmaster1675.com/chapter-ring/",       name: "gmtmaster1675 — chapter-ring dials" },
-      { url: "https://gmtmaster1675.com/non-chapter-ring/",   name: "gmtmaster1675 — non-chapter-ring dials" },
-      { url: "https://gmtmaster1675.com/brown-dials/",        name: "gmtmaster1675 — brown dials (two-tone / gold)" },
+      { url: "https://gmtmaster1675.com/gilt-dials/",         name: "gmtmaster1675: gilt dials" },
+      { url: "https://gmtmaster1675.com/matte-dials/",        name: "gmtmaster1675: matte dials" },
+      { url: "https://gmtmaster1675.com/chapter-ring/",       name: "gmtmaster1675: chapter-ring dials" },
+      { url: "https://gmtmaster1675.com/non-chapter-ring/",   name: "gmtmaster1675: non-chapter-ring dials" },
+      { url: "https://gmtmaster1675.com/brown-dials/",        name: "gmtmaster1675: brown dials (two-tone / gold)" },
       // Bezel insert types
-      { url: "https://gmtmaster1675.com/type-a/",             name: "gmtmaster1675 — bezel type A" },
-      { url: "https://gmtmaster1675.com/type-b/",             name: "gmtmaster1675 — bezel type B" },
-      { url: "https://gmtmaster1675.com/type-c/",             name: "gmtmaster1675 — bezel type C" },
+      { url: "https://gmtmaster1675.com/type-a/",             name: "gmtmaster1675: bezel type A" },
+      { url: "https://gmtmaster1675.com/type-b/",             name: "gmtmaster1675: bezel type B" },
+      { url: "https://gmtmaster1675.com/type-c/",             name: "gmtmaster1675: bezel type C" },
       // Components
-      { url: "https://gmtmaster1675.com/the-bezel/",          name: "gmtmaster1675 — bezel" },
-      { url: "https://gmtmaster1675.com/the-case/",           name: "gmtmaster1675 — case" },
-      { url: "https://gmtmaster1675.com/the-bracelet/",       name: "gmtmaster1675 — bracelet" },
-      { url: "https://gmtmaster1675.com/the-movement/",       name: "gmtmaster1675 — movement" },
-      { url: "https://gmtmaster1675.com/the-hands/",          name: "gmtmaster1675 — hands" },
-      { url: "https://gmtmaster1675.com/the-date-wheel/",     name: "gmtmaster1675 — date wheel" },
+      { url: "https://gmtmaster1675.com/the-bezel/",          name: "gmtmaster1675: bezel" },
+      { url: "https://gmtmaster1675.com/the-case/",           name: "gmtmaster1675: case" },
+      { url: "https://gmtmaster1675.com/the-bracelet/",       name: "gmtmaster1675: bracelet" },
+      { url: "https://gmtmaster1675.com/the-movement/",       name: "gmtmaster1675: movement" },
+      { url: "https://gmtmaster1675.com/the-hands/",          name: "gmtmaster1675: hands" },
+      { url: "https://gmtmaster1675.com/the-date-wheel/",     name: "gmtmaster1675: date wheel" },
     ],
   },
   {
@@ -183,17 +183,17 @@ const REFERENCE_SECTIONS = [
       // per-reference cluster. The site is the canonical Tudor
       // Submariner reference on the open web; agent enumerated 10
       // deep pages with prose (~1k-2k words each on the main refs).
-      { url: "https://www.tudorsub.com/tudorsubmariner7922/23/24",  name: "TudorSub — refs 7922 / 7923 / 7924" },
-      { url: "https://www.tudorsub.com/tudorsubmariner7928",         name: "TudorSub — ref 7928" },
-      { url: "https://www.tudorsub.com/tudorsubmariner7016/7021",    name: "TudorSub — refs 7016/0 + 7021/0" },
-      { url: "https://www.tudorsub.com/tudorsubmariner94010/94110",  name: "TudorSub — 94 series (94010 / 94110)" },
-      { url: "https://www.tudorsub.com/tudorsubmariner76100",        name: "TudorSub — ref 76100" },
-      { url: "https://www.tudorsub.com/tudorsubmariner79090",        name: "TudorSub — ref 79090" },
-      { url: "https://www.tudorsub.com/tudorsubmarinermilitary",     name: "TudorSub — military issue overview" },
-      { url: "https://www.tudorsub.com/the-rcn",                     name: "TudorSub — Tudor & the Royal Canadian Navy" },
-      { url: "https://www.tudorsub.com/movement",                    name: "TudorSub — movements reference" },
-      { url: "https://www.tudorsub.com/bracelet",                    name: "TudorSub — bracelets reference" },
-      { url: "https://www.tudorsub.com/tudorsubserialguide",         name: "TudorSub — serial number guide" },
+      { url: "https://www.tudorsub.com/tudorsubmariner7922/23/24",  name: "TudorSub: refs 7922 / 7923 / 7924" },
+      { url: "https://www.tudorsub.com/tudorsubmariner7928",         name: "TudorSub: ref 7928" },
+      { url: "https://www.tudorsub.com/tudorsubmariner7016/7021",    name: "TudorSub: refs 7016/0 + 7021/0" },
+      { url: "https://www.tudorsub.com/tudorsubmariner94010/94110",  name: "TudorSub: 94 series (94010 / 94110)" },
+      { url: "https://www.tudorsub.com/tudorsubmariner76100",        name: "TudorSub: ref 76100" },
+      { url: "https://www.tudorsub.com/tudorsubmariner79090",        name: "TudorSub: ref 79090" },
+      { url: "https://www.tudorsub.com/tudorsubmarinermilitary",     name: "TudorSub: military issue overview" },
+      { url: "https://www.tudorsub.com/the-rcn",                     name: "TudorSub: Tudor & the Royal Canadian Navy" },
+      { url: "https://www.tudorsub.com/movement",                    name: "TudorSub: movements reference" },
+      { url: "https://www.tudorsub.com/bracelet",                    name: "TudorSub: bracelets reference" },
+      { url: "https://www.tudorsub.com/tudorsubserialguide",         name: "TudorSub: serial number guide" },
     ],
   },
   {
@@ -207,18 +207,18 @@ const REFERENCE_SECTIONS = [
       // Solomons (Omega Passion). One WordPress page with 16 anchor
       // sections — no dates / authors on the sections, Links-only
       // treatment. 2,748 words across the body, 89 reference images.
-      { url: "https://www.omegaseamaster300.com/",            name: "omegaseamaster300 — home (Stuart Solomons' guide)" },
-      { url: "https://www.omegaseamaster300.com/#history",    name: "omegaseamaster300 — history" },
-      { url: "https://www.omegaseamaster300.com/#comex",      name: "omegaseamaster300 — COMEX variants" },
-      { url: "https://www.omegaseamaster300.com/#bezels",     name: "omegaseamaster300 — bezel reference" },
-      { url: "https://www.omegaseamaster300.com/#bracelets",  name: "omegaseamaster300 — bracelets & end links" },
-      { url: "https://www.omegaseamaster300.com/#crown",      name: "omegaseamaster300 — crown / Naiad" },
-      { url: "https://www.omegaseamaster300.com/#case",       name: "omegaseamaster300 — case & case backs (incl. fake detection)" },
-      { url: "https://www.omegaseamaster300.com/#dials",      name: "omegaseamaster300 — dials (incl. fake dial guide)" },
-      { url: "https://www.omegaseamaster300.com/#hands",      name: "omegaseamaster300 — hands" },
-      { url: "https://www.omegaseamaster300.com/#movement",   name: "omegaseamaster300 — movement evolution (CK 14755 → 166.034)" },
-      { url: "https://www.omegaseamaster300.com/#price",      name: "omegaseamaster300 — price & value tiers" },
-      { url: "https://www.omegaseamaster300.com/#catalogues", name: "omegaseamaster300 — catalogues archive" },
+      { url: "https://www.omegaseamaster300.com/",            name: "omegaseamaster300: home (Stuart Solomons' guide)" },
+      { url: "https://www.omegaseamaster300.com/#history",    name: "omegaseamaster300: history" },
+      { url: "https://www.omegaseamaster300.com/#comex",      name: "omegaseamaster300: COMEX variants" },
+      { url: "https://www.omegaseamaster300.com/#bezels",     name: "omegaseamaster300: bezel reference" },
+      { url: "https://www.omegaseamaster300.com/#bracelets",  name: "omegaseamaster300: bracelets & end links" },
+      { url: "https://www.omegaseamaster300.com/#crown",      name: "omegaseamaster300: crown / Naiad" },
+      { url: "https://www.omegaseamaster300.com/#case",       name: "omegaseamaster300: case & case backs (incl. fake detection)" },
+      { url: "https://www.omegaseamaster300.com/#dials",      name: "omegaseamaster300: dials (incl. fake dial guide)" },
+      { url: "https://www.omegaseamaster300.com/#hands",      name: "omegaseamaster300: hands" },
+      { url: "https://www.omegaseamaster300.com/#movement",   name: "omegaseamaster300: movement evolution (CK 14755 → 166.034)" },
+      { url: "https://www.omegaseamaster300.com/#price",      name: "omegaseamaster300: price & value tiers" },
+      { url: "https://www.omegaseamaster300.com/#catalogues", name: "omegaseamaster300: catalogues archive" },
     ],
   },
   {
@@ -229,20 +229,20 @@ const REFERENCE_SECTIONS = [
     // sections + one standalone /new-record/ post.
     title: "Omega Seamaster 600 'Ploprof'",
     links: [
-      { url: "https://www.omegaploprof.com/",            name: "omegaploprof — home (Stuart Solomons' monograph)" },
-      { url: "https://www.omegaploprof.com/#history",    name: "omegaploprof — history & chronology" },
-      { url: "https://www.omegaploprof.com/#prototypes", name: "omegaploprof — prototypes" },
-      { url: "https://www.omegaploprof.com/#bezels",     name: "omegaploprof — bezels" },
-      { url: "https://www.omegaploprof.com/#case",       name: "omegaploprof — case" },
-      { url: "https://www.omegaploprof.com/#crown",      name: "omegaploprof — crown (deepest section, 1,100w)" },
-      { url: "https://www.omegaploprof.com/#comex",      name: "omegaploprof — COMEX history & invalid assumptions" },
-      { url: "https://www.omegaploprof.com/#dials",      name: "omegaploprof — dials" },
-      { url: "https://www.omegaploprof.com/#hands",      name: "omegaploprof — hands" },
-      { url: "https://www.omegaploprof.com/#movement",   name: "omegaploprof — Cal. 1002 movement" },
-      { url: "https://www.omegaploprof.com/#catalogues", name: "omegaploprof — period catalogues" },
-      { url: "https://www.omegaploprof.com/#production", name: "omegaploprof — production years" },
-      { url: "https://www.omegaploprof.com/#value",      name: "omegaploprof — value guide" },
-      { url: "https://www.omegaploprof.com/new-record/", name: "omegaploprof — 2020 record auction note" },
+      { url: "https://www.omegaploprof.com/",            name: "omegaploprof: home (Stuart Solomons' monograph)" },
+      { url: "https://www.omegaploprof.com/#history",    name: "omegaploprof: history & chronology" },
+      { url: "https://www.omegaploprof.com/#prototypes", name: "omegaploprof: prototypes" },
+      { url: "https://www.omegaploprof.com/#bezels",     name: "omegaploprof: bezels" },
+      { url: "https://www.omegaploprof.com/#case",       name: "omegaploprof: case" },
+      { url: "https://www.omegaploprof.com/#crown",      name: "omegaploprof: crown (deepest section, 1,100w)" },
+      { url: "https://www.omegaploprof.com/#comex",      name: "omegaploprof: COMEX history & invalid assumptions" },
+      { url: "https://www.omegaploprof.com/#dials",      name: "omegaploprof: dials" },
+      { url: "https://www.omegaploprof.com/#hands",      name: "omegaploprof: hands" },
+      { url: "https://www.omegaploprof.com/#movement",   name: "omegaploprof: Cal. 1002 movement" },
+      { url: "https://www.omegaploprof.com/#catalogues", name: "omegaploprof: period catalogues" },
+      { url: "https://www.omegaploprof.com/#production", name: "omegaploprof: production years" },
+      { url: "https://www.omegaploprof.com/#value",      name: "omegaploprof: value guide" },
+      { url: "https://www.omegaploprof.com/new-record/", name: "omegaploprof: 2020 record auction note" },
     ],
   },
   {
@@ -251,35 +251,35 @@ const REFERENCE_SECTIONS = [
     // site, no dates / authors — Links-only treatment.
     title: "Rolex Explorer 1016",
     links: [
-      { url: "https://explorer1016.com/",                          name: "explorer1016 — home" },
-      { url: "https://explorer1016.com/history/",                  name: "explorer1016 — history" },
-      { url: "https://explorer1016.com/dial-catalogue/",           name: "explorer1016 — dial catalogue (index)" },
+      { url: "https://explorer1016.com/",                          name: "explorer1016: home" },
+      { url: "https://explorer1016.com/history/",                  name: "explorer1016: history" },
+      { url: "https://explorer1016.com/dial-catalogue/",           name: "explorer1016: dial catalogue (index)" },
       // Matte dials (7)
-      { url: "https://explorer1016.com/matte/",                    name: "explorer1016 — matte dials hub" },
-      { url: "https://explorer1016.com/matte/mark-0/",             name: "explorer1016 — matte Mark 0" },
-      { url: "https://explorer1016.com/matte/mark-1/",             name: "explorer1016 — matte Mark 1" },
-      { url: "https://explorer1016.com/matte/mark-2/",             name: "explorer1016 — matte Mark 2" },
-      { url: "https://explorer1016.com/matte/mark-3/",             name: "explorer1016 — matte Mark 3" },
-      { url: "https://explorer1016.com/matte/mark-4/",             name: "explorer1016 — matte Mark 4" },
-      { url: "https://explorer1016.com/mark-5/",                   name: "explorer1016 — matte Mark 5" },
-      { url: "https://explorer1016.com/matte/special-dials/",      name: "explorer1016 — matte special dials" },
-      { url: "https://explorer1016.com/matte/service-dials/",      name: "explorer1016 — matte service dials" },
+      { url: "https://explorer1016.com/matte/",                    name: "explorer1016: matte dials hub" },
+      { url: "https://explorer1016.com/matte/mark-0/",             name: "explorer1016: matte Mark 0" },
+      { url: "https://explorer1016.com/matte/mark-1/",             name: "explorer1016: matte Mark 1" },
+      { url: "https://explorer1016.com/matte/mark-2/",             name: "explorer1016: matte Mark 2" },
+      { url: "https://explorer1016.com/matte/mark-3/",             name: "explorer1016: matte Mark 3" },
+      { url: "https://explorer1016.com/matte/mark-4/",             name: "explorer1016: matte Mark 4" },
+      { url: "https://explorer1016.com/mark-5/",                   name: "explorer1016: matte Mark 5" },
+      { url: "https://explorer1016.com/matte/special-dials/",      name: "explorer1016: matte special dials" },
+      { url: "https://explorer1016.com/matte/service-dials/",      name: "explorer1016: matte service dials" },
       // Gilt dials (8)
-      { url: "https://explorer1016.com/gilt/",                     name: "explorer1016 — gilt dials hub" },
-      { url: "https://explorer1016.com/gilt/chapter-ring/",        name: "explorer1016 — gilt chapter-ring" },
-      { url: "https://explorer1016.com/gilt/chapter-ring/mark-0-occ/", name: "explorer1016 — gilt CR Mark 0 (OCC)" },
-      { url: "https://explorer1016.com/gilt/chapter-ring/mark-1/", name: "explorer1016 — gilt CR Mark 1" },
-      { url: "https://explorer1016.com/gilt/chapter-ring/mark-2/", name: "explorer1016 — gilt CR Mark 2" },
-      { url: "https://explorer1016.com/gilt/chapter-ring/mark-3/", name: "explorer1016 — gilt CR Mark 3" },
-      { url: "https://explorer1016.com/gilt/non-chapter-ring/",    name: "explorer1016 — gilt non-chapter-ring" },
-      { url: "https://explorer1016.com/gilt/non-chapter-ring/mark-4/", name: "explorer1016 — gilt non-CR Mark 4" },
-      { url: "https://explorer1016.com/gilt/non-chapter-ring/mark-5/", name: "explorer1016 — gilt non-CR Mark 5" },
-      { url: "https://explorer1016.com/gilt/non-chapter-ring/mark-6/", name: "explorer1016 — gilt non-CR Mark 6" },
+      { url: "https://explorer1016.com/gilt/",                     name: "explorer1016: gilt dials hub" },
+      { url: "https://explorer1016.com/gilt/chapter-ring/",        name: "explorer1016: gilt chapter-ring" },
+      { url: "https://explorer1016.com/gilt/chapter-ring/mark-0-occ/", name: "explorer1016: gilt CR Mark 0 (OCC)" },
+      { url: "https://explorer1016.com/gilt/chapter-ring/mark-1/", name: "explorer1016: gilt CR Mark 1" },
+      { url: "https://explorer1016.com/gilt/chapter-ring/mark-2/", name: "explorer1016: gilt CR Mark 2" },
+      { url: "https://explorer1016.com/gilt/chapter-ring/mark-3/", name: "explorer1016: gilt CR Mark 3" },
+      { url: "https://explorer1016.com/gilt/non-chapter-ring/",    name: "explorer1016: gilt non-chapter-ring" },
+      { url: "https://explorer1016.com/gilt/non-chapter-ring/mark-4/", name: "explorer1016: gilt non-CR Mark 4" },
+      { url: "https://explorer1016.com/gilt/non-chapter-ring/mark-5/", name: "explorer1016: gilt non-CR Mark 5" },
+      { url: "https://explorer1016.com/gilt/non-chapter-ring/mark-6/", name: "explorer1016: gilt non-CR Mark 6" },
       // Components
-      { url: "https://explorer1016.com/components/case/",          name: "explorer1016 — case reference" },
-      { url: "https://explorer1016.com/components/movement/",      name: "explorer1016 — movement reference" },
-      { url: "https://explorer1016.com/components/hands/",         name: "explorer1016 — hands reference" },
-      { url: "https://explorer1016.com/bracelet/",                 name: "explorer1016 — bracelet reference" },
+      { url: "https://explorer1016.com/components/case/",          name: "explorer1016: case reference" },
+      { url: "https://explorer1016.com/components/movement/",      name: "explorer1016: movement reference" },
+      { url: "https://explorer1016.com/components/hands/",         name: "explorer1016: hands reference" },
+      { url: "https://explorer1016.com/bracelet/",                 name: "explorer1016: bracelet reference" },
     ],
   },
   {
@@ -314,43 +314,43 @@ const REFERENCE_SECTIONS = [
       // price-table pages in the Price Guides topic section).
       {
         url: "https://www.heuerpriceguide.com/model-information",
-        name: "Heuer Price Guide — model information (hub)",
+        name: "Heuer Price Guide: model information (hub)",
       },
       {
         url: "https://www.heuerpriceguide.com/carrera-1960s",
-        name: "Heuer Price Guide — Carrera 1960s screw-back case (2447/2448) gallery",
+        name: "Heuer Price Guide: Carrera 1960s screw-back case (2447/2448) gallery",
       },
       {
         url: "https://www.heuerpriceguide.com/carrera-1970/80s---barrel-case-/-quartz",
-        name: "Heuer Price Guide — Carrera 1970s/80s barrel-case + quartz gallery",
+        name: "Heuer Price Guide: Carrera 1970s/80s barrel-case + quartz gallery",
       },
       {
         url: "https://www.heuerpriceguide.com/autavia-screw-back-case",
-        name: "Heuer Price Guide — Autavia screw-back case 1962–68 gallery",
+        name: "Heuer Price Guide: Autavia screw-back case 1962–68 gallery",
       },
       {
         url: "https://www.heuerpriceguide.com/autavia-cushion-case6099a6cb",
-        name: "Heuer Price Guide — Autavia cushion case 1969–85 (GMT, Siffert, Orange Boy)",
+        name: "Heuer Price Guide: Autavia cushion case 1969–85 (GMT, Siffert, Orange Boy)",
       },
       {
         url: "https://www.heuerpriceguide.com/monaco-case6288295e",
-        name: "Heuer Price Guide — Monaco case references 1969–78",
+        name: "Heuer Price Guide: Monaco case references 1969–78",
       },
       {
         url: "https://www.heuerpriceguide.com/vintage-heuer-authentication",
-        name: "Heuer Price Guide — authentication & valuation service",
+        name: "Heuer Price Guide: authentication & valuation service",
       },
       {
         url: "https://www.heuerpriceguide.com/condition-condition-condition",
-        name: "Heuer Price Guide — why condition drives vintage Heuer value",
+        name: "Heuer Price Guide: why condition drives vintage Heuer value",
       },
       {
         url: "https://www.heuerpriceguide.com/famous-heuer-ambassadors",
-        name: "Heuer Price Guide — famous Heuer ambassadors (McQueen, Jagger, Lauda, Andretti)",
+        name: "Heuer Price Guide: famous Heuer ambassadors (McQueen, Jagger, Lauda, Andretti)",
       },
       {
         url: "https://www.heuerpriceguide.com/heuer-parts-for-sale",
-        name: "Heuer Price Guide — vintage Heuer parts catalog",
+        name: "Heuer Price Guide: vintage Heuer parts catalog",
       },
       // On The Dash (Jeff Stein) — THE canonical Heuer reference on
       // the open web, online since 2003. Master Reference is the
@@ -358,19 +358,19 @@ const REFERENCE_SECTIONS = [
       // the per-reference catalogue pages.
       {
         url: "https://www.onthedash.com/master-reference/",
-        name: "On The Dash — Heuer Master Reference (the canonical index)",
+        name: "On The Dash: Heuer Master Reference (the canonical index)",
       },
       {
         url: "https://www.onthedash.com/watches/carrera/",
-        name: "On The Dash — Carrera hub",
+        name: "On The Dash: Carrera hub",
       },
       {
         url: "https://www.onthedash.com/watches/autavia/",
-        name: "On The Dash — Autavia hub",
+        name: "On The Dash: Autavia hub",
       },
       {
         url: "https://www.onthedash.com/watches/monaco/",
-        name: "On The Dash — Monaco hub",
+        name: "On The Dash: Monaco hub",
       },
     ],
   },
@@ -381,22 +381,22 @@ const REFERENCE_SECTIONS = [
     // this section scannable.
     title: "Heuer Camaro",
     links: [
-      { url: "https://www.heuercamaro.com",          name: "Heuer Camaro — reference site" },
-      { url: "https://www.heuercamaro.com/history",  name: "Heuer Camaro — history essay" },
-      { url: "https://www.heuercamaro.com/features", name: "Heuer Camaro — case, dial, hands, movements, bracelet" },
-      { url: "https://www.heuercamaro.com/models",   name: "Heuer Camaro — models (refs 7220, 7228, 9220, 7743, 7843, 73x43/45)" },
-      { url: "https://www.heuercamaro.com/models/7220",                    name: "Camaro Ref. 7220 — steel (Valjoux 7730/7733)" },
-      { url: "https://www.heuercamaro.com/models/7228-18k-gold",           name: "Camaro Ref. 7228 — 18k gold" },
-      { url: "https://www.heuercamaro.com/models/9220",                    name: "Camaro Ref. 9220 — gold-filled" },
-      { url: "https://www.heuercamaro.com/models/7743",                    name: "Camaro Ref. 7743 — Valjoux 7740" },
+      { url: "https://www.heuercamaro.com",          name: "Heuer Camaro: reference site" },
+      { url: "https://www.heuercamaro.com/history",  name: "Heuer Camaro: history essay" },
+      { url: "https://www.heuercamaro.com/features", name: "Heuer Camaro: case, dial, hands, movements, bracelet" },
+      { url: "https://www.heuercamaro.com/models",   name: "Heuer Camaro: models (refs 7220, 7228, 9220, 7743, 7843, 73x43/45)" },
+      { url: "https://www.heuercamaro.com/models/7220",                    name: "Camaro Ref. 7220: steel (Valjoux 7730/7733)" },
+      { url: "https://www.heuercamaro.com/models/7228-18k-gold",           name: "Camaro Ref. 7228: 18k gold" },
+      { url: "https://www.heuercamaro.com/models/9220",                    name: "Camaro Ref. 9220: gold-filled" },
+      { url: "https://www.heuercamaro.com/models/7743",                    name: "Camaro Ref. 7743: Valjoux 7740" },
       { url: "https://www.heuercamaro.com/models/7843-dato",               name: "Camaro Ref. 7843 Dato" },
       { url: "https://www.heuercamaro.com/models/73643",                   name: "Camaro Ref. 73643" },
       { url: "https://www.heuercamaro.com/models/73343",                   name: "Camaro Ref. 73343" },
-      { url: "https://www.heuercamaro.com/models/73345-gold-plated",       name: "Camaro Ref. 73345 — gold-plated" },
+      { url: "https://www.heuercamaro.com/models/73345-gold-plated",       name: "Camaro Ref. 73345: gold-plated" },
       { url: "https://www.heuercamaro.com/models/73443-dato",              name: "Camaro Ref. 73443 Dato" },
-      { url: "https://www.heuercamaro.com/models/73445-dato-gold-plated",  name: "Camaro Ref. 73445 Dato — gold-plated" },
-      { url: "https://www.heuercamaro.com/otherco-brands",                 name: "Camaro — other-brand reissues + co-brands + distributor variants" },
-      { url: "https://www.onthedash.com/watches/camaro/",                  name: "On The Dash — Camaro hub" },
+      { url: "https://www.heuercamaro.com/models/73445-dato-gold-plated",  name: "Camaro Ref. 73445 Dato: gold-plated" },
+      { url: "https://www.heuercamaro.com/otherco-brands",                 name: "Camaro: other-brand reissues + co-brands + distributor variants" },
+      { url: "https://www.onthedash.com/watches/camaro/",                  name: "On The Dash: Camaro hub" },
     ],
   },
   {
@@ -406,28 +406,28 @@ const REFERENCE_SECTIONS = [
     // the rest are reachable one click deeper from each cluster hub.
     title: "Heuer Yachting & Skipper",
     links: [
-      { url: "https://www.heuerchrono.com",                                                              name: "Heuerchrono — vintage yachting chronograph reference" },
+      { url: "https://www.heuerchrono.com",                                                              name: "Heuerchrono: vintage yachting chronograph reference" },
       // Skipper essentials
       { url: "https://www.heuerchrono.com/heuer-skipper/heuer-skipper-grid/",                            name: "Skipper grid (refs 7754, 7764, 73464, 1564/15640)" },
       { url: "https://www.heuerchrono.com/heuer-skipper/all-about-heuer-skipper/",                       name: "All about the Heuer Skipper" },
       { url: "https://www.heuerchrono.com/heuer-skipper/the-story-of-the-heuer-skipper/",                name: "The story of the Heuer Skipper" },
       { url: "https://www.heuerchrono.com/heuer-skipper/skipper-gallery/",                               name: "Skipper visual gallery (all dial variants)" },
-      { url: "https://www.heuerchrono.com/heuerchrono-com/the-most-rare-skipper-how-many-skipper-we-know-in-total/", name: "Skipper census — how many do we know?" },
+      { url: "https://www.heuerchrono.com/heuerchrono-com/the-most-rare-skipper-how-many-skipper-we-know-in-total/", name: "Skipper census: how many do we know?" },
       { url: "https://www.heuerchrono.com/heuer-skipper-movements/",                                     name: "Skipper movements reference (Valjoux 7733, 7734, 7740…)" },
       { url: "https://www.heuerchrono.com/heuer-skipper/heuer-skipper-bracelets-and-straps/",            name: "Skipper bracelets & straps (period-correct)" },
       { url: "https://www.heuerchrono.com/how-to-buy-a-vintage-heuer-skipper/",                          name: "How to buy a vintage Heuer Skipper" },
-      { url: "https://www.heuerchrono.com/heuer-skipper/wrong-vs-right-about-genuine-parts/",            name: "Skipper authenticity — wrong vs right parts" },
+      { url: "https://www.heuerchrono.com/heuer-skipper/wrong-vs-right-about-genuine-parts/",            name: "Skipper authenticity: wrong vs right parts" },
       // Skipper deep dives (selected)
-      { url: "https://www.heuerchrono.com/heuer-skipper/new-type-of-skipper-73464/",                     name: "Skipper 73464 — newly-identified variant" },
-      { url: "https://www.heuerchrono.com/heuer-skipper/mareographe-2443-reference-mystery-solved-its-a-2447-confirmed/", name: "Mareographe 2443 vs 2447 — reference mystery solved" },
+      { url: "https://www.heuerchrono.com/heuer-skipper/new-type-of-skipper-73464/",                     name: "Skipper 73464: newly-identified variant" },
+      { url: "https://www.heuerchrono.com/heuer-skipper/mareographe-2443-reference-mystery-solved-its-a-2447-confirmed/", name: "Mareographe 2443 vs 2447: reference mystery solved" },
       // Other Heuer yachting model lines
       { url: "https://www.heuerchrono.com/heuer-solunar-heuer-mareographe-abercrombie-fitch-seafarer/",  name: "Mareographe / Seafarer / Solunar (hub)" },
       { url: "https://www.heuerchrono.com/heuer-carrera-yachting/",                                      name: "Heuer Carrera Yachting (hub)" },
       { url: "https://www.heuerchrono.com/heuer-5-dots/",                                                name: "Heuer Regatta '5-dots' (hub)" },
       { url: "https://www.heuerchrono.com/heuer-yacht-timers/",                                          name: "Heuer Yacht Timer stopwatches" },
       // Other-brand yachting hub
-      { url: "https://www.heuerchrono.com/vintage-yachting-watches/colored-segment-subdials-for-using-as-regatta-yachting-watches/", name: "Other vintage yachting brands — segment-subdial overview" },
-      { url: "https://www.onthedash.com/watches/skipper/",                                                name: "On The Dash — Skipper hub" },
+      { url: "https://www.heuerchrono.com/vintage-yachting-watches/colored-segment-subdials-for-using-as-regatta-yachting-watches/", name: "Other vintage yachting brands: segment-subdial overview" },
+      { url: "https://www.onthedash.com/watches/skipper/",                                                name: "On The Dash: Skipper hub" },
     ],
   },
   // Enicar 101 — split into six clusters because the site is deep
@@ -435,16 +435,16 @@ const REFERENCE_SECTIONS = [
   // to one of the Enicar model lines + the reference / provenance
   // research hub.
   {
-    title: "Enicar — Reference & Provenance",
+    title: "Enicar: Reference & Provenance",
     links: [
-      { url: "https://enicar101.com",                                                                                    name: "Enicar 101 — home" },
-      { url: "https://enicar101.com/information/",                                                                       name: "Enicar 101 — information hub" },
-      { url: "https://enicar101.com/serial-reference/",                                                                  name: "Enicar 101 — serial reference database" },
-      { url: "https://enicar101.com/enicar-production-dates/",                                                           name: "Enicar 101 — production dates" },
-      { url: "https://enicar101.com/racing-heritage-2/",                                                                 name: "Enicar 101 — racing heritage" },
-      { url: "https://enicar101.com/brochures-ads/",                                                                     name: "Enicar 101 — brochures & manuals archive" },
-      { url: "https://enicar101.com/enicar-book/",                                                                       name: "Enicar 101 — Enicar Book" },
-      { url: "https://enicar101.com/blog/",                                                                              name: "Enicar 101 — blog index" },
+      { url: "https://enicar101.com",                                                                                    name: "Enicar 101: home" },
+      { url: "https://enicar101.com/information/",                                                                       name: "Enicar 101: information hub" },
+      { url: "https://enicar101.com/serial-reference/",                                                                  name: "Enicar 101: serial reference database" },
+      { url: "https://enicar101.com/enicar-production-dates/",                                                           name: "Enicar 101: production dates" },
+      { url: "https://enicar101.com/racing-heritage-2/",                                                                 name: "Enicar 101: racing heritage" },
+      { url: "https://enicar101.com/brochures-ads/",                                                                     name: "Enicar 101: brochures & manuals archive" },
+      { url: "https://enicar101.com/enicar-book/",                                                                       name: "Enicar 101: Enicar Book" },
+      { url: "https://enicar101.com/blog/",                                                                              name: "Enicar 101: blog index" },
       // Top provenance pieces (long-form research)
       { url: "https://enicar101.com/2021/11/19/the-correct-reference-of-jim-clarks-sherpa-graph/",                       name: "Provenance: Jim Clark's Sherpa Graph reference" },
       { url: "https://enicar101.com/2020/07/29/stirling-moss-and-his-stirling-moss/",                                    name: "Provenance: Stirling Moss's Sherpa Graph" },
@@ -460,9 +460,9 @@ const REFERENCE_SECTIONS = [
   {
     title: "Enicar Sherpa Graph",
     links: [
-      { url: "https://enicar101.com/sherpa-graph/",                                                                      name: "Sherpa Graph — model overview" },
+      { url: "https://enicar101.com/sherpa-graph/",                                                                      name: "Sherpa Graph: model overview" },
       { url: "https://enicar101.com/sherpa-graph-mkia/",                                                                 name: "Sherpa Graph MK Ia" },
-      { url: "https://enicar101.com/sherpa-graph-mk-1a-roll-call/",                                                      name: "Sherpa Graph MK Ia — Roll Call (serial DB)" },
+      { url: "https://enicar101.com/sherpa-graph-mk-1a-roll-call/",                                                      name: "Sherpa Graph MK Ia: Roll Call (serial DB)" },
       { url: "https://enicar101.com/sherpa-graph-mkib/",                                                                 name: "Sherpa Graph MK Ib" },
       { url: "https://enicar101.com/sherpa-graph-ic/",                                                                   name: "Sherpa Graph MK Ic" },
       { url: "https://enicar101.com/serhpa-graph-mk-id/",                                                                name: "Sherpa Graph MK Id (coming soon)" },
@@ -477,7 +477,7 @@ const REFERENCE_SECTIONS = [
   {
     title: "Enicar Aqua Graph",
     links: [
-      { url: "https://enicar101.com/aqua-graph/",      name: "Aqua Graph — model overview" },
+      { url: "https://enicar101.com/aqua-graph/",      name: "Aqua Graph: model overview" },
       { url: "https://enicar101.com/aqua-graph-mki/",  name: "Aqua Graph MK Ia" },
       { url: "https://enicar101.com/aqua-graph-mk-ib-2/", name: "Aqua Graph MK Ib" },
       { url: "https://enicar101.com/aqua-graph-mkii/", name: "Aqua Graph MK II" },
@@ -489,7 +489,7 @@ const REFERENCE_SECTIONS = [
   {
     title: "Enicar Jet Graph",
     links: [
-      { url: "https://enicar101.com/jet-graph/",       name: "Jet Graph — model overview" },
+      { url: "https://enicar101.com/jet-graph/",       name: "Jet Graph: model overview" },
       { url: "https://enicar101.com/jet-graph-mk-i/",  name: "Jet Graph MK Ia" },
       { url: "https://enicar101.com/jet-graph-mk-ib/", name: "Jet Graph MK Ib (coming soon)" },
       { url: "https://enicar101.com/jet-graph-mkii/",  name: "Jet Graph MK II" },
@@ -501,7 +501,7 @@ const REFERENCE_SECTIONS = [
   {
     title: "Enicar Super Graph",
     links: [
-      { url: "https://enicar101.com/super-graph/",            name: "Super Graph — overview" },
+      { url: "https://enicar101.com/super-graph/",            name: "Super Graph: overview" },
       { url: "https://enicar101.com/super-graph-coming-soon/", name: "Super Graph MK I" },
       { url: "https://enicar101.com/super-graph-simonet/",    name: "Super Graph 'Simonet'" },
       { url: "https://enicar101.com/super-graph-mk-ii/",      name: "Super Graph MK II" },
@@ -512,7 +512,7 @@ const REFERENCE_SECTIONS = [
   {
     title: "Enicar Dive Watches",
     links: [
-      { url: "https://enicar101.com/dive-watches/",                                                                      name: "Enicar Dive Watches — overview" },
+      { url: "https://enicar101.com/dive-watches/",                                                                      name: "Enicar Dive Watches: overview" },
       { url: "https://enicar101.com/sherpa-ultradive/",                                                                  name: "Sherpa Ultradive & OPS" },
       { url: "https://enicar101.com/sherpa-ops/",                                                                        name: "Sherpa OPS" },
       { url: "https://enicar101.com/super-dive-polish-navy/",                                                            name: "Super Dive 'Polish Navy'" },
@@ -697,7 +697,7 @@ function LinkSection({ title, items, isOpen, onToggle }) {
         }}>
           {items.length === 0 ? (
             <div style={{ padding: "8px 4px 0", fontSize: 12, color: "var(--text3)" }}>
-              Nothing curated here yet — check back as the section grows.
+              Nothing curated here yet. Check back as the section grows.
             </div>
           ) : (
             items.map(item => <LinkRow key={item.url} {...item} />)

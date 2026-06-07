@@ -377,7 +377,7 @@ export function WatchDetailSheet({
           fieldLine(
             item.manualThoughts || (
               <span style={{ color: "var(--text3)", fontStyle: "italic" }}>
-                Tap to add your thoughts — why bought, what you like,
+                Tap to add your thoughts: why bought, what you like,
                 expectations, fit with your collecting purpose…
               </span>
             ),
@@ -440,7 +440,7 @@ export function WatchDetailSheet({
         <div style={{ marginBottom: 8 }}>
           <textarea value={commentBody}
             onChange={e => setCommentBody(e.target.value)}
-            placeholder="Add a dated note — your thinking on this watch right now…"
+            placeholder="Add a dated note: your thinking on this watch right now…"
             rows={2}
             style={{ ...inputBase, width: "100%", resize: "vertical", fontSize: 13, fontFamily: "inherit" }} />
           <div style={{ display: "flex", gap: 8, marginTop: 6, justifyContent: "flex-end" }}>

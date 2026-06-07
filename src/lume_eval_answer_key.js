@@ -16,7 +16,7 @@ export const ANSWER_KEY = [
   {
     id: "e2643-movement",
     question: "What movement powers the Jaeger-LeCoultre E2643 Shark chronograph?",
-    fact: "The E2643 uses a Valjoux-based manual chronograph movement — cited as Valjoux 72, later cal. 726, or JLC's designation Cal. 13 VZH. It is NOT an in-house JLC chronograph movement.",
+    fact: "The E2643 uses a Valjoux-based manual chronograph movement, cited as Valjoux 72, later cal. 726, or JLC's designation Cal. 13 VZH. It is NOT an in-house JLC chronograph movement.",
   },
   {
     id: "e2643-names",
@@ -31,7 +31,7 @@ export const ANSWER_KEY = [
   {
     id: "e2643-bezels",
     question: "What's the defining feature of the JLC E2643 Shark?",
-    fact: "Its defining feature is a system of interchangeable bezels — typically a 60-minute/diving bezel, a telemeter bezel, and a world-time/24-hour bezel.",
+    fact: "Its defining feature is a system of interchangeable bezels: typically a 60-minute/diving bezel, a telemeter bezel, and a world-time/24-hour bezel.",
   },
   {
     id: "e2643-dial",
@@ -48,7 +48,7 @@ export const ANSWER_KEY = [
   {
     id: "sub-nodate",
     question: "Does the Rolex Submariner 5513 have a date window?",
-    fact: "The 5512 and 5513 are no-date Submariners — no date window and no cyclops. The date Submariner of that era is the 1680.",
+    fact: "The 5512 and 5513 are no-date Submariners: no date window and no cyclops. The date Submariner of that era is the 1680.",
   },
   {
     id: "sub-crystal",
