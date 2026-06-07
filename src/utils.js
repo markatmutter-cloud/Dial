@@ -504,6 +504,15 @@ export function imgSrc(url, width = 720) {
     if (u.hostname === "assets.phillips.com" && !u.pathname.startsWith("/image/upload/")) {
       return `https://assets.phillips.com/image/upload/c_limit,w_800,f_auto,q_auto${u.pathname}${u.search}`;
     }
+    // Jetpack Photon (i0/i1/i2.wp.com — Maunder Watches et al.) REJECTS
+    // wsrv's fetcher with a 400 (Mark 2026-06-06: every Maunder card hit
+    // the IMAGE NOT AVAILABLE placeholder). Photon is itself a resize
+    // CDN, so use its native params instead — replace the stored query
+    // (scrapers save `?fit=2560,1707&ssl=1` full-size hints) with a
+    // width + quality. 306KB original → ~23KB at w=720 (verified).
+    if (/^i[0-3]\.wp\.com$/.test(u.hostname)) {
+      return `${u.origin}${u.pathname}?w=${width}&quality=72&ssl=1`;
+    }
     // Don't double-wrap an already-proxied URL (idempotent across re-renders).
     if (u.hostname === "images.weserv.nl") return url;
     // Our own storage (Vercel Blob image cache + Supabase Storage) is left as-is
