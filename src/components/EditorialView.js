@@ -121,6 +121,20 @@ const SOURCES = [
   // archive as a dealer source, and the scraped body_text remains
   // available for the future editorial_index.py recommender pass.
   {
+    key: "le_monde_edmond",
+    label: "Le Monde Edmond",
+    publication: "Le Monde Edmond",
+    column: null,
+    url: "/le_monde_edmond.json",
+    bodies_url: "/le_monde_edmond_bodies.json",
+    // Collector-essay site (Edmond / "Mr. A"), 2012→present. Watch-side
+    // categories only — the fine-watches tree + collecting-investing
+    // (Mark spec 2026-06-06); the classic-cars tree is excluded at the
+    // scraper's category filter. collecting-investing includes some
+    // finance-desk posts (markets/M&A) by Mark's explicit category pick.
+    publication_url: "https://le-monde-edmond.com/",
+  },
+  {
     key: "romainrea_editorial",
     label: "Romain Réa",
     publication: "Romain Réa",
