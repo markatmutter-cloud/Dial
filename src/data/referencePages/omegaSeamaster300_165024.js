@@ -15,6 +15,12 @@ const node = {
   definer:
     "Omega's 1960s professional diver: broad-arrow hands, a fully graduated bezel, an in-house feel · c. 1962–1969",
   status: "coming_soon",
+
+  hero: {
+    img: "https://hairspring.com/cdn/shop/articles/Hero-516_a700d834-4623-4c11-b529-e9f3becc95b5.jpg?v=1741916494&width=1200",
+    credit: "Hairspring",
+    creditUrl: "https://hairspring.com/",
+  },
   teaser:
     "The Seamaster 300 answered the same brief as the Submariner in a different idiom: a symmetric-lug case, a fully graduated 60-minute bezel, and the broad-arrow handset Omega built for legibility at depth. A full reference guide is on the way.",
 

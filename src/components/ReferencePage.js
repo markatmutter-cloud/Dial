@@ -314,7 +314,7 @@ export function ReferencePage({
               <p key={i} style={{ fontFamily: SERIF, fontSize: isMobile ? 16 : 17, lineHeight: 1.65, color: "var(--text1)", marginTop: 16, marginBottom: 0 }}>{p}</p>
             ))}
             {node.inItsTime && (
-              <p style={{ fontFamily: SERIF, fontSize: isMobile ? 16 : 17, lineHeight: 1.65, color: "var(--text2)", marginTop: 16, marginBottom: 0 }}>{node.inItsTime}</p>
+              <p style={{ fontFamily: SERIF, fontSize: isMobile ? 16 : 17, lineHeight: 1.65, color: "var(--text1)", marginTop: 16, marginBottom: 0 }}>{node.inItsTime}</p>
             )}
           </div>
         )}
