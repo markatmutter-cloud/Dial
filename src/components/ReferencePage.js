@@ -102,7 +102,9 @@ export function ReferencePage({
 
   if (!node) return null;
 
-  const matched = items.filter((it) => matchItem(it, node.market));
+  // node.market is optional — coming-soon stubs render this page under the
+  // frost without one (the unguarded read crashed prod, 2026-06-07).
+  const matched = node.market ? items.filter((it) => matchItem(it, node.market)) : [];
   const market = {
     live: matched.filter((it) => !it.sold && !isAuctionItem(it)),
     auctions: matched.filter((it) => isAuctionItem(it) && !it.sold),
