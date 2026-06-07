@@ -91,3 +91,41 @@ glyphs allowed). It immediately caught 8 leftovers from the #840 sweep
 ErrorBoundary, SignInPrompt, App load-error line); fixed in the same
 PR. The em-dash rule is now self-enforcing; the BRAND.md "concierge"
 rule remains doc-only (one string site-wide, not worth a guard yet).
+
+---
+
+# Addendum — road-tests Tier 1 + Tier 2 (#856, #857)
+
+Audit of which components have direct render tests vs only shell-mock
+coverage — yesterday's CardShell crash made the "compiles but never runs"
+gap concrete; this session went after the backlog. Pre-session, ~13/63
+user-facing components had real road tests; the rest only executed inside
+shell mocks (which substitute fakes for leaf components). Worked the gap
+in two tiers:
+
+- **Tier 1 (#856, MERGED):** Card, PageHeader, StandardFilterBar
+  (+ StandardSearchInput), ShareReceiver, CatalogReceiver — five central
+  / recently-edited surfaces (whole-tab blast radius if they break).
+  CardShell.test.jsx pattern: render-without-crash + a few representative
+  branches per component. 293 lines.
+- **Tier 2 (#857, OPEN — CI green, awaiting merge):** the 11 modals —
+  AddSearchModal, CollectionEditModal, CollectionPickerModal,
+  ConfirmModal (+ ConfirmHost), FavSearchModal, ListingPickerModal,
+  MarkAsSoldModal, NotePickerModal, SettingsModal (mocks ../supabase
+  for LumeMemorySettings), SignInPromptModal, TrackNewItemModal. First
+  push failed jest with one bad regex (`/Move/` matched both the
+  MarkAsSoldModal description div and the "Move to Sold" button below
+  it); anchored on the unique "from Owned to Sold" substring, second
+  push green. 505 lines.
+- **Tier 3 (small leaf elements — Chip, Breadcrumb, DateDivider, etc.)** —
+  deliberately not done. Low complexity, rarely edited; CLAUDE.md's
+  blind-edit-render-test rule covers them on next edit.
+
+**Trust-but-verify on Explore:** initial subagent audit reported 54 gap
+components; file-by-file verification against actual `.test.jsx` files
+dropped four (DesktopShell/MobileShell/HomeTab/AboutModal already had
+real tests — the agent had mistaken them for mock-only).
+
+**Flag for next session:** PR #857 still open at close — CI green,
+mergeable. Once merged, post-state is 29/63 components with direct
+render tests (up from 13).

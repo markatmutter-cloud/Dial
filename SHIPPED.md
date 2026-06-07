@@ -117,6 +117,10 @@ within each section roughly last.
 - **2026-06-06 — CardShell direct render tests (#830).** BREAK-NOW "Can't find variable: aspect" shipped
   inside CardImage because shells' jest tests render mock grids; CardShell.test.jsx now exercises the real
   frame (image square/editorial + placeholder) so the shared card frame can't ship a render error blind.
+- **2026-06-07 — Tier 1 road tests (#856).** Five render components — Card, PageHeader, StandardFilterBar
+  (+ StandardSearchInput), ShareReceiver, CatalogReceiver — gain direct render tests (CardShell.test.jsx
+  pattern); each was previously only exercised via shell mocks. Closes the "compiles but never runs" gap on
+  the central / recently-edited surfaces; modal suite is tier 2 (PR #857, CI green, awaiting merge at close).
 
 ## Epic 1 — Sources
 
