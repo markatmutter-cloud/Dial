@@ -1,11 +1,12 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { HomeTab } from "./HomeTab";
 
 // Direct render coverage for HomeTab (blind-edit rule): the shells'
 // render tests use MOCK grids, so nothing in CI executed this
-// component before. Added with the 2026-06-07 guides-callout rework
-// (ManageCallout → GuidesCallout; goToChallenges/homeCounts removed).
+// component before. Added with the 2026-06-07 Home rework that
+// removed the bottom bleed band (ManageCallout/GuidesCallout) and the
+// goToChallenges / goToSavedLists / goToMyWatches / homeCounts props.
 
 const noop = () => {};
 
@@ -17,7 +18,6 @@ function baseProps(overrides = {}) {
     homeDealerSources: [], homeJumpToDealer: noop,
     goToRecentAdded: noop, goToRecentSold: noop, goToEndingNext: noop,
     homeSearchSubmit: noop,
-    goToSavedLists: noop, goToMyWatches: noop,
     openAbout: noop, signInWithGoogle: noop,
     isMobile: false,
     watchlist: [], hidden: [], handleWish: noop, toggleHide: noop,
@@ -44,29 +44,14 @@ function baseProps(overrides = {}) {
 describe("HomeTab", () => {
   test("renders with empty data", () => {
     render(<HomeTab {...baseProps()} />);
-    expect(screen.getByText("Reference Guides", { selector: "div" })).toBeInTheDocument();
-    expect(screen.getByText(/Browse the guides/)).toBeInTheDocument();
+    // Masthead tab from the shared model renders.
+    expect(screen.getByText("Reference Guides")).toBeInTheDocument();
   });
 
-  test("guides CTA fires the masthead guides entry's onSelect", () => {
-    const onSelect = jest.fn();
-    render(<HomeTab {...baseProps({
-      homeMastheadTabs: [
-        { key: "guides", label: "Reference Guides", mobileLabel: "Guides", icon: "references", active: false, onSelect },
-      ],
-    })} />);
-    fireEvent.click(screen.getByText(/Browse the guides/));
-    expect(onSelect).toHaveBeenCalled();
-  });
-
-  test("secondary pills are Watchbox and Lists (no Challenges)", () => {
-    const goToMyWatches = jest.fn();
-    const goToSavedLists = jest.fn();
-    render(<HomeTab {...baseProps({ goToMyWatches, goToSavedLists })} />);
-    fireEvent.click(screen.getByText("Watchbox"));
-    fireEvent.click(screen.getByText("Lists"));
-    expect(goToMyWatches).toHaveBeenCalled();
-    expect(goToSavedLists).toHaveBeenCalled();
+  test("the bottom bleed band is gone", () => {
+    render(<HomeTab {...baseProps()} />);
+    expect(screen.queryByText(/Browse the guides/)).toBeNull();
+    expect(screen.queryByText(/Open Watchbox/)).toBeNull();
     expect(screen.queryByText("Challenges")).toBeNull();
   });
 });

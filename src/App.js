@@ -4270,10 +4270,6 @@ export default function Watchlist() {
         setListingsSubTab(target);
         setPage(1);
       }}
-      // Guides-callout secondary pills (the primary "Browse the guides"
-      // CTA reuses homeMastheadTabs' guides entry inside HomeTab).
-      goToSavedLists={() => { setTab("watchlist"); setWatchTopTab("lists"); setPage(1); }}
-      goToMyWatches={() => { setTab("watchbox"); setPage(1); }}
       // Footer routes
       openAbout={() => setAboutModalOpen(true)}
       signInWithGoogle={triggerSignInPrompt}
