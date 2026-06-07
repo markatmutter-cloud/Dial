@@ -23,11 +23,32 @@ const node = {
   // Branch-scoped items (sea-dweller/comex/milsub/1680/6538…) route to their own
   // future pages, not here. (Helium-valve = sea-dweller/comex → won't show.)
   synthesisScope: ["5512", "5513", "model-wide"],
+
+  // Production narrative — "From prototype to icon" (guide format, 2026-06-07).
+  shorthand: [
+    {
+      body: "The shorthand treats the no-date Submariner as one watch: black dial, steel case, rotating bezel. In practice the 5512 and 5513 cover three decades of continuous small change, and learning the reference mostly means learning that sequence. The 5512 arrives in 1959 and brings the crown guards that define the modern case; the 5513 follows in 1962 with a movement that skipped chronometer certification, and the two run side by side for years.",
+    },
+    {
+      body: "The quickest read between them is the dial text: four lines on a 5512, with the chronometer designations, two lines on a 5513. Around them the dial itself moves through the eras. Early watches carry gilt-gloss dials with warm gold printing; the mid-1960s bring matte dials with white text; meters-first depth ratings give way to feet-first; the late 1970s add the larger Maxi lume plots, and the final years move to glossy dials with white-gold marker surrounds. Each step is documented, collected and priced on its own terms.",
+    },
+    {
+      body: "Cases and crown guards have their own sequence, from the early pointed guards through the rounded shape that settled in for the long run. Production-year boundaries are approximate almost everywhere: sources disagree on exact endpoints, and transitional watches exist at most of the joins. Treat any hard date as a guide rather than a wall.",
+    },
+    {
+      body: "The other thing the shorthand misses is service life. These were working watches for thirty years, and Rolex serviced them with the parts of the day, so later dials, hands, bezel inserts and crystals on earlier watches are common and often perfectly honest. Reading an example is less about any single component and more about whether the whole watch tells a coherent story.",
+    },
+  ],
+
   brand: "Rolex",
   modelLine: "Submariner",
   refs: ["5512", "5513"],
   group: "5512 / 5513",
   definer: "No-date, crown-guard, acrylic-era Submariners · c. 1959–1989",
+
+  marksIntro:
+    "How to read a 5512 or 5513: the dial, bezel, case and lume details that carry the reference. Tap any card for the source.",
+  storiesIntro: "Six pieces that explain the 5512 and 5513 beyond the spec sheet.",
 
   hero: {
     img: "https://images.squarespace-cdn.com/content/v1/5b213f95506fbec9b54e014c/5e5073ed-1b46-4ef7-ac07-3e8c45734708/DSC07336.JPG?format=2500w",
@@ -87,11 +108,11 @@ const node = {
   // Learn the marks — a paragraph each, paired with an example image where one
   // helps. Images baked from the Hairspring Finds / Bulang corpus.
   marks: [
-    { name: "Gilt vs matte", body: "Early examples carry the warmth and depth of gilt-gloss dials; later watches move to matte dials with white printing. That shift alone changes the feel. Gilt reads more delicate and old-world, matte more utilitarian and direct. Neither is better in the abstract; they belong to different chapters of the story.", img: "https://hairspring.com/cdn/shop/articles/Hero-184.jpg", url: "https://hairspring.com/blogs/finds/gilt-5513-rolex-submariner", source: "Hairspring Finds" },
-    { name: "Meters-first vs feet-first", body: "Meters-first depth ratings are one of the classic vintage cues. The change to feet-first printing is subtle when you're new to the reference, but once you see it you never unsee it, and it becomes one of the quickest ways to place a dial in the broader sequence.", img: "https://hairspring.com/cdn/shop/articles/Hero-3062-scaled.jpg", url: "https://hairspring.com/blogs/finds/tropical-meters-first-5513-rolex-submariner", source: "Hairspring Finds" },
-    { name: "Serif vs non-serif", body: "A small difference that changes the dial's personality, and a good example of how collectors build language around tiny variations almost no one else would notice. The four-line chronometer text of the 5512 is the other quick read: two lines means a 5513.", img: "https://hairspring.com/cdn/shop/articles/Hero-3801-scaled.jpg", url: "https://hairspring.com/blogs/finds/4-line-dial-pcg-5512-rolex-submariner", source: "Hairspring Finds" },
-    { name: "Maxi dials, Mark I–V", body: "One of the most approachable rabbit holes in the 5513 world. Larger lume plots give the watch a stronger presence, and the Mk I–V distinctions give plenty to study, especially good if you want a vintage Submariner that still feels robust and wearable.", img: "https://bulangandsons.com/cdn/shop/articles/BS-Maxi-Mk1-Artuicle-21_19b1f52f-5b89-4187-86fe-8b93bcdd62a2.jpg?v=1756227529&width=1024", url: "https://bulangandsons.com/blogs/watch-talks/the-mk1-maxi-5513-rolex-submariner", source: "Bulang & Sons" },
-    { name: "Late glossy dials & white-gold surrounds", body: "Later 5513s move into glossy dials with white-gold marker surrounds. They don't have the same matte-dial vintage feel, but they matter: this is the Submariner beginning to move toward its modern visual language. The same reference, a different atmosphere.", img: "", url: "", source: "" },
+    { name: "Gilt vs matte", short: "Gilt-gloss dials mark the early chapters, matte dials with white printing the later ones. Different eras, different feel.", body: "Early examples carry the warmth and depth of gilt-gloss dials; later watches move to matte dials with white printing. That shift alone changes the feel. Gilt reads more delicate and old-world, matte more utilitarian and direct. Neither is better in the abstract; they belong to different chapters of the story.", img: "https://hairspring.com/cdn/shop/articles/Hero-184.jpg", url: "https://hairspring.com/blogs/finds/gilt-5513-rolex-submariner", source: "Hairspring Finds" },
+    { name: "Meters-first vs feet-first", short: "The order of the depth rating is one of the quickest ways to place a dial in the sequence.", body: "Meters-first depth ratings are one of the classic vintage cues. The change to feet-first printing is subtle when you're new to the reference, but once you see it you never unsee it, and it becomes one of the quickest ways to place a dial in the broader sequence.", img: "https://hairspring.com/cdn/shop/articles/Hero-3062-scaled.jpg", url: "https://hairspring.com/blogs/finds/tropical-meters-first-5513-rolex-submariner", source: "Hairspring Finds" },
+    { name: "Serif vs non-serif", short: "Small typography shifts collectors use to date dials. Four lines of text means a 5512; two lines, a 5513.", body: "A small difference that changes the dial's personality, and a good example of how collectors build language around tiny variations almost no one else would notice. The four-line chronometer text of the 5512 is the other quick read: two lines means a 5513.", img: "https://hairspring.com/cdn/shop/articles/Hero-3801-scaled.jpg", url: "https://hairspring.com/blogs/finds/4-line-dial-pcg-5512-rolex-submariner", source: "Hairspring Finds" },
+    { name: "Maxi dials, Mark I–V", short: "Larger lume plots and five collected variations: a stronger wrist presence from the late 1970s.", body: "One of the most approachable rabbit holes in the 5513 world. Larger lume plots give the watch a stronger presence, and the Mk I–V distinctions give plenty to study, especially good if you want a vintage Submariner that still feels robust and wearable.", img: "https://bulangandsons.com/cdn/shop/articles/BS-Maxi-Mk1-Artuicle-21_19b1f52f-5b89-4187-86fe-8b93bcdd62a2.jpg?v=1756227529&width=1024", url: "https://bulangandsons.com/blogs/watch-talks/the-mk1-maxi-5513-rolex-submariner", source: "Bulang & Sons" },
+    { name: "Late glossy dials & white-gold surrounds", short: "Glossy dials with white-gold surrounds: the reference moving toward the modern Submariner's look.", body: "Later 5513s move into glossy dials with white-gold marker surrounds. They don't have the same matte-dial vintage feel, but they matter: this is the Submariner beginning to move toward its modern visual language. The same reference, a different atmosphere.", img: "", url: "", source: "" },
   ],
 
   // Notable examples worth seeing (the "marks" you'd point at). Image strip.
@@ -140,12 +161,12 @@ const node = {
 
   // Cultural / visual pieces — the lower editorial tier.
   storiesAndImages: [
-    { title: "History of the Submariner, Part 2: the 55XX & 1680", publication: "Monochrome", url: "https://monochrome-watches.com/rolex-submariner-history-part-2-the-55xx-1680references/", img: "https://monochrome-watches.com/wp-content/uploads/2020/08/History-of-the-Rolex-Submariner-Part-2-The-55XX-and-1680-References.jpg" },
-    { title: "Explaining the “Bart Simpson”", publication: "Hodinkee · Eric Wind", url: "https://www.hodinkee.com/articles/explaining-the-bart-simpson-rolex-submariner-erics-favorite", img: "https://hodinkee.imgix.net/uploads/article/hero_image/1463/1000w.jpg?ixlib=rails-1.1.0&fm=jpg&q=55&auto=format&usm=12&w=1200&h=630&fit=crop" },
-    { title: "Steve McQueen at Le Mans, in a 5512", publication: "Rolex Magazine", url: "https://www.rolexmagazine.com/2015/11/steve-mcqueen-racing-at-le-mans-rolex.html", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgbGIEEI6Q-WdPt7KTlc6JkIUcLczko-FqaigErt8fD1yJCEMCL-r-pMBxVFKrRbpxp6I-5Ya82mSQpQx0CxuHKANJlqB_dq5ZG7VCHrvCf820X3M0lbyTXBHYdpcdtdD7Guj3m9CgKssAB9ldohE6b9piV5mTQx_6694_5-msiqsYMIOsNx3mT80rTe17V/s3200/Steve%20McQueen%20Rolex%20Submariner%20and%20Persol%20Sunglasses.jpg" },
-    { title: "A Royal Navy diver's issued 5513", publication: "Rolex Magazine", url: "https://www.rolexmagazine.com/2021/01/antiques-roadshow-royal-navy-divers.html", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjB0fhVctG16xrrlCI3JEA07017AxE2jLFZDMe89mlVWXgpnlnFi1hphBuDuTbIqyEb1bceNgPnHSu1xh5uVAIhizijkejuoXbpaUKeJfjT1W4h_5GgOC914gQdf2CeGX1M4GtLpmBbgZY/s3200/royal-navy.jpg" },
-    { title: "Teaming up with COMEX", publication: "Perezcope · Jose Pereztroika", url: "https://perezcope.com/2020/06/28/the-sea-dweller-chronicles-dry-run-and-teaming-up-with-comex/", img: "https://i0.wp.com/perezcope.com/wp-content/uploads/2020/06/200624-title-part-two-comex-janus-4-zoom.jpg?fit=1200%2C732&ssl=1" },
-    { title: "Appreciating it as just a great dive watch", publication: "Fratello", url: "https://www.fratellowatches.com/can-we-appreciate-the-rolex-submariner-as-just-a-great-dive-watch/", img: "https://www.fratellowatches.com/cdn-cgi/image/anim=false/wp-content/uploads/2024/09/RolexResized-12.jpg" },
+    { title: "History of the Submariner, Part 2: the 55XX & 1680", blurb: "The production arc of the crown-guard generation: how the 5512 and 5513 evolved and where the 1680 fits.", publication: "Monochrome", url: "https://monochrome-watches.com/rolex-submariner-history-part-2-the-55xx-1680references/", img: "https://monochrome-watches.com/wp-content/uploads/2020/08/History-of-the-Rolex-Submariner-Part-2-The-55XX-and-1680-References.jpg" },
+    { title: "Explaining the “Bart Simpson”", blurb: "Why one stubby gilt coronet stamp earned a nickname and a following of its own.", publication: "Hodinkee · Eric Wind", url: "https://www.hodinkee.com/articles/explaining-the-bart-simpson-rolex-submariner-erics-favorite", img: "https://hodinkee.imgix.net/uploads/article/hero_image/1463/1000w.jpg?ixlib=rails-1.1.0&fm=jpg&q=55&auto=format&usm=12&w=1200&h=630&fit=crop" },
+    { title: "Steve McQueen at Le Mans, in a 5512", blurb: "The reference in its cultural prime, photographed on the wrist at Le Mans.", publication: "Rolex Magazine", url: "https://www.rolexmagazine.com/2015/11/steve-mcqueen-racing-at-le-mans-rolex.html", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgbGIEEI6Q-WdPt7KTlc6JkIUcLczko-FqaigErt8fD1yJCEMCL-r-pMBxVFKrRbpxp6I-5Ya82mSQpQx0CxuHKANJlqB_dq5ZG7VCHrvCf820X3M0lbyTXBHYdpcdtdD7Guj3m9CgKssAB9ldohE6b9piV5mTQx_6694_5-msiqsYMIOsNx3mT80rTe17V/s3200/Steve%20McQueen%20Rolex%20Submariner%20and%20Persol%20Sunglasses.jpg" },
+    { title: "A Royal Navy diver's issued 5513", blurb: "An issued military example surfacing decades later: what service life actually looked like.", publication: "Rolex Magazine", url: "https://www.rolexmagazine.com/2021/01/antiques-roadshow-royal-navy-divers.html", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjB0fhVctG16xrrlCI3JEA07017AxE2jLFZDMe89mlVWXgpnlnFi1hphBuDuTbIqyEb1bceNgPnHSu1xh5uVAIhizijkejuoXbpaUKeJfjT1W4h_5GgOC914gQdf2CeGX1M4GtLpmBbgZY/s3200/royal-navy.jpg" },
+    { title: "Teaming up with COMEX", blurb: "How working saturation divers pushed the Submariner toward the Sea-Dweller.", publication: "Perezcope · Jose Pereztroika", url: "https://perezcope.com/2020/06/28/the-sea-dweller-chronicles-dry-run-and-teaming-up-with-comex/", img: "https://i0.wp.com/perezcope.com/wp-content/uploads/2020/06/200624-title-part-two-comex-janus-4-zoom.jpg?fit=1200%2C732&ssl=1" },
+    { title: "Appreciating it as just a great dive watch", blurb: "A reset: the reference appraised as a tool, with the collecting noise set aside.", publication: "Fratello", url: "https://www.fratellowatches.com/can-we-appreciate-the-rolex-submariner-as-just-a-great-dive-watch/", img: "https://www.fratellowatches.com/cdn-cgi/image/anim=false/wp-content/uploads/2024/09/RolexResized-12.jpg" },
   ],
 
   books: [
