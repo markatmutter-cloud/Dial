@@ -143,7 +143,7 @@ export function ListingPickerModal({
         {source === "paste" ? (
           <div style={{ marginBottom: 10 }}>
             <p style={{ fontSize: 12, color: "var(--text2)", margin: "0 0 6px", lineHeight: 1.4 }}>
-              Paste a dealer URL from the feed (live or sold). The picker resolves it against listings.json — for off-platform watches use Manual entry.
+              Paste a dealer URL from the feed (live or sold). The picker resolves it against listings.json; for off-platform watches use Manual entry.
             </p>
             <div style={{ display: "flex", gap: 6 }}>
               <input value={pasteUrl}

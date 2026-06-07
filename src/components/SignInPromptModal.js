@@ -67,7 +67,7 @@ export function SignInPromptModal({ open, onClose, onSignIn }) {
         </div>
 
         <div style={{ fontSize: 13, color: "var(--text2)", lineHeight: 1.6, marginBottom: 6 }}>
-          Sign in with Google to unlock features — saving listings and searches
+          Sign in with Google to unlock features: saving listings and searches
           across devices. Watchlist is free, and you can keep browsing without
           an account.
         </div>
