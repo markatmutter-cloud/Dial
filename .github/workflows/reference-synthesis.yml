@@ -29,6 +29,7 @@ on:
         options:
           - submariner
           - speedmaster
+          - jlc-polaris
           - all
 
 concurrency:
