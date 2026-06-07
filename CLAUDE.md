@@ -78,7 +78,13 @@ the branch you'll create — branch before editing, never edit `main`.
   feature / design thread → **ROADMAP.md** under its epic. Echo where it landed.
 - **Branch discipline.** `git checkout -b <name>` BEFORE editing. If it
   slips, recover via revert + branch. Every logical change → its own
-  branch/PR; don't push follow-up commits onto an already-open PR.
+  branch/PR; don't push follow-up commits onto an already-open PR — Mark
+  merges fast, and a squash-merge orphans anything in flight (it cost two
+  re-land PRs in one session). Fix-to-an-open-PR = its own new PR.
+- **Parallel sessions share one checkout.** If another session is active
+  here, do code work from a git worktree (`git worktree add
+  .claude/worktrees/<name> -b <branch> origin/main`) and never switch the
+  shared checkout's branch.
 - **Verify before claiming done.** Vercel rebuilds ~60s after a JS push —
   confirm the new bundle is serving before reporting "shipped." Never claim
   shipped until CI is green.
@@ -296,7 +302,8 @@ Cross-file / process rules (single-site rules live as comments in their files):
   via the comprehensive scrape).
 - **Don't reintroduce retired surfaces** without a decision: Listings
   tri-state pill + blend sort, the EndingSoon strip, the Status segment, the
-  colored identity band, the top-level Share tab, the `_isTrackedLot` heart guard.
+  colored identity band, the top-level Share tab, the `_isTrackedLot` heart
+  guard, the Home bottom bleed band (Watchbox/guides callout).
 - **Don't rebuild the retired reaction/screening/auction-catalog systems**
   (removed 2026-05-26, table dropped): the `collection_item_reactions` substrate
   (emoji reactions, To-review/Loved/Liked/Passed buckets, per-card 👍/❌ rating,

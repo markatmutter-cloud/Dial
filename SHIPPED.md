@@ -523,6 +523,10 @@ within each section roughly last.
   wrapping pills) below 1250px; mobile cutover raised 640→760px; ladder now <760 mobile · 760–1250 stacked · ≥1280 full bar.
 - **2026-06-06 — Admin article curation (#824).** "Remove article (admin)" in the article ⋯ menu writes
   the shortHash(url) id into admin_hidden_listings; removed articles drop from Articles tab, Home strip, Search-all.
+- **2026-06-07 — About modal v2 (#850, #853).** Three-question restructure (what / why trust / what next):
+  six count-free capability cards incl. **Ask (Lumé)**, How-it-works second view with current naming, letter badges + stale counts gone; B-56 modal half.
+- **2026-06-07 — Home bottom bleed band removed (#851, #852).** Briefly re-anchored Watchbox → Reference
+  Guides, then cut entirely per Mark; dead LiveCounts/homeCounts gone; HomeTab + AboutModal got their first direct render tests.
 
 ## Epic 10 — Lumé (AI spine)
 

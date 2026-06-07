@@ -58,6 +58,9 @@ miss* what just dropped, *file* what they've found, and eventually
   placeholder glyph in data slots is fine. Applies to UI strings,
   guide prose, AND Lumé's generated replies (rule lives in
   public/lume_system_prompt.txt).
+- **Lumé is never a "concierge" in copy** (Mark, 2026-06-07). Say
+  "the site's resident watch expert" (its own system-prompt framing)
+  or plainly describe what it does.
 
 ## What it sounds like (vs doesn't)
 
