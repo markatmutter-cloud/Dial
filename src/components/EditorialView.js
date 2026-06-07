@@ -929,6 +929,7 @@ export function ArticleCard({ article, isMobile, compact, cols, watchlist, handl
           <img
             src={imgSrc(article.image)}
             alt=""
+            width={720} height={450}
             loading="lazy"
             decoding="async"
             style={{

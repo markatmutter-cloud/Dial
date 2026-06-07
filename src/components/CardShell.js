@@ -37,6 +37,7 @@ function CardImage({ image, priority }) {
     <>
       {showImg ? (
         <img src={image.src} alt={image.alt || ""}
+          width={720} height={aspect === "editorial" ? 450 : 720}
           onError={() => setFailed(true)}
           style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
           loading={priority ? "eager" : "lazy"} decoding="async" fetchpriority={priority ? "high" : "auto"} />

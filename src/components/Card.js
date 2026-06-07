@@ -229,7 +229,10 @@ export const Card = memo(function Card({
       innerRef={cardRef}
       href={item.url}
       onClickLink={onClickListing ? () => onClickListing(item) : undefined}
-      image={item.img ? { src: imgSrc(item.img), alt: item.ref } : null}
+      // 480px thumbs for compact (strip/dense) cards — PageSpeed 2026-06-06
+      // round 2: 720px thumbs for ~231px tiles were the remaining 1.5MB of
+      // "improve image delivery". Full-size cards keep 720.
+      image={item.img ? { src: imgSrc(item.img, compact ? 480 : 720), alt: item.ref } : null}
       priority={priority}
       aspect="square"
       size={compact ? "compact" : "full"}
