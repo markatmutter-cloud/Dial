@@ -1194,6 +1194,9 @@
     "source": "woe_dispatch",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "military"
+    ],
     "title": "Using a Garmin Smartwatch as a Tool with Coast Guard Rescue Swimmer Scott Ruskan",
     "updated_at": "2026-06-02",
     "url": "https://www.watchesofespionage.com/blogs/woe-dispatch/coast-guard-rescue-swimmer-scott-ruskan-garmin-fenix-watch",
@@ -3586,7 +3589,10 @@
     "source": "woe_dispatch",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "military",
+      "community_ethics"
+    ],
     "title": "A Russian Smartwatch-Enabled Assassination & US Army Apple Watch Warning",
     "updated_at": "2024-09-17",
     "url": "https://www.watchesofespionage.com/blogs/woe-dispatch/smartwatch-data-russian-navy-assassination",
@@ -6444,6 +6450,9 @@
     "source": "woe_dispatch",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "military"
+    ],
     "title": "W.O.E. YouTube: Real Spy Gadget Watches of the CIA & KGB",
     "updated_at": "2026-06-06",
     "url": "https://www.watchesofespionage.com/blogs/woe-dispatch/woe-youtube-real-spy-gadget-watches",

@@ -334,7 +334,9 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "vintage_care"
+    ],
     "title": "Our advice for better watch photography",
     "updated_at": "2026-01-27",
     "url": "https://www.acollectedman.com/blogs/journal/better-watch-photography",
@@ -1483,7 +1485,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "collecting_philosophy",
+      "life_lessons"
+    ],
     "title": "Interview: David Coggins",
     "updated_at": "2023-08-07",
     "url": "https://www.acollectedman.com/blogs/journal/interview-david-coggins",

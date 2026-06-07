@@ -14858,6 +14858,11 @@
     "source": "hairspring_finds",
     "source_type": "editorial_finds",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "auction_results",
+      "design"
+    ],
     "title": "Beyer Dial 3940J Patek Philippe Perpetual Calendar",
     "updated_at": "2026-05-26",
     "url": "https://hairspring.com/blogs/finds/beyer-dial-3940j-patek-philippe-perpetual-calendar",
@@ -16270,6 +16275,11 @@
     "source": "hairspring_finds",
     "source_type": "editorial_finds",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "auction_results",
+      "market_commentary"
+    ],
     "title": "Breguet Salmon Dial 3970EP Patek Phillipe Perpetual Calendar Chronograph",
     "updated_at": "2026-06-03",
     "url": "https://hairspring.com/blogs/finds/breguet-salmon-dial-3970ep-patek-phillipe-perpetual-calendar-chronograph",
@@ -18689,6 +18699,11 @@
     "source": "hairspring_finds",
     "source_type": "editorial_finds",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history",
+      "design"
+    ],
     "title": "'Darth' 101.035 A. Lange & Söhne Lange 1",
     "updated_at": "2026-05-31",
     "url": "https://hairspring.com/blogs/finds/darth-101-035-a-lange-sohne-lange-1",
@@ -31332,6 +31347,10 @@
     "source": "hairspring_finds",
     "source_type": "editorial_finds",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "design"
+    ],
     "title": "Piece Unique Voutilainen 28SC",
     "updated_at": "2026-06-07",
     "url": "https://hairspring.com/blogs/finds/piece-unique-voutilainen-28sc",
