@@ -62,9 +62,10 @@ gone, "resident watch expert" present, no concierge/em-dash copy).
 
 ## Open / next
 
-- **B-56 remainder:** the full About/"Nexus" page (3 voices:
-  enthusiast · dealer-creator · about-the-project; modal-vs-page
-  fork; Lumé-led guided intro). The modal half is done.
+- **B-56 + B-14 CLOSED (Mark, end of session):** the modal half
+  shipped; the full 3-voice About/"Nexus" page and the Lumé-led
+  guided intro are dropped, not deferred. Don't resurface; a future
+  About push starts as a fresh ROADMAP thread.
 - Mark to eyeball the new About on desktop + phone (it auto-opens
   for first-time visitors — the welcome path matters most).
 - Carried unchanged: dispatch layer (next big build), B-22 JS split,

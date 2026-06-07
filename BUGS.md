@@ -53,8 +53,8 @@ here until then so nothing's lost.
 | B-46 | **10 Lumé** (charter) | capability gap | ✅ graduated — Epic 10 list #2 |
 | B-47 | **10 Lumé** (pillar 3) | capability gap | ✅ graduated — Epic 10 list #5 |
 | B-51 | **10 Lumé** (pillar 3) | feature | ✅ graduated — Epic 10 list #6 |
-| B-56 | **9 IA/UX** (+brand) | feature thread | → graduate to Epic 9 |
-| B-14 | **9 IA/UX** (brand) | thread | folded into B-56 |
+| B-56 | **9 IA/UX** (+brand) | feature thread | ✅ closed 2026-06-07 (modal shipped; page dropped) |
+| B-14 | **9 IA/UX** (brand) | thread | closed with B-56 |
 | B-06 | **9 IA/UX** | design thread | shipped-ish → confirm/retire |
 | B-08 | **9 IA/UX** | design thread | shipped → retire |
 | B-57 | **0** (reference intelligence) | data quality | stays (defect) |
@@ -126,9 +126,6 @@ in-app since Claude can't run the app here.*
   Wishlist, Owned/Watchbox, Sold) is the relevant data model. Pairs with B-06
   for a screening/collecting plan-mode session.
 
-### B-14 — BRAND.md review (Plan thread)
-- **Reported:** 2026-05-24 (`Plan:`) · **Type:** Plan-mode thread, not a bug · **Status:** Queued — **now folded into [[B-56]]** (the About/Nexus redesign does the brand/voice review, since About is the most voice-forward surface). Mark wants a review of `BRAND.md` (voice/brand). Pairs naturally with the card design system's "breathing-space & brand impact" dial — brand voice + visual brand expression.
-
 ### B-45 — Lumé can't search by watch *attributes* (case material, dial colour, dial config)
 - **Reported:** 2026-05-30 (Mark, real use) · **Type:** Capability gap (Epic 7 recommender / Epic 0 reference-intelligence) · **Severity:** 2 · **Surface:** `api/chat.js` `search_listings` + the data in `public/listings_*.json` · **Status:** Open — bigger build, plan-mode. **Detail:** ask Lumé for "a Datejust in stainless steel, silver dial, no numerals" and it can't deliver — `search_listings` only filters brand / model / ref / price / free-text title substring. The structured attributes a collector actually shops by (case material, dial colour, dial markers (numerals vs baton vs none), bezel, complication, size) aren't extracted or indexed, so they're only hit by luck if the words happen to appear in the title. **This is the headline limitation Lumé exposes** and it's the same substrate the recommender (taste→condition→price, [[feedback_recommender_taxonomy]]) needs. **Hypothesis / direction:** an attribute-extraction pass (LLM enrichment in `merge.py`, like the reference matcher) tagging each listing with normalised facets → a faceted `search_listings`; OR a semantic/embedding search over listing text. Lexicon Phase 2 (slang→canonical) is a partial input. Decide approach in plan-mode; likely the biggest single uplift to Lumé's usefulness.
 
@@ -137,17 +134,6 @@ in-app since Claude can't run the app here.*
 
 ### B-47 — Lumé can't see what's on the user's screen (active filters / current listing)
 - **Reported:** 2026-05-31 (Mark, real use) · **Type:** Capability gap · **Severity:** 2 · **Surface:** `api/chat.js` tools + the client (no screen-context passed) · **Status:** Open — design/plan. **Detail:** Mark was viewing a filtered listing and said "it's the one on screen at the moment filtered"; Lumé can't access the current view — it only searches inventory itself, so it asked for a URL. It got there once Mark shared the share-link, but the friction is real: Lumé has no awareness of the user's **active filters, current results, or the listing/page they're looking at**. **Direction:** pass a lightweight "current context" (active tab/filters, visible/opened listing id or share-id) from the client into the chat request so Lumé can reason about "this one" / "these results." Ties to pillar 3 (deep-linking) — the inverse direction (app→Lumé context, not just Lumé→app actions).
-
-### B-56 — About / "Nexus" page redesign (3 voices + Lumé-led guided intro) + brand/voice/copy review
-- **Reported:** 2026-06-02 (Mark) · **Type:** Design + content (voice-heavy) thread → plan-mode · **Severity:** 2 · **Surface:** `src/components/AboutModal.js`, `App.js` (`aboutModalOpen`), `BRAND.md` · **Status:** OPEN — **modal half shipped 2026-06-07 (#850/#853:** three-question structure, six capability cards incl. Ask-Lumé, How-it-works second view, count-free copy**)**; what remains below is the full page/Nexus build. Build spec in memory [[project_about_page_sections]].
-- **Scope (the plan):**
-  1. **Three-voice restructure** — split the About into three clearly-voiced sections: **(a) Enthusiast** (why / what / how — the collector's why, what the site is, how to use it); **(b) Dealer-creator** (to dealers: *not a threat*, free promo + linkback, API offer, takedown/contact); **(c) About-the-project** (the moonphase frame-by-frame origin story, the Lumé persona, the recommender, discovery-not-sales ethos).
-  2. **Lumé-led intro + guided "how to use the site"** — Lumé features in describing the site, with a **button-driven guided RAG** (limited click options, **NOT** free-text / not a live-API chat) as the help flow. ⚠️ Overlaps the **Lumé thread** (separate sessions) — the *framing/entry* is here; the *guided-flow build* is Lumé-session work.
-  3. **Modal vs page decision** — the current modal may be too small for a 3-voice + guided intro; decide whether About/Nexus becomes a proper route/page in plan-mode.
-  4. **Brand & voice review — folds in [[B-14]]** — review `BRAND.md` (voice) as part of this, since About is the most voice-forward surface. Do the BRAND.md pass here.
-  5. **Copy review** — all About copy reviewed against BRAND.md voice (enthusiast warmth, no salesiness, discovery-not-sales). **Mark reviews/refines the copy** (it's his voice).
-  6. **Naming** — resolve **"About" vs "Nexus"** (the internal/label name).
-- **Why plan-mode:** copy/voice-heavy + a design fork (modal vs page) + a guided-RAG flow + a brand review — not a quick edit, and the copy needs Mark's eye.
 
 ### ⓑ Epic B — Platform Health
 *Audit remediation + reliability. Low-risk, noise-reducing; mostly independent of
@@ -224,6 +210,12 @@ install/decision tails remaining.*
 ---
 
 ## Resolved
+
+### B-56 — About / "Nexus" redesign · Modal half shipped #850/#853; page half KILLED by Mark 2026-06-07
+- The modal got the three-question restructure (six capability cards incl. Ask-Lume, How-it-works view, count-free copy). The bigger 3-voice page (dealer-creator + about-the-project voices, Lume-led guided intro, modal-vs-page fork) is dropped, not deferred; if it ever returns it starts as a fresh ROADMAP thread, not this ID.
+
+### B-14 — BRAND.md review · Closed with B-56 (2026-06-07)
+- The standalone review died with its host thread. What actually landed from it: the em-dash ban is now CI-enforced (copy-guard.test.js #855) and the Lume "no concierge" naming rule is in BRAND.md.
 
 ### B-64 — Desktop filter row: Min/Max overlapped the centered search at laptop widths · Fixed #832
 - **Fixed 2026-06-06** (same-day): StandardFilterBar self-stacks below 1250px (search line + wrapping pill line); mobile cutover raised 640→760 so phone-shaped windows get the real mobile view. Width ladder: <760 mobile · 760–1250 stacked · ≥1280 full bar.
