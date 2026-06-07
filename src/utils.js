@@ -470,6 +470,24 @@ export function ageBucketFromDate(dateStr) {
   return "Older";
 }
 
+// ── Session-deduped JSON fetch ───────────────────────────────────────
+// PageSpeed 2026-06-06: the editorial corpus meta JSONs (rolex_magazine
+// 974KB, fratello 732KB, …) were each downloaded TWICE per visit — the
+// Articles tab, the Home strip loader, and Search-all all fetch the same
+// EDITORIAL_SOURCE_URLS independently. One module-level promise cache
+// means each URL hits the network once per session; every consumer
+// shares the result. Failures evict so a retry can succeed.
+const _jsonFetchCache = new Map();
+export function fetchJsonCached(url) {
+  if (!_jsonFetchCache.has(url)) {
+    const p = fetch(url)
+      .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
+      .catch(err => { _jsonFetchCache.delete(url); throw err; });
+    _jsonFetchCache.set(url, p);
+  }
+  return _jsonFetchCache.get(url);
+}
+
 export function imgSrc(url, width = 720) {
   if (!url) return url;
   try {

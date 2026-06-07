@@ -4,7 +4,7 @@ import { pillBase, clearAllPill, editorialTitle, cardGridStyle } from "../styles
 import { Chip } from "./Chip";
 import { PageHeader } from "./PageHeader";
 import { StandardFilterBar, StandardSearchInput } from "./StandardFilterBar";
-import { shortHash, imgSrc } from "../utils";
+import { shortHash, imgSrc, fetchJsonCached } from "../utils";
 import { HeartIcon } from "./icons";
 
 // Map an editorial article record into the listing-shaped item that
@@ -300,11 +300,10 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
   // The bigger bodies files defer until the user actually searches.
   useEffect(() => {
     let alive = true;
-    const fetchOpts = { cache: "no-cache" };
+    // fetchJsonCached: dedupes against the Home strip + Search-all
+    // loaders, which pull the same corpus meta (PageSpeed 2026-06-06).
     Promise.all(SOURCES.map(s =>
-      fetch(s.url, fetchOpts)
-        .then(r => r.ok ? r.json() : {})
-        .catch(() => ({}))
+      fetchJsonCached(s.url).catch(() => ({}))
     )).then(results => {
       if (!alive) return;
       const flat = [];
@@ -334,12 +333,9 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
     if (!search.trim()) return;
     if (bodies !== null || bodiesLoading) return;
     setBodiesLoading(true);
-    const fetchOpts = { cache: "no-cache" };
     let alive = true;
     Promise.all(SOURCES.map(s =>
-      fetch(s.bodies_url, fetchOpts)
-        .then(r => r.ok ? r.json() : {})
-        .catch(() => ({}))
+      fetchJsonCached(s.bodies_url).catch(() => ({}))
     )).then(results => {
       if (!alive) return;
       const merged = {};
@@ -714,8 +710,9 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
               page pattern. Mobile keeps 1-col so the hero card
               breathes; the rest of the featured set scrolls below. */}
           <div style={articleGridStyle}>
-            {featured.map(a => (
+            {featured.map((a, idx) => (
               <ArticleCard
+                priority={idx < 4}
                 key={"featured-" + a.url}
                 article={a}
                 isMobile={isMobile}
@@ -750,8 +747,9 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
             more nonstandard chrome element, and infinite scroll makes the
             grouping redundant. */}
         <div style={articleGridStyle}>
-          {visible.map(a => (
+          {visible.map((a, idx) => (
             <ArticleCard
+              priority={!showFeatured && idx < 4}
               key={a.url}
               article={a}
               isMobile={isMobile}
@@ -811,7 +809,7 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
 // excerpt + click-out behaviour.
 // ─────────────────────────────────────────────────────────────────
 
-export function ArticleCard({ article, isMobile, compact, cols, watchlist, handleWish, openCollectionPicker, handleShare, isAdmin, onAdminRemove }) {
+export function ArticleCard({ article, isMobile, compact, cols, watchlist, handleWish, openCollectionPicker, handleShare, isAdmin, onAdminRemove, priority = false }) {
   const dateStr = formatDate(article.published_at);
   const sourceLabel = article._source.label;
   // Heart state — match the dealer-listing Card's behavior so the
@@ -930,7 +928,11 @@ export function ArticleCard({ article, isMobile, compact, cols, watchlist, handl
             src={imgSrc(article.image)}
             alt=""
             width={720} height={450}
-            loading="lazy"
+            // First-row cards load eager/high (PageSpeed 2026-06-06: the
+            // Articles LCP image was lazy — "LCP resources should not use
+            // loading=lazy"). Same pattern as the listings grid's priority.
+            loading={priority ? "eager" : "lazy"}
+            fetchpriority={priority ? "high" : "auto"}
             decoding="async"
             style={{
               width: "100%", height: "100%",
