@@ -24,7 +24,9 @@ describe("MarkAsSoldModal", () => {
       />
     );
     expect(screen.getByText("Mark as sold")).toBeInTheDocument();
-    expect(screen.getByText(/Move/)).toHaveTextContent("Rolex Submariner");
+    // Description div ends with "from Owned to Sold" — anchor on that so the
+    // matcher doesn't also collide with the "Move to Sold" button below.
+    expect(screen.getByText(/from Owned to Sold/)).toHaveTextContent("Rolex Submariner");
     expect(screen.getByRole("button", { name: /Move to Sold/ })).toBeInTheDocument();
   });
 
@@ -32,6 +34,6 @@ describe("MarkAsSoldModal", () => {
     render(
       <MarkAsSoldModal open={true} onClose={() => {}} item={{}} onConfirm={async () => ({})} />
     );
-    expect(screen.getByText(/Move/)).toHaveTextContent("this watch");
+    expect(screen.getByText(/from Owned to Sold/)).toHaveTextContent("this watch");
   });
 });
