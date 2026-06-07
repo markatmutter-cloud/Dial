@@ -9,6 +9,7 @@ import {
   daysAgo, freshDate,
   ageBucketFromDate, canonicalizeBrand, detectAuctionLotBrand,
   shortHash,
+  fetchJsonCached,
   matchesSearch,
   fmtSaleDateRange,
   FORCE_OTHER_BRANDS, SUPPRESS_AT_SOLD_BRANDS,
@@ -909,9 +910,9 @@ export default function Watchlist() {
         const fetched = await Promise.all(
           EDITORIAL_SOURCE_URLS.map(async (url) => {
             try {
-              const r = await fetch(url);
-              if (!r.ok) return [];
-              const data = await r.json();
+              // fetchJsonCached: shared with EditorialView + the Home strip
+              // (PageSpeed 2026-06-06 — corpus was downloaded twice).
+              const data = await fetchJsonCached(url);
               // Strip the source key from the URL path for a label.
               const key = url.replace(/^\//, "").replace(/\.json$/, "");
               // B-09 (2026-05-24): meta files are dict-keyed (url → record)
@@ -952,9 +953,8 @@ export default function Watchlist() {
         const fetched = await Promise.all(
           EDITORIAL_SOURCE_URLS.map(async (url) => {
             try {
-              const r = await fetch(url);
-              if (!r.ok) return [];
-              const data = await r.json();
+              // fetchJsonCached — see search-all loader note.
+              const data = await fetchJsonCached(url);
               const key = url.replace(/^\//, "").replace(/\.json$/, "");
               const records = Array.isArray(data) ? data : Object.values(data || {});
               return records
@@ -995,9 +995,8 @@ export default function Watchlist() {
         const fetched = await Promise.all(
           EDITORIAL_BODY_URLS.map(async (url) => {
             try {
-              const r = await fetch(url);
-              if (!r.ok) return null;
-              return await r.json();
+              // fetchJsonCached — shared with EditorialView's bodies loader.
+              return await fetchJsonCached(url);
             } catch (e) {
               console.warn("editorial bodies fetch failed", url, e);
               return null;
