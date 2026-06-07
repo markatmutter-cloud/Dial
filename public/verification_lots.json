@@ -1,7 +1,14 @@
 {
-  "date": "2026-06-06",
-  "updated_at": "2026-06-06T08:50:34+00:00",
+  "date": "2026-06-07",
+  "updated_at": "2026-06-07T09:12:57+00:00",
   "alerts": [
+    {
+      "house": "Watches of Knightsbridge",
+      "level": "ERROR",
+      "today": 0,
+      "previous": 60,
+      "note": "house absent from today's lot scrape (was present yesterday)"
+    },
     {
       "house": "Monaco Legend",
       "level": "WARN",
@@ -11,13 +18,13 @@
     }
   ],
   "counts": {
-    "Watches of Knightsbridge": 60,
+    "Marteau & Co": 33,
     "Antiquorum": 93,
     "Christie's": 138,
     "Monaco Legend": 2,
     "Phillips": 154,
     "Sotheby's": 1
   },
-  "total_live_lots": 448,
+  "total_live_lots": 421,
   "houses_tracked": 6
 }
