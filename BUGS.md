@@ -65,7 +65,7 @@ here until then so nothing's lost.
 | B-34 | **0** (platform health) | tech-debt | stays |
 | B-27 | **0** (platform health) | maintenance | stays |
 | B-63 | **9 IA/UX** | defect (overlay keyboard) | ✅ Fixed #816 `[audit:2026-06-06]` |
-| B-64 | **9 IA/UX** | visual defect | stays (defect) |
+| B-64 | **9 IA/UX** | visual defect | ✅ Fixed #832 |
 
 *The ⓐ/ⓑ/ⓒ groupings below are the OLD (IA_REDESIGN) taxonomy — superseded by the
 table above; next session's NOW/NEXT pass migrates the "graduate" rows into ROADMAP
@@ -180,7 +180,7 @@ the redesign.*
 - **Convention to adopt:** dormant-but-valid code carries a `DORMANT:` marker stating *why it's inert + what reactivates it* (done for `enumerate_bonhams`, #-this-PR). And: sanity-check plan docs (BUGS/ROADMAP) against actual code before writing "build X" (the B-24 framing miss). Pairs with the `/maintenance` skill.
 
 ### B-34 — Load-speed audit: measure + improve first-paint; verify Vercel downgrade impact
-- **Reported:** 2026-05-27 · **Type:** Performance · **Severity:** 2 · **Surface:** first-load / Vercel hosting · **Status:** Largely fixed 2026-05-28 (#646–#651). **Done:** wsrv image resize (payload ~198→~13 MB; desktop LCP 19→6 s); below-fold home strips deferred + eager LCP + `listings_desc` idle-loaded; AuctionCalendar/Search-all code-split; Blob→thumbnails (storage ~242→~20 MB). Vercel-downgrade question answered: the cap that paused us was **Blob transfer**, not site bandwidth (6/100 GB). **One follow-up:** ~~re-run PageSpeed mobile for the after-baseline~~ DONE 2026-06-06 (Mark ran it; PDFs in docs/audits-adjacent chat): **Home mobile 48** (was 35) · Home desktop 42 · Articles desktop 66. Diagnosis: FCP is excellent everywhere (0.2–0.8s — the B-17/B-34 work held); the wound is **LCP** (33.8s mobile / 5.7s desktop Home, 12.5s Articles), root-caused to **article images bypassing the imgSrc wsrv proxy** (raw 2MB blogger originals) → fixed in **#825**; re-run after it deploys for the next baseline. Remaining levers after that: **TBT ~950ms on Home** (bundle parse + data processing — the B-22 code-split phase 2 + ReferencesTab-subtree lazy-load) and the PageSpeed "efficient cache lifetimes" flag (main.js reported Cache TTL None — verify Vercel's static-asset headers; likely a vercel.json headers block).
+- **Reported:** 2026-05-27 · **Type:** Performance · **Severity:** 2 · **Surface:** first-load / Vercel hosting · **Status:** Largely fixed 2026-05-28 (#646–#651). **Done:** wsrv image resize (payload ~198→~13 MB; desktop LCP 19→6 s); below-fold home strips deferred + eager LCP + `listings_desc` idle-loaded; AuctionCalendar/Search-all code-split; Blob→thumbnails (storage ~242→~20 MB). Vercel-downgrade question answered: the cap that paused us was **Blob transfer**, not site bandwidth (6/100 GB). **One follow-up:** ~~re-run PageSpeed mobile for the after-baseline~~ DONE 2026-06-06 (Mark ran it; PDFs in docs/audits-adjacent chat): **Home mobile 48** (was 35) · Home desktop 42 · Articles desktop 66. Diagnosis: FCP is excellent everywhere (0.2–0.8s — the B-17/B-34 work held); the wound is **LCP** (33.8s mobile / 5.7s desktop Home, 12.5s Articles), root-caused to **article images bypassing the imgSrc wsrv proxy** (raw 2MB blogger originals) → fixed in **#825**; re-run after it deploys for the next baseline. Remaining levers after that: **TBT ~950ms on Home** (bundle parse + data processing — the B-22 code-split phase 2 + ReferencesTab-subtree lazy-load) and the PageSpeed "efficient cache lifetimes" flag (main.js reported Cache TTL None — verify Vercel's static-asset headers; likely a vercel.json headers block). **Round 3 (post #825–#829):** Saved desktop **68** — no image/cache findings left at all; TBT 240ms, CLS 0. The entire residual gap on every page is the B-22 JS split.
 - **Detail:** Measure real load speed (first paint + time-to-interactive) and find the wins. **Check whether the recent Vercel Pro→Hobby downgrade changed anything** (edge caching / bandwidth / build limits). Known levers already on the roadmap: ~22 MB JSON on first paint (listings.json split **Phase 2** + lazy-gate non-default fetches), **code-split Phase 2** (B-22), a CI size-budget guard. Deliverable: a before/after baseline (Lighthouse / WebPageTest) + a prioritized fix list. Pairs with ROADMAP "Payload + data-growth budget".
 
 ### ⓒ Epic C — Auctions & Scraping
@@ -209,11 +209,6 @@ install/decision tails remaining.*
   3. **Prior-record fallback for stripped fields** — WoK also strips `estimate-price-value` / lot description from sold lots' grid blocks on the live URL post-close. The enumerator now reads prior `auction_lots.json` once at startup and uses prior values as a fallback so a post-sale re-scrape never regresses fields captured pre-sale.
 - **Operational note:** Future WoK sales need the same flow — pre-sale scrape captures estimates/descriptions, post-sale scrape captures hammer via archive merge + preserves estimates via prior fallback. Both are automatic in the existing cron.
 
-### B-64 — Desktop filter row: Min/Max fields overlap the centered search input at laptop widths
-- **Reported:** 2026-06-06 (Mark screenshot, ~1190px window) · **Type:** Visual defect · **Severity:** 3 · **Surface:** `StandardFilterBar` (desktop filter row) · **Status:** Open.
-- **Detail:** The filter row centers the search input in a FIXED slot (the P-2 "search can't shift between tabs" rule), with pills left and Min/Max + Date + Price + count right. At laptop window widths the right cluster runs INTO the centered search box — Mark's screenshot shows "$ Min – Max" sitting on top of the input's right half (Auctions sub-tab, which adds the Auction Calendar pill and wraps "♡ Saved" to a second row). Pre-existing narrow-width crowding, surfaced by the same screenshot as the #819 wordmark collision.
-- **Hypothesis:** the centered-search slot doesn't reserve width against the right cluster — needs a min-width collapse rule (e.g. search slot yields/shrinks below ~1250px, or Min/Max collapses into the Price pill's popover at narrow widths). Fix inside `StandardFilterBar` so every tab inherits (cross-surface rule), not per-tab.
-
 ### ◆ One-off (no epic)
 *Small correctness fix.*
 
@@ -224,6 +219,9 @@ install/decision tails remaining.*
 ---
 
 ## Resolved
+
+### B-64 — Desktop filter row: Min/Max overlapped the centered search at laptop widths · Fixed #832
+- **Fixed 2026-06-06** (same-day): StandardFilterBar self-stacks below 1250px (search line + wrapping pill line); mobile cutover raised 640→760 so phone-shaped windows get the real mobile view. Width ladder: <760 mobile · 760–1250 stacked · ≥1280 full bar.
 
 ### B-63 — Escape didn't close the sign-in modal / mobile filter sheet · Fixed #816
 - **Fixed 2026-06-06** (same-day as reported, `audit:2026-06-06` U-08): keydown listeners added to `SignInPromptModal` + the MobileShell filter drawer, same pattern as ConfirmModal / the CardShell ⋯ menu; hooks self-gate on open state above any early return.

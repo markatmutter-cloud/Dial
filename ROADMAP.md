@@ -108,11 +108,12 @@ restructure) shipped; **the next build is Phase 1 — the Watchlists "living
 dossier" keystone** (Epic 3's composable Lists, now specced).
 
 ### NOW
-1. **"Does it work + is it surfaced right" audit.** The foundation everything
-   else stands on: walk every user-facing feature on the live site, produce a
-   per-feature status (works / broken / hard to find), fix the broken and
-   buried ones (starting with the Hide regression on Live auctions). Scoped as
-   a pass, not endless. (Epic 0 — see "Product QA" below.)
+1. **"Does it work + is it surfaced right" audit.** The "is it surfaced" half
+   ran 2026-06-06 (cold usability audit, C+ — docs/audits/2026-06-06-usability/);
+   its quick fixes shipped same-day and the headline finding made the **Epic 9
+   dispatch layer the agreed next big build** (see Epic 9 field-evidence block).
+   Remaining: the "does it work" half — per-feature works/broken status on the
+   live site. (Epic 0 — see "Product QA" below.)
 2. **Reference pages — pilot SHIPPED (2026-05-26).** Submariner 5512/5513 is live
    (Collecting ▸ References) on a repeatable **scrape → Opus-synthesis → digest**
    pipeline. Next: **review-gate + tighten the synthesis prompt** (only real

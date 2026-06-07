@@ -108,6 +108,16 @@ within each section roughly last.
 - **2026-06-03 — Chrome-consistency CI guard (#791).** Source-scan jest suite: FilterRow stays
   retired, PageHeader one-inset rule, topTabs.js owns tab labels, no "Hearted" UI label — drift fails the build.
 
+- **2026-06-06 — PageSpeed remediation wave (#825–#829, B-34).** Article images finally route through
+  imgSrc/wsrv (raw 2MB blogger originals were the 33.8s mobile LCP); 480px thumbs for strip cards + intrinsic
+  image dims; /static/* immutable cache; editorial corpus fetch deduped (fetchJsonCached — was downloaded 2×
+  per visit); first article images eager. Page weight ~8.4MB→~3MB; remaining gap = B-22 JS split.
+- **2026-06-06 — Maunder Watches images fixed (#828).** Jetpack Photon (i0.wp.com) 400s wsrv's fetcher —
+  imgSrc now uses Photon's native resize (306KB→23KB); covers any future WordPress-hosted dealer.
+- **2026-06-06 — CardShell direct render tests (#830).** BREAK-NOW "Can't find variable: aspect" shipped
+  inside CardImage because shells' jest tests render mock grids; CardShell.test.jsx now exercises the real
+  frame (image square/editorial + placeholder) so the shared card frame can't ship a render error blind.
+
 ## Epic 1 — Sources
 
 - **2026-04-30 — eBay integration.** Free Browse API source; admin
@@ -239,6 +249,10 @@ within each section roughly last.
   `auction_lots.json` for fields the post-sale grid strips (estimate /
   description / image). Heat Wave: 46 sold (GBP 127,700 realised) + 14 unsold.
   New `lot_outcome` field: `sold` / `sold_price_withheld` / `unsold` / `active`.
+
+- **2026-06-06 — Past-sale catalogs + house-logo stand-ins (#831/#833).** Archive calendar rows get
+  "View results →" into the sale's Sold catalog (sold lots now count toward the sale map; past sales gain
+  top-lot heroes); coverless tiles render public/logos/<house>.svg|png with text fallback (logos pending Mark).
 
 ## Epic 3 — Watchlist
 
@@ -491,6 +505,24 @@ within each section roughly last.
   pinned header + modal viewport guard; guide section-nav sticky fix; re-tap active sub-tab exits
   drill-ins; in-list view → PageHeader + section quick-nav + compact add-pills; counts never under
   titles (bar/right rule).
+
+- **2026-06-06 — First-time-user usability audit (#813, grade C+).** Playwright walkthrough of
+  the live site, 9-task battery, screenshot evidence + repeatable driver in docs/audits/2026-06-06-usability/;
+  findings routed (U-01 sub-tab/pill confusion field-confirmed → dispatch-layer evidence; B-51 upgraded; B-63/B-64 opened).
+- **2026-06-06 — Sub-tab restyle + audit quick fixes (#814–#817).** SubTabBar → enclosed segmented
+  control (segTrack/segItem; nav out-shouts filter pills) + "For sale" outcome label; HAMMER→SOLD FOR / CURRENT BID
+  copy sweep + brand-first search placeholders + labeled mobile Filter pill; Escape closes sign-in modal & filter
+  sheet (B-63); empty Saved drops the "0"+sort-pill chrome.
+- **2026-06-06 — Desktop top-bar rework (#818/#819/#822/#823).** Tabs left (sub-tabs align beneath),
+  wordmark centered ≥1280px (text-only), ⌂ home button leads the tab row at every width — two collision
+  regressions found by Mark and fixed same-hour, with DesktopShell viewport tests pinning both states.
+- **2026-06-06 — Search improvements (#820/#821).** Home "Search in" menu gains an Articles target
+  (routes to the Articles tab with the query applied); StandardSearchInput surface-filled so the field
+  is visible off-Home.
+- **2026-06-06 — Responsive chrome ladder (#832, closes B-64).** StandardFilterBar stacks (search line +
+  wrapping pills) below 1250px; mobile cutover raised 640→760px; ladder now <760 mobile · 760–1250 stacked · ≥1280 full bar.
+- **2026-06-06 — Admin article curation (#824).** "Remove article (admin)" in the article ⋯ menu writes
+  the shortHash(url) id into admin_hidden_listings; removed articles drop from Articles tab, Home strip, Search-all.
 
 ## Epic 10 — Lumé (AI spine)
 

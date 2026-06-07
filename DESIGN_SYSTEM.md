@@ -183,10 +183,13 @@ chrome-guard jest suite fails the build on drift.
   ("Shared by X") is the only line-adder.
 - **`StandardFilterBar`** — the one bar: pills left · search in a CENTERED
   fixed slot (grid `1fr minmax(200,340) 1fr`) · right zone · count in a
-  reserved right slot (minWidth 86 — late counts can't jog). Mobile = pill row
-  only; search lives in the shell row (one input per surface).
+  reserved right slot (minWidth 86 — late counts can't jog). Below 1250px
+  viewport it self-stacks: search on its own full-width line, pills + right
+  zone wrapping beneath (the single-line grid overlaps below that). Mobile =
+  pill row only; search lives in the shell row (one input per surface).
 - **`StandardSearchInput`** — the one search field: SearchIcon · radius 20 ·
-  height `CHROME.CONTROL_H` · built-in clear ×; `trailing` slot for extras
+  height `CHROME.CONTROL_H` · `--surface` fill (a transparent box vanished
+  next to the filled pills) · built-in clear ×; `trailing` slot for extras
   (Save-search heart).
 - **`topTabs.js`** — the only home of top-tab labels (Watches · Saved ·
   Articles · Reference Guides / "Guides" mobile); both shells + the Home

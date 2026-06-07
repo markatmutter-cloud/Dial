@@ -277,6 +277,10 @@ Two suites, CI on every push + PR:
   `buildProps`. **Adding a `useX` supabase hook that App calls → add it to
   `App.test.jsx`'s `jest.mock("./supabase")`** or the App render test throws
   "useX is not a function" (the Vercel build stays green — only jest catches it).
+  **Shell tests render MOCK grids — Card/CardShell/leaf components never execute
+  in them.** Editing a render path you can't run locally → give that component a
+  direct render test (pattern: `CardShell.test.jsx`); a Vercel build compiles but
+  never executes, so a ReferenceError ships green without one.
 
 ## Things to never do
 

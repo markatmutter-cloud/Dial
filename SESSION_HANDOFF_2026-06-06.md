@@ -83,3 +83,66 @@ unchanged.
 `LEGACY_WATCHLIST_KEY`, `LEGACY_HIDDEN_KEY`, `dial_watch_anon_id`,
 `dial_collections_sub_tab`, `dial_listings_sub_tab`,
 `dial_watch_top_tab`. (Carried forward.)
+
+---
+
+# Addendum — second session, 2026-06-06 (usability → design → speed)
+
+**One-line:** Mark's live user test → cold usability audit (C+) → 21 PRs
+merged same-day (#813–#833): sub-tab/segmented-control restyle, desktop
+top-bar rework, audit quick fixes, admin article removal, the PageSpeed
+remediation wave, responsive chrome ladder, past-sale catalogs.
+
+## The arc
+
+1. **Field test → audit.** Mark watched a target-competency user fail to
+   find Sold (tapped filter pills when told "click the subtab", feared
+   exploring). Cold audit #813 reproduced it on the live site; findings
+   routed (report: docs/audits/2026-06-06-usability/ — repeatable via
+   `walk.py`; playwright venv at /tmp/wl-audit-venv, recreate per README
+   repro block).
+2. **Audit fixes** #814–#817 (segmented sub-tabs + "For sale" · copy
+   sweep · B-63 Escape · Saved empty state) and #820/#821 (Articles in
+   Home search menu · visible search field).
+3. **Desktop top bar** #818/#819/#822/#823 — tabs left, wordmark
+   centered ≥1280, ⌂ leads the tab row at every width. TWO collision
+   regressions shipped + fixed same-hour (see coaching notes).
+4. **Speed** (Mark ran 8 PageSpeed reports): #825–#829 + #828 Maunder.
+   Root cause: article images bypassed imgSrc. Page weight ~8.4→~3MB.
+   Saved desktop now 68 with zero image/cache findings. Remaining gap =
+   **B-22 JS split — the agreed next perf lever, needs Mark in-app.**
+5. **#830 BREAK-NOW**: my #826 edit referenced `aspect` out of scope in
+   CardImage → prod ReferenceError on every card. Root: shells' jest
+   tests render MOCK grids; CardShell had zero direct render coverage.
+   Fixed + CardShell.test.jsx added + CLAUDE.md rule.
+6. **Calendar**: #831 house-logo stand-ins (mechanism live, **logo files
+   pending Mark** — 8 slugs in public/logos/README.md) and #833
+   past-sale catalogs ("View results →").
+
+## Open threads / next session
+
+1. **Dispatch layer (Epic 9 Phase 2) = the agreed next big build** —
+   audit's headline finding; plan-mode session with Mark on card content.
+2. **B-22 JS split** = the next perf lever (own session, Mark verifying
+   in-app surface by surface; report names CollectionsTab/ChallengeFlow/
+   151KB unused as first targets).
+3. **House logos**: Mark collecting 8 SVG/PNGs → drop in public/logos/.
+4. Optional perf: precomputed `home_articles.json` slice (~3MB off Home
+   idle load; scraper-side).
+5. **wok-post-sale-state branch carries an UNMERGED WIP commit**
+   (ccee761, B-62 archive-hammer follow-up superseded by #812? verify
+   against main before deleting — don't let it orphan silently).
+6. Audit deferred offers: moderated-test kit for Mark's next user
+   sessions; LOUPE THIS verb-shaped source labels (Mark's call); guide
+   title flip E2643→human name (Epic 5 template).
+
+## Coaching notes (for LEARNING)
+
+- Mark's first real user test produced the season's best design input —
+  the observation was specific, behavioral, emotionally precise.
+- Two of my regressions shipped because I edit render paths I can't
+  execute; the durable fix (direct render tests for blind-edited
+  components) is now a CLAUDE.md rule.
+- Mark drove design iteration tightly (wordmark→center, house→front of
+  tabs at every width) — three rounds to the right answer, each round
+  shipped within minutes.
