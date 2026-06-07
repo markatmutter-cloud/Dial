@@ -48,7 +48,7 @@ export class ErrorBoundary extends React.Component {
           <div style={{
             fontSize: 13, color: "var(--text2)", marginBottom: 14, lineHeight: 1.5,
           }}>
-            Screenshot this and send it to Mark — he'll get it fixed. Tapping back will return to the list view.
+            Screenshot this and send it to Mark; he'll get it fixed. Tapping back will return to the list view.
           </div>
           <button onClick={() => this.setState({ error: null })}
             style={{

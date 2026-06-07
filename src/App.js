@@ -3563,7 +3563,7 @@ export default function Watchlist() {
 
   // ⚠️ DO NOT add hooks (useState/useMemo/useEffect/useCallback) below this line. Hooks after an early return → React #310 ("rendered more hooks than previous render"); white-screened prod 3×. New hooks go ABOVE all early returns, or in a child component mounted unconditionally. Also: a useEffect deps array must not reference state declared later (TDZ).
   if (loading) return <div style={{ ...baseStyle, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, color: "var(--text2)" }}>Pulling the latest listings…</div>;
-  if (loadError) return <div style={{ ...baseStyle, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, color: "var(--text2)" }}>Couldn't pull the listings — refresh to try again.</div>;
+  if (loadError) return <div style={{ ...baseStyle, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, color: "var(--text2)" }}>Couldn't pull the listings. Refresh to try again.</div>;
 
   // ── SHARED STYLE TOKEN ───────────────────────────────────────────────────
   // sectionHeadingStyle still consumed by MobileShell for the filter

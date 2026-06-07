@@ -67,7 +67,7 @@ export function MarkAsSoldModal({
                   disabled={busy}>×</button>
         </div>
         <div style={{ fontSize: 13, color: "var(--text2)", marginBottom: 12, lineHeight: 1.5 }}>
-          Move <strong style={{ color: "var(--text1)" }}>{title}</strong> from Owned to Sold. Both fields are optional — leave blank if you don't have the details.
+          Move <strong style={{ color: "var(--text1)" }}>{title}</strong> from Owned to Sold. Both fields are optional; leave blank if you don't have the details.
         </div>
         <div style={{ display: "flex", gap: 8, marginBottom: 14 }}>
           <div style={{ flex: 2 }}>

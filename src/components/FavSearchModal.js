@@ -32,7 +32,7 @@ export function FavSearchModal({
           <button onClick={() => setOpen(false)} aria-label="Close" style={modalCloseButton}>×</button>
         </div>
         <div style={{ fontSize: 12, color: "var(--text2)", marginBottom: 10 }}>
-          Saving "<b>{search}</b>"{priceBand} — find it again from Saved → Searches.
+          Saving "<b>{search}</b>"{priceBand}. Find it again from Saved → Searches.
         </div>
         <input
           autoFocus

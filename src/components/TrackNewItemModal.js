@@ -34,7 +34,7 @@ export function TrackNewItemModal({
         <div style={{ fontSize: 11, color: "var(--text3)", marginBottom: 12, lineHeight: 1.5 }}>
           For auction-house lots (Antiquorum, Christie's, Sotheby's,
           Phillips, Watches of Knightsbridge, Marteau & Co), heart them
-          directly from the main feed — they're scraped automatically
+          directly from the main feed; they're scraped automatically
           every day.
         </div>
         <input
@@ -54,7 +54,7 @@ export function TrackNewItemModal({
           <div style={{ fontSize: 11, color: "var(--danger)", marginBottom: 8 }}>{trackError}</div>
         )}
         <div style={{ fontSize: 10, color: "var(--text3)", lineHeight: 1.55, marginBottom: 14 }}>
-          Supported: eBay item URLs — auction or Buy-It-Now, any region
+          Supported: eBay item URLs, auction or Buy-It-Now, any region
           (.com, .co.uk, .de, .fr, .it, .es, .nl, .at, .ch, .ca,
           .com.au) plus eBay's short share links (ebay.us / ebay.gg /
           ebay.to).

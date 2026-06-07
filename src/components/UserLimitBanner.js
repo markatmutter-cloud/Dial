@@ -65,7 +65,7 @@ export function UserLimitBanner({ count, cap, isAtSoftWarn, isAtHardCap }) {
           </>
         ) : (
           <>
-            <strong style={{ fontWeight: 600 }}>Heads up — you've saved {count} of {cap} watches.</strong>
+            <strong style={{ fontWeight: 600 }}>Heads up: you've saved {count} of {cap} watches.</strong>
             {" "}When you hit {cap} the heart button will be blocked until you un-favorite or get an expansion.
           </>
         )}
