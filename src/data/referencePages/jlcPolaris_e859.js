@@ -53,7 +53,7 @@ const node = {
 
   // Section intros (rewrite brief).
   marksIntro:
-    "How to read an E859: the caseback, crowns, dial, lume and crystal details that carry the reference. None should be judged in isolation; a strong example tells a coherent story across all of them. Tap any card for the source.",
+    "How to read an E859: the caseback, crowns, dial, lume and crystal details that define the reference. None should be judged in isolation; a strong example tells a coherent story across all of them.",
   storiesIntro: "Six pieces that explain the E859 beyond the spec sheet.",
 
   // Modern legacy — the relaunch history, kept out of the opening (redesign).
