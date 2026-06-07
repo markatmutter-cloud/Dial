@@ -1,19 +1,21 @@
 // ReferencePage — the editorial reference-guide surface (Collecting ▸ References).
 //
-// First visible node of the Submariner reference graph (ROADMAP Epic 5). A
-// hand-authored content node (src/data/referencePages/*) enriched at render by
+// A hand-authored content node (src/data/referencePages/*) enriched at render by
 // the LLM synthesis (public/reference_synthesis_<synthesisNode>.json), presented
-// as a guided learning JOURNEY: start → read it → learn to see → see real ones →
-// go deeper → go wider. Purpose: "why you should love this watch" — celebrate +
-// contextualise; the collecting journey lives in coaching, not here.
+// as a collector-led editorial essay.
 //
-// UX (2026-05-26 pass, docs/REFERENCE_PAGE_UX_REVIEW.md):
-//  - Sticky scroll-spy section nav (chip bar) for "where am I" + jump.
-//  - Real section-header tier (kicker + serif title + guided intro + top rule).
-//  - One shared content width so left edges align; reading prose left-aligned at
-//    an editorial measure.
-//  - Desktop pairs intro + story; market cards live INSIDE the "real examples"
-//    box; debated shows both sides (non-debates dropped); confident copy.
+// REDESIGN (2026-06-07, docs/REFERENCE_PAGE_REDESIGN.md — Mark's review burst):
+//  - Single readable column for prose (READW max-width), wide strips for
+//    browsing. No drop cap, no two-column intro split.
+//  - Section order: hero → the reference → what the shorthand misses (editorial
+//    evidence blocks; hand-authored node.shorthand, synthesis conflicts as
+//    fallback) → Reference stories (promoted into the body) → What to notice
+//    (strip, replaces "Reading the marks") → Key configurations (strip,
+//    replaces "Variants worth seeing") → Read it first (featured 4 + collapse)
+//    → real examples (NO grey checklist — buying-risk content never renders
+//    here; node.howToLook is retained in data for future listing context) →
+//    explore next → modern legacy (optional) → library → scope.
+//  - Page rule: teach the reader how to SEE the watch; no em-dashes in copy.
 
 import React, { useState, useEffect } from "react";
 import CardStrip from "./CardStrip";
@@ -24,6 +26,7 @@ import { referenceAsListing } from "../data/referencePages";
 
 const SERIF = FONT_SERIF;
 const MAXW = 1080;
+const READW = 820; // editorial reading measure (redesign: narrow to read, wide to browse)
 const NONDEBATE = /(not a factual conflict|no source ranks|tonal|sibling watches|consensus is that)/i;
 
 // Image with the wsrv→raw retry ladder (same fix class as the share hero,
@@ -70,6 +73,7 @@ export function ReferencePage({
   const [openConn, setOpenConn] = useState(null);
   const [synthesis, setSynthesis] = useState(null);
   const [active, setActive] = useState(null);
+  const [allSources, setAllSources] = useState(false);
 
   useEffect(() => {
     const sn = node && node.synthesisNode;
@@ -105,51 +109,67 @@ export function ReferencePage({
   };
   const seg = segment || (market.live.length ? "live" : market.auctions.length ? "auctions" : "sold");
 
-  // Synthesis, filtered to this reference's scope; debated = real debates only.
+  // Synthesis, filtered to this reference's scope; evidence = real debates only.
   const scope = node.synthesisScope || node.refs || [];
   const inScope = (it) => !it.applies_to || !it.applies_to.length || it.applies_to.some((t) => scope.includes(t));
   const synStories = (synthesis?.stories || []).filter(inScope);
   const realConflicts = (synthesis?.conflicts || []).filter(inScope).filter((c) => !NONDEBATE.test(c.note || ""));
 
+  // "What the shorthand misses": hand-authored blocks win; synthesis conflicts
+  // are the fallback, recast into the same editorial shape.
+  const shorthand = node.shorthand?.length
+    ? node.shorthand
+    : realConflicts.map((c) => ({
+        heading: c.topic,
+        body: c.note,
+        sourcePosition: (c.positions || []).join(" · "),
+      }));
+
   const has = {
     guides: node.guides?.length > 0,
     marks: node.marks?.length > 0,
     variants: node.variants?.length > 0,
-    debated: realConflicts.length > 0,
+    shorthand: shorthand.length > 0,
     stories: node.storiesAndImages?.length > 0 || synStories.length > 0,
     explore: node.connections?.length > 0,
+    legacy: !!node.modernLegacy,
     library: node.books?.length > 0,
   };
   const NAV = [
     { id: "overview", label: "Overview", show: true },
-    { id: "guides", label: "Guides", show: has.guides },
-    { id: "marks", label: "Marks", show: has.marks },
-    { id: "variants", label: "Variants", show: has.variants },
-    { id: "examples", label: "Examples", show: true },
-    { id: "debated", label: "Debated", show: has.debated },
+    { id: "shorthand", label: "Evidence", show: has.shorthand },
     { id: "stories", label: "Stories", show: has.stories },
+    { id: "marks", label: "Details", show: has.marks },
+    { id: "variants", label: "Configurations", show: has.variants },
+    { id: "guides", label: "Sources", show: has.guides },
+    { id: "examples", label: "Examples", show: true },
     { id: "explore", label: "Explore", show: has.explore },
     { id: "library", label: "Library", show: has.library },
   ].filter((s) => s.show);
   const goTo = (id) => { const el = document.getElementById(id); if (el) el.scrollIntoView({ behavior: "smooth", block: "start" }); };
 
-  // ── shared layout helpers (one width → aligned left edges) ──
+  // ── shared layout helpers ──
+  // shell = the wide browse width; readShell = the narrow editorial measure.
   const PAD = isMobile ? 16 : 20;
   const shell = (children, style) => <div style={{ maxWidth: MAXW, margin: "0 auto", width: "100%", padding: `0 ${PAD}px`, ...style }}>{children}</div>;
+  const readShell = (children, style) => shell(<div style={{ maxWidth: READW }}>{children}</div>, style);
   const sectionGap = isMobile ? 40 : 64;
 
-  const Section = (id, kicker, title, intro, children) => (
-    <section id={id} data-refsection style={{ scrollMarginTop: "calc(var(--sticky-top, 0px) + 70px)", marginTop: sectionGap }}>
-      {shell(
-        <div style={{ borderTop: "0.5px solid var(--border)", paddingTop: isMobile ? 22 : 30, marginBottom: isMobile ? 16 : 22 }}>
-          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--brand-olive-text)", marginBottom: 8 }}>{kicker}</div>
-          <h2 style={{ ...editorialHeading({ isMobile }), color: "var(--text1)", margin: 0 }}>{title}</h2>
-          {intro && <p style={{ fontSize: isMobile ? 15 : 16, lineHeight: 1.5, color: "var(--text2)", marginTop: 10, marginBottom: 0, maxWidth: 640 }}>{intro}</p>}
-        </div>
-      )}
-      {children}
-    </section>
-  );
+  const Section = (id, kicker, title, intro, children, { narrowHeader = false } = {}) => {
+    const header = (
+      <div style={{ borderTop: "0.5px solid var(--border)", paddingTop: isMobile ? 22 : 30, marginBottom: isMobile ? 16 : 22 }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--brand-olive-text)", marginBottom: 8 }}>{kicker}</div>
+        <h2 style={{ ...editorialHeading({ isMobile }), color: "var(--text1)", margin: 0 }}>{title}</h2>
+        {intro && <p style={{ fontSize: isMobile ? 15 : 16, lineHeight: 1.5, color: "var(--text2)", marginTop: 10, marginBottom: 0, maxWidth: 640 }}>{intro}</p>}
+      </div>
+    );
+    return (
+      <section id={id} data-refsection style={{ scrollMarginTop: "calc(var(--sticky-top, 0px) + 70px)", marginTop: sectionGap }}>
+        {narrowHeader ? readShell(header) : shell(header)}
+        {children}
+      </section>
+    );
+  };
 
   const renderListingCard = (item) => (
     <Card item={item} wished={!!watchlist[item.id]} onWish={handleWish} compact={compact}
@@ -158,7 +178,7 @@ export function ReferencePage({
   );
   const renderEditorialCard = (a) => (
     <a href={a.url} target="_blank" rel="noopener noreferrer" style={{ display: "block", textDecoration: "none", color: "inherit" }}>
-      <div style={{ width: "100%", aspectRatio: "4 / 3", overflow: "hidden", background: "var(--surface)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ width: "100%", aspectRatio: "4 / 3", overflow: "hidden", background: "var(--surface)", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 10 }}>
         {a.img ? <RefImg src={a.img} alt={a.title} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
                : <span style={{ fontFamily: SERIF, fontSize: 15, color: "var(--text3)", padding: 12, textAlign: "center" }}>{a.publication}</span>}
       </div>
@@ -169,7 +189,23 @@ export function ReferencePage({
     </a>
   );
 
-  // paired two-column row (desktop). flip → image left. ratio → media height.
+  // Detail card — the "What to notice" / "Key configurations" strips: image,
+  // name, a clamped line or two, click-through to the source.
+  const renderDetailCard = ({ name, text, img, url, source }) => (
+    <a href={url || undefined} target={url ? "_blank" : undefined} rel="noopener noreferrer" style={{ display: "block", textDecoration: "none", color: "inherit" }}>
+      <div style={{ width: "100%", aspectRatio: "4 / 3", overflow: "hidden", background: "var(--surface)", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 10 }}>
+        {img ? <RefImg src={img} alt={name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+             : <span style={{ fontFamily: SERIF, fontSize: 14, color: "var(--text3)", padding: 12, textAlign: "center" }}>{source || name}</span>}
+      </div>
+      <div style={{ padding: "8px 2px 12px" }}>
+        <div style={{ fontFamily: SERIF, fontSize: 15, fontWeight: 600, color: "var(--text1)", lineHeight: 1.25 }}>{name}</div>
+        <div style={{ fontSize: 12.5, lineHeight: 1.45, color: "var(--text2)", marginTop: 5, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{text}</div>
+        {source && <div style={{ fontSize: 10, color: "var(--text3)", marginTop: 6, letterSpacing: "0.04em", textTransform: "uppercase" }}>{source} ↗</div>}
+      </div>
+    </a>
+  );
+
+  // paired two-column row (desktop) — still used by Read it first.
   const paired = (text, media, key, { flip = false, ratio = "4 / 3" } = {}) => {
     const m = media && <div key="m" style={{ borderRadius: 10, overflow: "hidden", background: "var(--surface)", aspectRatio: ratio }}>{media}</div>;
     return (
@@ -180,7 +216,8 @@ export function ReferencePage({
   };
 
   const story = node.story || [];
-  const firstPara = story[0] || "";
+  const FEATURED_SOURCES = 4;
+  const guidesShown = allSources ? (node.guides || []) : (node.guides || []).slice(0, FEATURED_SOURCES);
 
   return (
     <div style={{ background: "var(--bg)", paddingBottom: isMobile ? 60 : 48 }}>
@@ -261,36 +298,93 @@ export function ReferencePage({
         )}
       </nav>
 
-      {/* OVERVIEW — model intro + the reference story, side by side on desktop */}
+      {/* OVERVIEW — "The reference": one clean single-column block. No drop
+          cap, no two-column split (redesign: narrow to read, wide to browse). */}
       <section id="overview" data-refsection style={{ scrollMarginTop: "calc(var(--sticky-top, 0px) + 70px)", marginTop: sectionGap }}>
-        {shell(
-          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "0.8fr 1.2fr", gap: isMobile ? 26 : 52, alignItems: "start" }}>
+        {readShell(
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--brand-olive-text)", marginBottom: 8 }}>Start here</div>
+            <h2 style={{ ...editorialHeading({ isMobile }), color: "var(--text1)", margin: "0 0 12px" }}>The {node.group}</h2>
             {node.modelIntro && (
-              <div>
-                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--brand-olive-text)", marginBottom: 8 }}>The {node.modelLine}</div>
-                <p style={{ fontFamily: SERIF, fontSize: isMobile ? 16 : 17, lineHeight: 1.6, color: "var(--text2)", margin: 0 }}>{node.modelIntro}</p>
-              </div>
+              <p style={{ fontFamily: SERIF, fontSize: isMobile ? 17 : 19, lineHeight: 1.6, color: "var(--text1)", margin: 0 }}>{node.modelIntro}</p>
             )}
-            <div>
-              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--brand-olive-text)", marginBottom: 8 }}>Start here</div>
-              <h2 style={{ ...editorialHeading({ isMobile }), color: "var(--text1)", margin: "0 0 12px" }}>The {node.group}</h2>
-              <p style={{ fontFamily: SERIF, fontSize: isMobile ? 17 : 19, lineHeight: 1.6, color: "var(--text1)", margin: 0 }}>
-                {firstPara && <span style={{ fontFamily: SERIF, float: "left", fontSize: isMobile ? 48 : 60, lineHeight: 0.8, fontWeight: 600, color: "var(--text1)", paddingRight: 9, marginTop: 5 }}>{firstPara.charAt(0)}</span>}
-                {firstPara.slice(1)}
-              </p>
-              {story.slice(1).map((p, i) => (
-                <p key={i} style={{ fontFamily: SERIF, fontSize: isMobile ? 16 : 17, lineHeight: 1.65, color: "var(--text1)", marginTop: 16, marginBottom: 0 }}>{p}</p>
-              ))}
-            </div>
+            {story.map((p, i) => (
+              <p key={i} style={{ fontFamily: SERIF, fontSize: isMobile ? 16 : 17, lineHeight: 1.65, color: "var(--text1)", marginTop: 16, marginBottom: 0 }}>{p}</p>
+            ))}
+            {node.inItsTime && (
+              <p style={{ fontFamily: SERIF, fontSize: isMobile ? 16 : 17, lineHeight: 1.65, color: "var(--text2)", marginTop: 16, marginBottom: 0 }}>{node.inItsTime}</p>
+            )}
           </div>
         )}
       </section>
 
-      {/* GUIDES — read it first */}
+      {/* EVIDENCE — what the shorthand misses. Editorial blocks, not Q&A;
+          hand-authored node.shorthand first, synthesis conflicts fallback. */}
+      {has.shorthand && Section("shorthand", "The collector version", "What the shorthand misses", null,
+        readShell(
+          <div>
+            {shorthand.map((b, i) => (
+              <div key={i} style={{ padding: isMobile ? "14px 0" : "16px 0", borderTop: i ? "0.5px solid var(--border)" : "none" }}>
+                <div style={{ fontFamily: SERIF, fontSize: isMobile ? 17 : 19, fontWeight: 600, color: "var(--text1)" }}>{b.heading}</div>
+                <p style={{ fontFamily: SERIF, fontSize: isMobile ? 15 : 16, lineHeight: 1.6, color: "var(--text1)", margin: "6px 0 0" }}>{b.body}</p>
+                {b.sourcePosition && <div style={{ fontSize: 12, lineHeight: 1.5, color: "var(--text3)", marginTop: 8 }}>Source position: {b.sourcePosition}</div>}
+              </div>
+            ))}
+          </div>
+        ), { narrowHeader: true }
+      )}
+
+      {/* REFERENCE STORIES — promoted into the body (Mark 2026-06-07): the
+          stories explain the reference; they are not bonus trivia. */}
+      {has.stories && Section("stories", "Why collectors care", "Reference stories", `The episodes that explain the ${node.group}: where it came from, what it did, and why it gets retold.`,
+        <>
+          {node.storiesAndImages?.length > 0 && shell(<div style={{ margin: "0 -8px" }}><CardStrip items={node.storiesAndImages} isMobile={isMobile} inset={false} background="transparent" renderCard={renderEditorialCard} /></div>)}
+          {synStories.length > 0 && shell(
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 0 : "0 36px", marginTop: node.storiesAndImages?.length ? 16 : 0 }}>
+              {synStories.map((s, i) => (
+                <a key={i} href={s.source || undefined} target={s.source ? "_blank" : undefined} rel="noopener noreferrer" style={{ display: "block", textDecoration: "none", color: "inherit", padding: "12px 0", borderTop: "0.5px solid var(--border)" }}>
+                  <div style={{ fontFamily: SERIF, fontSize: isMobile ? 16 : 17, fontWeight: 600, color: "var(--text1)", lineHeight: 1.3 }}>{s.title}{s.source ? " ↗" : ""}</div>
+                  <div style={{ fontSize: 13, lineHeight: 1.5, color: "var(--text2)", marginTop: 4 }}>{s.why}</div>
+                </a>
+              ))}
+            </div>
+          )}
+        </>
+      )}
+
+      {/* WHAT TO NOTICE — replaces "Reading the marks": a visual strip, not a
+          card-grid essay. Education, not warning. */}
+      {has.marks && Section("marks", "Learn to see it", "What to notice", "The physical details that tell you what you're looking at. Tap any card for the source.",
+        shell(
+          <div style={{ margin: "0 -8px" }}>
+            <CardStrip
+              items={node.marks}
+              isMobile={isMobile} inset={false} background="transparent"
+              renderCard={(m) => renderDetailCard({ name: m.name, text: m.body, img: m.img, url: m.url, source: m.source })}
+            />
+          </div>
+        )
+      )}
+
+      {/* KEY CONFIGURATIONS — replaces "Variants worth seeing": compact strip. */}
+      {has.variants && Section("variants", "Learn by example", "Key configurations", "The configurations the reference is usually discussed through.",
+        shell(
+          <div style={{ margin: "0 -8px" }}>
+            <CardStrip
+              items={node.variants}
+              isMobile={isMobile} inset={false} background="transparent"
+              renderCard={(v) => renderDetailCard({ name: v.name, text: v.traits, img: v.img, url: v.url, source: v.source })}
+            />
+          </div>
+        )
+      )}
+
+      {/* READ IT FIRST — after the visual explainers (understand the watch
+          first, then the research trail). Featured 4, the rest collapsed. */}
       {has.guides && Section("guides", "Read it first", "The guides to read first", "If you're looking to understand this reference, start here. Deeper cuts follow, but these give you the basis to build from.",
         shell(
           <div>
-            {node.guides.map((g, i) => paired(
+            {guidesShown.map((g, i) => paired(
               <div key="t">
                 <div style={{ fontSize: 10, color: "var(--text3)", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 6 }}>{String(i + 1).padStart(2, "0")} · {g.publication}</div>
                 <a href={g.url} target="_blank" rel="noopener noreferrer" style={{ fontFamily: SERIF, fontSize: isMobile ? 20 : 24, fontWeight: 600, color: "var(--text1)", textDecoration: "none", lineHeight: 1.2, display: "block" }}>{g.title}</a>
@@ -302,64 +396,31 @@ export function ReferencePage({
                 : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: SERIF, color: "var(--text3)", fontSize: 16, textAlign: "center", padding: 16 }}>{g.publication}</div>,
               i
             ))}
+            {(node.guides || []).length > FEATURED_SOURCES && (
+              <div style={{ paddingTop: 14, borderTop: "0.5px solid var(--border)" }}>
+                <button onClick={() => setAllSources((v) => !v)}
+                  style={{ border: "none", background: "none", cursor: "pointer", padding: 0, color: "var(--brand)", fontSize: 13, fontWeight: 600, fontFamily: "inherit" }}>
+                  {allSources ? "Show fewer sources" : `More sources (${node.guides.length - FEATURED_SOURCES})`}
+                </button>
+              </div>
+            )}
           </div>
         )
       )}
 
-      {/* MARKS — learn to see it (image left) */}
-      {has.marks && Section("marks", "Learn to see it", "Reading the marks", "The small details that tell you which watch you're looking at, and when something deserves a closer look.",
-        shell(
-          <div>
-            {node.marks.map((m, i) => paired(
-              <div key="t">
-                <div style={{ fontFamily: SERIF, fontSize: isMobile ? 19 : 22, fontWeight: 600, color: "var(--text1)", marginBottom: 8 }}>{m.name}</div>
-                <p style={{ fontSize: isMobile ? 15 : 16, lineHeight: 1.6, color: "var(--text2)", margin: 0 }}>{m.body}</p>
-                {m.source && m.url && <a href={m.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, color: "var(--text3)", letterSpacing: "0.04em", textTransform: "uppercase", textDecoration: "none", display: "inline-block", marginTop: 8 }}>{m.source} ↗</a>}
-              </div>,
-              m.img ? <a href={m.url || undefined} target="_blank" rel="noopener noreferrer" style={{ display: "block", width: "100%", height: "100%" }}><RefImg src={m.img} alt={m.name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} /></a> : null,
-              i, { flip: true, ratio: "3 / 2" }
-            ))}
-          </div>
-        )
-      )}
-
-      {/* VARIANTS — learn by example */}
-      {has.variants && Section("variants", "Learn by example", "Variants worth seeing", "A few real examples that show the range this reference runs. Once you've seen them, you can place almost any dial.",
-        shell(
-          <div>
-            {node.variants.map((v, i) => paired(
-              <div key="t">
-                <div style={{ fontFamily: SERIF, fontSize: isMobile ? 18 : 21, fontWeight: 600, color: "var(--text1)", marginBottom: 6 }}>{v.name}</div>
-                <p style={{ fontSize: isMobile ? 14 : 15, lineHeight: 1.55, color: "var(--text2)", margin: 0 }}>{v.traits}</p>
-                <a href={v.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, color: "var(--brand)", fontWeight: 600, textDecoration: "none", display: "inline-block", marginTop: 8 }}>View example — {v.source} ↗</a>
-              </div>,
-              <a href={v.url} target="_blank" rel="noopener noreferrer" style={{ display: "block", width: "100%", height: "100%" }}><RefImg src={v.img} alt={v.name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} /></a>,
-              i, { ratio: "3 / 2" }
-            ))}
-          </div>
-        )
-      )}
-
-      {/* EXAMPLES — see real ones: how-to-look + the market, one grey unit */}
+      {/* EXAMPLES — straight to the market. The due-diligence checklist no
+          longer renders here (page rule: teach how to see, not what to fear;
+          node.howToLook stays in data for future listing-context use). */}
       <section id="examples" data-refsection style={{ scrollMarginTop: "calc(var(--sticky-top, 0px) + 70px)", marginTop: sectionGap }}>
         {shell(
           <div style={{ borderTop: "0.5px solid var(--border)", paddingTop: isMobile ? 22 : 30, marginBottom: isMobile ? 16 : 22 }}>
             <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--brand-olive-text)", marginBottom: 8 }}>See real ones</div>
             <h2 style={{ ...editorialHeading({ isMobile }), color: "var(--text1)", margin: 0 }}>Look at real examples</h2>
+            <p style={{ fontSize: isMobile ? 15 : 16, lineHeight: 1.5, color: "var(--text2)", marginTop: 10, marginBottom: 0, maxWidth: 640 }}>Compare current listings, sold examples and auction records to see how dial type, condition, originality, completeness and provenance change the story.</p>
           </div>
         )}
         {shell(
           <div style={{ background: "var(--surface)", borderRadius: 12, padding: isMobile ? 16 : "22px 24px", overflow: "hidden" }}>
-            {node.howToLook && <>
-              <p style={{ fontSize: isMobile ? 14 : 15, lineHeight: 1.55, color: "var(--text1)", marginTop: 0, marginBottom: 12 }}>{node.howToLook.intro}</p>
-              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "0 28px", marginBottom: 14 }}>
-                {node.howToLook.checks.map((c, i) => (
-                  <div key={i} style={{ display: "flex", gap: 8, padding: "6px 0", fontSize: 13, lineHeight: 1.45, color: "var(--text2)" }}>
-                    <span style={{ color: "var(--brand-olive-text)", flex: "0 0 auto" }}>·</span>{c}
-                  </div>
-                ))}
-              </div>
-            </>}
             {/* segmented control */}
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 12, flexWrap: "wrap" }}>
               <div style={{ display: "flex", gap: 6 }}>
@@ -379,49 +440,10 @@ export function ReferencePage({
             </div>
             {market[seg].length > 0
               ? <div style={{ margin: "0 -8px" }}><CardStrip items={market[seg]} isMobile={isMobile} max={12} inset={false} background="transparent" renderCard={renderListingCard} /></div>
-              : <div style={{ fontSize: 13, color: "var(--text3)", padding: "4px 0 8px" }}>None in this bucket right now — it refreshes as the scrape runs.</div>}
-            {node.howToLook?.outro && <p style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: 14, color: "var(--text2)", margin: "12px 0 0" }}>{node.howToLook.outro}</p>}
+              : <div style={{ fontSize: 13, color: "var(--text3)", padding: "4px 0 8px" }}>None in this bucket right now. It refreshes as the scrape runs.</div>}
           </div>
         )}
       </section>
-
-      {/* DEBATED — go deeper: real debates, both sides */}
-      {has.debated && Section("debated", "Go deeper", "Debated & contested", "The questions still being argued, and where each side stands, so you can make up your own mind.",
-        shell(
-          <div>
-            {realConflicts.map((c, i) => (
-              <div key={i} style={{ padding: isMobile ? "14px 0" : "16px 0", borderTop: "0.5px solid var(--border)" }}>
-                <div style={{ fontFamily: SERIF, fontSize: isMobile ? 17 : 19, fontWeight: 600, color: "var(--text1)" }}>{c.topic}</div>
-                <div style={{ fontSize: 14, lineHeight: 1.5, color: "var(--text2)", marginTop: 4 }}>{c.note}</div>
-                {c.positions?.length > 0 && (
-                  <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 8 : 24, marginTop: 10 }}>
-                    {c.positions.map((p, j) => (
-                      <div key={j} style={{ fontSize: 13, lineHeight: 1.5, color: "var(--text2)", borderLeft: "2px solid var(--border)", paddingLeft: 12 }}>{p}</div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )
-      )}
-
-      {/* STORIES — moved down; the lore */}
-      {has.stories && Section("stories", "The lore", "Stories", `Where the ${node.group} turns up: in service, on screen, and in the stories that get retold.`,
-        <>
-          {node.storiesAndImages?.length > 0 && shell(<div style={{ margin: "0 -8px" }}><CardStrip items={node.storiesAndImages} isMobile={isMobile} inset={false} background="transparent" renderCard={renderEditorialCard} /></div>)}
-          {synStories.length > 0 && shell(
-            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 0 : "0 36px", marginTop: node.storiesAndImages?.length ? 16 : 0 }}>
-              {synStories.map((s, i) => (
-                <a key={i} href={s.source || undefined} target={s.source ? "_blank" : undefined} rel="noopener noreferrer" style={{ display: "block", textDecoration: "none", color: "inherit", padding: "12px 0", borderTop: "0.5px solid var(--border)" }}>
-                  <div style={{ fontFamily: SERIF, fontSize: isMobile ? 16 : 17, fontWeight: 600, color: "var(--text1)", lineHeight: 1.3 }}>{s.title}{s.source ? " ↗" : ""}</div>
-                  <div style={{ fontSize: 13, lineHeight: 1.5, color: "var(--text2)", marginTop: 4 }}>{s.why}</div>
-                </a>
-              ))}
-            </div>
-          )}
-        </>
-      )}
 
       {/* EXPLORE — go wider: the rabbit hole */}
       {has.explore && Section("explore", "Go wider", "Where to explore next", node.whereNext,
@@ -466,12 +488,20 @@ export function ReferencePage({
           {synthesis?.module_candidates?.length > 0 && shell(
             <div style={{ marginTop: 16 }}>
               <div style={{ fontSize: 11, color: "var(--text3)", lineHeight: 1.6 }}>
-                <span style={{ fontWeight: 600 }}>Also in the Submariner family, coming as their own pages:</span>{" "}
+                <span style={{ fontWeight: 600 }}>Also in this family, coming as their own pages:</span>{" "}
                 {synthesis.module_candidates.map((m) => m.module).join(" · ")}
               </div>
             </div>
           )}
         </>
+      )}
+
+      {/* MODERN LEGACY — optional, for line-spanning guides: the relaunch /
+          successor history, kept out of the opening narrative. */}
+      {has.legacy && Section("legacy", "The line today", "Modern legacy", null,
+        readShell(
+          <p style={{ fontFamily: SERIF, fontSize: isMobile ? 16 : 17, lineHeight: 1.65, color: "var(--text1)", margin: 0 }}>{node.modernLegacy}</p>
+        ), { narrowHeader: true }
       )}
 
       {/* LIBRARY — books, two columns */}
@@ -498,7 +528,7 @@ export function ReferencePage({
               <div style={{ fontSize: 12, lineHeight: 1.6, color: "var(--text2)" }}>{node.scopeNote}</div>
               <div style={{ fontSize: 12, lineHeight: 1.6, color: "var(--text3)", marginTop: 8 }}>
                 Compiled from thousands of dealer listings and write-ups, reviewed by hand. Spot something off?{" "}
-                <a href="mailto:mark@mutter.co.uk?subject=Reference%20note%3A%205512%2F5513" style={{ color: "var(--brand)", textDecoration: "none" }}>Suggest a fix</a>.
+                <a href="mailto:mark@mutter.co.uk?subject=Reference%20note" style={{ color: "var(--brand)", textDecoration: "none" }}>Suggest a fix</a>.
               </div>
             </div>
           )}

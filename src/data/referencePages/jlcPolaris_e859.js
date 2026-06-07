@@ -23,10 +23,44 @@ const node = {
   refs: ["E859"],
   group: "E859",
   definer:
-    "Automatic alarm diver · 42mm EPSA compressor case · calibre 825/K825 · internal bezel · 16-hole resonance caseback · c. 1,714 production examples, 1965–1970 · relaunched as a collection in 2018",
+    "Automatic alarm diver · 42mm EPSA compressor case · calibre 825/K825 · internal bezel · 16-hole resonance caseback · c. 1,714 production examples",
 
   synthesisNode: "jlc-polaris",
   synthesisScope: ["E859", "E857", "E870", "190.8.96", "Q9008470", "Q9008170", "Q9038670", "Q9028471", "Q9068670", "Q9028180", "model-wide", "dive-watch-context"],
+
+  // "What the shorthand misses" — hand-authored editorial evidence blocks
+  // (redesign 2026-06-07). Overrides the synthesis-conflicts fallback.
+  shorthand: [
+    {
+      heading: "1968 is the icon, not the whole story",
+      body: "The Polaris is often described as a 1968 watch. That is true only if 1968 means the famous dial. The fuller history starts earlier: around 50 prototypes in 1963, series production from 1965, the bolder second-generation dial in 1968, and a small late run with Calypso hands in 1970.",
+      sourcePosition: "JLC frames the model around 1968; Le Monde Edmond/Mstanga, Christie's, Fratello and Hairspring support the 1965\u20131970 production story.",
+    },
+    {
+      heading: "1,714 is the accepted count, not a factory table",
+      body: "The accepted figure is 1,714 production examples, excluding roughly 50 prototypes. The total is widely repeated, but the year-by-year breakdown (500 early watches, 1,214 in the 1968 style, 55 Calypso-hand examples) comes from collector scholarship supported by archive extracts, not a published JLC production table. It is the best map available; treat it as scholarship.",
+      sourcePosition: "Le Monde Edmond/Mstanga carries the breakdown; Christie's, Hodinkee and dealer sources repeat the 1,714 total.",
+    },
+    {
+      heading: "Two dial generations is useful shorthand",
+      body: "The early 1965 dial is glossier, slimmer and more restrained; the 1968 dial is matte, bold and immediately recognisable. Transitional watches complicate the line, including documented 1967 examples that appear to trial the later look, and the rare Memodate disc text.",
+      sourcePosition: "Christie's documents the 1967 batch; Phillips documents the Memodate; Hairspring and Fratello describe the generation shift.",
+    },
+    {
+      heading: "The signatures are a market split, not a hierarchy",
+      body: "LeCoultre-signed dials generally indicate the US market; Jaeger-LeCoultre signatures are usually European. Both are correct. The useful question is whether the dial, movement bridge, caseback, box and any archive extract tell the same market story.",
+      sourcePosition: "Christie's, Phillips, Hodinkee and Le Monde Edmond all describe the split the same way.",
+    },
+    {
+      heading: "Rarity is not the same as desirability",
+      body: "The 1970 Calypso-hand watches are legitimate and very scarce, yet visually divisive. For many, the canonical Polaris remains the 1968-style dial: large trapezoidal plots, internal bezel, domed crystal, and the 16-hole caseback doing the real work behind the watch.",
+      sourcePosition: "Le Monde Edmond and Hairspring document the Calypso run and its mixed reception.",
+    },
+  ],
+
+  // Modern legacy — the relaunch history, kept out of the opening (redesign).
+  modernLegacy:
+    "The E859 disappeared after 1970 but became the reference JLC kept returning to. The 768-piece Tribute to Polaris in 2008 proved collector demand for the design, and the 2018 Polaris collection turned the vintage alarm diver into the brand's modern sport-watch platform: three-hander, Date, Chronograph, world-timer and a 1,000-piece Memovox. From 2020 the Mariner models pushed the idea further, with 300m water resistance and a reworked alarm architecture whose gong mounts on the case side, visible through a sapphire back.",
 
   hero: {
     img: "https://hodinkee.imgix.net/uploads/article/hero_image/2150/JLCPolaris1968_13.jpg?ixlib=rails-1.1.0&fm=jpg&q=55&auto=format&usm=12&fit=crop&ch=Width%2CDPR%2CSave-Data&alt=&ar=16%3A9&w=2400",
@@ -40,7 +74,6 @@ const node = {
   story: [
     "Most dive watches of the period solved the timing problem with a bezel. The Polaris added a second timing method: a mechanical alarm set on the central disc, designed to sound, and to be felt through the caseback, when dive time ran out. That's why the engineering centres on the back of the watch rather than the front. The back is a resonance system: a sealed inner caseback protects the movement, a resonating layer amplifies the hammer strike, and the perforated 16-hole outer cover lets the sound travel through water and wetsuit.",
     "The dial side is just as deliberate. There's no external bezel. Dive time lives on an internal rotating ring driven by the crown at 3, which keeps the dial unusually large for the case and puts everything under one oversized domed Hesalite crystal. The large dome and the absence of an external bezel make the dial feel unusually open for a dive watch, especially on the matte second-generation dial with its big trapezoidal tritium plots. The 42mm case was oversized by 1965 standards; it reads entirely current today.",
-    "Production ended in 1970 and the reference went quiet for decades. A 768-piece Tribute in 2008 demonstrated the collector demand, and at SIHH 2018, fifty years after the best-known dial, JLC relaunched Polaris as its sport collection: three-hander, Date, Chronograph, world-timer, a 1,000-piece Memovox, and from 2020 the Mariner, a 300m diver that relocates the alarm gong to the case side behind a sapphire back. The E859 is the reference the modern line keeps returning to.",
   ],
 
   inItsTime:
