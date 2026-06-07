@@ -184,7 +184,7 @@ export function ReferencePage({
                : <span style={{ fontFamily: SERIF, fontSize: 15, color: "var(--text3)", padding: 12, textAlign: "center" }}>{a.publication}</span>}
       </div>
       <div style={{ padding: "8px 10px 12px" }}>
-        <div style={{ fontFamily: SERIF, fontSize: 14, fontWeight: 600, color: "var(--text1)", lineHeight: 1.25 }}>{a.title}</div>
+        <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text1)", lineHeight: 1.3 }}>{a.title}</div>
         {a.blurb && <div style={{ fontSize: 12, lineHeight: 1.45, color: "var(--text2)", marginTop: 5, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{a.blurb}</div>}
         <div style={{ fontSize: 10, color: "var(--text3)", marginTop: 6, letterSpacing: "0.04em", textTransform: "uppercase" }}>{a.publication} ↗</div>
       </div>
@@ -200,7 +200,7 @@ export function ReferencePage({
              : <span style={{ fontFamily: SERIF, fontSize: 14, color: "var(--text3)", padding: 12, textAlign: "center" }}>{source || name}</span>}
       </div>
       <div style={{ padding: "8px 2px 12px" }}>
-        <div style={{ fontFamily: SERIF, fontSize: 15, fontWeight: 600, color: "var(--text1)", lineHeight: 1.25 }}>{name}</div>
+        <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text1)", lineHeight: 1.3 }}>{name}</div>
         <div style={{ fontSize: 12.5, lineHeight: 1.45, color: "var(--text2)", marginTop: 5, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{text}</div>
         {source && <div style={{ fontSize: 10, color: "var(--text3)", marginTop: 6, letterSpacing: "0.04em", textTransform: "uppercase" }}>{source} ↗</div>}
       </div>
@@ -326,9 +326,9 @@ export function ReferencePage({
         readShell(
           <div>
             {shorthand.map((b, i) => (
-              <div key={i} style={{ padding: isMobile ? "14px 0" : "16px 0", borderTop: i ? "0.5px solid var(--border)" : "none" }}>
-                <div style={{ fontFamily: SERIF, fontSize: isMobile ? 17 : 19, fontWeight: 600, color: "var(--text1)" }}>{b.heading}</div>
-                <p style={{ fontFamily: SERIF, fontSize: isMobile ? 15 : 16, lineHeight: 1.6, color: "var(--text1)", margin: "6px 0 0" }}>{b.body}</p>
+              <div key={i} style={{ padding: shorthand.some((x) => x.heading) ? (isMobile ? "14px 0" : "16px 0") : "8px 0", borderTop: i && shorthand.some((x) => x.heading) ? "0.5px solid var(--border)" : "none" }}>
+                {b.heading && <div style={{ fontFamily: SERIF, fontSize: isMobile ? 17 : 19, fontWeight: 600, color: "var(--text1)" }}>{b.heading}</div>}
+                <p style={{ fontFamily: SERIF, fontSize: isMobile ? 16 : 17, lineHeight: 1.65, color: "var(--text1)", margin: b.heading ? "6px 0 0" : 0 }}>{b.body}</p>
                 {b.sourcePosition && <div style={{ fontSize: 12, lineHeight: 1.5, color: "var(--text3)", marginTop: 8 }}>Source position: {b.sourcePosition}</div>}
               </div>
             ))}
@@ -373,7 +373,7 @@ export function ReferencePage({
             <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 0 : "0 36px", marginTop: node.storiesAndImages?.length ? 16 : 0 }}>
               {synStories.map((s, i) => (
                 <a key={i} href={s.source || undefined} target={s.source ? "_blank" : undefined} rel="noopener noreferrer" style={{ display: "block", textDecoration: "none", color: "inherit", padding: "12px 0", borderTop: "0.5px solid var(--border)" }}>
-                  <div style={{ fontFamily: SERIF, fontSize: isMobile ? 16 : 17, fontWeight: 600, color: "var(--text1)", lineHeight: 1.3 }}>{s.title}{s.source ? " ↗" : ""}</div>
+                  <div style={{ fontSize: isMobile ? 15 : 16, fontWeight: 600, color: "var(--text1)", lineHeight: 1.3 }}>{s.title}{s.source ? " ↗" : ""}</div>
                   <div style={{ fontSize: 13, lineHeight: 1.5, color: "var(--text2)", marginTop: 4 }}>{s.why}</div>
                 </a>
               ))}
@@ -397,9 +397,9 @@ export function ReferencePage({
           <div>
             {guidesShown.map((g, i) => paired(
               <div key="t">
-                <div style={{ fontSize: 10, color: "var(--text3)", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 6 }}>{String(i + 1).padStart(2, "0")} · {g.publication}</div>
-                <a href={g.url} target="_blank" rel="noopener noreferrer" style={{ fontFamily: SERIF, fontSize: isMobile ? 20 : 24, fontWeight: 600, color: "var(--text1)", textDecoration: "none", lineHeight: 1.2, display: "block" }}>{g.title}</a>
-                <p style={{ fontSize: isMobile ? 14 : 15, lineHeight: 1.55, color: "var(--text2)", marginTop: 10, marginBottom: 10 }}>{g.blurb}</p>
+                <div style={{ fontSize: 10, color: "var(--text3)", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 6 }}>{g.publication}</div>
+                <a href={g.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: isMobile ? 16 : 18, fontWeight: 600, color: "var(--text1)", textDecoration: "none", lineHeight: 1.25, display: "block" }}>{g.title}</a>
+                <p style={{ fontSize: isMobile ? 13 : 14, lineHeight: 1.5, color: "var(--text2)", marginTop: 8, marginBottom: 8, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{g.blurb}</p>
                 <div style={{ fontSize: 13, color: "var(--text2)" }}><span style={{ fontWeight: 600 }}>Read this for:</span> {g.readThisFor}. <a href={g.url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--brand)", textDecoration: "none", whiteSpace: "nowrap" }}>Read ↗</a></div>
               </div>,
               g.img
@@ -460,7 +460,7 @@ export function ReferencePage({
       {has.explore && Section("explore", "Explore", "Where to explore next", node.whereNext,
         <>
           {shell(
-            <div>
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 0 : "0 36px" }}>
               {node.connections.map((conn, i) => {
                 const ex = items.filter((it) => matchItem(it, conn.match));
                 ex.sort((a, b) => (a.sold === b.sold ? 0 : a.sold ? 1 : -1));
@@ -469,10 +469,10 @@ export function ReferencePage({
                 const chip = <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: d.fg, background: d.bg, padding: "2px 8px", borderRadius: 999, whiteSpace: "nowrap" }}>{d.label}</span>;
                 if (open) {
                   return (
-                    <div key={i} style={{ borderTop: "0.5px solid var(--border)", padding: isMobile ? "14px 0" : "16px 0" }}>
+                    <div key={i} style={{ gridColumn: isMobile ? "auto" : "1 / -1", borderTop: "0.5px solid var(--border)", padding: isMobile ? "14px 0" : "16px 0" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 5, flexWrap: "wrap" }}>
                         <button onClick={() => setOpenConn(null)} style={{ border: "none", background: "var(--surface)", color: "var(--text2)", cursor: "pointer", fontFamily: "inherit", fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", padding: "3px 10px", borderRadius: 999 }}>✕ Close</button>
-                        {chip}<span style={{ fontFamily: SERIF, fontSize: isMobile ? 17 : 19, fontWeight: 600, color: "var(--text1)" }}>{conn.label}</span>
+                        {chip}<span style={{ fontSize: isMobile ? 16 : 17, fontWeight: 600, color: "var(--text1)" }}>{conn.label}</span>
                       </div>
                       <div style={{ fontSize: 14, lineHeight: 1.5, color: "var(--text2)", maxWidth: 640 }}>{conn.why}</div>
                       {ex.length > 0 && <div style={{ marginTop: 12, marginLeft: -8, marginRight: -8 }}><CardStrip items={ex} isMobile={isMobile} max={14} inset={false} background="transparent" renderCard={renderListingCard} /></div>}
@@ -483,11 +483,11 @@ export function ReferencePage({
                 const canOpen = ex.length > 0;
                 return (
                   <div key={i} onClick={canOpen ? () => setOpenConn(i) : undefined} style={{ display: "flex", gap: 12, alignItems: "center", borderTop: "0.5px solid var(--border)", padding: "14px 0", cursor: canOpen ? "pointer" : "default" }}>
-                    <div style={{ flex: "0 0 auto", width: 56, height: 56, borderRadius: 8, overflow: "hidden", background: "var(--surface)" }}>
+                    <div style={{ flex: "0 0 auto", width: 72, height: 72, borderRadius: 8, overflow: "hidden", background: "var(--surface)" }}>
                       {thumb && <RefImg src={thumb} alt={conn.label} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />}
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3, flexWrap: "wrap" }}>{chip}<span style={{ fontFamily: SERIF, fontSize: isMobile ? 16 : 18, fontWeight: 600, color: "var(--text1)" }}>{conn.label}</span></div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3, flexWrap: "wrap" }}>{chip}<span style={{ fontSize: isMobile ? 15 : 16, fontWeight: 600, color: "var(--text1)" }}>{conn.label}</span></div>
                       <div style={{ fontSize: 13, lineHeight: 1.45, color: "var(--text2)" }}>{conn.why}</div>
                     </div>
                     {canOpen && <div style={{ flex: "0 0 auto", color: "var(--brand)", fontSize: 12, fontWeight: 600, whiteSpace: "nowrap" }}>{ex.length} →</div>}
