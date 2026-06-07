@@ -1087,7 +1087,7 @@ export function HomeTab(props) {
             return (
               <CardShell href={a.url} aspect="square" bodyPadding="10px 12px 12px"
                 // imgSrc: CardShell expects a pre-proxied src (PageSpeed 2026-06-06 — raw blogger originals were the Home LCP)
-                image={a.image ? { src: imgSrc(a.image), alt: "" } : null}
+                image={a.image ? { src: imgSrc(a.image, 480), alt: "" } : null}
                 level2={<div style={{ fontSize: 10, fontWeight: 600, color: "var(--text3)", textTransform: "uppercase", letterSpacing: 0.4, marginBottom: 4 }}>{(a._source && a._source.label) || a.source || ""}</div>}
                 level1={<div style={{ fontSize: 12, fontWeight: 500, color: "var(--text1)", lineHeight: 1.3, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{a.title}</div>}
                 heart={al && handleWish ? { wished: !!(watchlist && watchlist[al.id]), onToggle: () => handleWish(al) } : null}
