@@ -10,6 +10,12 @@ const node = {
   definer:
     "Omega's 1957 anti-magnetic field watch, built for engineers and technicians working near magnetic fields · the Railmaster's first reference",
   status: "coming_soon",
+
+  hero: {
+    img: "https://omegaforums.net/data/attachments/952/952439-cb5a21f84df4f2f83f75a30f18978867.jpg",
+    credit: "Omega Forums",
+    creditUrl: "https://omegaforums.net/",
+  },
   teaser:
     "Launched in 1957 alongside the Speedmaster and Seamaster 300, the Railmaster paired a soft-iron antimagnetic core with a clean, high-legibility dial. CK2914 is where the line begins. A full reference guide is on the way.",
 

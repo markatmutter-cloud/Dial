@@ -4,7 +4,7 @@ import { Breadcrumb } from "./Breadcrumb";
 import { PageHeader } from "./PageHeader";
 import { Chip } from "./Chip";
 import { StandardFilterBar, StandardSearchInput } from "./StandardFilterBar";
-import { editorialHeading, editorialProse, editorialTitle, pillBase, clearAllPill, cardGridStyle } from "../styles";
+import { editorialHeading, editorialProse, editorialTitle, pillBase, clearAllPill, cardGridStyle, FONT_SERIF } from "../styles";
 import { imgSrc } from "../utils";
 import {
   REFERENCE_NODES,
@@ -121,7 +121,15 @@ export function ReferenceBrowse(props) {
             onViewAll={props.onViewAll}
           />
         ) : (
-          <ComingSoon node={node} />
+          <ComingSoon node={node} isMobile={isMobile}>
+            <ReferencePage
+              node={node}
+              items={props.items || []}
+              isMobile={isMobile}
+              primaryCurrency={props.primaryCurrency}
+              compact={props.compact}
+            />
+          </ComingSoon>
         )}
       </div>
     );
@@ -339,42 +347,61 @@ function RefGuideCard({ node, isMobile, onClick, watchlist, handleWish, openColl
   );
 }
 
-function ComingSoon({ node }) {
-  // Demand smoke test. MVP records interest in local state only; persisting it
-  // (a small reference_interest table) is the immediate follow-up.
+function ComingSoon({ node, isMobile, children }) {
+  // Coming-soon guides render the REAL guide layout (hero, nav, whatever the
+  // stub carries) under a frosted overlay, so the page reads as a preview of
+  // the finished thing rather than a placeholder (Mark 2026-06-07). The frost
+  // starts below the hero so the photograph and title stay readable. The
+  // interest button is the demand smoke test (local state; a
+  // reference_interest table is the follow-up). The suggestion box sends via
+  // mail so it works without auth or a new table.
   const [noted, setNoted] = useState(false);
+  const [note, setNote] = useState("");
+  const heroH = isMobile ? 320 : 480;
+  const send = () => {
+    const subject = encodeURIComponent(`Reference guide suggestion (${node.brand} ${node.modelLine})`);
+    const body = encodeURIComponent(note || "");
+    window.location.href = `mailto:mark@mutter.co.uk?subject=${subject}&body=${body}`;
+  };
   return (
-    <div style={{ maxWidth: 560 }}>
-      {/* Editorial register — this is a preview OF a serif reference node,
-          so the title + teaser read as editorial content, not chrome. */}
-      <h1 style={{ ...editorialHeading(), color: "var(--text1)", margin: "0 0 4px" }}>
-        {node.brand} {node.modelLine}
-      </h1>
-      <div style={{ fontSize: 14, color: "var(--text2)", marginBottom: 12 }}>
-        {node.group || (node.refs || []).join(" / ")}
-        {node.definer ? ` · ${node.definer}` : ""}
-      </div>
-      {node.teaser && (
-        <p style={{ ...editorialProse(), color: "var(--text2)" }}>{node.teaser}</p>
-      )}
-      <div style={{ marginTop: 16, padding: 16, border: "0.5px dashed var(--border)", borderRadius: 10 }}>
-        <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text1)", marginBottom: 6 }}>
-          Full guide coming soon
-        </div>
-        <div style={{ fontSize: 13, color: "var(--text2)", marginBottom: 12 }}>
-          Want this reference guide unlocked sooner? Let us know you're interested.
-        </div>
-        {noted ? (
-          <div style={{ fontSize: 13, color: "var(--text1)", fontWeight: 600 }}>
-            ✓ Thanks. We'll let you know when it's live.
+    <div style={{ position: "relative" }}>
+      <div style={{ pointerEvents: "none" }} aria-hidden="true">{children}</div>
+      <div style={{
+        position: "absolute", left: 0, right: 0, top: heroH, bottom: 0, zIndex: 16,
+        background: "color-mix(in srgb, var(--bg) 55%, transparent)",
+        backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)",
+        display: "flex", justifyContent: "center", alignItems: "flex-start",
+      }}>
+        <div style={{ maxWidth: 480, width: "100%", margin: isMobile ? "40px 16px" : "72px 20px", background: "var(--bg)", border: "0.5px solid var(--border)", borderRadius: 14, padding: isMobile ? 18 : 24, boxShadow: "0 8px 40px rgba(0,0,0,0.12)" }}>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--brand-olive-text)", marginBottom: 8 }}>Coming soon</div>
+          <div style={{ fontFamily: FONT_SERIF, fontSize: isMobile ? 20 : 23, fontWeight: 600, color: "var(--text1)", lineHeight: 1.2, marginBottom: 8 }}>
+            The {node.group} guide is on the way
           </div>
-        ) : (
-          <button onClick={() => setNoted(true)} style={{
-            cursor: "pointer", fontFamily: "inherit", fontSize: 13, fontWeight: 600,
-            color: "#fff", background: "var(--brand-olive, #4a5240)", border: "none",
-            borderRadius: 8, padding: "8px 14px",
-          }}>Subscribe to unlock</button>
-        )}
+          {node.teaser && <p style={{ fontSize: 14, lineHeight: 1.55, color: "var(--text2)", margin: "0 0 14px" }}>{node.teaser}</p>}
+          {noted ? (
+            <div style={{ fontSize: 13, color: "var(--text1)", fontWeight: 600, marginBottom: 16 }}>✓ Noted. We'll let you know when it's live.</div>
+          ) : (
+            <button onClick={() => setNoted(true)} style={{
+              cursor: "pointer", fontFamily: "inherit", fontSize: 13, fontWeight: 600,
+              color: "#fff", background: "var(--brand-olive, #4a5240)", border: "none",
+              borderRadius: 8, padding: "8px 14px", marginBottom: 16,
+            }}>I want this guide</button>
+          )}
+          <div style={{ borderTop: "0.5px solid var(--border)", paddingTop: 14 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text1)", marginBottom: 6 }}>Help shape the guides</div>
+            <div style={{ fontSize: 13, lineHeight: 1.5, color: "var(--text2)", marginBottom: 10 }}>
+              Suggest the next reference we should cover, or tell us what to add or change in the guides so far.
+            </div>
+            <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={3}
+              placeholder="A reference you'd like covered, or a fix for an existing guide…"
+              style={{ width: "100%", boxSizing: "border-box", fontFamily: "inherit", fontSize: 13, lineHeight: 1.5, color: "var(--text1)", background: "var(--surface)", border: "0.5px solid var(--border)", borderRadius: 8, padding: "8px 10px", resize: "vertical" }} />
+            <button onClick={send} disabled={!note.trim()} style={{
+              cursor: note.trim() ? "pointer" : "default", fontFamily: "inherit", fontSize: 13, fontWeight: 600,
+              color: note.trim() ? "var(--text1)" : "var(--text3)", background: "var(--surface)",
+              border: "0.5px solid var(--border)", borderRadius: 8, padding: "7px 14px", marginTop: 8,
+            }}>Send suggestion</button>
+          </div>
+        </div>
       </div>
     </div>
   );
