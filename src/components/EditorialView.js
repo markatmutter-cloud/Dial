@@ -226,7 +226,13 @@ const BRAND_TOP_N = 24;       // Show top N brands in expansion panel; "+more" e
 const RESULTS_PAGE_SIZE = 40; // 24 → 48 → 100 → 40 (2026-05-22). 100 was making Editorial slow to load (Mark report). Dropping to 40 cuts initial-paint card count 60%; Load more button picks up the rest in 40-card chunks. Body-text search is unaffected (it operates on the full corpus, not the visible page).
 const FEATURED_COUNT = 8;     // Most-recent articles surfaced in the hero strip (visible only when no search / no filters active).
 
-export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, handleWish, openCollectionPicker, handleShare, search: searchProp, setSearch: setSearchProp }) {
+export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, handleWish, openCollectionPicker, handleShare, search: searchProp, setSearch: setSearchProp,
+  // Admin article curation (Mark 2026-06-06): adminHidden is the global
+  // admin_hidden_listings id-set (article ids = shortHash(url), same id
+  // space articleAsListing uses); onAdminRemoveArticle toggles an article
+  // into it via the card's ⋯ menu. Both optional — signed-out and
+  // non-admin sessions just never see the menu item.
+  isAdmin, adminHidden, onAdminRemoveArticle }) {
   // cols / compact / gridStyle come from App.js's useViewSettings — the
   // same grid sizing the Listings tab uses. ArticleCard adapts its
   // typography + excerpt density to `compact` so a 7-col packed grid
@@ -353,24 +359,33 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
     return () => { alive = false; };
   }, [search, bodies, bodiesLoading]);
 
+  // Admin-removed articles drop out for EVERYONE here — the one choke
+  // point feeding counts, brand options, the filter block, and the
+  // featured strip (Mark 2026-06-06; same global-curation semantics as
+  // the listings feeds' adminHidden filter in App.js).
+  const visibleArticles = useMemo(() => {
+    if (!adminHidden || adminHidden.size === 0) return articles;
+    return articles.filter(a => !adminHidden.has(shortHash(a.url)));
+  }, [articles, adminHidden]);
+
   // Source counts (for the expansion-panel chip count badges).
   const sourceCounts = useMemo(() => {
     const out = {};
-    articles.forEach(a => { out[a._source.key] = (out[a._source.key] || 0) + 1; });
+    visibleArticles.forEach(a => { out[a._source.key] = (out[a._source.key] || 0) + 1; });
     return out;
-  }, [articles]);
+  }, [visibleArticles]);
 
   // Brand list from the corpus, ordered by frequency.
   const brandOptions = useMemo(() => {
     const counts = {};
-    articles.forEach(a => {
+    visibleArticles.forEach(a => {
       const b = (a.brand || "").trim();
       if (b) counts[b] = (counts[b] || 0) + 1;
     });
     return Object.entries(counts)
       .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
       .map(([brand, count]) => ({ brand, count }));
-  }, [articles]);
+  }, [visibleArticles]);
 
   // Apply filters + sort. Free-text search hits title + author always;
   // body match enables silently once the lazy bodies fetch lands. Until
@@ -388,7 +403,7 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
     const queryTerms = q ? q.split(/\s+/).filter(t => t.length > 1) : [];
     const sourceSet = activeSources.length ? new Set(activeSources) : null;
     const brandSet  = activeBrands.length  ? new Set(activeBrands)  : null;
-    let out = articles.filter(a => {
+    let out = visibleArticles.filter(a => {
       if (sourceSet && !sourceSet.has(a._source.key)) return false;
       if (brandSet && !brandSet.has((a.brand || "").trim())) return false;
       if (heartedOnly) {
@@ -439,7 +454,7 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
       out.sort((a, b) => (a.published_at || "").localeCompare(b.published_at || ""));
     }
     return out;
-  }, [articles, bodies, search, activeSources, activeBrands, sort, heartedOnly, watchlist]);
+  }, [visibleArticles, bodies, search, activeSources, activeBrands, sort, heartedOnly, watchlist]);
 
   // Lazy page-size reset whenever filters or sort change.
   useEffect(() => {
@@ -459,10 +474,10 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
   const showFeatured = !hasFilters;
   const featured = useMemo(() => {
     if (!showFeatured) return [];
-    return [...articles]
+    return [...visibleArticles]
       .sort((a, b) => (b.published_at || "").localeCompare(a.published_at || ""))
       .slice(0, FEATURED_COUNT);
-  }, [articles, showFeatured]);
+  }, [visibleArticles, showFeatured]);
 
   // When the featured strip is showing, exclude those URLs from the
   // dense scroll below — otherwise the newest articles appear twice
@@ -708,6 +723,8 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
                 handleWish={handleWish}
                 openCollectionPicker={openCollectionPicker}
                 handleShare={handleShare}
+                isAdmin={isAdmin}
+                onAdminRemove={onAdminRemoveArticle}
               />
             ))}
           </div>
@@ -742,6 +759,8 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
               handleWish={handleWish}
               openCollectionPicker={openCollectionPicker}
               handleShare={handleShare}
+              isAdmin={isAdmin}
+              onAdminRemove={onAdminRemoveArticle}
             />
           ))}
         </div>
@@ -792,7 +811,7 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
 // excerpt + click-out behaviour.
 // ─────────────────────────────────────────────────────────────────
 
-export function ArticleCard({ article, isMobile, compact, cols, watchlist, handleWish, openCollectionPicker, handleShare }) {
+export function ArticleCard({ article, isMobile, compact, cols, watchlist, handleWish, openCollectionPicker, handleShare, isAdmin, onAdminRemove }) {
   const dateStr = formatDate(article.published_at);
   const sourceLabel = article._source.label;
   // Heart state — match the dealer-listing Card's behavior so the
@@ -1021,6 +1040,20 @@ export function ArticleCard({ article, isMobile, compact, cols, watchlist, handl
         {openCollectionPicker && (
           <button onClick={onAddToList} style={articleMenuItemStyle}>
             Add to list…
+          </button>
+        )}
+        {/* Admin-only curation (Mark 2026-06-06): drops the article into
+            admin_hidden_listings (global — every visitor stops seeing it),
+            same store the listings × overlay writes. */}
+        {isAdmin && onAdminRemove && (
+          <button
+            onClick={(e) => {
+              e.preventDefault(); e.stopPropagation();
+              setMenuOpen(false);
+              onAdminRemove(article);
+            }}
+            style={{ ...articleMenuItemStyle, color: "var(--danger)" }}>
+            Remove article (admin)
           </button>
         )}
       </div>,
