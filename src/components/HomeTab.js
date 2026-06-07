@@ -800,7 +800,7 @@ function GuidesCallout({ goToGuides, goToSavedLists, goToMyWatches, isMobile, sh
         Know the reference, not just the listing.
       </h2>
       <p style={{ margin: "10px auto 0", maxWidth: 560, fontSize: 14, color: "var(--text-on-dark-2)", lineHeight: 1.5 }}>
-        Hand-built guides to the watches worth knowing — production history, what to look for, and how examples differ.
+        Hand-built guides to the watches worth knowing. Production history, what to look for, and how examples differ.
       </p>
       <div style={{
         display: "flex", justifyContent: "center", alignItems: "center",
