@@ -151,14 +151,14 @@ const node = {
   connections: [
     { label: "Heuer Autavia", distance: "similar", why: "Almost mandatory: shared Valjoux-powered, rotating-bezel, 1960s tool-chronograph logic. The closest cousin in feel.", match: { brand: "heuer", text: ["autavia"] } },
     { label: "Zenith A277", distance: "similar", why: "One of the great bridge watches in vintage collecting. It leads toward chronographs, divers and military aesthetics all at once.", match: { brand: "zenith", refs: ["a277"], text: ["a 277"] } },
-    { label: "Nivada Chronomaster", distance: "similar", why: "The cult classic that feels like a Speedmaster, a dive watch and a racing chrono simultaneously: the Shark's spiritual neighbour.", match: { brand: "nivada", text: ["chronomaster"] } },
-    { label: "Gallet Multichron", distance: "similar", why: "The scholarship door: aviation history, niche collecting, and some of the best-made chronographs nobody talks about.", match: { brand: "gallet", text: ["multichron"] } },
-    { label: "Omega Speedmaster", distance: "adjacent", why: "The canonical tool chronograph of the same era: what the category looks like when history says yes.", match: { brand: "omega", text: ["speedmaster"] } },
+    { label: "Nivada Chronomaster", distance: "similar", why: "A cult chronograph that reads as part Speedmaster, part diver, part racing chrono. The closest thing the Shark has to a sibling outside JLC.", match: { brand: "nivada", text: ["chronomaster"] } },
+    { label: "Gallet Multichron", distance: "similar", why: "Aviation history and some of the best-made chronographs that rarely get discussed. Gallet rewards reading.", match: { brand: "gallet", text: ["multichron"] } },
+    { label: "Omega Speedmaster", distance: "adjacent", why: "The defining tool chronograph of the same era, and the standard the rest of the category is read against.", match: { brand: "omega", text: ["speedmaster"] } },
     { label: "Universal Genève Compax", distance: "adjacent", why: "Moves toward elegance without losing the chronograph appeal: mid-century proportion with the same mechanical heart.", match: { brand: "universal", text: ["compax"] } },
     { label: "Breitling Co-Pilot", distance: "adjacent", why: "The tool chronograph from another culture: aviation rather than diving, with the same instrument-first conviction.", match: { brand: "breitling", text: ["co-pilot", "co pilot", "copilot"] } },
     { label: "Rolex GMT-Master 1675", distance: "edge", why: "Same period, different complication, for when the pull turns out to be 1960s tool watches rather than chronographs specifically.", match: { brand: "rolex", refs: ["1675"] } },
     { label: "Omega Railmaster", distance: "edge", why: "Tool-watch scholarship without a single sub-dial: the test of whether it's the era's purposefulness you love.", match: { brand: "omega", text: ["railmaster"] } },
-    { label: "Patek Philippe Calatrava", distance: "edge", why: "Chronograph collectors often eventually discover proportion and restraint. The Calatrava is where that discovery tends to land.", match: { brand: "patek", text: ["calatrava"] } },
+    { label: "Patek Philippe Calatrava", distance: "edge", why: "Sooner or later most chronograph collectors develop an eye for proportion and restraint. The Calatrava is usually where it leads.", match: { brand: "patek", text: ["calatrava"] } },
     { label: "JLC Memovox Polaris E859", distance: "edge", why: "JLC's own diving lineage: the internal family the Shark's gridded crown nods straight back to.", match: { brand: "jaeger", text: ["polaris"] } },
   ],
 
