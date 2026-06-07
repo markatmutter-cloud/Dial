@@ -121,6 +121,20 @@ const SOURCES = [
   // archive as a dealer source, and the scraped body_text remains
   // available for the future editorial_index.py recommender pass.
   {
+    key: "strictlyvintagewatches",
+    label: "Strictly Vintage Watches",
+    publication: "Strictly Vintage Watches",
+    column: null,
+    url: "/strictlyvintagewatches.json",
+    bodies_url: "/strictlyvintagewatches_bodies.json",
+    // Charlie Dunne's collector-scholarship site — Collector's Guides
+    // (in-depth single-reference essays, heavily JLC), the long-form
+    // "Collectibles of Jaeger-LeCoultre" feature, museum visits,
+    // vintage-catalog scans. Mark spec 2026-06-06: prime reference-
+    // guide fuel. Shop pages excluded at the scraper's sitemap filter.
+    publication_url: "https://www.strictlyvintagewatches.com/",
+  },
+  {
     key: "le_monde_edmond",
     label: "Le Monde Edmond",
     publication: "Le Monde Edmond",
