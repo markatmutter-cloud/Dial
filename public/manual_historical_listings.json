@@ -135,6 +135,84 @@
       "sold": true,
       "soldAt": "2025-05-15",
       "firstSeen": "2025-05-15"
+    },
+    {
+      "id": "ec4a6b7d448f",
+      "url": "https://www.windvintage.com/lecoultre-polaris-reference-e-859-on-bracelet-unpolished",
+      "brand": "Jaeger-LeCoultre",
+      "ref": "E859",
+      "title": "LeCoultre Polaris Reference E 859 on Bracelet, Unpolished",
+      "source": "Wind Vintage",
+      "price": null,
+      "priceUSD": null,
+      "currency": null,
+      "img": "https://images.squarespace-cdn.com/content/v1/5b213f95506fbec9b54e014c/e43ea8e8-98a3-489d-9803-12f7737ac91e/DSC04733.JPG",
+      "sold": true
+    },
+    {
+      "id": "282a74221607",
+      "url": "https://www.windvintage.com/lecoultre-polaris-reference-e-859-unpolished",
+      "brand": "Jaeger-LeCoultre",
+      "ref": "E859",
+      "title": "LeCoultre Polaris Reference E 859, Unpolished",
+      "source": "Wind Vintage",
+      "price": null,
+      "priceUSD": null,
+      "currency": null,
+      "img": "https://images.squarespace-cdn.com/content/v1/5b213f95506fbec9b54e014c/1701894691142-YHOOF8856FAUJ85V65CH/DSC05879.jpeg",
+      "sold": true
+    },
+    {
+      "id": "6fed150bc8c9",
+      "url": "https://www.windvintage.com/lecoultre-polaris",
+      "brand": "Jaeger-LeCoultre",
+      "ref": "E859",
+      "title": "LeCoultre Polaris",
+      "source": "Wind Vintage",
+      "price": null,
+      "priceUSD": null,
+      "currency": null,
+      "img": "https://images.squarespace-cdn.com/content/v1/5b213f95506fbec9b54e014c/1582139051357-XB3V7GL4SX9L8BOZ2K16/Polaris-02.jpg",
+      "sold": true
+    },
+    {
+      "id": "a5ae8bf1eb2e",
+      "url": "https://www.windvintage.com/lecoultre-polaris-reference-e-859-unpolished-2024",
+      "brand": "Jaeger-LeCoultre",
+      "ref": "E859",
+      "title": "LeCoultre Polaris Reference E 859, Unpolished w/ Extract",
+      "source": "Wind Vintage",
+      "price": null,
+      "priceUSD": null,
+      "currency": null,
+      "img": "https://images.squarespace-cdn.com/content/v1/5b213f95506fbec9b54e014c/c59509e1-5185-4906-85b5-802de94bd752/DSC08297.JPG",
+      "sold": true
+    },
+    {
+      "id": "8ece621ecccf",
+      "url": "https://www.windvintage.com/lecoultre-polaris-reference-e-859",
+      "brand": "Jaeger-LeCoultre",
+      "ref": "E859",
+      "title": "LeCoultre Polaris Reference E 859",
+      "source": "Wind Vintage",
+      "price": null,
+      "priceUSD": null,
+      "currency": null,
+      "img": "https://images.squarespace-cdn.com/content/v1/5b213f95506fbec9b54e014c/1653670541479-1GLNVKV5JYJDQBSFG6LU/LeCoultre+Polaris+Reference+E+859+copy.jpeg",
+      "sold": true
+    },
+    {
+      "id": "49e102364d08",
+      "url": "https://www.windvintage.com/lecoultre-polaris-ref-e-859-unpolished",
+      "brand": "Jaeger-LeCoultre",
+      "ref": "E859",
+      "title": "LeCoultre Tropical Polaris Ref E 859, Unpolished",
+      "source": "Wind Vintage",
+      "price": null,
+      "priceUSD": null,
+      "currency": null,
+      "img": "https://images.squarespace-cdn.com/content/v1/5b213f95506fbec9b54e014c/ed5db1cf-03c6-4579-8a46-ea9febc3471c/DSC03334.JPG",
+      "sold": true
     }
   ]
 }

@@ -12,12 +12,14 @@
 
 import rolexSubmariner5512_5513 from "./rolexSubmariner_5512_5513";
 import jlcSharkVogue_e2643 from "./jlcSharkVogue_e2643";
+import jlcPolaris_e859 from "./jlcPolaris_e859";
 import omegaSeamaster300_165024 from "./omegaSeamaster300_165024";
 import omegaRailmaster_ck2914 from "./omegaRailmaster_ck2914";
 
 export const REFERENCE_NODES = [
   rolexSubmariner5512_5513,
   jlcSharkVogue_e2643,
+  jlcPolaris_e859,
   omegaSeamaster300_165024,
   omegaRailmaster_ck2914,
 ];
@@ -72,6 +74,7 @@ const REFERENCE_UPDATED_AT = {
   "omega-seamaster-300-165024": "2026-05-29",
   "omega-railmaster-ck2914": "2026-05-30",
   "jlc-shark-vogue-e2643": "2026-05-31",
+  "jlc-polaris-e859": "2026-06-06",
 };
 export function referenceUpdatedAt(node) {
   return (node && (node.updatedAt || REFERENCE_UPDATED_AT[node.id])) || "";
