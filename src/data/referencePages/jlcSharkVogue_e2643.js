@@ -25,29 +25,29 @@ const node = {
   refs: ["E2643"],
   group: "E2643",
   definer:
-    "Late-1960s steel chronograph with swappable bezels: “Shark Deep Sea” in the US, “Vogue” in Europe · c. 1968–1971",
+    "Late-1960s steel chronograph with interchangeable bezels: Shark Deep Sea in the US, Vogue Chronograph in Europe · c. 1968–early 1970s",
 
   // "What the shorthand misses" — hand-authored editorial evidence blocks
   // (no synthesisNode on this Route-B page, so these ARE the Evidence section).
   shorthandTitle: "A short run under two names",
   shorthand: [
     {
-      body: "The E2643 sold under two names that mean the same watch. In the United States it was the Shark Deep Sea, signed LeCoultre; in Europe it was the Vogue Chronograph, signed Jaeger-LeCoultre. Neither name nor signature outranks the other. The useful question with any example is whether the dial, movement and case tell one consistent market story.",
+      body: "The E2643 is best understood through its two market names. In the US, it was the Shark Deep Sea and is usually found with a LeCoultre dial. In Europe, it was the Vogue Chronograph and is usually signed Jaeger-LeCoultre. Both are correct when the rest of the watch supports the same market story.",
     },
     {
-      body: "How many were made is not established. There is no archive table in the sources reviewed, only the shape of the run: launched around 1968 into a crowded sport-chronograph market, sold poorly, and phased out within a few years. Scarcity today is inferred from how rarely correct examples surface, not from a known figure.",
+      body: "Exact production numbers are not established in the sources reviewed. What can be said more safely is that the model appears to have had a short commercial life. It arrived around 1968, entered a crowded sport-chronograph market, and seems to have been phased out after only a few years. Scarcity today should be described as observed market scarcity, not as a confirmed production total.",
     },
     {
-      body: "The movement goes by three names. Valjoux 72, calibre 726 and JLC's own Cal. 13 VZH all describe the same column-wheel family at different moments, so listings citing different calibres are not necessarily describing different watches. A blanket 'it's always a Valjoux 72' is too narrow for later examples.",
+      body: "The movement should also be described carefully. The E2643 is part of the Valjoux 72 family of manually wound column-wheel chronographs, with sources citing Valjoux 72, Valjoux 726 and JLC calibre 13 VZH depending on example and period. No example should be called simply 'a Valjoux 72' without qualification.",
     },
     {
-      body: "The bezels are the identity, and the complication. Three were catalogued: diving, telemeter and world-time, and swapping them was the point of the watch. An unusual bezel is not automatically wrong, but it is automatically a question. The known fake pattern runs the other way: added GMT hands or triple-date displays that no catalogued E2643 carried.",
+      body: "The bezels define the reference. The catalogued concept centres on interchangeable bezels for diving, telemeter and world-time use. A non-standard bezel is not automatically wrong, but it should prompt closer checking. Extra-complication examples with added GMT hands, triple-date layouts or other non-catalogued features should be treated with caution.",
     },
   ],
 
   marksIntro:
-    "How to read an E2643: the dial, bezel, signature, movement and case details that carry the reference. Tap any card for the source.",
-  storiesIntro: "Three pieces that explain the E2643 beyond the spec sheet.",
+    "How to read an E2643: the dial, bezels, signature, movement and case details that define the reference.",
+  storiesIntro: "Three pieces that explain the E2643 beyond the spec sheet: the collector deep dive, the brand framing, and the market-history snapshot.",
 
   hero: {
     img: "https://mentawatches.com/wp-content/uploads/2023/04/DSC09842-Edit-scaled-1.jpg",
@@ -56,16 +56,13 @@ const node = {
   },
 
   modelIntro:
-    "The E2643 is Jaeger-LeCoultre's late-1960s sports chronograph: a large steel case, a manually wound Valjoux-based chronograph movement, a reverse-panda dial, and a system of interchangeable bezels that let one watch read as a diver, a telemeter chronograph, or a world-time travel watch. It was sold as the “Shark Deep Sea” in the United States and the “Vogue Chronograph” in Europe, and the dial signature usually follows that split: LeCoultre on US-market watches, Jaeger-LeCoultre on European ones.",
+    "The E2643 is Jaeger-LeCoultre's late-1960s sports chronograph: a large steel case, a manually wound Valjoux-based chronograph movement, a reverse-panda dial, and a system of interchangeable bezels that let the same watch read as a diver, telemeter chronograph, or world-time travel watch.",
 
   story: [
-    "This is one of the more characterful sports chronographs of the late 1960s, and part of the fun is that it refuses to sit in a single category. Fit the 60-minute bezel and it's a dive chronograph. Fit the telemeter bezel and it's a tool for timing things you see and hear. Fit the world-time bezel and it becomes a travel watch. The same watch, three different identities, which is exactly the idea Jaeger-LeCoultre built it around.",
-    "The case is where the appeal starts. Auction houses and dealers consistently describe it as big for the period, with thick, angular lugs and a strong, slightly macho stance: around 40mm, roughly 13mm thick, with broad bevels and pump pushers. The reverse-panda dial keeps it legible, the inner tachymeter scale adds instrument flavour, and the rotating bezel does the heavy lifting on identity. WatchProSite even traces the gridded crown back to JLC's own Polaris.",
-    "Use this page as a map. The naming split, the bezel system, the Valjoux 72 / 726 movement family, the reverse-panda and rare all-black dials. Read the sources, compare the auction records, and let the reference pull you in. It's a watch that rewards looking closely.",
+    "It was sold under two period names. In the United States it was the Shark Deep Sea, usually signed LeCoultre. In Europe it was the Vogue Chronograph, usually signed Jaeger-LeCoultre. Neither version outranks the other. The useful question is whether the dial, movement, case and paperwork tell one coherent market story.",
+    "The bezel system is the point of the watch. Fit the 60-minute bezel and it becomes a dive chronograph. Fit the telemeter bezel and it becomes a distance-timing instrument. Fit the world-time bezel and it becomes a travel watch. That flexibility is what separates the E2643 from more familiar late-1960s chronographs.",
+    "The case gives it presence: around 40mm, thick angular lugs, pump pushers, broad bevels and a slightly muscular stance. It sits in the same broad sport-chronograph moment as the Heuer Autavia, Rolex Daytona, Omega Speedmaster, Breitling Co-Pilot and Zenith A277, but with a more eccentric JLC identity.",
   ],
-
-  inItsTime:
-    "JLC built the E2643 as a deliberate answer to a booming sport-chronograph market, in the years when Heuer, Rolex, Omega and Breitling were all fighting for the wrist of anyone who wanted a tool chronograph. Timeline.watch frames it as a response that never found big commercial success and was phased out after only a few years, which is part of why correct examples are scarce today. It sits at the crossroads of the dive watch, the travel watch and the Valjoux-72 chronograph world: a true bridge reference.",
 
   // Annotated guides — description paired with the source card. readThisFor = the quick tag.
   guides: [
@@ -74,7 +71,7 @@ const node = {
       publication: "WatchProSite",
       url: "https://www.watchprosite.com/jaeger-lecoultre/a-view-on-the-jaeger-lecoultre-vintage-diving-chronograph-the-shark-/2.745943.4926288/",
       img: "",
-      blurb: "The single richest source on the reference. It pins the specs (~40mm, ~13mm thick, 120m water resistance, the Valjoux R72 / JLC Cal. 13 VZH column-wheel movement), documents the three catalogued bezels (world-time, diving, 24-hour), traces the crown design to the Polaris, and crucially flags the fakes: “extra-complication” LeCoultre chronographs (added GMT, triple-date, 24-hour) that aren't original. Treat it as collector commentary, but it's the deepest map there is.",
+      blurb: "The single richest source on the reference. It pins the specs (~40mm, ~13mm thick, 120m water resistance, the Valjoux R72 / JLC Cal. 13 VZH column-wheel movement), documents the three catalogued bezels (world-time, diving, 24-hour), traces the crown design to the Polaris, and flags extra-complication examples (added GMT, triple-date, 24-hour) that should be treated with caution. Treat it as collector commentary, but it is the deepest map there is.",
       readThisFor: "the deep technical picture and the authenticity watch-outs",
     },
     {
@@ -105,19 +102,19 @@ const node = {
 
   // Learn the marks — a paragraph each.
   marks: [
-    { name: "Reverse-panda dial", short: "Black base, light sub-dials, inner tachymeter scale. The register proportions and printing are the first read on originality.", body: "The standard and most recognisable look: a black base with light sub-dials, tritium plots, and an inner tachymeter scale. JLC's own Collectibles description calls it a reverse-panda grained black dial with luminescent markers. Once you've seen a few, the proportions of the registers and the printing become your first read on originality.", img: "https://img.jaeger-lecoultre.com/open-graph-boxed-image-1/o-dpr-2/393de4b6e011966047ef647ea7bd8ce590229ea7.jpg", url: "https://www.jaeger-lecoultre.com/us-en/watches/collectibles/qve26431", source: "Jaeger-LeCoultre" },
-    { name: "The interchangeable bezels", short: "Diving, telemeter and world-time bezels were catalogued; swapping them was the point. Full sets with spares are the ones collectors chase.", body: "The defining feature. Catalogues describe three: a 60-minute / diving bezel, a telemeter bezel, and a world-time / 24-hour bezel. The watch was meant to change job by swapping the top. Complete sets with the original box and spare bezels are the ones collectors chase. WatchProSite flags a white 24-hour bezel as suspect, so treat unusual bezels with care.", img: "https://dist.phillips.com/auction-assets/HK080121/150931_001.jpg?fit=cover&optimize=medium&width=1302", url: "https://www.phillips.com/detail/jaegerlecoultre/150931", source: "Phillips" },
-    { name: "LeCoultre vs Jaeger-LeCoultre signature", short: "LeCoultre usually points to the US market; Jaeger-LeCoultre to Europe. Either can be correct.", body: "A strong market tell, not a complete authentication rule: LeCoultre-signed dials generally indicate US-market watches, Jaeger-LeCoultre signatures point to European examples. The same reference under two names. Use it as a clue, then corroborate with the movement, case and any archive extract.", img: "https://dist.phillips.com/auction-assets/CH080117/97_001.jpg?fit=cover&optimize=medium&width=1302", url: "https://www.phillips.com/detail/JAEGER-LECOULTRE/CH080117/97", source: "Phillips" },
-    { name: "Valjoux 72 · 726 · Cal. 13 VZH: one movement, three names", short: "Three names, one column-wheel family. Different calibre citations don't necessarily mean different watches.", body: "Listings cite the calibre differently and it confuses people. The manual chronograph is most often called Valjoux 72; later examples are listed as the upgraded 21,600 a/h cal. 726; and JLC's own designation is Cal. 13 VZH (Valjoux R72). They describe the same column-wheel family, so a blanket “it's always a Valjoux 72” is too narrow.", img: "https://dist.phillips.com/auction-assets/HK080624/206799_001.jpg?fit=cover&optimize=medium&width=1302", url: "https://www.phillips.com/detail/jaegerlecoultre/206799", source: "Phillips" },
-    { name: "Big, angular case with Type-XX-adjacent lugs", short: "Around 40mm with broad bevels and pump pushers. The case is most of the watch's presence; check it hasn't been polished soft.", body: "Around 40mm (some describe 40.5mm), ~13mm thick, 20mm lugs, with broad bevels and pump pushers. WatchProSite notes the lug geometry is shared with the civilian Breguet Type XX of the era. The case is most of the watch's presence, so check the lugs and bevels haven't been polished soft.", img: "https://falco-watches.com/cdn/shop/files/LECOULTRE_SHARK_CHRONOGRAPHE2643VALJOUX72.jpg", url: "https://falco-watches.com/products/lecoultre-shark-chronograph-e2643-valjoux-72", source: "Falco Watches" },
+    { name: "Reverse-panda dial", short: "Black dial, light registers and inner tachymeter scale. Most examples are reverse-panda; all-black dials are much rarer.", body: "The standard and most recognisable look: a black base with light sub-dials, tritium plots, and an inner tachymeter scale. JLC's own Collectibles description calls it a reverse-panda grained black dial with luminescent markers. Once you've seen a few, the proportions of the registers and the printing become your first read on originality.", img: "https://img.jaeger-lecoultre.com/open-graph-boxed-image-1/o-dpr-2/393de4b6e011966047ef647ea7bd8ce590229ea7.jpg", url: "https://www.jaeger-lecoultre.com/us-en/watches/collectibles/qve26431", source: "Jaeger-LeCoultre" },
+    { name: "Interchangeable bezels", short: "Diving, telemeter and world-time bezels are the heart of the reference. Complete sets with spare bezels change the story.", body: "The defining feature. Catalogues describe three: a 60-minute / diving bezel, a telemeter bezel, and a world-time / 24-hour bezel. The watch was meant to change job by swapping the top. Complete sets with the original box and spare bezels are the ones collectors chase. WatchProSite flags a white 24-hour bezel as suspect, so treat unusual bezels with care.", img: "https://dist.phillips.com/auction-assets/HK080121/150931_001.jpg?fit=cover&optimize=medium&width=1302", url: "https://www.phillips.com/detail/jaegerlecoultre/150931", source: "Phillips" },
+    { name: "LeCoultre vs Jaeger-LeCoultre", short: "LeCoultre usually points to the US market; Jaeger-LeCoultre to Europe. Either can be correct.", body: "A strong market tell, not a complete authentication rule: LeCoultre-signed dials generally indicate US-market watches, Jaeger-LeCoultre signatures point to European examples. The same reference under two names. Use it as a clue, then corroborate with the movement, case and any archive extract.", img: "https://dist.phillips.com/auction-assets/CH080117/97_001.jpg?fit=cover&optimize=medium&width=1302", url: "https://www.phillips.com/detail/JAEGER-LECOULTRE/CH080117/97", source: "Phillips" },
+    { name: "Valjoux 72 / 726 / Cal. 13 VZH", short: "Different sources use different calibre names within the same Valjoux column-wheel chronograph family. Check the specific example.", body: "Listings cite the calibre differently and it confuses people. The manual chronograph is most often called Valjoux 72; later examples are listed as the upgraded 21,600 a/h cal. 726; and JLC's own designation is Cal. 13 VZH (Valjoux R72). They describe the same column-wheel family, so a blanket “it's always a Valjoux 72” is too narrow.", img: "https://dist.phillips.com/auction-assets/HK080624/206799_001.jpg?fit=cover&optimize=medium&width=1302", url: "https://www.phillips.com/detail/jaegerlecoultre/206799", source: "Phillips" },
+    { name: "Case and lugs", short: "Around 40mm, thick angular lugs, pump pushers and broad bevels. The case carries much of the watch's character, so soft polishing matters.", body: "Around 40mm (some describe 40.5mm), ~13mm thick, 20mm lugs, with broad bevels and pump pushers. WatchProSite notes the lug geometry is shared with the civilian Breguet Type XX of the era. The case is most of the watch's presence, so check the lugs and bevels haven't been polished soft.", img: "https://falco-watches.com/cdn/shop/files/LECOULTRE_SHARK_CHRONOGRAPHE2643VALJOUX72.jpg", url: "https://falco-watches.com/products/lecoultre-shark-chronograph-e2643-valjoux-72", source: "Falco Watches" },
   ],
 
   // Notable examples worth seeing. Image strip.
   variants: [
-    { name: "World-time full set", traits: "Box + spare bezels, the complete concept", img: "https://mentawatches.com/wp-content/uploads/2023/04/DSC09884-Edit-scaled-1.jpg", url: "https://mentawatches.com/product/lecoultre-full-set-e2643-shark-chronograph/", source: "Menta Watches" },
-    { name: "Rare all-black dial", traits: "Black sub-dials; Phillips notes most are reverse-panda", img: "https://dist.phillips.com/auction-assets/CH080117/97_001.jpg?fit=cover&optimize=medium&width=1302", url: "https://www.phillips.com/detail/JAEGER-LECOULTRE/CH080117/97", source: "Phillips" },
-    { name: "“Great White Shark”", traits: "Unusual white 24-hour bezel, possible US prototype", img: "https://dist.phillips.com/auction-assets/HK080120/921_001.jpg?fit=cover&optimize=medium&width=1302", url: "https://www.phillips.com/detail/jaegerlecoultre/134486", source: "Phillips" },
-    { name: "LeCoultre US-market example", traits: "Reverse-panda, LeCoultre-signed, telemeter bezel", img: "https://falco-watches.com/cdn/shop/files/LECOULTRE_SHARK_CHRONOGRAPHE2643VALJOUX72.jpg", url: "https://falco-watches.com/products/lecoultre-shark-chronograph-e2643-valjoux-72", source: "Falco Watches" },
+    { name: "World-time full set", traits: "The complete concept: box, world-time bezel and spare bezels.", img: "https://mentawatches.com/wp-content/uploads/2023/04/DSC09884-Edit-scaled-1.jpg", url: "https://mentawatches.com/product/lecoultre-full-set-e2643-shark-chronograph/", source: "Menta Watches" },
+    { name: "Rare all-black dial", traits: "Black sub-dials rather than reverse-panda registers. Phillips notes this as the rarer configuration.", img: "https://dist.phillips.com/auction-assets/CH080117/97_001.jpg?fit=cover&optimize=medium&width=1302", url: "https://www.phillips.com/detail/JAEGER-LECOULTRE/CH080117/97", source: "Phillips" },
+    { name: "“Great White Shark”", traits: "Unusual white 24-hour bezel; rare and possibly prototype-adjacent rather than a standard variant.", img: "https://dist.phillips.com/auction-assets/HK080120/921_001.jpg?fit=cover&optimize=medium&width=1302", url: "https://www.phillips.com/detail/jaegerlecoultre/134486", source: "Phillips" },
+    { name: "LeCoultre US-market example", traits: "LeCoultre-signed reverse-panda example, useful for understanding the US-market Shark identity.", img: "https://falco-watches.com/cdn/shop/files/LECOULTRE_SHARK_CHRONOGRAPHE2643VALJOUX72.jpg", url: "https://falco-watches.com/products/lecoultre-shark-chronograph-e2643-valjoux-72", source: "Falco Watches" },
   ],
 
   market: { refs: ["e2643"], text: ["e 2643", "shark deep sea", "vogue chronograph"] },
@@ -146,28 +143,28 @@ const node = {
   // docs/RECOMMENDER_STRATEGY.md "Reference-page connection buckets"):
   // the why-line explains the BRIDGE, not the resemblance.
   connections: [
-    { label: "Heuer Autavia", distance: "similar", why: "Almost mandatory: shared Valjoux-powered, rotating-bezel, 1960s tool-chronograph logic. The closest cousin in feel.", match: { brand: "heuer", text: ["autavia"] } },
-    { label: "Zenith A277", distance: "similar", why: "One of the great bridge watches in vintage collecting. It leads toward chronographs, divers and military aesthetics all at once.", match: { brand: "zenith", refs: ["a277"], text: ["a 277"] } },
-    { label: "Nivada Chronomaster", distance: "similar", why: "A cult chronograph that reads as part Speedmaster, part diver, part racing chrono. The closest thing the Shark has to a sibling outside JLC.", match: { brand: "nivada", text: ["chronomaster"] } },
+    { label: "Heuer Autavia", distance: "similar", why: "The closest cousin in feel: 1960s rotating-bezel sport chronograph, Valjoux logic, tool-watch presence.", match: { brand: "heuer", text: ["autavia"] } },
+    { label: "Zenith A277", distance: "similar", why: "A strong chronograph-diver bridge: military feel, rotating bezel, and a similar late-1960s purposefulness.", match: { brand: "zenith", refs: ["a277"], text: ["a 277"] } },
+    { label: "Nivada Chronomaster", distance: "similar", why: "Another multi-role chronograph: part diver, part racing chrono, part general-purpose tool watch.", match: { brand: "nivada", text: ["chronomaster"] } },
     { label: "Gallet Multichron", distance: "similar", why: "Aviation history and some of the best-made chronographs that rarely get discussed. Gallet rewards reading.", match: { brand: "gallet", text: ["multichron"] } },
     { label: "Omega Speedmaster", distance: "adjacent", why: "The defining tool chronograph of the same era, and the standard the rest of the category is read against.", match: { brand: "omega", text: ["speedmaster"] } },
     { label: "Universal Genève Compax", distance: "adjacent", why: "Moves toward elegance without losing the chronograph appeal: mid-century proportion with the same mechanical heart.", match: { brand: "universal", text: ["compax"] } },
     { label: "Breitling Co-Pilot", distance: "adjacent", why: "The tool chronograph from another culture: aviation rather than diving, with the same instrument-first conviction.", match: { brand: "breitling", text: ["co-pilot", "co pilot", "copilot"] } },
-    { label: "Rolex GMT-Master 1675", distance: "edge", why: "Same period, different complication, for when the pull turns out to be 1960s tool watches rather than chronographs specifically.", match: { brand: "rolex", refs: ["1675"] } },
+    { label: "Rolex GMT-Master 1675", distance: "edge", why: "Same period, different route into the travel-tool idea. Useful if the world-time bezel is what catches you.", match: { brand: "rolex", refs: ["1675"] } },
     { label: "Omega Railmaster", distance: "edge", why: "Tool-watch scholarship without a single sub-dial: the test of whether it's the era's purposefulness you love.", match: { brand: "omega", text: ["railmaster"] } },
-    { label: "Patek Philippe Calatrava", distance: "edge", why: "Sooner or later most chronograph collectors develop an eye for proportion and restraint. The Calatrava is usually where it leads.", match: { brand: "patek", text: ["calatrava"] } },
+    { label: "Movado Sub-Sea chronographs", distance: "edge", why: "The same dive-chronograph category with its own distinctive period design.", match: { brand: "movado", text: ["sub-sea", "sub sea", "subsea"] } },
     { label: "JLC Memovox Polaris E859", distance: "edge", why: "JLC's own diving lineage: the internal family the Shark's gridded crown nods straight back to.", match: { brand: "jaeger", text: ["polaris"] } },
   ],
 
   // Cultural / reference pieces — the lower editorial tier.
   storiesAndImages: [
-    { title: "A View on the Shark: the deep collector dive", blurb: "The richest single source on the reference: specs, bezels, crown lineage, and the known fake patterns.", publication: "WatchProSite", url: "https://www.watchprosite.com/jaeger-lecoultre/a-view-on-the-jaeger-lecoultre-vintage-diving-chronograph-the-shark-/2.745943.4926288/", img: "" },
-    { title: "Deep Sea Shark, in JLC's own Collectibles programme", blurb: "The brand's own framing of the reference, with the official description of the dial and bezels.", publication: "Jaeger-LeCoultre", url: "https://www.jaeger-lecoultre.com/us-en/watches/collectibles/qve26431", img: "https://img.jaeger-lecoultre.com/open-graph-boxed-image-1/o-dpr-2/393de4b6e011966047ef647ea7bd8ce590229ea7.jpg" },
-    { title: "1968 Jaeger-LeCoultre E2643: the short version", blurb: "A capsule history: why the watch existed, why it didn't sell, and why correct examples are scarce.", publication: "Timeline.watch", url: "https://www.timeline.watch/watch/1968-jaeger-lecoultre-e-2643/", img: "https://www.timeline.watch/wp-content/uploads/2017/08/Jaeger-LeCoultre-E.2643.jpg" },
+    { title: "A View on the Shark: the deep collector dive", blurb: "The richest single read on the E2643: bezel types, case details, crown lineage, movement naming and the extra-complication watches to be wary of.", publication: "WatchProSite", url: "https://www.watchprosite.com/jaeger-lecoultre/a-view-on-the-jaeger-lecoultre-vintage-diving-chronograph-the-shark-/2.745943.4926288/", img: "" },
+    { title: "Deep Sea Shark, in JLC's own Collectibles programme", blurb: "The official anchor for the reference: reverse-panda dial, interchangeable bezels and the brand\'s own framing of the Deep Sea Shark.", publication: "Jaeger-LeCoultre", url: "https://www.jaeger-lecoultre.com/us-en/watches/collectibles/qve26431", img: "https://img.jaeger-lecoultre.com/open-graph-boxed-image-1/o-dpr-2/393de4b6e011966047ef647ea7bd8ce590229ea7.jpg" },
+    { title: "1968 Jaeger-LeCoultre E2643: the short version", blurb: "The concise version: a late-1960s answer to the sport-chronograph boom that never became a commercial hit, which helps explain why correct examples feel scarce now.", publication: "Timeline.watch", url: "https://www.timeline.watch/watch/1968-jaeger-lecoultre-e-2643/", img: "https://www.timeline.watch/wp-content/uploads/2017/08/Jaeger-LeCoultre-E.2643.jpg" },
   ],
 
   scopeNote:
-    "This page covers the E2643 across its two period names (Shark Deep Sea / Vogue Chronograph) and its dial, bezel and movement variations. It's authored from a verified research dossier and cross-checked against dealer, auction and forum sources; every claim is source-credited inline. Production-year ranges are approximate (sources disagree on exact endpoints), some bezel and “extra-complication” variants are debated or known fakes (see How to look), and exact production numbers aren't established in the sources reviewed.",
+    "This page covers the E2643 across its two period names, Shark Deep Sea and Vogue Chronograph, and its known dial, bezel and movement variations. It is based on a verified research dossier and cross-checked against brand, auction, dealer and collector sources. Production-year ranges are approximate, exact production numbers are not established in the sources reviewed, and some extra-complication examples are debated or known to be incorrect. See Reference details and Sources for the evidence trail.",
 };
 
 export default node;

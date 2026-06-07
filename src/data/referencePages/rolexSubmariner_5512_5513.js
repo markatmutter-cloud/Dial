@@ -47,7 +47,7 @@ const node = {
   definer: "No-date, crown-guard, acrylic-era Submariners · c. 1959–1989",
 
   marksIntro:
-    "How to read a 5512 or 5513: the dial, bezel, case and lume details that carry the reference. Tap any card for the source.",
+    "How to read a 5512 or 5513: the dial, bezel, case and lume details that define the reference.",
   storiesIntro: "Six pieces that explain the 5512 and 5513 beyond the spec sheet.",
 
   hero: {

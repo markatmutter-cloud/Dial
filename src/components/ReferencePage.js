@@ -340,7 +340,7 @@ export function ReferencePage({
 
       {/* WHAT TO NOTICE — replaces "Reading the marks": a visual strip, not a
           card-grid essay. Education, not warning. */}
-      {has.marks && Section("marks", "Details", "Reference details", node.marksIntro || `How to read a ${node.group}: the physical cues that carry the reference. Tap any card for the source.`,
+      {has.marks && Section("marks", "Details", "Reference details", node.marksIntro || `How to read a ${node.group}: the physical cues that define the reference.`,
         shell(
           <div style={{ margin: "0 -8px" }}>
             <CardStrip
