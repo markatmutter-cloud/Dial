@@ -130,3 +130,84 @@ real tests — the agent had mistaken them for mock-only).
 in CI (up from 13 pre-session). Tier 3 leaves the small/rare-touch
 elements (Chip / Breadcrumb / DateDivider / etc.) to the standing
 blind-edit rule.
+
+---
+
+# Addendum — the reference-guide session (the long one)
+
+A separate, parallel session that ran the same span. Where the above
+sessions did About/tests, this one rebuilt the reference-guide system
+and added two editorial sources. **20 PRs (#834–#849, #854, #858),
+3 pipeline runs, all merged + verified live.**
+
+## What shipped
+
+- **JLC Polaris E859 — built end-to-end from Mark's dossier (#834–#836, #839).**
+  Mark brought a verified research doc + source finds (Blomman, 6 Wind
+  Vintage sold examples, the Le Monde Edmond deep-dive); the Opus
+  pipeline synthesised 36 sources (~28k words, 18 consensus facts) on
+  top. Authored page in the new format; modern Polaris line as a Modern
+  legacy section. Hybrid (Route A + B) is the node recipe now.
+- **Reference-page editorial redesign (#841, #843–#845, #849, #854).**
+  Driven by Mark's live review + consolidated rewrite briefs. Encyclopedia
+  modules → collector-led essay: single 820px reading column (drop cap +
+  two-column intro removed), **Production** narrative (was the headed
+  Evidence blocks), **Reference stories** promoted into the body, **What
+  to notice** + **Key configurations** as image strips, grey
+  due-diligence checklist removed (page rule: teach how to see, not what
+  to fear). E2643 + Submariner 5512/5513 content-edited to match the
+  E859 template. Brief lives at `docs/REFERENCE_PAGE_REDESIGN.md`.
+- **Collecting-arc connections, all 5 guides (#837).** Similar/Adjacent/Edge
+  buckets; the why-line explains the *bridge*, not the resemblance; edge
+  recs are taste-hypothesis tests. Rationale in RECOMMENDER_STRATEGY.
+- **Two editorial sources (#835, #838).** Le Monde Edmond (278 articles,
+  watch categories only) + Strictly Vintage Watches (55, incl. the JLC
+  Collectibles long-form). Both feed future JLC nodes via corpus-reuse.
+- **Em-dashes killed site-wide (#840).** ~420 strings; rule → BRAND.md +
+  Lumé's prompt. (The other session's #855 copy-guard then made it a CI check.)
+- **Coming-soon guides reworked (#846–#848).** Frosted real-layout preview
+  + interest button + suggest-a-guide box; hero thumbnails on the two Omega
+  stubs. #847 was a break-now (stubs lack `market`; ReferencePage read it
+  unguarded → white screen), fixed + regression-tested (#848).
+- **B-65 Shuck the Oyster deep-tail (#858).** Full-site sweep found 36
+  available watches past the 50-page cap (as deep as ~p150). Fix: prior-CSV
+  URLs unseen by the capped walk re-verify each run. Seeded the 36; a
+  production cron has since confirmed the fill (placeholders → real prices).
+
+## Voice rules locked (Mark, in his words)
+
+- **No em-dashes in product copy** — LLM tell, costs credibility even when
+  correct. (BRAND.md + copy-guard.)
+- **Guides read as edited-down editorial, not written-up essays.** Mark
+  called my first copy "a little cringe" — the cringe is the cleverness:
+  performative headers ("What the shorthand misses", "Why collectors care")
+  and showing-off phrases ("philosophical cousin", "party trick", "where
+  history says yes"). His register is the plain confident sentence: a
+  knowledgeable friend, not a writer performing. Saved to
+  feedback_reference_voice_intrinsic. Section nouns stay grounded
+  (Overview · Production · Details · Configurations · Stories · Sources ·
+  Examples · Explore).
+- **Teach how to SEE the watch, not what to fear** — buying-risk checklists
+  belong in listing context, never the learning page.
+
+## Open / next (this session's lane)
+
+- **E857 Deep Sea Alarm node** — the teed-up next guide (E859's ancestor;
+  Le Monde Edmond + Strictly Vintage both cover it; synthesis flagged it).
+- **Example-card tags/pills** (5512 · Gilt · Maxi · Full set · Tropical…) —
+  asked for in BOTH content briefs, deferred as a listing-card feature, not
+  copy. Logged in ROADMAP Epic 5. Highest-leverage non-guide move: sharpens
+  every guide's Examples at once.
+- **Promote the two Omega stubs** (Seamaster 300 165.024, Railmaster CK2914)
+  to live guides; thumbnails + frosted preview already in place.
+- **`reference_interest` table** — persist the coming-soon interest button +
+  suggestion-box submissions (currently mailto).
+- ROADMAP Epic 5 also carries: market-strip era segmentation + a visible
+  source-confidence model (both from the review briefs).
+
+## Process note (mine)
+
+Twice I reported a background chain as done when only the *launch* had
+fired (an E2643 PR that had silently aborted; a "merge queue" that hadn't
+queued). Mark caught both. Rule for me: **report on verified outcomes, not
+launched commands** — read the result before claiming the result.

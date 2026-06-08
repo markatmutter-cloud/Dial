@@ -177,6 +177,19 @@ within each section roughly last.
   general `/articles/...` piece, complementing Bring a Loupe + Reference Points.
   Reuses BAL's `parse_article()`; same shape as Christie's Stories. Seeded with
   the James Stacey Tudor-collector meet-up.
+- **2026-06-07 — Le Monde Edmond editorial source (#835).** WordPress REST API
+  scoped to the watch-side categories (fine-watches tree + collecting-investing;
+  classic-cars excluded); 278 articles to 2012 seeded. Feeds the corpus + future
+  JLC nodes via corpus-reuse.
+- **2026-06-07 — Strictly Vintage Watches editorial source (#838).** Charlie
+  Dunne's collector-guides site (Squarespace, sitemap discovery); 55 articles
+  incl. the 4,400-word "Collectibles of Jaeger-LeCoultre" + the Memovox
+  single-reference guides.
+- **2026-06-07 — Shuck the Oyster deep-tail retention (B-65, #858).** Slow-moving
+  stock drifts past the 50-page crawl cap (a full-site sweep found 36 available
+  watches as deep as page ~150). Prior-CSV URLs unseen by the capped walk now
+  re-verify each run (available → tracked for life, sold → drop); 36 finds seeded
+  + a production cron confirmed the fill.
 
 ## Epic 2 — Auction houses
 
@@ -345,6 +358,26 @@ within each section roughly last.
   Sun→Sun+Wed for fresher article rotation. LLM topic-tagger stays Sunday-only
   by design (Wed articles tag the following Sunday) — recorded in both workflow
   headers; themes are recommender substrate, not UI-surfaced.
+- **2026-06-07 — JLC Polaris E859 guide, built end-to-end (#834-#836, #839).**
+  Mark's verified dossier + a 36-source Opus synthesis (manifest → pipeline →
+  authored page). Anchors the vintage E859, carries the line through the 2008
+  Tribute + 2018 collection; 6 Wind Vintage sold examples seeded into the public
+  archive. Hybrid (Route A + B) is now the node recipe.
+- **2026-06-07 — Reference-page editorial redesign (#841, #843-#845, #849, #854).**
+  All guides moved from encyclopedia modules to a collector-led essay: single
+  reading column (drop-cap + two-column intro gone), Production narrative (was
+  the Evidence/debate blocks), Reference stories promoted into the body,
+  What-to-notice + Key-configurations as image strips, grey due-diligence
+  checklist removed. E2643 + Submariner 5512/5513 content-edited to match.
+- **2026-06-07 — Collecting-arc connections across all 5 guides (#837).**
+  Similar/Adjacent/Edge buckets whose why-line explains the bridge, not the
+  resemblance; edge recs as taste-hypothesis tests (rationale in
+  RECOMMENDER_STRATEGY "Reference-page connection buckets").
+- **2026-06-07 — Coming-soon guides: frosted preview + suggestion box (#846-#848).**
+  Stubs render the real layout under a blur with an interest button + a
+  suggest-the-next-guide box (mailto); hero thumbnails on the Seamaster 300 /
+  Railmaster cards. (#847 = break-now guard for stubs' missing `market`;
+  #848 = its render-test.)
 
 ## Epic 6 — Collection mentality
 
@@ -672,5 +705,8 @@ within each section roughly last.
   existing editorial surfaces consume them; extended only to the ReferenceBrowse
   teaser. DESIGN_SYSTEM carries the system + the "serif = read, never on chrome"
   guardrail. Serif deliberately NOT added to search hero / empty states / list names.
+- **2026-06-07 — Em-dashes removed from all user-facing copy (#840).** ~420 string-literal
+  instances rewritten (colon/comma/period/parens; en-dash kept for ranges, lone "—" placeholder glyph kept).
+  Durable rule → BRAND.md voice + a hard line in Lumé's system prompt so generated replies comply. The LLM-tell that costs credibility.
 - **2026-06-07 — copy-guard.test.js (#855).** Jest enforcement of the BRAND.md em-dash ban
   (chrome-guard pattern: comments stripped, placeholder "—" glyphs allowed); caught + fixed 8 strings the #840 sweep missed.
