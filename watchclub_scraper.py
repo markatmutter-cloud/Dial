@@ -95,11 +95,18 @@ def clean(s):
 
 
 def parse_item(p):
-    # Status "1" appears to be the active sentinel; anything else
-    # (sold / archived) we treat as inactive. We can refine when
-    # we see what other statuses Watch Club uses.
+    # Watch Club's TaffyDB marks SOLD/archived stock with status "30"
+    # (and strips its price to 0 — verified: every price>0 item is non-30
+    # and every status-30 item is price-0, 0 exceptions). Live inventory
+    # is spread across several non-30 codes (1, 12, 19, 20, 28, 34, 35 —
+    # likely new / featured / reserved categories) which Watch Club
+    # reshuffles between catalog rebuilds. The old `status == "1"` filter
+    # only ever saw the 17-or-so items parked at status 1, so the live
+    # count flapped 15↔62 run-to-run and chronically tripped the
+    # truncation guard, freezing the source (B-59). Keying "sold" on the
+    # stable status-30 signal yields the full ~65 live watches every run.
     status = str(p.get("status", "1"))
-    sold = status != "1"
+    sold = status == "30"
 
     brand = clean(p.get("brand", "")) or "Other"
     model = clean(p.get("model", ""))
