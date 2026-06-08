@@ -1,13 +1,13 @@
 {
-  "date": "2026-06-07",
-  "updated_at": "2026-06-07T21:42:04+00:00",
+  "date": "2026-06-08",
+  "updated_at": "2026-06-08T07:05:19+00:00",
   "alerts": [],
   "counts": {
     "Wind Vintage": 103,
     "Tropical Watch": 81,
     "Menta Watches": 51,
     "Collectors Corner NY": 48,
-    "Falco Watches": 109,
+    "Falco Watches": 108,
     "Pascal Karp": 74,
     "Tokant": 38,
     "Romain R\u00e9a": 236,
@@ -15,7 +15,7 @@
     "Oliver & Clarke": 88,
     "Craft & Tailored": 70,
     "Watch Brothers London": 14,
-    "MVV Watches": 57,
+    "MVV Watches": 56,
     "DB1983": 24,
     "Hairspring": 32,
     "Somlo": 200,
@@ -23,7 +23,7 @@
     "Watches of Knightsbridge": 67,
     "Belmont Watches": 37,
     "Bob's Watches": 45,
-    "Watchfid": 64,
+    "Watchfid": 66,
     "Bulang & Sons": 171,
     "Moonphase": 17,
     "Huntington Company": 83,
@@ -33,7 +33,7 @@
     "Shuck the Oyster": 147,
     "Central Watch": 175,
     "European Watch": 18,
-    "Vintage Watch Collective": 35,
+    "Vintage Watch Collective": 34,
     "Vision Vintage Watches": 37,
     "Watchurbia": 7,
     "Maunder Watches": 84,
@@ -48,6 +48,6 @@
     "Watch Center": 272,
     "eBay": 28
   },
-  "total_listings": 3968,
+  "total_listings": 3967,
   "sources_tracked": 44
 }
