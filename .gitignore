@@ -228,3 +228,6 @@ docs/reading_corpus_digest.md
 # Personal insights — Mark's private collection / taste notes (e.g. the
 # collector handoff). Never committed; lives only on the local machine.
 personal/
+
+# Ephemeral scrape-health-gate log (B-60); never committed
+scrape_move.log
