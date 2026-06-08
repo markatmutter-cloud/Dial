@@ -37,7 +37,7 @@ title,brand,price,url,img,description,source,sold
 1990 Rolex Datejust 36 16234,Rolex,8500,https://centralwatch.com/shop/pre-owned/rolex-datejust-36-2890,https://centralwatch.com/images/products/prod_1932_7606_medium.png,,Central Watch,False
 2001 Rolex Datejust 36 16233,Rolex,8995,https://centralwatch.com/shop/pre-owned/rolex-datejust-36-2869,https://centralwatch.com/images/products/prod_1885_7290_medium.png,,Central Watch,False
 1984 Rolex Datejust 31 68240,Rolex,5995,https://centralwatch.com/shop/pre-owned/rolex-datejust-31-1758,https://centralwatch.com/images/products/prod_1849_6971_medium.png,,Central Watch,False
-2005 Rolex Cellini Prince 5442,Rolex,4500,https://centralwatch.com/shop/pre-owned/rolex-cellini-prince,https://centralwatch.com/images/products/prod_1836_6821_medium.png,,Central Watch,False
+1981 Rolex Oyster Perpetual 26 6718,Rolex,4500,https://centralwatch.com/shop/pre-owned/rolex-oyster-perpetual-26,https://centralwatch.com/images/products/prod_1811_6658_medium.png,,Central Watch,False
 2000's Patek Philippe Calatrava 3992,Patek Philippe,14000,https://centralwatch.com/shop/pre-owned/patek-philippe-calatrava-porcelain,https://centralwatch.com/images/products/prod_1697_5719_medium.png,,Central Watch,False
 1950's Patek Philippe Vintage Manual 2506/1,Patek Philippe,8495,https://centralwatch.com/shop/pre-owned/patek-philippe-vintage-manual,https://centralwatch.com/images/products/prod_1444_4287_medium.png,,Central Watch,False
 1970's Patek Philippe White Gold Square 3494,Patek Philippe,7500,https://centralwatch.com/shop/pre-owned/patek-philippe-white-gold-square,https://centralwatch.com/images/products/prod_1425_4208_medium.png,,Central Watch,False
@@ -62,6 +62,7 @@ title,brand,price,url,img,description,source,sold
 2000's Cartier Santos 100 W20121U2,Cartier,5500,https://centralwatch.com/shop/pre-owned/cartier-santos-100-2858,https://centralwatch.com/images/products/prod_1867_7129_medium.png,,Central Watch,False
 2000's Cartier Tank Divan W6300755,Cartier,4750,https://centralwatch.com/shop/pre-owned/cartier-tank-divan-2856,https://centralwatch.com/images/products/prod_1875_7185_medium.png,,Central Watch,False
 1990's Cartier Cougar 887904,Cartier,11500,https://centralwatch.com/shop/pre-owned/cartier-cougar-2887,https://centralwatch.com/images/products/prod_1933_7613_medium.png,,Central Watch,False
+1990 Cartier Santos Ronde 1561 1,Cartier,3250,https://centralwatch.com/shop/pre-owned/cartier-santos-ronde-3894,https://centralwatch.com/images/products/prod_1934_7619_medium.png,,Central Watch,False
 2000's Cartier Tri Color Trinity Draped Multicolor Chain Necklace,Cartier,9750,https://centralwatch.com/shop/pre-owned/cartier-tri-color-trinity-draped-multicolor-chain-necklace,https://centralwatch.com/images/products/prod_1647_5448_medium.png,,Central Watch,False
 1990's Cartier Must De Tank,Cartier,3250,https://centralwatch.com/shop/pre-owned/cartier-must-de-2870,https://centralwatch.com/images/products/prod_1912_7447_medium.png,,Central Watch,False
 2000 Cartier Tank Chinoise 2305,Cartier,14250,https://centralwatch.com/shop/pre-owned/cartier-tank-chinoise,https://centralwatch.com/images/products/prod_1695_5698_medium.png,,Central Watch,False
@@ -108,8 +109,7 @@ title,brand,price,url,img,description,source,sold
 1990 IWC Novecento Perpetual Annual Calendar Gold 3545,IWC,12500,https://centralwatch.com/shop/pre-owned/iwc-novecento-perpetual-annual-calendar-gold,https://centralwatch.com/images/products/prod_1505_4441_medium.png,,Central Watch,False
 2000's Tiffany & Co Mark Round Diamond 17940538,Tiffany & Co,9995,https://centralwatch.com/shop/pre-owned/tiffany-co-mark-round-diamond,https://centralwatch.com/images/products/prod_1266_3647_medium.png,,Central Watch,False
 1940's Tiffany & Co Vintage 1092860,Tiffany & Co,2995,https://centralwatch.com/shop/pre-owned/tiffany-co-vintage,https://centralwatch.com/images/products/prod_1051_2492_medium.jpg,,Central Watch,False
-1990's Tiffany & Co Streamerica World Time M141,Tiffany & Co,1950,https://centralwatch.com/shop/pre-owned/tiffany-co-streamerica-world-time,https://centralwatch.com/images/products/prod_1520_4474_medium.png,,Central Watch,False
-2020's Tiffany & Co Square Limited Edition 63182680,Tiffany & Co,3995,https://centralwatch.com/shop/pre-owned/tiffany-co-square-limited-edition,https://centralwatch.com/images/products/prod_1480_4382_medium.png,,Central Watch,False
+1990's Tiffany & Co Streamerica World Time M141,Tiffany & Co,3995,https://centralwatch.com/shop/pre-owned/tiffany-co-streamerica-world-time,https://centralwatch.com/images/products/prod_1520_4474_medium.png,,Central Watch,False
 2000's Franck Muller Cintrée Curvex 7502CC,Franck Muller,8500,https://centralwatch.com/shop/pre-owned/franck-muller-cintr-e-curvex,https://centralwatch.com/images/products/prod_1771_6354_medium.png,,Central Watch,False
 2000's Franck Muller Cintrée Curvex 6850SC,Franck Muller,9995,https://centralwatch.com/shop/pre-owned/franck-muller-cintr-e-curvex-3891,https://centralwatch.com/images/products/prod_1928_7579_medium.png,,Central Watch,False
 1990's Franck Muller Cintrée Curvex 2852SC,Franck Muller,7250,https://centralwatch.com/shop/pre-owned/franck-muller-cintr-e-curvex-3892,https://centralwatch.com/images/products/prod_1930_7593_medium.png,,Central Watch,False
@@ -131,6 +131,7 @@ LATE 2000's Chopard Happy Sport 28/8946,Chopard,6500,https://centralwatch.com/sh
 2000's Zenith Elite Dual Time 030520683,Zenith,3995,https://centralwatch.com/shop/pre-owned/zenith-elite-dual-time,https://centralwatch.com/images/products/prod_1858_7042_medium.png,,Central Watch,False
 1990's Zenith El Primero 2212304002,Zenith,11995,https://centralwatch.com/shop/pre-owned/zenith-el-primero,https://centralwatch.com/images/products/prod_1889_7319_medium.png,,Central Watch,False
 2000's Zenith Baby Star 03122067,Zenith,3995,https://centralwatch.com/shop/pre-owned/zenith-baby-star,https://centralwatch.com/images/products/prod_1859_7049_medium.png,,Central Watch,False
+2000's Tourneau Classic,Tourneau,5500,https://centralwatch.com/shop/pre-owned/tourneau-classic,https://centralwatch.com/images/products/prod_1936_7632_medium.png,,Central Watch,False
 1999 Tourneau Astronic Self-Winding Chronometer 026,Tourneau,5995,https://centralwatch.com/shop/pre-owned/tourneau-astronic-self-winding-chronometer,https://centralwatch.com/images/products/prod_1131_3001_medium.jpg,,Central Watch,False
 1954 Hamilton Wesley-B S550472,Hamilton,3500,https://centralwatch.com/shop/pre-owned/hamilton-wesley-b-754,https://centralwatch.com/images/products/prod_1459_5465_medium.png,,Central Watch,False
 1940's Hamilton Wilshire Coral S038794,Hamilton,2995,https://centralwatch.com/shop/pre-owned/rolex-wilshire-coral,https://centralwatch.com/images/products/prod_1451_4303_medium.png,,Central Watch,False
@@ -144,6 +145,7 @@ LATE 2000's Chopard Happy Sport 28/8946,Chopard,6500,https://centralwatch.com/sh
 2000's Movado Vizio Chronograph 83.C5.1890,Movado,795,https://centralwatch.com/shop/pre-owned/movado-vizio-chronograph,https://centralwatch.com/images/products/prod_1539_4559_medium.png,,Central Watch,False
 2000's Baume & Mercier Hampton Milleis 65393,Baume & Mercier,1495,https://centralwatch.com/shop/pre-owned/baume-mercier-hampton-milleis,https://centralwatch.com/images/products/prod_1419_4189_medium.png,,Central Watch,False
 2010 Baume & Mercier Riviera 65472,Baume & Mercier,1750,https://centralwatch.com/shop/pre-owned/baume-mercier-riviera,https://centralwatch.com/images/products/prod_1164_3146_medium.png,,Central Watch,False
+2020's Baume & Mercier Riviera Baumatic 65900,Baume & Mercier,2250,https://centralwatch.com/shop/pre-owned/baume-mercier-riviera-baumatic,https://centralwatch.com/images/products/prod_1937_7639_medium.png,,Central Watch,False
 2000's Baume & Mercier Capeland Chronograph M0A08502,Baume & Mercier,2500,https://centralwatch.com/shop/pre-owned/baume-mercier-capeland-chronograph,https://centralwatch.com/images/products/prod_1508_4447_medium.png,,Central Watch,False
 2000's Baume & Mercier Capeland 65390,Baume & Mercier,2995,https://centralwatch.com/shop/pre-owned/baume-mercier-capeland-3883,https://centralwatch.com/images/products/prod_1911_7439_medium.png,,Central Watch,False
 2000's Baume & Mercier Capeland MV045216,Baume & Mercier,1995,https://centralwatch.com/shop/pre-owned/baume-mercier-capeland,https://centralwatch.com/images/products/prod_1848_6957_medium.png,,Central Watch,False
@@ -175,6 +177,7 @@ Tissot Square Bumper 2345976,Tissot,4995,https://centralwatch.com/shop/pre-owned
 1970's Bueche Girod Blue Lapiz 9918,Other,8995,https://centralwatch.com/shop/pre-owned/bueche-girod-blue-lapiz,https://centralwatch.com/images/products/prod_1701_5751_medium.png,,Central Watch,False
 1960's Gallet Chronograph MultiChron Gallet,Other,4750,https://centralwatch.com/shop/pre-owned/gallet-chronograph-multichron,https://centralwatch.com/images/products/prod_1700_5744_medium.png,,Central Watch,False
 Grand Central Watch Customized Repair Book,Other,4750,https://centralwatch.com/shop/pre-owned/grand-central-watch-customized-repair-book,https://centralwatch.com/images/products/prod_962_1963_medium.jpg,,Central Watch,False
+EARLY 2000's Bell & Ross Aviation Military BR03-92-S-09828,Other,2995,https://centralwatch.com/shop/pre-owned/bell-ross-aviation-military-,https://centralwatch.com/images/products/prod_1935_7626_medium.png,,Central Watch,False
 2022 Grand Seiko Heritage Collection SLGH009-9SA5-00E0,Grand Seiko,6995,https://centralwatch.com/shop/pre-owned/grand-seiko-heritage-collection,https://centralwatch.com/images/products/prod_1758_6224_medium.png,,Central Watch,False
 2022 Grand Seiko Elegance Collection SBGK009G-9S63-00A0,Grand Seiko,4995,https://centralwatch.com/shop/pre-owned/grand-seiko-elegance-collectiongrey,https://centralwatch.com/images/products/prod_1766_6300_medium.png,,Central Watch,False
 2014 Nomos Zürich Worldtimer Midnight Blue 807,Other,5750,https://centralwatch.com/shop/pre-owned/nomos-z-rich-worldtimer-midnight-blue,https://centralwatch.com/images/products/prod_1777_6899_medium.png,,Central Watch,False
