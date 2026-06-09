@@ -64,7 +64,7 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import { ConfirmHost } from "./components/ConfirmModal";
 import { ChatBubbleHost } from "./components/ChatBubbleHost";
 import { PageHeader } from "./components/PageHeader";
-import { registerActionHandlers } from "./components/ActionBus";
+import { registerActionHandlers, registerItemResolver } from "./components/ActionBus";
 // IdentityBand import retired 2026-05-22 — component file still in
 // the repo for git history, no current call site.
 // import { IdentityBand } from "./components/IdentityBand";
@@ -2776,9 +2776,18 @@ export default function Watchlist() {
       setNotePickerText(text);
       return { ok: true };
     };
-    return registerActionHandlers({
+    const unregActions = registerActionHandlers({
       show_listings, read_more, open_watch, add_to_list, create_list, save_note,
     });
+    // Sync resolver so Lumé's chat can route a watch link in its reply body to
+    // the in-app shared surface (via open_watch) instead of the dealer site —
+    // only when the URL resolves to a live watch we hold; everything else stays
+    // a normal external link.
+    const unregResolver = registerItemResolver((url) => {
+      const id = url ? shortHash(url) : null;
+      return id && liveStateById.has(id) ? liveStateById.get(id) : null;
+    });
+    return () => { unregActions(); unregResolver(); };
   }, [
     resetFilters, setFilterBrands, setFilterModels, setFilterRefs, setSearch,
     setMinPriceText, setMaxPriceText, setStatusMode, setListingsSubTab,

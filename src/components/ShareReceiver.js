@@ -154,6 +154,7 @@ export function ShareReceiver({
         }
         primaryCTA={{ label: "Browse Watchlist →", onClick: goBrowse }}
         signedIn={!!user}
+        onClose={clearIntent}
       />
     );
   }
@@ -242,6 +243,7 @@ export function ShareReceiver({
       onAddToList={(user && openCollectionPicker) ? () => openCollectionPicker(sharedItem) : null}
       onShare={handleShare ? () => handleShare(sharedItem) : null}
       busy={busy}
+      onClose={clearIntent}
     />
   );
 }
