@@ -124,6 +124,15 @@ const ATTR = /\b(stainless|steel|silver|champagne|quick.?set|no.?date|dial|baton
 // Internal-plumbing talk Lumé must never leak.
 const PLUMBING = /not (yet )?(in|within) (our|the)[^.]{0,25}(index|corpus|coverage)|trigger(ing)? indexing|saved enough|been saved (by )?(enough )?users|hasn'?t been saved|haven'?t been saved/i;
 const FALLBACK = /hit my limit working that one out/i;
+// Chatty / fluffy filler the voice rules ban (doc section 22). These are the
+// unambiguous ones — a well-behaved reply never needs them.
+const BANNED_TONE = /\b(great data|core hunting grounds|taste profile|collector journey|horological journey|aligns with your profile|considering list|consideration set|curated for you|exciting opportunit(y|ies)|wrist candy|grail.?worthy)\b/i;
+// Price-ladder / status language — collecting is not a ladder from cheap to
+// expensive, so these framings are banned regardless of context.
+const LADDER = /\b(starter (watch|piece)|entry.?level|ready to move up|graduate to|move up to|a serious collector would|the more important watch)\b/i;
+// Em-dash (U+2014) must never appear in generated copy (en-dash U+2013 in
+// numeric ranges is fine). The rule is in the prompt; this gate makes it stick.
+const EM_DASH = /—/;
 const names = (r) => r.toolCalls.map((t) => t.name);
 
 // ── LLM-judge helpers (charter conformance + grounding) ───────────────
@@ -241,6 +250,43 @@ suite("Lumé eval — live behaviour (LUME_EVAL=1)", () => {
       expect(/105\.?012/.test(q) && /145\.?022/.test(q)).toBe(false);
     }
     expect(r.rawText).not.toMatch(FALLBACK);
+  });
+
+  // ── Tone regression (voice rules — doc sections 6/7/22) ───────────────
+  evalTest("Tone: 'what did I miss' opens with substance, no chatty filler, no em-dash", async () => {
+    // The workflow Mark reviewed: it had said "Great data … core hunting grounds
+    // … taste profile … your considering list" and emitted an em-dash.
+    const r = await runTurn(
+      "What has been listed in the past week that I haven't hearted that might be a good fit for me?",
+      { hearted_count: 9, saved_search_count: 2,
+        hearted_sample: [
+          { brand: "Tudor", model: "Submariner", reference: "7016", priceUSD: 9000, url: "" },
+          { brand: "Heuer", model: "Autavia", reference: "11630", priceUSD: 8000, url: "" },
+        ] },
+    );
+    expect(r.finalText.length).toBeGreaterThan(0);
+    expect(r.rawText).not.toMatch(BANNED_TONE);
+    expect(r.rawText).not.toMatch(EM_DASH);
+    // Must not invent a user construct the data doesn't show.
+    expect(r.rawText).not.toMatch(/your (considering|target|shortlist|short list|acquisition)/i);
+  });
+
+  evalTest("Tone: recommendation uses plain words, no price-ladder/status language", async () => {
+    const r = await runTurn("Can you recommend a watch for me? I mostly like vintage divers under $8k.");
+    expect(r.finalText.length).toBeGreaterThan(0);
+    expect(r.rawText).not.toMatch(BANNED_TONE);
+    expect(r.rawText).not.toMatch(LADDER);
+    expect(r.rawText).not.toMatch(EM_DASH);
+    // "pieces" for watches is banned (luxury-sales register) — allow it only
+    // inside a quote, which a recommendation reply won't contain.
+    expect(r.rawText).not.toMatch(/\b\d+\s+pieces\b|\bthese pieces\b|\ba (lovely|nice|great) piece\b/i);
+  });
+
+  evalTest("Tone: expensive watch is not framed as automatically better (no ladder)", async () => {
+    const r = await runTurn("Is a Patek Philippe a better collector's watch than my Tudor?");
+    expect(r.finalText.length).toBeGreaterThan(0);
+    expect(r.rawText).not.toMatch(LADDER);
+    expect(r.rawText).not.toMatch(BANNED_TONE);
   });
 });
 
