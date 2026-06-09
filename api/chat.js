@@ -31,6 +31,8 @@ import {
   norm as _norm,
   getReference,
   searchArticles,
+  selectMissed,
+  urlKey,
   WEB_SEARCH_TOOL,
   collectWebCitations,
   collectWebSearchQueries,
@@ -113,6 +115,20 @@ const TOOLS = [
         min_price_usd: { type: "number" },
         max_price_usd: { type: "number" },
         include_sold: { type: "boolean", description: "also search sold listings (default false)" },
+        limit: { type: "number", description: "max results (default 8, cap 15)" },
+      },
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "find_missed",
+    description:
+      "Find watches the user MISSED, tuned to THEIR taste (the brands/model lines they've already hearted). Three modes: 'live_unsaved' = recently-listed LIVE watches in their taste they have NOT saved (still available to look at); 'sold_unsaved' = watches that recently SOLD, in their taste, that they never hearted — the ones that got away (each result includes time_to_sell_days + the price it sold for, so you can say 'went in a day, sold for $9,250, worth knowing the level'); 'sold_saved' = the user's OWN hearted watches that have since sold, for a reflective look-back. The unsaved modes EXCLUDE anything the user already hearted, so you never re-recommend a watch they've saved. Results are pre-ranked (sold_unsaved by how FAST they sold, fastest first; others by recency); you curate and rank by taste. Use for 'what did I miss this week', 'anything good get away', 'did anything sell fast'.",
+    input_schema: {
+      type: "object",
+      properties: {
+        mode: { type: "string", enum: ["live_unsaved", "sold_unsaved", "sold_saved"], description: "default live_unsaved" },
+        window_days: { type: "number", description: "how far back to look (default 7, max 60)" },
         limit: { type: "number", description: "max results (default 8, cap 15)" },
       },
       additionalProperties: false,
@@ -279,6 +295,32 @@ function toolSearchListings(input) {
   return { count: results.length, results: results.slice(0, limit) };
 }
 
+// "what did I miss" — windows recent listings by the user's taste and saved
+// state. The PURE half (selectMissed) lives in lume_reference.js; here we just
+// load the user's full hearted set (RLS-scoped) + the right listings file.
+async function toolFindMissed(input, sb) {
+  const mode = ["live_unsaved", "sold_unsaved", "sold_saved"].includes(input.mode) ? input.mode : "live_unsaved";
+  const heartedUrls = new Set(), heartedIds = new Set(), tasteKeys = new Set(), tasteBrands = new Set();
+  try {
+    // Full-ish hearted set (not just the 12-sample get_user_context gives) so
+    // the unsaved modes can EXCLUDE every saved watch — recommending one the
+    // user already hearted is the trust-breaking failure we're fixing.
+    const { data } = await sb.from("watchlist_items").select("listing_snapshot").limit(500);
+    for (const r of (data || [])) {
+      const s = r.listing_snapshot || {};
+      if (s.url) heartedUrls.add(urlKey(s.url));
+      if (s.id) heartedIds.add(s.id);
+      const brand = _norm(s.brand), ml = _norm(s.model_line || s.model || "");
+      if (brand) { tasteBrands.add(brand); tasteKeys.add(`${brand}|${ml}`); }
+    }
+  } catch {}
+  const listings = readPublicJson(mode === "live_unsaved" ? "listings_live.json" : "listings_sold.json") || [];
+  return selectMissed(listings, {
+    mode, windowDays: input.window_days, limit: input.limit,
+    heartedUrls, heartedIds, tasteKeys, tasteBrands, nowISO: new Date().toISOString(),
+  });
+}
+
 function toolGetAuctionState(input) {
   const state = readPublicJson("auctions_state.json") || {};
   const wantStatus = (input.status || "all").toLowerCase();
@@ -308,6 +350,7 @@ async function runTool(name, input, sb) {
   try {
     if (name === "get_user_context") return await toolGetUserContext(sb);
     if (name === "search_listings") return toolSearchListings(input || {});
+    if (name === "find_missed") return await toolFindMissed(input || {}, sb);
     if (name === "get_auction_state") return toolGetAuctionState(input || {});
     if (name === "get_reference") return getReference(input || {});
     if (name === "search_articles") return searchArticles(input || {});
@@ -647,6 +690,6 @@ function safeJson(s) {
 // (the default export is still the handler).
 export const __evalInternals = {
   SYSTEM_PROMPT, TOOLS, WEB_SEARCH_TOOL, collectWebCitations,
-  toolSearchListings, toolGetAuctionState,
+  toolSearchListings, toolGetAuctionState, selectMissed,
   chooseModel, extractActions, MAX_TOOL_ROUNDS, MODEL_FAST, MODEL_SMART,
 };
