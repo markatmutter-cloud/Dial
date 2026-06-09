@@ -1,15 +1,7 @@
 {
-  "date": "2026-06-08",
-  "updated_at": "2026-06-08T10:41:26+00:00",
-  "alerts": [
-    {
-      "house": "Monaco Legend",
-      "level": "WARN",
-      "today": 2,
-      "median": 124,
-      "note": "count is 2% of recent median (2 vs ~124)"
-    }
-  ],
+  "date": "2026-06-09",
+  "updated_at": "2026-06-09T09:25:50+00:00",
+  "alerts": [],
   "counts": {
     "Marteau & Co": 33,
     "Antiquorum": 93,
