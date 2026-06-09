@@ -62,6 +62,7 @@ async function load() {
 async function runTool(name, input, ctx) {
   if (name === "get_user_context") return ctx;                       // stubbed (no Supabase in the harness)
   if (name === "search_listings") return E.toolSearchListings(input || {});
+  if (name === "find_missed") return { count: 0, mode: (input && input.mode) || "live_unsaved", window_days: 7, results: [] }; // stubbed (needs Supabase for the hearted set)
   if (name === "get_auction_state") return E.toolGetAuctionState(input || {});
   if (name === "get_reference") return getReference(input || {});
   if (name === "search_articles") return searchArticles(input || {});

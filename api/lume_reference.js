@@ -44,6 +44,90 @@ export function norm(s) {
   return String(s == null ? "" : s).toLowerCase();
 }
 
+// ── "what did I miss" retrieval (find_missed) ─────────────────────────
+// Normalise a listing URL to a stable key so saved-state matching works
+// across the two surfaces (watchlist_items.listing_snapshot.url vs the
+// listings_*.json url): drop protocol, www, trailing slash, and query.
+export function urlKey(u) {
+  // Drop the query FIRST, then the trailing slash — otherwise "…/x/?q=1"
+  // keeps its slash and won't match the saved "…/x".
+  return norm(u).replace(/^https?:\/\//, "").replace(/^www\./, "").split("?")[0].replace(/\/+$/, "");
+}
+
+// PURE: given a listings array + the user's hearted set, return the watches
+// they MISSED in `mode`. No Supabase, no file read (caller supplies both
+// listings and the hearted/taste sets) so the windowing / saved-exclusion /
+// taste-filter / speed-sort logic is unit-testable in normal CI.
+//
+// modes:
+//   live_unsaved — recently LISTED, in taste, NOT already saved (still live)
+//   sold_unsaved — recently SOLD, in taste, never hearted (the ones that got
+//                  away); each carries time_to_sell_days + the sold price, and
+//                  results are sorted FASTEST-sale first (the missed-it signal)
+//   sold_saved   — the user's OWN hearted watches that have since sold (a
+//                  reflective look-back; no taste filter, it's their hearts)
+export function selectMissed(listings, opts = {}) {
+  const mode = ["live_unsaved", "sold_unsaved", "sold_saved"].includes(opts.mode) ? opts.mode : "live_unsaved";
+  const windowDays = Math.min(Math.max(Number(opts.windowDays) || 7, 1), 60);
+  const limit = Math.min(Math.max(Number(opts.limit) || 8, 1), 15);
+  const heartedUrls = opts.heartedUrls instanceof Set ? opts.heartedUrls : new Set();
+  const heartedIds = opts.heartedIds instanceof Set ? opts.heartedIds : new Set();
+  const tasteKeys = opts.tasteKeys instanceof Set ? opts.tasteKeys : new Set();
+  const tasteBrands = opts.tasteBrands instanceof Set ? opts.tasteBrands : new Set();
+  const DAY = 86400000;
+  const now = Number(opts.nowMs) || Date.parse(opts.nowISO || "") || Date.now();
+  const cutoff = now - windowDays * DAY;
+
+  const sold = mode !== "live_unsaved";
+  const onlySaved = mode === "sold_saved";
+  const out = [];
+  if (!Array.isArray(listings)) return { count: 0, mode, window_days: windowDays, results: [] };
+  for (const it of listings) {
+    if (!it || !it.url) continue;
+    if (sold ? !it.sold : !!it.sold) continue;                 // this mode's live/sold half
+    const dateStr = sold ? it.soldAt : it.firstSeen;            // recent SOLD vs recent LISTED
+    const t = dateStr ? Date.parse(dateStr) : NaN;
+    if (!Number.isFinite(t) || t < cutoff) continue;
+    const saved = heartedUrls.has(urlKey(it.url)) || (it.id && heartedIds.has(it.id));
+    if (onlySaved ? !saved : saved) continue;                  // unsaved modes drop saved; sold_saved keeps only saved
+    const brand = norm(it.brand);
+    const ml = norm(it.model_line || it.model || "");
+    if (!onlySaved && (tasteKeys.size || tasteBrands.size)) {   // taste filter (skip for their own hearts)
+      if (!(tasteKeys.has(`${brand}|${ml}`) || tasteBrands.has(brand))) continue;
+    }
+    const tts = (sold && it.firstSeen && it.soldAt)
+      ? Math.max(0, Math.round((Date.parse(it.soldAt) - Date.parse(it.firstSeen)) / DAY)) : null;
+    // Sold items often have no captured price (priceUSD null, lastMeaningfulPrice
+    // 0); coerce that to null so Lumé says "price not recorded", never "$0".
+    const rawPrice = it.priceUSD ?? it.lastMeaningfulPrice;
+    out.push({
+      id: it.id || "",
+      brand: it.brand || "",
+      model: it.model || it.model_line || "",
+      reference: it.reference_id || it.reference_no || it.ref || "",
+      priceUSD: (typeof rawPrice === "number" && rawPrice > 0) ? rawPrice : null,
+      currency: it.currency || "",
+      source: it.source || "",
+      url: it.url || "",
+      sold: !!it.sold,
+      soldAt: it.soldAt || null,
+      firstSeen: it.firstSeen || null,
+      time_to_sell_days: tts,
+      taste_match: tasteKeys.has(`${brand}|${ml}`) ? "model" : (tasteBrands.has(brand) ? "brand" : null),
+    });
+  }
+  // "directly in your taste" first: model-line matches outrank brand-only ones,
+  // so the capped top-N isn't flooded by every other model from a brand they like.
+  const recency = (x) => Date.parse((sold ? x.soldAt : x.firstSeen) || "") || 0;
+  const tier = (x) => (x.taste_match === "model" ? 0 : x.taste_match === "brand" ? 1 : 2);
+  if (mode === "sold_unsaved") {
+    out.sort((a, b) => tier(a) - tier(b) || (a.time_to_sell_days ?? 999) - (b.time_to_sell_days ?? 999) || recency(b) - recency(a));
+  } else {
+    out.sort((a, b) => tier(a) - tier(b) || recency(b) - recency(a));
+  }
+  return { count: out.length, mode, window_days: windowDays, results: out.slice(0, limit) };
+}
+
 // ── search_articles: knowledge over the editorial corpus ──────────────
 // Lumé's window into OUR 13k editorial articles (collector mags, dealer
 // journals, deep-dive write-ups) — the knowledge that lets it TALK ABOUT a
