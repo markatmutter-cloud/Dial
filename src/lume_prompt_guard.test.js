@@ -31,6 +31,8 @@ describe("Lumé system prompt — voice + grounding invariants", () => {
     ["recommendation distance", /RECOMMENDATION DISTANCE/i],
     ["don't pad / graceful floor", /DON'T PAD/i],
     ["missed-this-week workflow excludes saved", /WHAT DID I MISS/i],
+    ["link every watch inline", /LINK EVERY WATCH YOU NAME/i],
+    ["no self-contradiction on re-search", /isn't in our system/i],
     ["em-dash ban", /NEVER use em-dashes/i],
     ["grounding non-negotiable", /GROUNDING \(non-negotiable\)/i],
     ["search stays filterable", /KEEP THE QUERY FILTERABLE/i],
