@@ -380,6 +380,19 @@ export function shortHash(str) {
   return (a + b).slice(0, 12);
 }
 
+// Normalise a listing URL to a stable match key. Used to resolve a URL in a
+// Lumé reply back to the live item it points at WITHOUT hashing (the feed id is
+// merge.py's SHA1 stable_id, not shortHash — they never match, which is why the
+// hash-based resolver silently failed). Both sides come from the same
+// listings_live.json url, so this only has to undo the small ways a model can
+// mangle it: surrounding < >, a trailing slash, trailing punctuation.
+export function normUrl(u) {
+  return String(u || "").trim()
+    .replace(/^<+/, "").replace(/>+$/, "")
+    .replace(/[).,;]+$/, "")
+    .replace(/\/+$/, "");
+}
+
 export function fmt(price, currency) {
   // Null-safe: kind='article' items have price:null (no transaction
   // attached to an editorial post) and can reach Card via the Home
