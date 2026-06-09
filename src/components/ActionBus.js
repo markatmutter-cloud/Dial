@@ -19,6 +19,26 @@ export function registerActionHandlers(map) {
   };
 }
 
+// Synchronous URL → live-item resolver (registered by App, closing over
+// liveStateById). ChatBubbleHost uses it to decide AT RENDER TIME whether a
+// link in Lumé's reply is a watch we can open in-app (→ render an in-app
+// button) or anything else (→ a normal external link). Synchronous on purpose:
+// classifying links up front avoids an async window.open() that popup-blockers
+// would swallow. Returns the item, or null if it's not a resolvable live watch.
+let itemResolver = null;
+
+export function registerItemResolver(fn) {
+  itemResolver = fn;
+  return () => {
+    if (itemResolver === fn) itemResolver = null;
+  };
+}
+
+export function resolveItemByUrl(url) {
+  if (!url || !itemResolver) return null;
+  try { return itemResolver(url) || null; } catch { return null; }
+}
+
 export async function dispatchAction(action) {
   if (!action || typeof action.type !== "string") {
     return { ok: false, message: "Unknown action." };

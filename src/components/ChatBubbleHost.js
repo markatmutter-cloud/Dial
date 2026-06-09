@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { supabase, useAuth } from "../supabase";
-import { dispatchAction } from "./ActionBus";
+import { dispatchAction, resolveItemByUrl } from "./ActionBus";
 import { registerLumeOpener } from "./LumeBus";
 import { LumeIcon } from "./LumeIcon";
 
@@ -56,7 +56,22 @@ const ANIM_CSS = "@keyframes lumeBlink{0%,80%,100%{opacity:.25}40%{opacity:1}}";
 // bare URLs (→ clickable, new tab), line breaks. No markdown dep; React nodes.
 const RICH = /\*\*([^*]+)\*\*|\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)|(https?:\/\/[^\s)]+)/g;
 
-function renderInline(text, kp) {
+// A link in Lumé's reply: if it resolves to a live watch we hold, open it IN-APP
+// (the shared surface) instead of bouncing to the dealer site — Mark's "the body
+// links are direct links, I want the shared surface" fix. Anything else (an
+// article, a citation, a watch that's gone) stays a normal external link. The
+// resolve check is synchronous so we never fall back to an async window.open()
+// a popup-blocker would eat.
+function renderLink(url, label, key, openInApp) {
+  if (openInApp && resolveItemByUrl(url)) {
+    return (
+      <a key={key} href={url} onClick={(e) => { e.preventDefault(); openInApp(url); }} style={LINK_STYLE}>{label}</a>
+    );
+  }
+  return <a key={key} href={url} target="_blank" rel="noopener noreferrer" style={LINK_STYLE}>{label}</a>;
+}
+
+export function renderInline(text, kp, openInApp) {
   const out = [];
   let last = 0, i = 0, m;
   RICH.lastIndex = 0;
@@ -65,9 +80,9 @@ function renderInline(text, kp) {
     if (m[1] !== undefined) {
       out.push(<strong key={`${kp}-${i}`}>{m[1]}</strong>);
     } else if (m[2] !== undefined) {
-      out.push(<a key={`${kp}-${i}`} href={m[3]} target="_blank" rel="noopener noreferrer" style={LINK_STYLE}>{m[2]}</a>);
+      out.push(renderLink(m[3], m[2], `${kp}-${i}`, openInApp));   // [label](url)
     } else if (m[4] !== undefined) {
-      out.push(<a key={`${kp}-${i}`} href={m[4]} target="_blank" rel="noopener noreferrer" style={LINK_STYLE}>{m[4]}</a>);
+      out.push(renderLink(m[4], m[4], `${kp}-${i}`, openInApp));   // bare url
     }
     i += 1;
     last = RICH.lastIndex;
@@ -76,9 +91,9 @@ function renderInline(text, kp) {
   return out;
 }
 
-function renderRich(text) {
+function renderRich(text, openInApp) {
   return String(text || "").split("\n").map((line, i) => (
-    <React.Fragment key={i}>{i > 0 && <br />}{renderInline(line, `l${i}`)}</React.Fragment>
+    <React.Fragment key={i}>{i > 0 && <br />}{renderInline(line, `l${i}`, openInApp)}</React.Fragment>
   ));
 }
 
@@ -127,6 +142,15 @@ export function ChatBubbleHost({ seedItem = null }) {
     const res = await dispatchAction(action);
     setActionState((s) => ({ ...s, [key]: { status: res.ok ? "done" : "failed", message: res.message } }));
     if (res.ok) setOpen(false); // minimise so the result behind is visible (Mark)
+  }, []);
+
+  // Open a watch link from the reply body in-app (the shared surface). Only
+  // called for links renderLink already confirmed resolve to a live watch, so
+  // open_watch succeeds; minimise Lumé so the surface behind is visible.
+  const openItemInApp = useCallback((url) => {
+    dispatchAction({ type: "open_watch", payload: { itemUrl: url } }).then((res) => {
+      if (res && res.ok) setOpen(false);
+    });
   }, []);
 
   // Device-native dictation: append speech into the draft. (B-43)
@@ -372,7 +396,7 @@ export function ChatBubbleHost({ seedItem = null }) {
                   color: isUser ? "#fff" : "var(--text1)",
                   border: isUser ? "none" : "0.5px solid var(--border)",
                 }}>
-                  {isUser ? m.content : renderRich(m.content)}
+                  {isUser ? m.content : renderRich(m.content, openItemInApp)}
                 </div>
                 {acts.length > 0 && (
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 6, maxWidth: "90%" }}>
@@ -383,13 +407,16 @@ export function ChatBubbleHost({ seedItem = null }) {
                       const done = st && st.status === "done";
                       const running = st && st.status === "running";
                       return (
-                        <button key={ai} onClick={() => runAction(a, key)} disabled={running || done}
+                        // Visited chips keep the ✓ but stay CLICKABLE (Mark: after
+                        // opening a link I want to go back and re-open it). Only a
+                        // chip mid-run is disabled.
+                        <button key={ai} onClick={() => runAction(a, key)} disabled={running}
                           title={failed ? st.message : undefined}
                           style={{
                             border: "none", borderRadius: 999, padding: "6px 12px", fontSize: 13,
-                            fontFamily: "inherit", cursor: running || done ? "default" : "pointer",
+                            fontFamily: "inherit", cursor: running ? "default" : "pointer",
                             background: failed ? "var(--danger)" : "var(--brand-olive)", color: "#fff",
-                            opacity: running ? 0.6 : 1,
+                            opacity: running ? 0.6 : (done ? 0.85 : 1),
                           }}>
                           {done ? "✓ " : ""}{a.label}
                         </button>

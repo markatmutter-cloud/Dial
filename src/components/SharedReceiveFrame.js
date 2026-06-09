@@ -44,6 +44,7 @@ export function SharedReceiveFrame({
   extraActions = [],
   navCues = [],
   busy = false,
+  onClose,
 }) {
   const attribution = sender
     ? (isLume ? `Lumé picked this ${typeLabel} for you` : `${sender} shared a ${typeLabel} with you`)
@@ -51,6 +52,13 @@ export function SharedReceiveFrame({
 
   return (
     <div style={{ padding: "16px 16px 110px", maxWidth: 1100, margin: "0 auto", width: "100%" }}>
+      {/* [0] Back — close this surface and return to where the user was browsing
+          (Mark: a Lumé link opened this with no way back). Only when wired. */}
+      {onClose && (
+        <div style={{ display: "flex", marginBottom: 12 }}>
+          <button onClick={onClose} aria-label="Back" style={backBtnStyle}>← Back</button>
+        </div>
+      )}
       {/* [A] Attribution — the single line of chrome copy; no explainer. */}
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
         <span aria-hidden style={{
@@ -148,4 +156,9 @@ const subtleBtn = {
 const navCueStyle = {
   border: "none", background: "transparent", color: "var(--text2)",
   padding: 0, fontFamily: "inherit", fontSize: 13, cursor: "pointer",
+};
+const backBtnStyle = {
+  border: "0.5px solid var(--border)", background: "var(--surface)", color: "var(--text1)",
+  padding: "6px 12px", borderRadius: 999, fontFamily: "inherit", fontSize: 13,
+  fontWeight: 500, cursor: "pointer",
 };
