@@ -604,6 +604,28 @@ got-away items** (their links still leak to the dealer; not in the live feed);
 reliable actions-block emission. Then the home Lumé surface once the probe shows
 tone holds.
 
+**Active thread (2026-06-09, Mark) — Lumé as a full-page catch-up surface.** Mark's
+own daily-use journeys, to become launchable entry points on a **full-page Lumé tab**
+(landing-page surface, not just the corner bubble): you kick off a journey, it links
+you through, then it opens into free conversation (deep on a reference / any question),
+always closing with follow-up chips to the *other* journeys, and **every link on the
+share surface** (add-to-list or dealer link) — *including articles* (needs the in-app
+article surface, **B-51**, still unbuilt). Three builds, sequenced so each verifies live:
+1. **Catch-up journeys (building now).** A FAMILY Lumé chains, never dead-ending at one:
+   ① live-missed (7d, taste, unhearted) · ② the-ones-that-got-away (sold, **speed first** —
+   same-day/1-day closes the user never saw) · ③ widen either to 30d · ④ hearted-that-sold
+   (reflective) · ⑤ **latest listed** (newest stock, not taste-filtered) · *(later, needs
+   new tools)* ⑥ new articles in taste · ⑦ hearted auction lots **closing soon** · ⑧ taste-fit
+   auction lots **ending <7d**, unhearted. ①–⑤ ship as prompt orchestration on the existing
+   `find_missed` + `show_listings`; ⑥ needs a recency+taste article tool; ⑥–⑧ are the net-new
+   retrieval (auction-aware taste-matching + `date_end` logic).
+2. **Full-page Lumé surface** — a tab/subtab hosting the conversation + a dispatch of journey
+   launchers as its cold-open. New surface = its own plan (topTabs / shells / routing /
+   ChatBubbleHost → full-page variant).
+3. **Varied cold opens** — different openers for new · signed-out · how-long-away (not the same
+   engagement each time), plus a surprising new-user journey running all the way to "want to see
+   something on the **edge** of your recommendations?" (ties pillar 5 / RECOMMENDER_STRATEGY edge modes).
+
 **Six capability pillars** (KNOWS · DOES · KNOWS-YOU · TAKES-YOU · NUDGES):
 1. **Knowledge — references & watches.** Built: ref index + 7 model-line deep-dives + lexicon P1. Next: attribute-level knowledge (**B-45**), more synthesis nodes, fact-vs-opinion tagging per claim.
 2. **Knowledge — collector mentality.** Lives in the editorial corpus (Screwdown Crown +) — the work is *classify*, not ingest. Powers a *coaching mode only* — never bleeds into how a watch is described (intrinsic-voice firewall).
