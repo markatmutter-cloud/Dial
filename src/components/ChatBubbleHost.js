@@ -126,6 +126,10 @@ export function ChatBubbleHost({ seedItem = null }) {
   const [isMobile, setIsMobile] = useState(
     () => typeof window !== "undefined" && !!window.matchMedia && window.matchMedia("(max-width: 600px)").matches
   );
+  // Desktop expand-to-fullscreen (Mark): the bubble is a 380px frame; ⤢ blows it
+  // up to a near-full-screen takeover for a real conversation. Mobile is already
+  // full-screen, so expand is desktop-only and resets on minimise.
+  const [expanded, setExpanded] = useState(false);
   const [hasOpened, setHasOpened] = useState(() => {
     try { return typeof localStorage !== "undefined" && localStorage.getItem(OPENED_KEY) === "1"; }
     catch { return false; }
@@ -288,12 +292,27 @@ export function ChatBubbleHost({ seedItem = null }) {
   };
   // Desktop: a floating rounded frame, bottom-right. Mobile: full-screen sheet
   // (you can't see the page behind it anyway), with safe-area-aware chrome.
+  // Desktop EXPANDED: a centered near-full-screen takeover over a dimmed backdrop.
+  const isExpanded = expanded && !isMobile;
   const panelFrame = isMobile
     ? {
         position: "fixed", inset: 0, zIndex: Z,
         width: "100%", height: "100dvh",
         display: "flex", flexDirection: "column",
         background: "var(--bg)",
+        overflow: "hidden",
+      }
+    : isExpanded
+    ? {
+        position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
+        zIndex: Z,
+        width: "min(880px, calc(100vw - 48px))",
+        height: "min(820px, calc(100vh - 48px))",
+        display: "flex", flexDirection: "column",
+        background: "var(--bg)",
+        border: "1px solid rgba(255,255,255,0.22)",
+        borderRadius: 16,
+        boxShadow: "0 0 0 1px rgba(0,0,0,0.18), 0 24px 64px rgba(0,0,0,0.6)",
         overflow: "hidden",
       }
     : {
@@ -317,19 +336,37 @@ export function ChatBubbleHost({ seedItem = null }) {
         <span style={{ fontSize: 15, fontWeight: 600, letterSpacing: "-0.01em" }}>{NAME}</span>
         <span style={{ fontSize: 13, fontWeight: 400, opacity: 0.85 }}>· Watch chat</span>
       </div>
-      {/* Mobile: a down-chevron reads as "minimise" (drop it back to the launcher);
-          desktop: the usual ×. Both just setOpen(false). */}
-      <button onClick={() => setOpen(false)} aria-label="Minimise" title="Minimise" style={{
-        border: "none", background: "rgba(255,255,255,0.16)", color: "#fff",
-        width: isMobile ? 34 : 26, height: isMobile ? 34 : 26, borderRadius: "50%",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        fontSize: 17, lineHeight: 1, textAlign: "center", cursor: "pointer", padding: 0,
-      }}>
-        {isMobile
-          ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M6 9l6 6 6-6" /></svg>
-          : "×"}
-      </button>
+      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        {/* Desktop + signed-in only: ⤢ expand to a full-screen takeover / ⤡
+            collapse back to the corner frame. Mobile is already full-screen. */}
+        {!isMobile && user && (
+          <button onClick={() => setExpanded((e) => !e)}
+            aria-label={isExpanded ? "Collapse" : "Expand"} title={isExpanded ? "Collapse" : "Expand"} style={{
+            border: "none", background: "rgba(255,255,255,0.16)", color: "#fff",
+            width: 26, height: 26, borderRadius: "50%",
+            display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", padding: 0,
+          }}>
+            {isExpanded
+              ? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M4 14h6v6" /><path d="M20 10h-6V4" /><path d="M14 10l7-7" /><path d="M3 21l7-7" /></svg>
+              : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M15 3h6v6" /><path d="M9 21H3v-6" /><path d="M21 3l-7 7" /><path d="M3 21l7-7" /></svg>}
+          </button>
+        )}
+        {/* Mobile: a down-chevron reads as "minimise" (drop it back to the launcher);
+            desktop: the usual ×. Both minimise + reset expand. */}
+        <button onClick={() => { setOpen(false); setExpanded(false); }} aria-label="Minimise" title="Minimise" style={{
+          border: "none", background: "rgba(255,255,255,0.16)", color: "#fff",
+          width: isMobile ? 34 : 26, height: isMobile ? 34 : 26, borderRadius: "50%",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: 17, lineHeight: 1, textAlign: "center", cursor: "pointer", padding: 0,
+        }}>
+          {isMobile
+            ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M6 9l6 6 6-6" /></svg>
+            : "×"}
+        </button>
+      </div>
     </div>
   );
 
@@ -390,7 +427,7 @@ export function ChatBubbleHost({ seedItem = null }) {
     // Signed-in: the full chat.
     const display = [{ role: "assistant", content: GREETING }, ...messages];
     node = (
-      <div style={{ ...panelFrame, ...(isMobile ? {} : { height: "min(560px, calc(100vh - 120px))" }) }} role="dialog" aria-label={NAME}>
+      <div style={{ ...panelFrame, ...(isMobile || isExpanded ? {} : { height: "min(560px, calc(100vh - 120px))" }) }} role="dialog" aria-label={NAME}>
         <style>{ANIM_CSS}</style>
         {header}
         <div ref={scrollRef} style={{
@@ -519,5 +556,16 @@ export function ChatBubbleHost({ seedItem = null }) {
     );
   }
 
-  return createPortal(node, document.body);
+  return createPortal(
+    <>
+      {/* Dimmed backdrop behind the expanded desktop takeover; click to collapse. */}
+      {open && isExpanded && (
+        <div onClick={() => setExpanded(false)} aria-hidden style={{
+          position: "fixed", inset: 0, zIndex: Z - 1, background: "rgba(0,0,0,0.45)",
+        }} />
+      )}
+      {node}
+    </>,
+    document.body
+  );
 }
