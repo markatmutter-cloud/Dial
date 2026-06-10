@@ -126,8 +126,17 @@ within each section roughly last.
   ListingPickerModal, MarkAsSoldModal, NotePickerModal, SettingsModal (mocks ../supabase for
   LumeMemorySettings), SignInPromptModal, TrackNewItemModal. Post-state: 29/63 user-facing components
   road-tested in CI (up from ~13). Tier 3 leaf elements left to the standing rule.
+- **2026-06-09 — Scrape-health gate (#859, B-60).** A final `always()` step
+  (`scrape_health_gate.py`) fails the Scrape-listings workflow when any source
+  produced no CSV this run or `verify_sources` logged an ERROR, so the existing
+  notifier opens an issue. Closes the silent-rot gap that hid Watch Center (B-58).
 
 ## Epic 1 — Sources
+
+- **2026-06-09 — Watch Club liveness fix (#860, B-59).** Keyed "sold" on the
+  TaffyDB `status==30` signal (not `status=="1"`), which the catalog reshuffles
+  between rebuilds; recovered ~48 live listings and unfroze the source (was stuck
+  at 61 since 06-04). (B-58 was already self-healed by the curl_cffi probe.)
 
 - **2026-04-30 — eBay integration.** Free Browse API source; admin
   configures `data/ebay_searches.json`; BIN items in main feed.
@@ -582,6 +591,24 @@ within each section roughly last.
   token sheet; sign-out under the identity; Articles flat grid (year roll-up retired); About
   auto-open retired; CardStrip webkit-scrollbar hide; guide images filled from cited og:image +
   wsrv→raw→favicon retry ladder.
+
+- **2026-06-09 — Lumé "What You Missed" feature (#861–#864, #868).** The
+  twin user story end-to-end. **Voice (#861):** tone brief merged into
+  `lume_system_prompt.txt` (plain words, no price ladder, never invent user
+  constructs, concrete reasons, recommendation distance, don't-pad) + CI static
+  guard + live tone evals; brief saved as docs/LUME_TONE_GUIDANCE.md.
+  **Retrieval (#862):** `find_missed` tool, saved-state aware, 3 modes —
+  `live_unsaved` / `sold_unsaved` (the ones that got away, sorted fastest-sale
+  first w/ time-to-sell + sold price) / `sold_saved`. **Journey (#863):** body
+  links → in-app shared surface, "← Back" control, re-clickable chips. **Link
+  fix (#864):** every surfaced watch linked inline; never re-search and claim a
+  shown watch "isn't in our system". **Routing + em-dash (#868):** resolve reply
+  links by URL match (the feed id is SHA1, not shortHash — the hash resolver sent
+  every link to the dealer); em-dashes stripped server-side.
+- **2026-06-09 — Lumé conversation+judge probe (#865).** `tools/lume_probe.py`
+  runs multi-turn scenarios through the real prompt+data on the real models, then
+  an LLM judge grades each reply against the LUME_TONE_GUIDANCE rubric. Dev tool
+  (needs the API key); the systematic replacement for spot-checking live.
 
 ## UI & chrome (cross-cutting)
 

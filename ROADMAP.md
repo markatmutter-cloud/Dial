@@ -569,6 +569,7 @@ pillar 5; Epic 7 holds the recommender *substrate/strategy*, this epic the
 `docs/LUME_ROADMAP.md` is **retired and folded in below** — splitting the AI
 direction out is what made this roadmap go stale. Companions that remain:
 [LUME_UX_PRINCIPLES.md](docs/LUME_UX_PRINCIPLES.md) (the design bible) ·
+[LUME_TONE_GUIDANCE.md](docs/LUME_TONE_GUIDANCE.md) (tone + behaviour + recommendation rules) ·
 [RECOMMENDER_STRATEGY.md](docs/RECOMMENDER_STRATEGY.md) (Epic 7 detail) ·
 [LUME_CONFIG_REQUESTS.md](docs/LUME_CONFIG_REQUESTS.md) (prompt-tune intake) ·
 [REFERENCE_INTELLIGENCE.md](docs/REFERENCE_INTELLIGENCE.md) (the corpus).
@@ -589,6 +590,19 @@ free-recall essay — the exact trust-killer we refuse. Lumé's gaps are
 clean slate; only usage counts persist, so abuse-testing pollutes nothing until
 pillar 4 ships (then incognito + reset are hard requirements; use a second
 Google account for cold-start testing).
+
+**State (2026-06-09):** the **"What You Missed"** surface shipped end-to-end
+(#861–#868) — voice rewrite (LUME_TONE_GUIDANCE), the saved-state-aware
+`find_missed` tool (live-missed + sold "got away" + hearted-got-away, weighted
+by sale speed), and the in-app journey (links → shared surface, Back, links
+resolve by URL not hash). A conversation+judge probe (`tools/lume_probe.py`,
+#865) runs multi-turn scenarios through the real models and grades them against
+the tone rubric — **this is the tone-reliability gate that the home Lumé surface
+is blocked on.** **Next builds:** (B) an **in-app reference card for SOLD
+got-away items** (their links still leak to the dealer; not in the live feed);
+(C) **progression chips** ("show more / push further / widen to a month") +
+reliable actions-block emission. Then the home Lumé surface once the probe shows
+tone holds.
 
 **Six capability pillars** (KNOWS · DOES · KNOWS-YOU · TAKES-YOU · NUDGES):
 1. **Knowledge — references & watches.** Built: ref index + 7 model-line deep-dives + lexicon P1. Next: attribute-level knowledge (**B-45**), more synthesis nodes, fact-vs-opinion tagging per claim.

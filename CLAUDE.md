@@ -287,6 +287,15 @@ Two suites, CI on every push + PR:
   in them.** Editing a render path you can't run locally → give that component a
   direct render test (pattern: `CardShell.test.jsx`); a Vercel build compiles but
   never executes, so a ReferenceError ships green without one.
+- **Test the real path, not the plumbing (Lumé/AI especially).** A green unit
+  test on the data layer, or a render test that MOCKS the dependency under test,
+  proves nothing about user-facing behaviour — both shipped broken Lumé this way
+  (find_missed unit-green but the conversation was bad; the in-app resolver's
+  render test mocked the resolver while the real one hashed URLs wrong and sent
+  every link to the dealer). For a conversation feature, RUN the real multi-turn
+  conversation (subagents on the real prompt + real tool data, or
+  `tools/lume_probe.py` via the API) and read the answers; for a resolver, test
+  the real lookup. Don't mock the thing you're verifying.
 
 ## Things to never do
 
