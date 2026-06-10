@@ -1,30 +1,22 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
-import { supabase, useAuth } from "../supabase";
+import { useAuth } from "../supabase";
 import { dispatchAction, resolveItemByUrl } from "./ActionBus";
 import { registerLumeOpener } from "./LumeBus";
 import { LumeIcon } from "./LumeIcon";
+import { useLumeChat, LumeConversation, describeItem, NAME, GREETING, SUGGESTIONS } from "./LumeConversation";
 
-// "Share with Lumé" seed: compose the opening user message from a listing the
-// user handed to Lumé via a card's ⋯ menu. Lumé resolves brand/model/ref (and
-// the URL) with its tools and engages about THIS watch.
-function describeItem(it) {
-  if (!it || typeof it !== "object") return "Tell me about this watch.";
-  const bits = [it.brand, it.model || it.model_line, it.reference_id || it.reference_no]
-    .filter(Boolean).join(" ").trim();
-  const title = (it.title || bits || "this watch").toString().trim();
-  const price = it.priceUSD ? `, $${Number(it.priceUSD).toLocaleString()}` : "";
-  const src = it.source ? ` (${it.source})` : "";
-  const url = it.url ? ` ${it.url}` : "";
-  return `I'm looking at this listing: ${title}${price}${src}. What should I know about it?${url}`;
-}
+// renderInline now lives with the conversation core; re-export it so the
+// existing ChatBubbleHost.test.jsx import keeps working.
+export { renderInline } from "./LumeConversation";
 
 // Lumé — the watch-expert concierge bubble (Epic 9 "AI spine").
 //
 // Mounts ONCE at the top of the app next to <ConfirmHost/> (App.js), as a
-// sibling of the shells — all its state lives here, App.js gains no new hooks
-// (no React #310 risk) and no shellProps. Theme inherits via :root CSS vars
-// (portal → document.body).
+// sibling of the shells — its surface state lives here, App.js gains no new
+// hooks (no React #310 risk) and no shellProps. The conversation itself (state +
+// message/composer render) is the shared LumeConversation, so the bubble and the
+// inline LumeTab can't drift. Theme inherits via :root CSS vars (portal → body).
 //
 // Signed-OUT users see the launcher too (B-43) — tapping it prompts sign-in.
 // Signed-in: the grounded chat. The cold-open VOICE + grounding live server-side
@@ -34,80 +26,7 @@ function describeItem(it) {
 // DARK sage for light olive *tints* — invisible on solid olive). (B-39)
 
 const Z = 1400; // below confirm/overlay modals, above page content
-const NAME = "Lumé";
 const OPENED_KEY = "lume_opened_v1";
-
-// Device-native dictation engine (Web Speech API uses the OS/browser engine).
-// null where unsupported → the mic button is hidden.
-const SpeechRec =
-  typeof window !== "undefined" ? (window.SpeechRecognition || window.webkitSpeechRecognition) : null;
-
-// Display-only opener — sets Lumé's voice + teaches the pronunciation; the
-// substantive get_user_context-grounded cold open comes from the model.
-const GREETING =
-  "I'm Lumé.\n\nSo, what's your watch problem?\n\nLate-night Speedmaster browsing? Talking yourself into a vintage Sub? I speak fluent Speedy, Sub, QP, gilt, tropical, ghost bezel, soft case, and \"why is this one somehow twice the price?\"\n\nGive me 3–5 watches you like, one you're thinking about buying, and a rabbit hole you want to go down. The more you give me, the better I'll be.\n\nWhat should we look at first?";
-
-const SUGGESTIONS = ["What should I look at?", "I'm into dive watches", "Surprise me"];
-
-const LINK_STYLE = { color: "var(--brand)", textDecoration: "underline" };
-const ANIM_CSS = "@keyframes lumeBlink{0%,80%,100%{opacity:.25}40%{opacity:1}}";
-
-// Minimal rich-text renderer for assistant replies: **bold**, [md](links),
-// bare URLs (→ clickable, new tab), line breaks. No markdown dep; React nodes.
-// Tolerates a url wrapped in angle brackets — the model sometimes writes
-// [label](<https://…>), which would otherwise fail to parse as a link and leak
-// the raw markdown / a broken href.
-const RICH = /\*\*([^*]+)\*\*|\[([^\]]+)\]\(<?(https?:\/\/[^)\s>]+)>?\)|(https?:\/\/[^\s)>]+)/g;
-
-// A link in Lumé's reply: if it resolves to a live watch we hold, open it IN-APP
-// (the shared surface) instead of bouncing to the dealer site — Mark's "the body
-// links are direct links, I want the shared surface" fix. Anything else (an
-// article, a citation, a watch that's gone) stays a normal external link. The
-// resolve check is synchronous so we never fall back to an async window.open()
-// a popup-blocker would eat.
-function renderLink(url, label, key, openInApp) {
-  if (openInApp && resolveItemByUrl(url)) {
-    return (
-      <a key={key} href={url} onClick={(e) => { e.preventDefault(); openInApp(url); }} style={LINK_STYLE}>{label}</a>
-    );
-  }
-  return <a key={key} href={url} target="_blank" rel="noopener noreferrer" style={LINK_STYLE}>{label}</a>;
-}
-
-export function renderInline(text, kp, openInApp) {
-  const out = [];
-  let last = 0, i = 0, m;
-  RICH.lastIndex = 0;
-  while ((m = RICH.exec(text)) !== null) {
-    if (m.index > last) out.push(text.slice(last, m.index));
-    if (m[1] !== undefined) {
-      out.push(<strong key={`${kp}-${i}`}>{m[1]}</strong>);
-    } else if (m[2] !== undefined) {
-      out.push(renderLink(m[3], m[2], `${kp}-${i}`, openInApp));   // [label](url)
-    } else if (m[4] !== undefined) {
-      out.push(renderLink(m[4], m[4], `${kp}-${i}`, openInApp));   // bare url
-    }
-    i += 1;
-    last = RICH.lastIndex;
-  }
-  if (last < text.length) out.push(text.slice(last));
-  return out;
-}
-
-function renderRich(text, openInApp) {
-  return String(text || "").split("\n").map((line, i) => (
-    <React.Fragment key={i}>{i > 0 && <br />}{renderInline(line, `l${i}`, openInApp)}</React.Fragment>
-  ));
-}
-
-const MicIcon = ({ size = 18 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
-    strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-    <rect x="9" y="2" width="6" height="12" rx="3" />
-    <path d="M5 10a7 7 0 0 0 14 0" />
-    <line x1="12" y1="19" x2="12" y2="22" />
-  </svg>
-);
 
 export function ChatBubbleHost({ seedItem = null }) {
   // seedItem (Mark 2026-06-01): on the share-receive surfaces the floating
@@ -116,23 +35,21 @@ export function ChatBubbleHost({ seedItem = null }) {
   // share surfaces seedItem is null and the launcher opens a normal chat.
   const { user, signInWithGoogle } = useAuth();
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState([]);
-  const [draft, setDraft] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [capped, setCapped] = useState(false);
-  const [error, setError] = useState("");
-  const [actionState, setActionState] = useState({});
-  const [listening, setListening] = useState(false);
   const [isMobile, setIsMobile] = useState(
     () => typeof window !== "undefined" && !!window.matchMedia && window.matchMedia("(max-width: 600px)").matches
   );
+  // Desktop expand-to-fullscreen (Mark): the bubble is a 380px frame; ⤢ blows it
+  // up to a near-full-screen takeover for a real conversation. Mobile is already
+  // full-screen, so expand is desktop-only and resets on minimise.
+  const [expanded, setExpanded] = useState(false);
   const [hasOpened, setHasOpened] = useState(() => {
     try { return typeof localStorage !== "undefined" && localStorage.getItem(OPENED_KEY) === "1"; }
     catch { return false; }
   });
-  const scrollRef = useRef(null);
-  const inputRef = useRef(null);
-  const recognitionRef = useRef(null);
+  // The conversation state + send loop (shared with the inline tab). This is the
+  // bubble's own instance — ephemeral; minimising drops nothing but the panel.
+  const chat = useLumeChat();
+  const { messages, send, loading } = chat;
 
   const openChat = useCallback(() => {
     setOpen(true);
@@ -140,16 +57,8 @@ export function ChatBubbleHost({ seedItem = null }) {
     try { localStorage.setItem(OPENED_KEY, "1"); } catch {}
   }, []);
 
-  const runAction = useCallback(async (action, key) => {
-    setActionState((s) => ({ ...s, [key]: { status: "running" } }));
-    const res = await dispatchAction(action);
-    setActionState((s) => ({ ...s, [key]: { status: res.ok ? "done" : "failed", message: res.message } }));
-    if (res.ok) setOpen(false); // minimise so the result behind is visible (Mark)
-  }, []);
-
   // Open a watch link from the reply body in-app (the shared surface). Only
-  // called for links renderLink already confirmed resolve to a live watch, so
-  // open_watch succeeds; minimise Lumé so the surface behind is visible.
+  // called for links LumeConversation already confirmed resolve to a live watch.
   const openItemInApp = useCallback((url) => {
     // Resolve to the real item and open by its id — open_watch keys on the feed's
     // SHA1 id, so passing itemUrl (which it would re-hash with shortHash) wouldn't
@@ -164,28 +73,6 @@ export function ChatBubbleHost({ seedItem = null }) {
       if (res && res.ok && isMobile) setOpen(false);
     });
   }, [isMobile]);
-
-  // Device-native dictation: append speech into the draft. (B-43)
-  const toggleMic = useCallback(() => {
-    if (!SpeechRec) return;
-    if (listening) { try { recognitionRef.current && recognitionRef.current.stop(); } catch {} return; }
-    let rec;
-    try { rec = new SpeechRec(); } catch { return; }
-    rec.lang = "en-US"; rec.interimResults = true; rec.continuous = false;
-    const base = draft;
-    rec.onresult = (e) => {
-      let t = "";
-      for (let k = 0; k < e.results.length; k++) t += e.results[k][0].transcript;
-      setDraft((base ? base.replace(/\s*$/, "") + " " : "") + t);
-    };
-    rec.onend = () => setListening(false);
-    rec.onerror = () => setListening(false);
-    recognitionRef.current = rec;
-    setListening(true);
-    try { rec.start(); } catch { setListening(false); }
-  }, [listening, draft]);
-
-  useEffect(() => () => { try { recognitionRef.current && recognitionRef.current.stop(); } catch {} }, []);
 
   // Track narrow viewports → Lumé goes full-screen on mobile.
   useEffect(() => {
@@ -208,53 +95,6 @@ export function ChatBubbleHost({ seedItem = null }) {
     return () => { document.body.style.overflow = prev; };
   }, [open, isMobile]);
 
-  useEffect(() => {
-    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-  }, [messages, loading, open]);
-
-  // Auto-grow the composer with the draft (B-41), to ~5 lines then scroll.
-  useEffect(() => {
-    const el = inputRef.current;
-    if (!el) return;
-    el.style.height = "auto";
-    el.style.height = `${Math.min(el.scrollHeight, 120)}px`;
-  }, [draft, open]);
-
-  const send = useCallback(
-    async (text) => {
-      const content = (text || "").trim();
-      if (!content || loading) return;
-      setError("");
-      setDraft("");
-      const next = [...messages, { role: "user", content }];
-      setMessages(next);
-      setLoading(true);
-      try {
-        const { data } = await supabase.auth.getSession();
-        const token = data?.session?.access_token;
-        if (!token) { setError("Please sign in again."); setLoading(false); return; }
-        const res = await fetch("/api/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-          body: JSON.stringify({ messages: next }),
-        });
-        if (res.status === 429) { setCapped(true); setLoading(false); return; }
-        if (!res.ok) { setError("Something went wrong. Try again in a moment."); setLoading(false); return; }
-        const body = await res.json();
-        setMessages([...next, {
-          role: "assistant",
-          content: body.reply || "",
-          actions: Array.isArray(body.actions) ? body.actions : [],
-        }]);
-      } catch {
-        setError("Couldn't reach Lumé. Check your connection.");
-      } finally {
-        setLoading(false);
-      }
-    },
-    [messages, loading]
-  );
-
   // "Share with Lumé" (B-52): a card's ⋯ row calls askLumeAbout(item) → this
   // opens the bubble and, if signed in, kicks off a conversation about that
   // listing. Re-registers when send/openChat change so it always uses the live
@@ -274,9 +114,8 @@ export function ChatBubbleHost({ seedItem = null }) {
     bottom: "max(16px, env(safe-area-inset-bottom))",
     zIndex: Z,
   };
-  // Speech-bubble launcher: a rounded square with one squared corner (tail) so
-  // it reads as a chat icon, not a plain circle. (B-43)
-  // Back to a circle (Mark), with a larger lume glow + drop shadow.
+  // Speech-bubble launcher → back to a circle (Mark), with a larger lume glow +
+  // drop shadow. (B-43)
   const launcherStyle = {
     width: 52, height: 52,
     borderRadius: "50%",
@@ -288,12 +127,27 @@ export function ChatBubbleHost({ seedItem = null }) {
   };
   // Desktop: a floating rounded frame, bottom-right. Mobile: full-screen sheet
   // (you can't see the page behind it anyway), with safe-area-aware chrome.
+  // Desktop EXPANDED: a centered near-full-screen takeover over a dimmed backdrop.
+  const isExpanded = expanded && !isMobile;
   const panelFrame = isMobile
     ? {
         position: "fixed", inset: 0, zIndex: Z,
         width: "100%", height: "100dvh",
         display: "flex", flexDirection: "column",
         background: "var(--bg)",
+        overflow: "hidden",
+      }
+    : isExpanded
+    ? {
+        position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
+        zIndex: Z,
+        width: "min(880px, calc(100vw - 48px))",
+        height: "min(820px, calc(100vh - 48px))",
+        display: "flex", flexDirection: "column",
+        background: "var(--bg)",
+        border: "1px solid rgba(255,255,255,0.22)",
+        borderRadius: 16,
+        boxShadow: "0 0 0 1px rgba(0,0,0,0.18), 0 24px 64px rgba(0,0,0,0.6)",
         overflow: "hidden",
       }
     : {
@@ -317,35 +171,47 @@ export function ChatBubbleHost({ seedItem = null }) {
         <span style={{ fontSize: 15, fontWeight: 600, letterSpacing: "-0.01em" }}>{NAME}</span>
         <span style={{ fontSize: 13, fontWeight: 400, opacity: 0.85 }}>· Watch chat</span>
       </div>
-      {/* Mobile: a down-chevron reads as "minimise" (drop it back to the launcher);
-          desktop: the usual ×. Both just setOpen(false). */}
-      <button onClick={() => setOpen(false)} aria-label="Minimise" title="Minimise" style={{
-        border: "none", background: "rgba(255,255,255,0.16)", color: "#fff",
-        width: isMobile ? 34 : 26, height: isMobile ? 34 : 26, borderRadius: "50%",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        fontSize: 17, lineHeight: 1, textAlign: "center", cursor: "pointer", padding: 0,
-      }}>
-        {isMobile
-          ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M6 9l6 6 6-6" /></svg>
-          : "×"}
-      </button>
+      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        {/* Desktop + signed-in only: ⤢ expand to a full-screen takeover / ⤡
+            collapse back to the corner frame. Mobile is already full-screen. */}
+        {!isMobile && user && (
+          <button onClick={() => setExpanded((e) => !e)}
+            aria-label={isExpanded ? "Collapse" : "Expand"} title={isExpanded ? "Collapse" : "Expand"} style={{
+            border: "none", background: "rgba(255,255,255,0.16)", color: "#fff",
+            width: 26, height: 26, borderRadius: "50%",
+            display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", padding: 0,
+          }}>
+            {isExpanded
+              ? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M4 14h6v6" /><path d="M20 10h-6V4" /><path d="M14 10l7-7" /><path d="M3 21l7-7" /></svg>
+              : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M15 3h6v6" /><path d="M9 21H3v-6" /><path d="M21 3l-7 7" /><path d="M3 21l7-7" /></svg>}
+          </button>
+        )}
+        {/* Mobile: a down-chevron reads as "minimise" (drop it back to the launcher);
+            desktop: the usual ×. Both minimise + reset expand. */}
+        <button onClick={() => { setOpen(false); setExpanded(false); }} aria-label="Minimise" title="Minimise" style={{
+          border: "none", background: "rgba(255,255,255,0.16)", color: "#fff",
+          width: isMobile ? 34 : 26, height: isMobile ? 34 : 26, borderRadius: "50%",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: 17, lineHeight: 1, textAlign: "center", cursor: "pointer", padding: 0,
+        }}>
+          {isMobile
+            ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M6 9l6 6 6-6" /></svg>
+            : "×"}
+        </button>
+      </div>
     </div>
   );
 
   let node;
 
   if (!open) {
-    // Tapping the launcher (or the callout) opens SEEDED when there's a
-    // shared item on screen, else a normal chat. The callout reads "Ask Lumé"
-    // on a share surface (always shown there) or the first-run "Ask me" hint.
-    //
-    // Seed ONLY an empty conversation (P-29, 2026-06-03): Lumé minimises
-    // itself after every action button (deliberate — the result behind should
-    // be visible), so without the guard every reopen re-sent the same seed
-    // question — one full model turn per round-trip, costing real API spend
-    // just to get back to the transcript. With a transcript present, reopening
-    // simply shows it.
+    // Tapping the launcher (or the callout) opens SEEDED when there's a shared
+    // item on screen, else a normal chat. Seed ONLY an empty conversation (P-29):
+    // Lumé minimises after every action button, so without the guard every reopen
+    // re-sent the same seed question — one full model turn per round-trip.
     const openSeeded = () => {
       openChat();
       if (seedItem && user && messages.length === 0 && !loading) send(describeItem(seedItem));
@@ -387,137 +253,32 @@ export function ChatBubbleHost({ seedItem = null }) {
       </div>
     );
   } else {
-    // Signed-in: the full chat.
-    const display = [{ role: "assistant", content: GREETING }, ...messages];
+    // Signed-in: the full chat (header + the shared conversation core).
     node = (
-      <div style={{ ...panelFrame, ...(isMobile ? {} : { height: "min(560px, calc(100vh - 120px))" }) }} role="dialog" aria-label={NAME}>
-        <style>{ANIM_CSS}</style>
+      <div style={{ ...panelFrame, ...(isMobile || isExpanded ? {} : { height: "min(560px, calc(100vh - 120px))" }) }} role="dialog" aria-label={NAME}>
         {header}
-        <div ref={scrollRef} style={{
-          flex: 1, overflowY: "auto", overscrollBehavior: "contain", padding: "14px",
-          display: "flex", flexDirection: "column", gap: 10,
-        }}>
-          {display.map((m, i) => {
-            const isUser = m.role === "user";
-            const acts = !isUser && Array.isArray(m.actions) ? m.actions : [];
-            return (
-              <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: isUser ? "flex-end" : "flex-start", gap: 6 }}>
-                <div style={{
-                  maxWidth: "85%", padding: "8px 12px", borderRadius: 12, fontSize: 14, lineHeight: 1.45,
-                  background: isUser ? "var(--brand-olive)" : "var(--card-bg, var(--surface))",
-                  color: isUser ? "#fff" : "var(--text1)",
-                  border: isUser ? "none" : "0.5px solid var(--border)",
-                }}>
-                  {isUser ? m.content : renderRich(m.content, openItemInApp)}
-                </div>
-                {acts.length > 0 && (
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6, maxWidth: "90%" }}>
-                    {acts.map((a, ai) => {
-                      const key = `${i}-${ai}`;
-                      const st = actionState[key];
-                      const failed = st && st.status === "failed";
-                      const done = st && st.status === "done";
-                      const running = st && st.status === "running";
-                      return (
-                        // Visited chips keep the ✓ but stay CLICKABLE (Mark: after
-                        // opening a link I want to go back and re-open it). Only a
-                        // chip mid-run is disabled.
-                        <button key={ai} onClick={() => runAction(a, key)} disabled={running}
-                          title={failed ? st.message : undefined}
-                          style={{
-                            border: "none", borderRadius: 999, padding: "6px 12px", fontSize: 13,
-                            fontFamily: "inherit", cursor: running ? "default" : "pointer",
-                            background: failed ? "var(--danger)" : "var(--brand-olive)", color: "#fff",
-                            opacity: running ? 0.6 : (done ? 0.85 : 1),
-                          }}>
-                          {done ? "✓ " : ""}{a.label}
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-
-          {messages.length === 0 && !loading && (
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 2 }}>
-              {SUGGESTIONS.map((s) => (
-                <button key={s} onClick={() => send(s)} style={{
-                  border: "0.5px solid var(--border)", background: "transparent", color: "var(--text1)",
-                  borderRadius: 999, padding: "6px 12px", fontSize: 13, cursor: "pointer", fontFamily: "inherit",
-                }}>{s}</button>
-              ))}
-            </div>
-          )}
-
-          {loading && (
-            <div aria-label={`${NAME} is thinking`} style={{
-              alignSelf: "flex-start", display: "flex", gap: 4, alignItems: "center",
-              padding: "10px 12px", borderRadius: 12, background: "var(--card-bg, var(--surface))",
-              border: "0.5px solid var(--border)",
-            }}>
-              {[0, 1, 2].map((d) => (
-                <span key={d} style={{
-                  width: 6, height: 6, borderRadius: "50%", background: "var(--text2)", display: "inline-block",
-                  animation: "lumeBlink 1.2s infinite", animationDelay: `${d * 0.15}s`,
-                }} />
-              ))}
-            </div>
-          )}
-          {error && <div style={{ fontSize: 13, color: "var(--danger)", padding: "2px" }}>{error}</div>}
-          {capped && (
-            <div style={{ fontSize: 13, color: "var(--text2)", padding: "2px" }}>
-              You've used today's messages with {NAME}. Back tomorrow.
-            </div>
-          )}
-        </div>
-
-        {!capped && (
-          <form onSubmit={(e) => { e.preventDefault(); send(draft); }} style={{
-            display: "flex", alignItems: "flex-end", gap: 8,
-            padding: isMobile ? "10px 12px calc(10px + env(safe-area-inset-bottom))" : "10px 12px",
-            borderTop: "0.5px solid var(--border)", flexShrink: 0,
-          }}>
-            {SpeechRec && (
-              <button type="button" onClick={toggleMic}
-                aria-label={listening ? "Stop dictation" : "Dictate"} title="Dictate"
-                style={{
-                  border: "0.5px solid var(--border)", borderRadius: 10, height: 38, width: 38,
-                  flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center",
-                  cursor: "pointer", fontFamily: "inherit",
-                  background: listening ? "var(--brand-olive)" : "transparent",
-                  color: listening ? "#fff" : "var(--text2)",
-                }}>
-                <MicIcon />
-              </button>
-            )}
-            <textarea
-              ref={inputRef}
-              value={draft}
-              onChange={(e) => setDraft(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(draft); } }}
-              placeholder="Ask about a watch…"
-              disabled={loading}
-              rows={1}
-              style={{
-                flex: 1, border: "0.5px solid var(--border)", borderRadius: 10, padding: "9px 12px",
-                fontSize: 14, fontFamily: "inherit", lineHeight: 1.4, background: "var(--bg)",
-                color: "var(--text1)", WebkitTextFillColor: "var(--text1)", caretColor: "var(--text1)",
-                outline: "none", resize: "none", maxHeight: 120, overflowY: "auto",
-              }}
-            />
-            <button type="submit" disabled={loading || !draft.trim()} style={{
-              border: "none", background: "var(--brand-olive)", color: "#fff", borderRadius: 10,
-              padding: "0 14px", height: 38, flexShrink: 0, fontSize: 14, fontWeight: 600,
-              cursor: loading || !draft.trim() ? "default" : "pointer",
-              opacity: loading || !draft.trim() ? 0.5 : 1, fontFamily: "inherit",
-            }}>Send</button>
-          </form>
-        )}
+        <LumeConversation
+          chat={chat}
+          onOpenItem={openItemInApp}
+          onActionResult={(a, res) => { if (res && res.ok) setOpen(false); }}
+          isMobile={isMobile}
+          greeting={GREETING}
+          suggestions={SUGGESTIONS}
+        />
       </div>
     );
   }
 
-  return createPortal(node, document.body);
+  return createPortal(
+    <>
+      {/* Dimmed backdrop behind the expanded desktop takeover; click to collapse. */}
+      {open && isExpanded && (
+        <div onClick={() => setExpanded(false)} aria-hidden style={{
+          position: "fixed", inset: 0, zIndex: Z - 1, background: "rgba(0,0,0,0.45)",
+        }} />
+      )}
+      {node}
+    </>,
+    document.body
+  );
 }
