@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { ChatBubbleHost, renderInline } from "./ChatBubbleHost";
 import { resolveItemByUrl } from "./ActionBus";
 
@@ -30,6 +30,15 @@ describe("ChatBubbleHost", () => {
     mockUser = { id: "user-123" };
     render(<ChatBubbleHost />);
     expect(screen.getByLabelText("Open Lumé")).toBeInTheDocument();
+  });
+
+  test("signed-in desktop: opening the chat exposes an Expand control that toggles to Collapse", () => {
+    mockUser = { id: "user-123" }; // jsdom has no matchMedia → isMobile=false (desktop)
+    render(<ChatBubbleHost />);
+    fireEvent.click(screen.getByLabelText("Open Lumé"));
+    const expand = screen.getByLabelText("Expand");
+    fireEvent.click(expand);
+    expect(screen.getByLabelText("Collapse")).toBeInTheDocument();
   });
 });
 
