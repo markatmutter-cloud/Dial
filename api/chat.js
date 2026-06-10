@@ -623,6 +623,11 @@ export default async function handler(req, res) {
     return;
   }
 
+  // Belt-and-suspenders for the no-em-dash rule: the model ignores it
+  // unreliably, so strip em-dashes (U+2014) from the visible reply. En-dashes
+  // (U+2013) in numeric ranges like 1965–1970 are fine and left alone.
+  if (finalText) finalText = finalText.replace(/\s*—\s*/g, ", ");
+
   if (!finalText) {
     finalText = "I hit my limit working that one out. Try asking a bit more narrowly.";
   }

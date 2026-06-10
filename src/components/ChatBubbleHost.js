@@ -54,7 +54,10 @@ const ANIM_CSS = "@keyframes lumeBlink{0%,80%,100%{opacity:.25}40%{opacity:1}}";
 
 // Minimal rich-text renderer for assistant replies: **bold**, [md](links),
 // bare URLs (→ clickable, new tab), line breaks. No markdown dep; React nodes.
-const RICH = /\*\*([^*]+)\*\*|\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)|(https?:\/\/[^\s)]+)/g;
+// Tolerates a url wrapped in angle brackets — the model sometimes writes
+// [label](<https://…>), which would otherwise fail to parse as a link and leak
+// the raw markdown / a broken href.
+const RICH = /\*\*([^*]+)\*\*|\[([^\]]+)\]\(<?(https?:\/\/[^)\s>]+)>?\)|(https?:\/\/[^\s)>]+)/g;
 
 // A link in Lumé's reply: if it resolves to a live watch we hold, open it IN-APP
 // (the shared surface) instead of bouncing to the dealer site — Mark's "the body
@@ -148,7 +151,12 @@ export function ChatBubbleHost({ seedItem = null }) {
   // called for links renderLink already confirmed resolve to a live watch, so
   // open_watch succeeds; minimise Lumé so the surface behind is visible.
   const openItemInApp = useCallback((url) => {
-    dispatchAction({ type: "open_watch", payload: { itemUrl: url } }).then((res) => {
+    // Resolve to the real item and open by its id — open_watch keys on the feed's
+    // SHA1 id, so passing itemUrl (which it would re-hash with shortHash) wouldn't
+    // resolve. resolveItemByUrl already confirmed this one resolves.
+    const item = resolveItemByUrl(url);
+    const payload = item ? { itemId: item.id, itemUrl: item.url } : { itemUrl: url };
+    dispatchAction({ type: "open_watch", payload }).then((res) => {
       if (res && res.ok) setOpen(false);
     });
   }, []);

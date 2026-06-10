@@ -45,6 +45,17 @@ describe("renderInline — reply-body links", () => {
     expect(openInApp).toHaveBeenCalledWith("https://dealer.com/5513");
   });
 
+  test("parses an angle-bracket-wrapped url and still routes in-app", () => {
+    resolveItemByUrl.mockReturnValueOnce({ id: "x" });
+    const openInApp = jest.fn();
+    const { container } = render(<div>{renderInline("see [the 5513](<https://dealer.com/5513>)", "k", openInApp)}</div>);
+    const a = container.querySelector("a");
+    expect(a).toHaveTextContent("the 5513");
+    expect(a).toHaveAttribute("href", "https://dealer.com/5513"); // brackets stripped
+    a.click();
+    expect(openInApp).toHaveBeenCalledWith("https://dealer.com/5513");
+  });
+
   test("a non-resolvable link stays a normal external link", () => {
     resolveItemByUrl.mockReturnValueOnce(null); // article / citation / gone
     const openInApp = jest.fn();

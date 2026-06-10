@@ -9,6 +9,7 @@ import {
   daysAgo, freshDate,
   ageBucketFromDate, canonicalizeBrand, detectAuctionLotBrand,
   shortHash,
+  normUrl,
   fetchJsonCached,
   matchesSearch,
   fmtSaleDateRange,
@@ -2693,6 +2694,17 @@ export default function Watchlist() {
     return m;
   }, [items, auctionLotItems]);
 
+  // URL → live item, so a URL in a Lumé reply resolves to the item it points at
+  // by URL match (NOT by hashing the URL — the feed id is merge.py's SHA1, which
+  // shortHash never reproduces). This is what lets the chat open a listing link
+  // in the in-app shared surface instead of bouncing to the dealer.
+  const liveStateByUrl = useMemo(() => {
+    const m = new Map();
+    for (const it of items) if (it && it.url) m.set(normUrl(it.url), it);
+    for (const it of auctionLotItems) if (it && it.url) m.set(normUrl(it.url), it);
+    return m;
+  }, [items, auctionLotItems]);
+
   // Lumé "open a watch" trigger — bumped by the open_watch action so
   // ShareReceiver opens the focused surface for an item without a reload.
   const [shareOpenTick, setShareOpenTick] = useState(0);
@@ -2782,16 +2794,15 @@ export default function Watchlist() {
     // Sync resolver so Lumé's chat can route a watch link in its reply body to
     // the in-app shared surface (via open_watch) instead of the dealer site —
     // only when the URL resolves to a live watch we hold; everything else stays
-    // a normal external link.
-    const unregResolver = registerItemResolver((url) => {
-      const id = url ? shortHash(url) : null;
-      return id && liveStateById.has(id) ? liveStateById.get(id) : null;
-    });
+    // a normal external link. Resolve by URL match (the feed id is SHA1, which
+    // shortHash can't reproduce — hashing here is the bug that sent every link
+    // to the dealer).
+    const unregResolver = registerItemResolver((url) => liveStateByUrl.get(normUrl(url)) || null);
     return () => { unregActions(); unregResolver(); };
   }, [
     resetFilters, setFilterBrands, setFilterModels, setFilterRefs, setSearch,
     setMinPriceText, setMaxPriceText, setStatusMode, setListingsSubTab,
-    setPage, setReferencesSubTab, setTab, liveStateById,
+    setPage, setReferencesSubTab, setTab, liveStateById, liveStateByUrl,
     openCollectionPicker, collectionsApi,
   ]);
 
