@@ -51,16 +51,15 @@ export function SharedReceiveFrame({
     : `Shared with you`;
 
   return (
-    <div style={{ padding: "16px 16px 110px", maxWidth: 1100, margin: "0 auto", width: "100%" }}>
-      {/* [0] Back — close this surface and return to where the user was browsing
-          (Mark: a Lumé link opened this with no way back). Only when wired. */}
+    <div style={{ position: "relative", padding: "16px 16px 110px", maxWidth: 1100, margin: "0 auto", width: "100%" }}>
+      {/* [0] Close — a top-RIGHT × (Mark: clicking a link then mousing to a
+          top-left Back is wrong; × where the eye expects close). Returns the
+          user to where they were browsing; only when wired. */}
       {onClose && (
-        <div style={{ display: "flex", marginBottom: 12 }}>
-          <button onClick={onClose} aria-label="Back" style={backBtnStyle}>← Back</button>
-        </div>
+        <button onClick={onClose} aria-label="Close" title="Close" style={closeBtnStyle}>×</button>
       )}
       {/* [A] Attribution — the single line of chrome copy; no explainer. */}
-      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14, paddingRight: onClose ? 40 : 0 }}>
         <span aria-hidden style={{
           flexShrink: 0, width: 28, height: 28, borderRadius: 999,
           background: "var(--brand-olive-tint-12)", color: "var(--brand-olive-ink)",
@@ -157,8 +156,10 @@ const navCueStyle = {
   border: "none", background: "transparent", color: "var(--text2)",
   padding: 0, fontFamily: "inherit", fontSize: 13, cursor: "pointer",
 };
-const backBtnStyle = {
+const closeBtnStyle = {
+  position: "absolute", top: 14, right: 14, zIndex: 2,
   border: "0.5px solid var(--border)", background: "var(--surface)", color: "var(--text1)",
-  padding: "6px 12px", borderRadius: 999, fontFamily: "inherit", fontSize: 13,
-  fontWeight: 500, cursor: "pointer",
+  width: 32, height: 32, borderRadius: 999, padding: 0,
+  fontFamily: "inherit", fontSize: 20, lineHeight: 1, fontWeight: 400,
+  display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
 };

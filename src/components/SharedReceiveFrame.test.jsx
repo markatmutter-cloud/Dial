@@ -3,8 +3,9 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { SharedReceiveFrame } from "./SharedReceiveFrame";
 
 // SharedReceiveFrame owns the chrome for every "shared with you" surface.
-// These pin the Back control (Mark: a Lumé link opened this with no way back)
-// and a render-without-crash baseline so a chrome edit can't ship a ReferenceError.
+// These pin the Close control (Mark: a top-right × where the eye expects close,
+// not a top-left Back) and a render-without-crash baseline so a chrome edit
+// can't ship a ReferenceError.
 
 const base = {
   typeLabel: "watch",
@@ -20,16 +21,16 @@ describe("SharedReceiveFrame", () => {
     expect(screen.getByText("A Watch")).toBeInTheDocument();
   });
 
-  test("shows a Back control that calls onClose", () => {
+  test("shows a Close control that calls onClose", () => {
     const onClose = jest.fn();
     render(<SharedReceiveFrame {...base} onClose={onClose} />);
-    const back = screen.getByLabelText("Back");
-    fireEvent.click(back);
+    const close = screen.getByLabelText("Close");
+    fireEvent.click(close);
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
-  test("no Back control when onClose is not wired (backward compatible)", () => {
+  test("no Close control when onClose is not wired (backward compatible)", () => {
     render(<SharedReceiveFrame {...base} />);
-    expect(screen.queryByLabelText("Back")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Close")).not.toBeInTheDocument();
   });
 });

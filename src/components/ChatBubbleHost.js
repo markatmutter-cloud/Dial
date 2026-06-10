@@ -157,9 +157,13 @@ export function ChatBubbleHost({ seedItem = null }) {
     const item = resolveItemByUrl(url);
     const payload = item ? { itemId: item.id, itemUrl: item.url } : { itemUrl: url };
     dispatchAction({ type: "open_watch", payload }).then((res) => {
-      if (res && res.ok) setOpen(false);
+      // Keep Lumé OPEN on desktop (Mark): the surface opens behind the floating
+      // panel, and the most likely next click is the NEXT link in Lumé's list —
+      // don't make them re-open the chat. On mobile the panel is a full-screen
+      // sheet that would cover the watch, so minimise there to reveal it.
+      if (res && res.ok && isMobile) setOpen(false);
     });
-  }, []);
+  }, [isMobile]);
 
   // Device-native dictation: append speech into the draft. (B-43)
   const toggleMic = useCallback(() => {
