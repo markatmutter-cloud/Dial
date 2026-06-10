@@ -315,10 +315,16 @@ async function toolFindMissed(input, sb) {
     }
   } catch {}
   const listings = readPublicJson(mode === "live_unsaved" ? "listings_live.json" : "listings_sold.json") || [];
-  return selectMissed(listings, {
+  const r = selectMissed(listings, {
     mode, windowDays: input.window_days, limit: input.limit,
     heartedUrls, heartedIds, tasteKeys, tasteBrands, nowISO: new Date().toISOString(),
   });
+  // Drop the raw total `count` before it reaches the model — handing it "count: 439"
+  // is exactly why it opens with "you've got 439 listings", violating the no-counts
+  // rule (Mark). Replace it with a non-numeric signal so it can still OFFER more
+  // ("want me to widen to 30 days?") without quoting a number it can't get right.
+  const results = r.results || [];
+  return { mode: r.mode, window_days: r.window_days, results, more_beyond_these: r.count > results.length };
 }
 
 function toolGetAuctionState(input) {
