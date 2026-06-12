@@ -1386,6 +1386,13 @@ def _mla_parse_estimation(text):
     """
     if not text:
         return None, None, None
+    # Unescape HTML entities FIRST. Monaco Legend renders the CHF thousands
+    # separator as the numeric entity `&#039;` (apostrophe), e.g.
+    # `Fr.\xa032&#039;500` — if left raw, the number regex below stops at
+    # the `&` and reads only "32" (B-70: sold prices came out ~1000× too
+    # small, CHF 32'500 → 32). unescape() turns &#039;→' (in the separator
+    # class), &#8211;→– etc., so the explicit replaces are now belt-and-braces.
+    text = unescape(text)
     # HTML entity normalise + collapse whitespace
     t = (text.replace("&#8211;", "-").replace("&#8288;", "")
               .replace("–", "-").replace("—", "-").replace("⁠", "")
@@ -1423,6 +1430,9 @@ def _mla_parse_sold_price(text, currency_hint=None):
     (currency_iso, amount_int) — currency falls back to hint."""
     if not text:
         return currency_hint, None
+    # Unescape entities first — the CHF separator is `&#039;` (apostrophe);
+    # without this the number regex truncates "32&#039;500" to 32 (B-70).
+    text = unescape(text)
     t = (text.replace("&#8211;", "-").replace("&#8288;", "")
               .replace("–", "-").replace("\xa0", " "))
     t = re.sub(r"\s+", " ", t).strip()
