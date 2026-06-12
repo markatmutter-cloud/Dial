@@ -18,10 +18,10 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.11'
 
@@ -340,6 +340,15 @@ jobs:
         # committed public/verification.json.
         run: python verify_sources.py || true
 
+      - name: Record scrape-health state (B-66)
+        # Runs BEFORE the commit so the updated consecutive-miss counts in
+        # data/scrape_health_state.json get committed by `git add data/`.
+        # Always exits 0 (it only updates counts; the --check step below
+        # decides pass/fail). always() so the count updates even if an
+        # earlier step hiccuped.
+        if: always()
+        run: python3 scrape_health_gate.py --record
+
       - name: Commit and push
         # Push race-resilient: if main has moved while we were scraping
         # (manual push, parallel workflow), rebase and retry up to 3 times.
@@ -370,13 +379,14 @@ jobs:
           echo "Push still failing after 3 retries"
           exit 1
 
-      - name: Scrape-health gate (B-60)
+      - name: Scrape-health gate (B-60, debounced B-66)
         # Runs LAST and with always() so healthy sources' data is already
         # committed above before this can fail the job. Fails the workflow
-        # (red badge) when any source produced no CSV this run, or
-        # verify_sources logged an ERROR — which makes
-        # notify-scrape-failure.yml open the usual GitHub issue. Without
-        # this, continue-on-error lets a dead source rot unseen (B-60; it
-        # hid B-58 for six days).
+        # (red badge) only when a source has missed THRESHOLD consecutive
+        # runs (the --record step above tracks the count) — which makes
+        # notify-scrape-failure.yml open the usual GitHub issue. A single
+        # transient flap stays green (merge.py's B-15 debounce already
+        # protects the data); genuine rot (B-58) still crosses the
+        # threshold within a day.
         if: always()
-        run: python3 scrape_health_gate.py
+        run: python3 scrape_health_gate.py --check
