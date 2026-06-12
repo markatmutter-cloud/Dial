@@ -865,96 +865,180 @@ def enumerate_christies(sale_url, sale=None):
     return out
 
 
-def scrape_sothebys_lot_image(lot_url):
-    """Return the canonical lot image URL or None.
+# ── Sotheby's (GraphQL lotCardsConnection) ──────────────────────────────
+#
+# B-69 (2026-06-12): Sotheby's stopped server-rendering the algoliaJson
+# payload into the auction page — `pageProps.algoliaJson` is now null and
+# only the first 48 lots ship inline (as a `lotCardsConnection`). The old
+# enumerator keyed off algoliaJson for both the lot list and a bootstrap
+# slug, so it returned 0 lots: the calendar still listed the sale but the
+# catalogue was empty (Mark: "Sotheby's shows as a link, lots live, no
+# listing available"). Only 1 Sotheby's lot survived in the feed.
+#
+# The page now drives lot loading through the site's own Cosmo GraphQL
+# router at clientapi.prod.sothelabs.com. We replicate its
+# LotCardsFilterByPaginated operation (extracted from the page bundle but
+# inlined self-contained here, so a JS redeploy / chunk-hash change can't
+# break it — introspection is disabled on the router but arbitrary valid
+# queries run). offset/limit walk the full lot list. Each card carries
+# title, lot number, estimate, image (brightspot CDN) and — on closed
+# sales — the realised price (bidState.sold.ResultVisible.premiums.
+# finalPrice). One ~5-call walk replaces the old per-lot fetch storm.
+#
+# Trade-off vs the old per-lot path: lot descriptions / essays
+# (catalogueNote / provenance / literature / exhibition) aren't in the
+# card payload, so description is just maker + title and the essay fields
+# are empty. That's the card data the feed needs; the per-lot essay fetch
+# was the slow, WAF-risky part and is intentionally dropped.
+SOTHEBYS_GQL_ENDPOINT = "https://clientapi.prod.sothelabs.com/graphql"
+SOTHEBYS_GQL_HEADERS = {
+    "User-Agent": HEADERS.get("User-Agent", "Mozilla/5.0"),
+    "Content-Type": "application/json",
+    "Origin": "https://www.sothebys.com",
+    "Referer": "https://www.sothebys.com/",
+}
+SOTHEBYS_GQL_PAGE = 100
+SOTHEBYS_LOTS_QUERY = """query LotPage($id: String!, $filter: LotCardsConnectionFilter!, $language: TranslationLanguage!, $limit: Int, $offset: Int) {
+  auction(id: $id, language: $language) {
+    id
+    lotCards: lotCardsConnection(offset: $offset, limit: $limit, filter: $filter) {
+      hasNextPage
+      totalCount
+      lots {
+        lotId
+        title
+        subtitle
+        creatorsDisplayTitle
+        lotNumber { ... on VisibleLotNumber { lotDisplayNumber } }
+        slug { lotSlug }
+        estimateV2 { ... on LowHighEstimateV2 { lowEstimate { amount currency } highEstimate { amount currency } } }
+        media(imageSizes: [Large]) { images { renditions { url width imageSize } } }
+        bidState { sold { ... on ResultVisible { isSold premiums { finalPrice: finalPriceV2 { amount currency } } } } }
+      }
+    }
+  }
+}"""
 
-    Sotheby's renders the high-res lot image into the page's `og:image`
-    meta tag — a brightspotcdn URL like
-    `https://sothebys-md.brightspotcdn.com/dims4/.../crop/.../resize/4096x4096!/quality/90/?url=…`.
-    The algoliaJson hit on the auction page doesn't carry the hash
-    needed to construct this URL, so we pay one HTTP fetch per lot.
 
-    Caller is expected to politeness-delay between calls; this function
-    just does the fetch + parse and lets the caller orchestrate.
-    Returns None on any error (no image is better than a thrown
-    exception that aborts the whole sale).
-    """
+def _sothebys_amount(node):
+    """A GraphQL Amount node ({amount: "3000", currency: "USD"}) → (int, cur)."""
+    if not isinstance(node, dict):
+        return None, None
+    raw = node.get("amount")
+    cur = node.get("currency")
     try:
-        r = requests.get(lot_url, headers=HEADERS, timeout=20)
-        r.raise_for_status()
-    except Exception:
-        return None
-    # property="og:image" can appear before or after the content="..."
-    # attribute, so match the meta tag flexibly. The image URL is
-    # always brightspotcdn — anchor on that to avoid picking up
-    # site-chrome OG images on error pages.
-    m = re.search(
-        r'<meta[^>]+property="og:image"[^>]+content="([^"]+brightspotcdn[^"]+)"',
-        r.text,
-    )
-    if not m:
-        m = re.search(
-            r'<meta[^>]+content="([^"]+brightspotcdn[^"]+)"[^>]+property="og:image"',
-            r.text,
-        )
-    if m:
-        # The og:image carries HTML-encoded ampersands — undo them
-        # so the URL works directly as an <img src>.
-        return m.group(1).replace("&amp;", "&")
+        amt = int(float(raw)) if raw not in (None, "") else None
+    except (TypeError, ValueError):
+        amt = None
+    if amt == 0:
+        amt = None
+    return amt, cur
 
-    # Fallback for lots without an og:image meta (a small minority —
-    # usually older sales where Sotheby's didn't generate the social
-    # preview): scan the body for brightspotcdn URLs and pick the
-    # largest-resize variant. The brightspot URL pattern is
-    # `.../resize/WIDTHxHEIGHT!/...`; bigger numbers = the canonical
-    # hero image rather than thumbnail/sidebar variants.
-    candidates = re.findall(r'(https://[^"\s]+brightspotcdn[^"\s]+)', r.text)
-    if not candidates:
+
+def _sothebys_card_to_lot(card, sale_url, auction_title, auction_currency,
+                          auction_year, auction_name, sale_end):
+    """One LotCard from the GraphQL connection → (lot_url, lot dict) in the
+    same shape every other house emits. Returns None for non-lots /
+    excluded titles (pocket watches, clocks, loose dials — is_excluded_title)."""
+    lot_id = card.get("lotId")
+    slug_block = card.get("slug") or {}
+    lot_slug = slug_block.get("lotSlug") if isinstance(slug_block, dict) else None
+    if not lot_id or not lot_slug:
         return None
-    def _resize_size(u):
-        m_ = re.search(r"/resize/(\d+)x(\d+)!", u)
-        if not m_: return 0
-        try: return int(m_.group(1)) * int(m_.group(2))
-        except ValueError: return 0
-    best = max(candidates, key=_resize_size)
-    return best.replace("&amp;", "&")
+    title = (card.get("title") or "").strip()
+    if not title or is_excluded_title(title):
+        return None
+    creator = (card.get("creatorsDisplayTitle") or "").strip()
+    ln = card.get("lotNumber") or {}
+    lot_display = ln.get("lotDisplayNumber") if isinstance(ln, dict) else None
+
+    if auction_year and auction_name:
+        full_url = f"https://www.sothebys.com/en/buy/auction/{auction_year}/{auction_name}/{lot_slug}"
+    else:
+        full_url = sale_url.rstrip("/") + "/" + lot_slug
+
+    est = card.get("estimateV2") or {}
+    low, low_cur = _sothebys_amount(est.get("lowEstimate"))
+    high, high_cur = _sothebys_amount(est.get("highEstimate"))
+    currency = (low_cur or high_cur or auction_currency or "USD").upper()
+
+    # Realised price only on closed lots (ResultVisible.isSold). On live
+    # lots `sold` is null / ResultHidden, so sold_price stays None — no
+    # repeat of the old "sold = low estimate while bidding" bug (B-pre).
+    sold_price = None
+    sold = (card.get("bidState") or {}).get("sold") or {}
+    if sold.get("isSold"):
+        fp = (sold.get("premiums") or {}).get("finalPrice")
+        sold_price, sp_cur = _sothebys_amount(fp)
+        if sp_cur:
+            currency = sp_cur.upper()
+    status = "ended" if sold.get("isSold") else "active"
+
+    # Largest available rendition. Sotheby's brightspot URLs are
+    # hash-signed with the resize baked in — store as-is, don't rewrite
+    # (CLAUDE.md scraper note).
+    img_url = None
+    images = (card.get("media") or {}).get("images") or []
+    if images:
+        rends = images[0].get("renditions") or []
+        if rends:
+            best = max(rends, key=lambda x: x.get("width") or 0)
+            img_url = best.get("url")
+
+    # Prepend the maker so the card's prominent line reads "Cartier Tank
+    # …" not just "Tank …" — the card title is pure model + description.
+    maker_short = creator.split(",")[0].strip() if creator else ""
+    if maker_short and maker_short.lower() not in title.lower():
+        display_title = f"{maker_short} {title}"
+    else:
+        display_title = title
+    description = f"{creator} — {title}" if creator and creator not in title else title
+
+    return (full_url, {
+        "house": "Sotheby's",
+        "lot_id": lot_id,
+        "lot_number": lot_display,
+        "title": display_title,
+        "maker": creator or None,
+        "description": (description or "")[:4000],
+        "catalogue_note": "",
+        "provenance": "",
+        "literature": "",
+        "exhibition": "",
+        "currency": currency,
+        "estimate_low": low,
+        "estimate_high": high,
+        "starting_price": None,
+        "current_bid": None,
+        "sold_price": sold_price,
+        "estimate_low_usd": to_usd(low, currency),
+        "estimate_high_usd": to_usd(high, currency),
+        "starting_price_usd": None,
+        "current_bid_usd": None,
+        "sold_price_usd": to_usd(sold_price, currency),
+        "status": status,
+        "image": img_url,
+        "auction_title": auction_title,
+        "auction_start": None,
+        "auction_end": sale_end,
+        "auction_url": sale_url,
+        "scraped_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+    })
 
 
 def enumerate_sothebys(sale_url, sale=None):
-    """Return a list of (url, lot dict) tuples for a Sotheby's sale.
+    """Return [(lot_url, lot_dict)] for a Sotheby's sale via the GraphQL API.
 
-    Two-pass strategy (PR #94, 2026-05-06):
-
-    1. Fetch the auction page → algoliaJson SSR payload gives us the
-       first 48 lots (the SSR hardcodes page=0 — `?page=N` is ignored
-       server-side, see PR #93 docstring for the prior limitation).
-       Use the FIRST lot's slug to bootstrap pass 2.
-
-    2. Fetch that one lot page → its apolloCache contains an
-       `Auction` entry whose `lotCards({"countryOfOrigin":"US","filter":"ALL"})`
-       field carries EVERY lot in the sale (~151 entries on
-       ge2601). Each card has lotId, slug, title, lotNumber,
-       creatorsDisplayTitle. From there:
-
-       - For lots already covered by algoliaJson (the 48 with full
-         estimates), reuse the algoliaJson hit + the per-lot image
-         fetch the prior code path used.
-       - For the remaining lots (the 100+ that algoliaJson didn't
-         expose), fetch each lot page individually and pull
-         estimateV2 + media + description from its own LotV2 in
-         apolloCache.
-
-    Cost: 1 auction page + 1 bootstrap lot + N-48 per-lot fetches
-    for full data + 48 per-lot fetches for images. Roughly the same
-    request volume as the prior code path (which already did 48
-    image fetches), just gets ~3× more lots.
-
-    Sotheby's doesn't appear to have a Phillips-style WAF so far;
-    if 403s start appearing we can layer the same backoff pattern
-    enumerate_phillips uses.
+    See the section comment above for why this replaced the algoliaJson +
+    bootstrap-lot approach (B-69). Two passes:
+      1. Fetch the auction page → pageProps.auctionId (raw uuid the
+         GraphQL `auction(id:)` wants) + the apolloCache Auction object
+         for sale metadata (title, currency, slug, end date).
+      2. POST LotCardsFilterByPaginated, walking offset/limit until
+         hasNextPage is false, and map each card to a lot record.
     """
-    out = []
-    # ── Pass 1: auction page → algoliaJson (48 lots) ──────────────
+    sale = sale or {}
+    # ── Pass 1: auction page → auctionId + sale metadata ──────────────
     try:
         r = requests.get(sale_url, headers=HEADERS, timeout=30)
         r.raise_for_status()
@@ -966,279 +1050,77 @@ def enumerate_sothebys(sale_url, sale=None):
         print("  [Sotheby's] no __NEXT_DATA__ on auction page")
         return []
     try:
-        data = json.loads(m.group(1))
+        pp = json.loads(m.group(1)).get("props", {}).get("pageProps", {})
     except Exception as e:
         print(f"  [Sotheby's] __NEXT_DATA__ parse failed: {e}")
         return []
-    aj = (data.get("props", {}).get("pageProps", {}).get("algoliaJson") or {})
-    hits = aj.get("hits") or []
-    by_lot_id = {}
-    for hit in hits:
-        oid = hit.get("objectID")
-        if oid: by_lot_id[oid] = hit
-    print(f"  [Sotheby's] algoliaJson: {len(hits)} hits, nbHits={aj.get('nbHits')}")
-
-    # ── Pass 2: bootstrap a lot URL, harvest lotCards ─────────────
-    bootstrap_slug = None
-    for hit in hits:
-        if hit.get("slug"):
-            bootstrap_slug = hit["slug"]
-            break
-    if not bootstrap_slug:
-        print("  [Sotheby's] no bootstrap lot slug in algoliaJson")
+    auction_id = pp.get("auctionId")
+    if not auction_id:
+        print("  [Sotheby's] no auctionId on auction page")
         return []
-    bootstrap_url = ("https://www.sothebys.com" + bootstrap_slug) if bootstrap_slug.startswith("/") else bootstrap_slug
-    try:
-        time.sleep(PER_LOT_SLEEP_SECONDS)
-        rb = requests.get(bootstrap_url, headers=HEADERS, timeout=30)
-        rb.raise_for_status()
-    except Exception as e:
-        print(f"  [Sotheby's] bootstrap lot fetch failed: {e}")
-        return []
-    mb = re.search(r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>', rb.text, re.DOTALL)
-    if not mb:
-        print("  [Sotheby's] no __NEXT_DATA__ on bootstrap lot")
-        return []
-    bdata = json.loads(mb.group(1))
-    apollo = bdata.get("props", {}).get("pageProps", {}).get("apolloCache") or {}
-    auction_obj = None
-    auction_currency = None
-    auction_title = None
-    for k, v in apollo.items():
-        if isinstance(v, dict) and v.get("__typename") == "Auction":
-            auction_obj = v
-            break
-    if not auction_obj:
-        print("  [Sotheby's] no Auction in apolloCache")
-        return []
-    lot_cards = None
-    for fk, fv in auction_obj.items():
-        if fk.startswith("lotCards") and isinstance(fv, list):
-            lot_cards = fv
-            break
-    if not lot_cards:
-        print("  [Sotheby's] no lotCards on Auction object")
-        return []
-    auction_currency = auction_obj.get("currency") or auction_obj.get("currencyV2") or "USD"
-    auction_title = auction_obj.get("title")
+    apollo = pp.get("apolloCache") or {}
+    auction_obj = next((v for k, v in apollo.items()
+                        if k.startswith("Auction:") and isinstance(v, dict)), {})
+    auction_title = auction_obj.get("title") or (sale.get("title") if isinstance(sale, dict) else None)
     # Catalog-level exclusion: a non-watch sale (jewels/art) shouldn't be
-    # enumerated at all, even though a few watch lots would survive the
-    # per-lot is_excluded_title filter below. See EXCLUDE_CATALOG_TITLES.
+    # enumerated even though a few watch lots would survive the per-lot
+    # filter. See EXCLUDE_CATALOG_TITLES.
     if is_excluded_catalog(auction_title):
         print(f"  [Sotheby's] skipping blocklisted catalog: {auction_title!r}")
         return []
-    auction_year = (auction_obj.get("slug") or {}).get("year") if isinstance(auction_obj.get("slug"), dict) else None
-    auction_name = (auction_obj.get("slug") or {}).get("name") if isinstance(auction_obj.get("slug"), dict) else None
-    # Hoist a sale-level "approximately when this sale ends" date.
-    # Used as a fallback for lots that algoliaJson didn't cover and
-    # whose per-lot LotV2 didn't carry a date — without this, ~100 lots
-    # land with auction_end=null on the frontend and the
-    # endingSoonComparator drops them to tier 3 (mis-sorting the whole
-    # "Live auctions" view per Mark's report 2026-05-07).
-    #
-    # Three potential sources, preferred in order:
-    #   1. Auction.dates.closed — usually null for live sales until
-    #      the day-of, but populated for online auctions.
-    #   2. LotV2.session.scheduledOpeningDate from the bootstrap lot —
-    #      for live sales this is when the live session starts, which
-    #      is approximately when the sale ends (close enough for tier
-    #      classification).
-    #   3. None.
-    auction_dates = auction_obj.get("dates") or {}
-    sale_auction_end = None
-    if isinstance(auction_dates, dict):
-        cb = auction_dates.get("closed")
-        if isinstance(cb, str): sale_auction_end = cb
-    if not sale_auction_end:
-        # The bootstrap lot's LotV2 was the same parse — find it and
-        # extract its session date.
-        for v in apollo.values():
-            if isinstance(v, dict) and v.get("__typename") == "LotV2":
-                sess = v.get("session") or {}
-                if isinstance(sess, dict):
-                    sd = sess.get("scheduledOpeningDate")
-                    if isinstance(sd, str):
-                        sale_auction_end = sd
-                        break
-    print(f"  [Sotheby's] lotCards: {len(lot_cards)} lots — fetching missing ones (sale-end fallback: {sale_auction_end or 'none'})")
+    auction_currency = (auction_obj.get("currencyV2") or auction_obj.get("currency") or "USD").upper()
+    slug = auction_obj.get("slug") or {}
+    auction_year = slug.get("year") if isinstance(slug, dict) else None
+    auction_name = slug.get("name") if isinstance(slug, dict) else None
+    # Sale-level end date for the endingSoon tier sort: prefer the actual
+    # close, fall back to the live-session start (startsToClose ≈ sale
+    # end), then the calendar sale dict. Without it ~all lots land with
+    # auction_end=null and drop to tier 3 (mis-sorting "Live auctions").
+    dates = auction_obj.get("dates") or {}
+    sale_end = None
+    if isinstance(dates, dict):
+        for key in ("closed", "startsToClose"):
+            v = dates.get(key)
+            if isinstance(v, str):
+                sale_end = v
+                break
+    if not sale_end and isinstance(sale, dict):
+        sale_end = sale.get("end_date") or sale.get("dateEnd") or sale.get("start_date")
 
-    # ── Build per-lot data ────────────────────────────────────────
-    for card in lot_cards:
-        lot_id = card.get("lotId")
-        slug_block = card.get("slug") or {}
-        lot_slug = slug_block.get("lotSlug") if isinstance(slug_block, dict) else None
-        if not lot_id or not lot_slug:
-            continue
-        title = (card.get("title") or "").strip()
-        if is_excluded_title(title):
-            continue
-        creator = (card.get("creatorsDisplayTitle") or "").strip()
-        lot_number_block = card.get("lotNumber") or {}
-        lot_display = lot_number_block.get("lotDisplayNumber") if isinstance(lot_number_block, dict) else None
-        # URL: same shape Sotheby's renders
-        if auction_year and auction_name:
-            full_url = f"https://www.sothebys.com/en/buy/auction/{auction_year}/{auction_name}/{lot_slug}"
-        else:
-            # Fallback — derive from sale_url + slug
-            full_url = sale_url.rstrip("/") + "/" + lot_slug
-        # Decide what data we already have. AlgoliaJson hit has full
-        # estimate + currency + sold_price + dates. lotCards has only
-        # title + slug + lotNumber + creator. If algoliaJson doesn't
-        # cover this lot, we per-lot fetch for estimateV2 + image.
-        hit = by_lot_id.get(lot_id)
-        currency = (hit.get("currency") if hit else None) or auction_currency or "USD"
-        currency = currency.upper()
-        low = hit.get("lowEstimate") if hit else None
-        high = hit.get("highEstimate") if hit else None
-        status_state = ((hit.get("lotState") or "").lower()) if hit else ""
-        auction_state = ((hit.get("auctionState") or "").lower()) if hit else ""
-        status = "ended" if auction_state in ("closed", "complete", "completed") or status_state == "sold" else "active"
-        # hit.price has dual meaning in Sotheby's algoliaJson:
-        # for SOLD lots it's the realised hammer; for everything else
-        # it's the low estimate (the catalog "starting from" display).
-        # Without gating, every active lot ended up with
-        # sold_price = low_estimate, downstream merge.py + App.js
-        # flagged the lot as sold while bidding was still live (Mark
-        # report 2026-05-13 — multiple Sotheby's lots showed Sold the
-        # day before their auction-end; Daytona ref 6262 showed Sold
-        # at $40k = low estimate while still taking bids).
-        #
-        # Two-gate defence:
-        # (a) lotState must be explicitly "sold". If Sotheby's later
-        #     exposes a closed-without-sale state, sold_price stays
-        #     null — the correct semantics for an unsold lot.
-        # (b) Reject sold_price == low_estimate. Even when lotState
-        #     transiently flips to "sold", there's a window where
-        #     `price` is still the low-estimate placeholder before
-        #     the hammer propagates. Better to leave null and let
-        #     the next scrape settle it than to publish a false
-        #     "sold for low estimate." Cost: rare lots that genuinely
-        #     hammer at low estimate need the second scrape pass to
-        #     resolve — acceptable trade vs the alternative.
-        sold_price = None
-        if status_state == "sold":
-            candidate = (hit.get("price") if hit else None) or None
-            if candidate == 0: candidate = None
-            if candidate is not None and low is not None and candidate == low:
-                candidate = None
-            sold_price = candidate
-        # auction_start was previously taken from algoliaJson's
-        # `openDate` — Sotheby's online portion opens days/weeks
-        # before the live session, so this triggered the `tier 0
-        # (currently live)` branch in `endingSoonComparator` for
-        # lots that aren't actually live yet, mis-sorting the Live
-        # auctions view (PR fix 2026-05-07). Drop it: leave null
-        # so all upcoming Sotheby's lots cluster in tier 1 and
-        # sort by auction_end ascending alongside other houses.
-        auction_start = None
-        # auction_end falls back to the sale-level Auction.dates.closed
-        # when algoliaJson + the per-lot LotV2 both omit it. Without
-        # this fallback, ~100 lotCards-only lots ended up with
-        # auction_end=null and dropped to tier 3 (no date) instead
-        # of tier 1 (upcoming) — visible to the user as "undefined"
-        # in the days-left chip + scattered sort order.
-        auction_end = (hit.get("closingTime") or hit.get("auctionDate")) if hit else None
-        img_url = None
-
-        # Per-lot fetch: always for image (algoliaJson doesn't carry
-        # the og:image hash). For lots NOT in algoliaJson (i.e. past
-        # the SSR's first 48), we additionally need estimate +
-        # description from the lot's own LotV2.
-        # Essay fields (catalogueNote / provenance / literature /
-        # exhibition) only populate via _scrape_sothebys_lot_full,
-        # which is the heavier per-lot fetch path. The lighter "just
-        # the og:image" path skips them — that's fine, since the
-        # heavier path triggers for any lot beyond algoliaJson's
-        # 48-cap (i.e. most lots on larger sales). When we DO have
-        # essays, we forward them through to the output record below.
-        catalogue_note = ""
-        provenance     = ""
-        literature     = ""
-        exhibition     = ""
+    # ── Pass 2: paginate the GraphQL lotCardsConnection ───────────────
+    out = []
+    offset = 0
+    total = None
+    while True:
         try:
-            time.sleep(PER_LOT_SLEEP_SECONDS)
-            if hit is None or low is None:
-                # Need full data — pull from the lot page's apolloCache.
-                lot_data = _scrape_sothebys_lot_full(full_url)
-                if lot_data:
-                    if low is None: low = lot_data.get("low")
-                    if high is None: high = lot_data.get("high")
-                    if sold_price is None: sold_price = lot_data.get("sold")
-                    img_url = lot_data.get("image")
-                    if not auction_end:   auction_end   = lot_data.get("auction_end")
-                    # auction_start intentionally left null (see comment above).
-                    description    = lot_data.get("description") or title
-                    catalogue_note = lot_data.get("catalogue_note", "")
-                    provenance     = lot_data.get("provenance", "")
-                    literature     = lot_data.get("literature", "")
-                    exhibition     = lot_data.get("exhibition", "")
-                else:
-                    description = title
-            else:
-                # Lighter fetch — just the og:image.
-                img_url = scrape_sothebys_lot_image(full_url)
-                description = (creator + " — " + title) if creator and creator not in title else title
+            resp = requests.post(
+                SOTHEBYS_GQL_ENDPOINT, headers=SOTHEBYS_GQL_HEADERS,
+                json={"query": SOTHEBYS_LOTS_QUERY,
+                      "variables": {"id": auction_id, "filter": "ALL",
+                                    "language": "ENGLISH",
+                                    "limit": SOTHEBYS_GQL_PAGE, "offset": offset}},
+                timeout=40)
+            resp.raise_for_status()
+            payload = resp.json()
         except Exception as e:
-            print(f"    [Sotheby's] lot fetch failed for {full_url}: {e}")
-            description = title
-        # Sale-level fallback: if neither algoliaJson nor the per-lot
-        # fetch surfaced an auction_end, use the bootstrap Auction
-        # object's `dates.closed`. Same date for every lot in the sale.
-        if not auction_end and sale_auction_end:
-            auction_end = sale_auction_end
-        # Display title — prepend the maker so the card's prominent
-        # line says "Cartier Tank Cintrée …" instead of just
-        # "Tank Cintrée | …" (Mark's report 2026-05-07: filters
-        # work because brand is detected separately, but the
-        # visible title was dropping the maker for every Sotheby's
-        # lot since the algoliaJson + lotCards titles are pure
-        # model + description). Skip the prepend if the maker
-        # already appears in the title (rare but possible). Strip
-        # any "Brand, Country" → "Brand" so the maker reads
-        # cleanly when prepended (creatorsDisplayTitle is
-        # "Cartier, Paris" but we want "Cartier" up front).
-        maker_short = (creator.split(",")[0].strip() if creator else "")
-        if maker_short and maker_short.lower() not in title.lower():
-            display_title = f"{maker_short} {title}"
-        else:
-            display_title = title
-        lot_data_out = {
-            "house": "Sotheby's",
-            "lot_id": lot_id,
-            "lot_number": lot_display,
-            "title": display_title,
-            "maker": creator or None,
-            # Description cap lifted 2000 → 4000 (2026-05-19) — the
-            # spec block alone can run ~900 chars and essays add to it.
-            "description": (description or "")[:4000],
-            # Essay fields surfaced 2026-05-19 (Mark feedback). Empty
-            # strings on most lots — Sotheby's only populates these
-            # on essay-worthy pieces — but kept as explicit keys so
-            # downstream readers can rely on the schema shape.
-            "catalogue_note": catalogue_note or "",
-            "provenance":     provenance or "",
-            "literature":     literature or "",
-            "exhibition":     exhibition or "",
-            "currency": currency,
-            "estimate_low": low,
-            "estimate_high": high,
-            "starting_price": None,
-            "current_bid": None,
-            "sold_price": sold_price,
-            "estimate_low_usd":  to_usd(low,  currency),
-            "estimate_high_usd": to_usd(high, currency),
-            "starting_price_usd": None,
-            "current_bid_usd":    None,
-            "sold_price_usd":    to_usd(sold_price, currency),
-            "status": status,
-            "image": img_url,
-            "auction_title": auction_title,
-            "auction_start": auction_start,
-            "auction_end":   auction_end,
-            "auction_url":   sale_url,
-            "scraped_at":    time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-        }
-        out.append((full_url, lot_data_out))
+            print(f"  [Sotheby's] GraphQL fetch failed at offset {offset}: {e}")
+            break
+        conn = ((payload.get("data") or {}).get("auction") or {}).get("lotCards")
+        if conn is None:
+            print(f"  [Sotheby's] GraphQL error: {json.dumps(payload.get('errors'))[:200]}")
+            break
+        for card in (conn.get("lots") or []):
+            rec = _sothebys_card_to_lot(card, sale_url, auction_title,
+                                        auction_currency, auction_year,
+                                        auction_name, sale_end)
+            if rec:
+                out.append(rec)
+        total = conn.get("totalCount")
+        if not conn.get("hasNextPage"):
+            break
+        offset += SOTHEBYS_GQL_PAGE
+        time.sleep(PER_LOT_SLEEP_SECONDS)
+    print(f"  [Sotheby's] {len(out)} watch lots from {auction_title!r} (sale total {total})")
     return out
 
 
@@ -1734,115 +1616,6 @@ def _extract_christies_essay(html):
     if not inner:
         return ""
     return _strip_html(inner.group(1))
-
-
-def _scrape_sothebys_lot_full(lot_url):
-    """Pull the full lot data from the lot page's apolloCache LotV2.
-
-    Returns a dict with keys: low, high, sold, image, auction_start,
-    auction_end, description, catalogue_note, provenance, literature,
-    exhibition. Or None on parse failure.
-    """
-    try:
-        r = requests.get(lot_url, headers=HEADERS, timeout=20)
-        r.raise_for_status()
-    except Exception:
-        return None
-    m = re.search(r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>', r.text, re.DOTALL)
-    if not m: return None
-    try:
-        data = json.loads(m.group(1))
-    except Exception:
-        return None
-    apollo = data.get("props", {}).get("pageProps", {}).get("apolloCache") or {}
-    lot = None
-    auction = None
-    for v in apollo.values():
-        if not isinstance(v, dict): continue
-        if v.get("__typename") == "LotV2": lot = v
-        elif v.get("__typename") == "Auction": auction = v
-    if not lot: return None
-    # estimateV2 wraps low/high in `Amount` objects (string amount).
-    # Convert to plain ints so the rest of the pipeline (to_usd, the
-    # frontend price formatter) doesn't need to special-case this
-    # shape.
-    est = lot.get("estimateV2") or {}
-    def _amount(node):
-        if isinstance(node, dict): node = node.get("amount")
-        if node in (None, ""): return None
-        try: return int(float(node))
-        except (TypeError, ValueError): return None
-    low = _amount(est.get("lowEstimate"))
-    high = _amount(est.get("highEstimate"))
-    sold = None
-    bid_ref = lot.get("latestBid") or {}
-    # latestBid is a reference; resolved value may have hammer info.
-    # For now leave sold price detection to the bid_ref dereferencing
-    # in a future PR — most active lots don't have it set yet anyway.
-    image = None
-    media = None
-    for fk in lot.keys():
-        if fk.startswith("media"):
-            media = lot[fk]
-            break
-    if isinstance(media, dict):
-        images = media.get("images") or []
-        if images:
-            # Pick the largest size variant available.
-            best = None
-            best_score = 0
-            for img in images:
-                if not isinstance(img, dict): continue
-                sizes = img.get("sizes") or []
-                for sz in sizes:
-                    if not isinstance(sz, dict): continue
-                    url = sz.get("url") or ""
-                    score = 0
-                    sm = re.search(r"resize/(\d+)x(\d+)", url)
-                    if sm: score = int(sm.group(1)) * int(sm.group(2))
-                    if score > best_score:
-                        best_score = score; best = url
-            if best:
-                image = best.replace("&amp;", "&")
-    if not image:
-        # og:image fallback uses the same code path the prior scraper
-        # used — keep behaviour consistent.
-        image = scrape_sothebys_lot_image(lot_url)
-    # Spec block (dial/calibre/case/etc.) AND the essay fields are
-    # all on LotV2. Lift them all. CLAUDE.md notes catalogueNote +
-    # provenance + literature were "discarded" by the prior parser
-    # (Mark feedback 2026-05-19: "why are we discarding the sothebys
-    # essays?"). Most lots fill only catalogueNote — provenance +
-    # literature are typically populated only on important pieces —
-    # but we extract all four so the downstream recommender + Epic 0
-    # reference encyclopedia can read them when present.
-    description    = _strip_html(lot.get("description"))
-    catalogue_note = _strip_html(lot.get("catalogueNote"))
-    provenance     = _strip_html(lot.get("provenance"))
-    literature     = _strip_html(lot.get("literature"))
-    # `exhibition` field is sometimes called `exhibited` on older lots;
-    # check both. Single-string in either case.
-    exhibition = _strip_html(lot.get("exhibition") or lot.get("exhibited"))
-    auction_start = None
-    auction_end = None
-    if auction:
-        dates = auction.get("dates") or {}
-        if isinstance(dates, dict):
-            ab = dates.get("acceptsBids")
-            cb = dates.get("closed")
-            auction_start = ab if isinstance(ab, str) else None
-            auction_end = cb if isinstance(cb, str) else None
-    return {
-        "low": low, "high": high, "sold": sold,
-        "image": image,
-        "auction_start": auction_start,
-        "auction_end": auction_end,
-        "description":    description[:4000],
-        "catalogue_note": catalogue_note[:4000],
-        "provenance":     provenance[:4000],
-        "literature":     literature[:4000],
-        "exhibition":     exhibition[:2000],
-    }
 
 
 def enumerate_phillips(sale_url, sale=None):
