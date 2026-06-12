@@ -165,8 +165,9 @@ diagram, data model, and folder layout.
   (keep the bounds-check on the `{_K: V}` resolver — `-N` sentinels). `sold_price`
   comes from the rendered "Sold For" panel, not JSON-LD (that's the low estimate).- **Comprehensive auction houses (5):** Antiquorum (use `live.antiquorum.swiss`
   + live-URL fallback when the catalog lags), Christie's, Monaco Legend
-  (server-rendered Livewire), Sotheby's (`apolloCache` lotCards, not
-  algoliaJson alone), Phillips. **Bonhams runs from a residential host, not CI**
+  (server-rendered Livewire), Sotheby's (GraphQL `lotCardsConnection` at
+  `clientapi.prod.sothelabs.com`, paginated — B-69; the old SSR
+  algoliaJson/apolloCache lot list went empty 2026-06), Phillips. **Bonhams runs from a residential host, not CI**
   — its lot pages 403 datacenter IPs (Cloudflare), so `enumerate_bonhams` is
   dormant in CI; the laptop `launchd` agent (`bonhams_lots_scraper.py`) scrapes
   it into a SEPARATE `public/bonhams_lots.json` (frontend folds it by URL key;
