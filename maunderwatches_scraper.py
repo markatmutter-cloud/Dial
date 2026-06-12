@@ -7,26 +7,37 @@ endpoint. ~146 products today; same pattern as Watchurbia / Menta /
 Grey & Patina but scoped to the "all-preowned-watches" category at
 the API level so retail/strap inventory doesn't leak in.
 
+CI block (B-66, 2026-06-12): Maunder's bot-protection began serving a
+one-run HTTP 202 anti-bot interstitial to the GitHub Actions IP, which
+flapped the source red (it also hit watchesoflancashire/wok the same
+runs — same shared-CDN symptom). Fix is the proven watchcenter/Bonhams
+treatment: swap plain `requests` for `curl_cffi` with `impersonate=
+"chrome"` so the TLS/JA3 fingerprint matches a real browser and the
+challenge doesn't fire. With a real Chrome JA3 the full Chrome UA is
+no longer suspicious, so the old short-UA 403 workaround is unneeded.
+
 Run: python3 maunderwatches_scraper.py
 Output: maunderwatches_listings.csv
 """
 import csv
 import re
+import sys
 import time
 
-import requests
+try:
+    from curl_cffi import requests as cc
+except ImportError:
+    sys.exit("curl-cffi not installed — `pip install -r requirements-auctions.txt`")
 
+IMPERSONATE = "chrome"
 BASE = "https://www.maunderwatches.co.uk"
 API = f"{BASE}/wp-json/wc/store/v1/products"
 HEADERS = {
-    # Maunder's bot-protection (likely Wordfence or Cloudflare-rules) returns
-    # 403 to the long Chrome UA but is fine with the short generic one.
-    "User-Agent": "Mozilla/5.0",
     "Accept": "application/json, text/plain, */*",
     "Accept-Language": "en-US,en;q=0.9",
     "Referer": f"{BASE}/",
 }
-SESSION = requests.Session()
+SESSION = cc.Session(impersonate=IMPERSONATE)
 SESSION.headers.update(HEADERS)
 
 BRANDS = [
@@ -81,7 +92,7 @@ def fetch_chunk(offset, per_page):
                 return r.json()
             last_err = f"HTTP {r.status_code}"
             time.sleep(2 ** attempt)
-        except requests.RequestException as e:
+        except Exception as e:  # curl_cffi raises curl_cffi.requests.errors.RequestsError
             last_err = str(e)
             time.sleep(2 ** attempt)
     raise RuntimeError(f"offset {offset} failed after 3 attempts: {last_err}")
