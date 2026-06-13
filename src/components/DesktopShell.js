@@ -63,6 +63,9 @@ export function DesktopShell(props) {
     topTabs,
     trackNewItemModalJSX, watchSubTabsJSX, watchHeartedToggleJSX, collectionsSubTabsJSX, watchlistTabJSX,
     saleContextHeaderJSX,
+    catalogFullPage,
+    catalogBarJSX,
+    catalogActionRowJSX,
     watchboxTabJSX,
     referencesTabJSX, collectionsTabJSX,
     lotMigrationBannerJSX,
@@ -501,7 +504,14 @@ export function DesktopShell(props) {
           olive WATCHLIST + olive Search button) carries the first
           paint. Border-bottom dropped when olive: the color flip is
           its own divider against the neutral working surface below. */}
-      {(() => {
+      {/* Auction-catalog full-page takeover (Mark 2026-06-13): the green title
+          bar + action row replace the entire top nav bar (mirroring the
+          calendar modal's focused full-page treatment); the filter row + grid
+          render below as normal. flexShrink:0 keeps it out of the scroll pane
+          so it stays pinned while the lots scroll. */}
+      {catalogFullPage ? (
+        <div style={{ flexShrink: 0 }}>{catalogBarJSX}{catalogActionRowJSX}</div>
+      ) : (() => {
         // Same rule as topBarOnOlive above: receive surfaces +
         // Search-all also get olive chrome even if the underlying
         // `tab` is "home" (e.g. user landed via a /share link with
@@ -657,8 +667,8 @@ export function DesktopShell(props) {
           Hidden when a share-receive landing surface is taking over
           the content area, since the recipient has no use for the
           sub-tab + filter row chrome until they dismiss / save. */}
-      {!anyShareActive && !searchAllActive && listingsSubTabsJSX}
-      {!anyShareActive && !searchAllActive && watchSubTabsJSX}
+      {!anyShareActive && !searchAllActive && !catalogFullPage && listingsSubTabsJSX}
+      {!anyShareActive && !searchAllActive && !catalogFullPage && watchSubTabsJSX}
       {/* referencesSubTabsJSX retired 2026-06-03 — Articles + Reference
           Guides are top-level tabs; the tools family launches from the
           account menu. */}
@@ -668,7 +678,7 @@ export function DesktopShell(props) {
           tools below, rather than scrolling inside the content.
           PR_W (2026-05-22): hidden when in cross-tab Search-all
           destination (SearchResultsView has its own header). */}
-      {!anyShareActive && !searchAllActive && identityBandJSX}
+      {!anyShareActive && !searchAllActive && !catalogFullPage && identityBandJSX}
       {/* Catalog + Saved headers + their filter bar moved INTO the scroll pane
           (Mark 2026-06-02) so the title scrolls away and the filter pins — see
           the useCollapse block inside data-desktop-main below. On other surfaces

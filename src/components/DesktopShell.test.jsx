@@ -67,6 +67,30 @@ describe("DesktopShell", () => {
     expect(screen.getByTestId("listings-tab-content")).toBeInTheDocument();
   });
 
+  test("auction-catalog full-page takeover: green bar replaces the top nav, filter stays", () => {
+    // Mark 2026-06-13: drilling into a sale promotes the catalogue to a
+    // full-page surface — the shell suppresses the top nav bar + sub-tabs and
+    // renders the App-built green bar (catalogBarJSX) + action row; the filter
+    // row + grid stay.
+    window.innerWidth = 1440;
+    render(<DesktopShell {...buildMockShellProps({
+      tab: "listings",
+      listingsSubTab: "auctions",
+      catalogFullPage: true,
+      catalogBarJSX: <div data-testid="catalog-bar">The New York Auction: XIV</div>,
+      catalogActionRowJSX: <div data-testid="catalog-actions" />,
+    })} />);
+    expect(screen.getByTestId("catalog-bar")).toBeInTheDocument();
+    expect(screen.getByTestId("catalog-actions")).toBeInTheDocument();
+    // Top nav suppressed: main tabs + wordmark gone.
+    expect(screen.queryByText("Reference Guides")).not.toBeInTheDocument();
+    expect(screen.queryByText("Watchlist")).not.toBeInTheDocument();
+    // Filter row stays (catalogue is still a filterable grid).
+    expect(screen.getByRole("button", { name: /^Source/ })).toBeInTheDocument();
+    // The lot grid still renders.
+    expect(screen.getByTestId("listings-tab-content")).toBeInTheDocument();
+  });
+
   test("renders the watchlist tab content on Watchlist tab", () => {
     render(<DesktopShell {...buildMockShellProps({ tab: "watchlist" })} />);
     expect(screen.getByTestId("watchlist-tab")).toBeInTheDocument();

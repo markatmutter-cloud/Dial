@@ -54,6 +54,26 @@ describe("MobileShell", () => {
     expect(screen.queryByText("Cool Stuff")).not.toBeInTheDocument();
   });
 
+  test("auction-catalog full-page takeover: shows the green bar, hides the main tabs", () => {
+    // Mark 2026-06-13: drilling into a sale promotes the catalogue to a
+    // full-page surface — the shell suppresses the masthead + main tabs and
+    // renders the App-built green bar (catalogBarJSX) + action row instead.
+    render(<MobileShell {...buildMockShellProps({
+      tab: "listings",
+      listingsSubTab: "auctions",
+      catalogFullPage: true,
+      catalogBarJSX: <div data-testid="catalog-bar">The New York Auction: XIV</div>,
+      catalogActionRowJSX: <div data-testid="catalog-actions" />,
+    })} />);
+    expect(screen.getByTestId("catalog-bar")).toBeInTheDocument();
+    expect(screen.getByTestId("catalog-actions")).toBeInTheDocument();
+    // Chrome suppressed: main-tab pills + brand wordmark gone.
+    expect(screen.queryByText("Articles")).not.toBeInTheDocument();
+    expect(screen.queryByText("Guides")).not.toBeInTheDocument();
+    // Filter affordance stays (catalogue is still a filterable grid).
+    expect(screen.getByLabelText("Filters")).toBeInTheDocument();
+  });
+
   test("renders the drawer when drawerOpen is true", () => {
     render(<MobileShell {...buildMockShellProps({ drawerOpen: true })} />);
     // Drawer's "Show N watches" CTA is the most reliable in-drawer anchor.
