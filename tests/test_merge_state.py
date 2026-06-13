@@ -572,6 +572,13 @@ def test_is_excluded_catalog_blocks_nonwatch_sales():
     assert merge.is_excluded_catalog("Espionage: Fact & Fiction") is True
     # Case-insensitivity.
     assert merge.is_excluded_catalog("espionage: FACT & fiction") is True
+    # Sotheby's non-watch sales Mark flagged 2026-06-13 (B-71): a Fabergé /
+    # gold-boxes sale and the Tempelsman objets collection, both cross-listed
+    # in the watches category with a handful of watch lots.
+    assert merge.is_excluded_catalog(
+        "Artistic Luxury: Fabergé, Gold Boxes, Silver & Ceramics") is True
+    assert merge.is_excluded_catalog(
+        "A Marvelous Journey: The Collection of Maurice Tempelsman") is True
     # Real watch sales are untouched.
     assert merge.is_excluded_catalog("Important Watches") is False
     assert merge.is_excluded_catalog("The Geneva Watch Auction: XX") is False
