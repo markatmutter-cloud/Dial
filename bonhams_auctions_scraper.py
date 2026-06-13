@@ -145,9 +145,15 @@ def scrape():
         # Cards that just say "Coming soon" / "Register to bid" omit
         # those phrases — those upcoming sales don't have a catalog
         # yet despite having a sale URL.
+        # Strip tags first: the CTA renders the lot count in its own span,
+        # e.g. `View <span>41</span> lots`, which split the "View … lots"
+        # phrase and made this read False for every published catalog
+        # (B-72, 2026-06-13). After stripping, allow an optional count token
+        # between the verb and "lots".
+        chunk_text = re.sub(r"<[^>]+>", " ", chunk)
         has_catalog = bool(re.search(
-            r'(?:View|Browse|See)\s+(?:lots|catalogue|catalog)',
-            chunk,
+            r'(?:View|Browse|See)\s+(?:[\d,]+\s+)?(?:lots|catalogue|catalog)',
+            chunk_text,
             re.IGNORECASE,
         ))
 

@@ -15,8 +15,10 @@ Why this exists as its own file:
   lots to their OWN file, `public/bonhams_lots.json`. The frontend folds that
   file into the same Auctions projection by URL key (mirroring
   manual_archive_lots.json), so CI's auction_lots.json sweep can never clobber
-  it. The Bonhams *calendar* still updates in CI (bonhams_auctions_scraper.py
-  is not blocked) — only the lots need to be here.
+  it. As of 2026-06-13 (B-72) the Bonhams *calendar* ALSO runs here — the
+  department page now 403s CI too — so the residential wrapper runs both
+  bonhams_auctions_scraper.py (→ data/bonhams_auctions.csv) and this lots
+  scraper. CI's merge.py re-emits the calendar from that CSV.
 
 Run: python3 bonhams_lots_scraper.py
 Requires: pip install -r requirements-auctions.txt  (curl-cffi for Bonhams)

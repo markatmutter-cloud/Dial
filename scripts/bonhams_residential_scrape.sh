@@ -39,20 +39,36 @@ cd "$REPO" || exit 1
     exit 1
   fi
 
-  # Scrape (throttled). Non-zero = transient block / guard tripped — bail
+  # Calendar scrape (B-72, 2026-06-13): Bonhams' department page now also 403s
+  # GitHub Actions, so the CALENDAR — not just the lots — must run from this
+  # residential host. Non-fatal: a transient block just leaves the prior
+  # data/bonhams_auctions.csv untouched, and CI's merge.py keeps emitting it.
+  # The lots scrape below still reads the schedule from auctions.json (which CI
+  # re-emits from this CSV on its next run), so a fresh sale's lots land on the
+  # following tick — a one-cycle lag, by design.
+  if "$PY" bonhams_auctions_scraper.py && [ -f bonhams_auctions_listings.csv ]; then
+    mv -f bonhams_auctions_listings.csv data/bonhams_auctions.csv
+    echo "calendar CSV refreshed"
+  else
+    echo "calendar scrape produced no CSV (transient block?) — keeping prior"
+    rm -f bonhams_auctions_listings.csv
+  fi
+
+  # Scrape lots (throttled). Non-zero = transient block / guard tripped — bail
   # without committing so prior good data survives.
   if ! "$PY" bonhams_lots_scraper.py --throttle; then
     echo "scraper exited non-zero (throttled-skip is exit 0); nothing committed"
     exit 1
   fi
 
-  if "$GIT" diff --quiet -- public/bonhams_lots.json; then
-    echo "no change to bonhams_lots.json"
+  # Commit whichever of the two refreshed (lots and/or calendar).
+  "$GIT" add public/bonhams_lots.json data/bonhams_auctions.csv
+  if "$GIT" diff --cached --quiet; then
+    echo "no change to bonhams lots or calendar"
     exit 0
   fi
 
-  "$GIT" add public/bonhams_lots.json
-  "$GIT" commit -m "Bonhams lots refresh $(date -u '+%Y-%m-%d %H:%M UTC')" || exit 1
+  "$GIT" commit -m "Bonhams refresh (lots + calendar) $(date -u '+%Y-%m-%d %H:%M UTC')" || exit 1
 
   # Race-resilient push (CI commits to main several times a day).
   for i in 1 2 3; do
