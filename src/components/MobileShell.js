@@ -63,6 +63,9 @@ export function MobileShell(props) {
     topTabs,
     trackNewItemModalJSX, watchSubTabsJSX, watchHeartedToggleJSX, collectionsSubTabsJSX, watchlistTabJSX,
     saleContextHeaderJSX,
+    catalogFullPage,
+    catalogBarJSX,
+    catalogActionRowJSX,
     savedHeaderJSX,
     watchboxTabJSX,
     referencesTabJSX, collectionsTabJSX,
@@ -164,6 +167,11 @@ export function MobileShell(props) {
             other tab the row carries the wordmark left + auth right
             on olive. Same screen position for the M either way. */}
         {/* Olive chrome must OR-in the receive flags, not gate on tab!=="home" alone: onOlive = tab!=="home" || anyShareActive || searchAllActive. Share/search-all surfaces leave tab unchanged. */}
+        {/* Brand/masthead row is suppressed in the auction-catalog full-page
+            takeover (Mark 2026-06-13) — the pinned green bar (catalogBarJSX,
+            rendered as the first child of the sticky stack below) owns the top
+            of the viewport there. */}
+        {!catalogFullPage && (
         <div style={{
           padding: "8px 16px 8px",
           paddingTop: "calc(env(safe-area-inset-top, 0px) + 8px)",
@@ -203,6 +211,7 @@ export function MobileShell(props) {
             {authJSX}
           </div>
         </div>
+        )}
         {/* Sticky stack: main tabs + sub-tabs + search + sort/filter.
             Stays pinned to the viewport top so the whole nav + filter
             chrome is reachable at any scroll depth.
@@ -225,6 +234,12 @@ export function MobileShell(props) {
         {/* Main tab pills (Listings / Watchlists / Collecting) — B-03:
             first child of the sticky stack. Always olive inside the
             chrome (tab !== "home"), matching the core-tab chrome. */}
+        {/* Auction-catalog takeover (Mark 2026-06-13): the green title bar +
+            action row replace the main-tab pills as the pinned first child of
+            the sticky stack, so the bar stays put while the lots scroll. */}
+        {catalogFullPage ? (
+          <>{catalogBarJSX}{catalogActionRowJSX}</>
+        ) : (
         <div style={{
           display: "flex",
           alignItems: "center",
@@ -279,6 +294,7 @@ export function MobileShell(props) {
             })}
           </div>
         </div>
+        )}
         {/* Sub-tabs strip — anchored at the TOP of the sticky stack
             2026-05-21 (PR_Y3, Mark feedback). Sub-tabs sit above the
             search row so they read as a continuation of main-nav
@@ -286,8 +302,8 @@ export function MobileShell(props) {
             the Collecting inconsistency — referencesSubTabsJSX is
             now lifted to App.js (was inside ReferencesTab) so all
             three tabs hit the same shell-level slot. */}
-        {!anyShareActive && listingsSubTabsJSX}
-        {!anyShareActive && watchSubTabsJSX}
+        {!anyShareActive && !catalogFullPage && listingsSubTabsJSX}
+        {!anyShareActive && !catalogFullPage && watchSubTabsJSX}
         {/* referencesSubTabsJSX retired 2026-06-03 — Articles + Reference
             Guides are top-level tabs now; the tools family launches from
             the account menu. */}
@@ -296,7 +312,7 @@ export function MobileShell(props) {
             block"). Sits between sub-tabs and the search row so the
             section header is the first thing below the navigation and
             the search/filters apply to that named section. */}
-        {!anyShareActive && identityBandJSX}
+        {!anyShareActive && !catalogFullPage && identityBandJSX}
         {/* Search row — hidden on:
             - The entire Watchlists tab (Mark spec 2026-05-21).
             - Listings > Auction calendar (Mark spec 2026-05-22).

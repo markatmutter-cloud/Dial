@@ -3841,22 +3841,36 @@ export default function Watchlist() {
       resetFilters={resetFilters}
     />
   );
-  // Catalog header — prominent, full-bleed, ABOVE the filter bar (Mark
-  // 2026-06-01). When you've drilled into one sale, the catalog IS the context
-  // the filters operate within, so it frames the grid rather than sitting in
-  // it as a card. Carries the exit, the sale's info hierarchy, the lot count,
-  // and a heart to save the whole catalog (→ Lists ▸ Hearted ▸ Sales).
-  const saleContextHeaderJSX = (
+  // Auction catalog = a FULL-PAGE surface (Mark 2026-06-13). When you've
+  // drilled into one sale, the shells suppress the masthead / main tabs /
+  // sub-tabs and pin a GREEN BAR carrying the sale title + a persistent ×
+  // that returns to the calendar — mirroring the auction calendar modal's
+  // own full-page treatment ([[project_chrome_unification]], cross-surface
+  // consistency). The Save / Share / Auction-house actions move to a slim
+  // row under the bar; the filter/search bar + lot grid stay. This replaced
+  // the in-chrome PageHeader (saleContextHeaderJSX, kept null below) that
+  // framed the catalog 2026-06-01 → 06-13.
+  const catalogSale = (
     tab === "listings"
     && (listingsSubTab === "auctions" || listingsSubTab === "sold")
     && effectiveSaleUrls.length === 1
     && salesByUrl.get(effectiveSaleUrls[0])
-  ) ? (() => {
-    const sale = salesByUrl.get(effectiveSaleUrls[0]);
+  ) || null;
+  const catalogFullPage = !!catalogSale;
+  // × / back: drop the single-sale filter AND reopen the calendar (the
+  // surface you drilled in from). Clearing filterSaleUrls ends the catalog
+  // context so the normal chrome returns under the calendar modal.
+  const exitCatalogToCalendar = () => { setFilterSaleUrls([]); setCalendarModalOpen(true); };
+  // saleContextHeaderJSX retired in favour of the green bar (same drill-in
+  // condition), but kept as a null prop so the shells' existing render slot
+  // is a harmless no-op rather than a removed-prop ReferenceError.
+  const saleContextHeaderJSX = null;
+  const catalogActions = (() => {
+    if (!catalogSale) return [];
+    const sale = catalogSale;
     const saved = savedAuctionUrlSet.has(sale.url);
     // Share an IN-APP link to the catalog receive surface (Mark 2026-06-02) —
-    // NOT the raw auction-house URL (which dead-ended off the platform). Mirrors
-    // the listing share's sender-name (?from) derivation.
+    // NOT the raw auction-house URL (which dead-ended off the platform).
     const shareCatalog = async () => {
       try {
         const u = new URL(window.location.origin);
@@ -3877,31 +3891,72 @@ export default function Watchlist() {
         }
       } catch {}
     };
-    const eyebrow = `${sale.house}${sale.location ? ` · ${sale.location}` : ""}${fmtSaleDateRange(sale) ? ` · ${fmtSaleDateRange(sale)}` : ""}`;
-    const actions = [];
-    if (user) actions.push({
+    const a = [];
+    if (user) a.push({
       label: saved ? "Saved" : "Save catalog", active: saved,
       icon: <span style={{ color: saved ? "var(--heart)" : "var(--text2)" }}>{saved ? "♥" : "♡"}</span>,
       onClick: () => toggleSavedAuction(sale.url),
     });
-    if (sale.url) actions.push({ label: "Share", onClick: shareCatalog });
-    // "→ auction house" link next to the header (Mark 2026-06-02) — the same
-    // affordance the auction calendar has; opens the house's own catalog page.
-    if (sale.url) actions.push({ label: "Auction house ↗", href: sale.url, external: true });
-    return (
-      <PageHeader
-        isMobile={isMobile}
-        onExit={() => setFilterSaleUrls([])}
-        exitLabel="Exit auction"
-        eyebrow={eyebrow}
-        title={sale.title}
-        // Lot count removed from the header meta (P-8 consistency, Mark's
-        // 2026-06-03 verification pass) — the count's one home is the filter
-        // bar's reserved right slot, same as every other surface.
-        actions={actions}
-      />
-    );
-  })() : null;
+    if (sale.url) a.push({ label: "Share", onClick: shareCatalog });
+    if (sale.url) a.push({ label: "Auction house ↗", href: sale.url, external: true });
+    return a;
+  })();
+  // Green title bar (content only — the shells wrap it in their own sticky
+  // container so it pins as you scroll the lots). House · location · date
+  // eyebrow + sale title, × on the right.
+  const catalogBarJSX = catalogSale ? (
+    <div style={{
+      display: "flex", alignItems: "center", justifyContent: "space-between",
+      gap: 12, padding: "12px 16px",
+      paddingTop: isMobile ? "calc(12px + env(safe-area-inset-top, 0px))" : 12,
+      background: "var(--brand-olive)", color: "#fff",
+    }}>
+      <div style={{ minWidth: 0 }}>
+        <div style={{
+          fontSize: 10, fontWeight: 600, letterSpacing: "0.06em",
+          textTransform: "uppercase", opacity: 0.82,
+          whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+        }}>
+          {`${catalogSale.house}${catalogSale.location ? ` · ${catalogSale.location}` : ""}${fmtSaleDateRange(catalogSale) ? ` · ${fmtSaleDateRange(catalogSale)}` : ""}`}
+        </div>
+        <div style={{
+          fontSize: 16, fontWeight: 600,
+          whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+        }}>{catalogSale.title}</div>
+      </div>
+      <button onClick={exitCatalogToCalendar} aria-label="Back to auction calendar"
+        title="Back to auction calendar"
+        style={{
+          border: "none", background: "transparent", cursor: "pointer",
+          color: "#fff", fontSize: 22, lineHeight: 1, padding: "0 4px", flexShrink: 0,
+        }}>×</button>
+    </div>
+  ) : null;
+  // Slim action row beneath the green bar (Save catalog · Share · Auction
+  // house ↗). Sits in page-bg so it reads as a toolbar under the title.
+  const catalogActionRowJSX = catalogSale ? (
+    <div style={{
+      display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap",
+      padding: "8px 16px", background: "var(--bg)",
+      borderBottom: "0.5px solid var(--border)",
+    }}>
+      {catalogActions.map((a, i) => {
+        const style = {
+          display: "inline-flex", alignItems: "center", gap: 5,
+          fontFamily: "inherit", fontSize: 12, fontWeight: 600,
+          padding: "5px 11px", borderRadius: 999,
+          border: "1px solid var(--border)", background: "transparent",
+          color: "var(--text1)", cursor: "pointer", textDecoration: "none",
+          whiteSpace: "nowrap",
+        };
+        return a.href ? (
+          <a key={i} href={a.href} target="_blank" rel="noopener noreferrer" style={style}>{a.label}</a>
+        ) : (
+          <button key={i} onClick={a.onClick} style={style}>{a.icon}{a.label}</button>
+        );
+      })}
+    </div>
+  ) : null;
 
   // Saved-tab scrolling header (Mark 2026-06-02). On the Saved (hearted)
   // surface the title scrolls away while the filter bar pins — same collapsing
@@ -4985,6 +5040,14 @@ export default function Watchlist() {
     topTabs,
     trackNewItemModalJSX, watchSubTabsJSX, watchHeartedToggleJSX, collectionsSubTabsJSX,
     saleContextHeaderJSX,
+    // Auction catalog full-page takeover (Mark 2026-06-13). When
+    // catalogFullPage, the shells suppress the masthead / main tabs /
+    // sub-tabs and pin catalogBarJSX (green title bar + × back-to-calendar)
+    // with catalogActionRowJSX (Save/Share/Auction-house) beneath it; the
+    // filter bar + lot grid stay.
+    catalogFullPage,
+    catalogBarJSX,
+    catalogActionRowJSX,
     savedHeaderJSX,
     // Bundle 2A.2: shells render `watchlistTabJSX` for the Saved
     // tab — the value is now the dispatched content (Watchlist or
