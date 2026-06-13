@@ -2510,7 +2510,13 @@ ENUMERATORS = {
     # published yet — see antiquorum_auctions_scraper.py.
     "Antiquorum":    (enumerate_antiquorum,  ("catalog.antiquorum.swiss", "live.antiquorum.swiss/auctions/")),
     "Bonhams":       (enumerate_bonhams,     ("bonhams.com/auction/",)),
-    "Christie's":    (enumerate_christies,   ("christies.com/en/auction/",)),
+    # `christies.com/en/auction/` = main live sales; `onlineonly.christies.com`
+    # = the online-only editions (e.g. "Watches Online: The New York Edit"),
+    # whose calendar link is an `sso?SaleID=…` that 302s into that host (B-73).
+    # Both route to enumerate_christies (it detects the platform internally).
+    # The dispatch needle was the missing half of B-73: enumerate_christies
+    # learned the online-only payload, but main() never routed the sale to it.
+    "Christie's":    (enumerate_christies,   ("christies.com/en/auction/", "onlineonly.christies.com/")),
     "Monaco Legend": (enumerate_monaco_legend, ("monacolegendauctions.com/auction/",)),
     "Sotheby's":     (enumerate_sothebys,    ("sothebys.com/en/buy/auction/",)),
     "Phillips":      (enumerate_phillips,    ("phillips.com/auction/",)),
