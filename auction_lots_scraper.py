@@ -705,6 +705,44 @@ def refresh_antiquorum_unsold_lots(prior_lots, fresh_out, today=None):
     return updated
 
 
+def _christies_lots_blob(text):
+    """Extract the chrComponents lots `data` dict, handling BOTH Christie's
+    platforms (B-73, 2026-06-13):
+      - www.christies.com assigns `window.chrComponents.lots = {data:{…}}`
+        (just the .lots sub-object).
+      - onlineonly.christies.com assigns the WHOLE
+        `window.chrComponents = {…, "lots": {data:{…}}, …}` in one blob.
+    Returns the inner `data` dict (.lots / .total_hits_filtered / .sale) or
+    None. Same inner shape on both, so the caller's parsing is unchanged."""
+    m = re.search(r"window\.chrComponents\.lots\s*=\s*", text)
+    if m:
+        raw = _brace_match_json(text, m.end())
+        if raw:
+            try:
+                return json.loads(raw).get("data") or {}
+            except Exception:
+                return None
+    m = re.search(r"window\.chrComponents\s*=\s*", text)
+    if m:
+        raw = _brace_match_json(text, m.end())
+        if raw:
+            try:
+                return (json.loads(raw).get("lots") or {}).get("data") or {}
+            except Exception:
+                return None
+    return None
+
+
+def _chr_num(x):
+    """Christie's estimates come as ints on www but `"18000.00"` strings on
+    the online-only platform (B-73). Coerce to a clean int (or None) so cards
+    don't render decimals. Harmless for values already numeric."""
+    try:
+        return int(float(x)) if x not in (None, "") else None
+    except (TypeError, ValueError):
+        return None
+
+
 def enumerate_christies(sale_url, sale=None):
     """Return a list of (url, lot dict) tuples for a Christie's sale.
 
@@ -725,19 +763,16 @@ def enumerate_christies(sale_url, sale=None):
     except Exception as e:
         print(f"  [Christie's] auction page fetch failed: {e}")
         return []
-    m = re.search(r"window\.chrComponents\.lots\s*=\s*", r.text)
-    if not m:
-        print("  [Christie's] chrComponents.lots assignment not found")
+    # Online-only sales (B-73): the calendar gives an `sso?SaleID=…` link that
+    # 302s to onlineonly.christies.com/s/<slug>/lots/<saleid>. Detect from the
+    # RESOLVED url so we use the right lot-URL host + paginate the resolved
+    # listing URL (?page on the sso link doesn't carry through).
+    resolved_url = getattr(r, "url", None) or sale_url
+    is_online_only = "onlineonly.christies.com" in (resolved_url or "")
+    data = _christies_lots_blob(r.text)
+    if data is None:
+        print("  [Christie's] chrComponents lots blob not found")
         return []
-    raw = _brace_match_json(r.text, m.end())
-    if not raw:
-        return []
-    try:
-        blob = json.loads(raw)
-    except Exception as e:
-        print(f"  [Christie's] JSON parse failed: {e}")
-        return []
-    data = blob.get("data") or {}
     lots = data.get("lots") or []
     sale = data.get("sale") or {}
     total = data.get("total_hits_filtered") or len(lots)
@@ -751,21 +786,17 @@ def enumerate_christies(sale_url, sale=None):
     # for that one URL — single extra request for the entire tail.
     if total > len(lots) and page_size > 0:
         pages_needed = (total + page_size - 1) // page_size
-        sep = "&" if "?" in sale_url else "?"
-        page_url = f"{sale_url}{sep}page={pages_needed}"
+        sep = "&" if "?" in resolved_url else "?"
+        page_url = f"{resolved_url}{sep}page={pages_needed}"
         try:
             time.sleep(PER_LOT_SLEEP_SECONDS)
             pr = requests.get(page_url, headers=HEADERS, timeout=30)
             pr.raise_for_status()
-            pm = re.search(r"window\.chrComponents\.lots\s*=\s*", pr.text)
-            if pm:
-                praw = _brace_match_json(pr.text, pm.end())
-                if praw:
-                    pblob = json.loads(praw)
-                    pdata = pblob.get("data") or {}
-                    page_lots = pdata.get("lots") or []
-                    if len(page_lots) > len(lots):
-                        lots = page_lots
+            pdata = _christies_lots_blob(pr.text)
+            if pdata:
+                page_lots = pdata.get("lots") or []
+                if len(page_lots) > len(lots):
+                    lots = page_lots
         except Exception as e:
             print(f"  [Christie's] paginated fetch failed: {e}")
         if len(lots) < total:
@@ -784,9 +815,7 @@ def enumerate_christies(sale_url, sale=None):
         if cm:
             sym = cm.group("cur")
             currency = {"$": "USD", "£": "GBP", "€": "EUR"}.get(sym, sym)
-        sold_price = lot.get("price_realised") or None
-        if sold_price == 0:
-            sold_price = None
+        sold_price = _chr_num(lot.get("price_realised")) or None
         # Status: per-sale `is_auction_over` shadows lot-level state
         # for now (Christie's marks sales over only after the live
         # session closes; per-lot is_in_progress is more granular).
@@ -794,7 +823,8 @@ def enumerate_christies(sale_url, sale=None):
         # URL: Christie's gives a relative path on lot.url
         url = lot.get("url") or ""
         if url and not url.startswith("http"):
-            url = "https://www.christies.com" + url
+            url = ("https://onlineonly.christies.com" if is_online_only
+                   else "https://www.christies.com") + url
         if not url:
             continue
         # Image: chrComponents.lots embeds the lot image at
@@ -818,7 +848,10 @@ def enumerate_christies(sale_url, sale=None):
         # var (default ON) so Mark can throttle if the comprehensive
         # cron slows down past acceptable.
         catalogue_note = ""
-        if os.environ.get("CHRISTIES_ESSAYS", "1") == "1":
+        # Skip the per-lot essay fetch for online-only sales — that platform's
+        # lot pages have a different structure (_extract_christies_essay won't
+        # find the "Lot Essay" block) and it'd add ~N slow fetches per sale.
+        if not is_online_only and os.environ.get("CHRISTIES_ESSAYS", "1") == "1":
             try:
                 time.sleep(PER_LOT_SLEEP_SECONDS)
                 er = requests.get(url, headers=HEADERS, timeout=20)
@@ -845,13 +878,13 @@ def enumerate_christies(sale_url, sale=None):
             "literature": "",
             "exhibition": "",
             "currency": currency,
-            "estimate_low": lot.get("estimate_low"),
-            "estimate_high": lot.get("estimate_high"),
+            "estimate_low": _chr_num(lot.get("estimate_low")),
+            "estimate_high": _chr_num(lot.get("estimate_high")),
             "starting_price": None,
             "current_bid": None,
             "sold_price": sold_price,
-            "estimate_low_usd":  to_usd(lot.get("estimate_low"),  currency),
-            "estimate_high_usd": to_usd(lot.get("estimate_high"), currency),
+            "estimate_low_usd":  to_usd(_chr_num(lot.get("estimate_low")),  currency),
+            "estimate_high_usd": to_usd(_chr_num(lot.get("estimate_high")), currency),
             "starting_price_usd": None,
             "current_bid_usd":    None,
             "sold_price_usd":    to_usd(sold_price, currency),
