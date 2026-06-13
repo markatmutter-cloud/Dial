@@ -4,7 +4,10 @@ Bonhams' auction **lot** pages 403 GitHub's datacenter IPs (Cloudflare), so the
 lots can't be scraped from CI. This sets up a residential host — Mark's laptop,
 via a `launchd` LaunchAgent — to scrape Bonhams lots a few times a day and push
 `public/bonhams_lots.json`, which the app folds into the Auctions projection.
-(The Bonhams **calendar** still updates in CI; only the lots run here.)
+(As of 2026-06-13 (B-72) this host runs **both** the Bonhams calendar
+[`bonhams_auctions_scraper.py` → `data/bonhams_auctions.csv`] and the lots —
+Bonhams' department page now 403s CI too. CI's `merge.py` re-emits the
+calendar from that committed CSV.)
 
 Code unchanged, this same setup later moves to an always-on box (Raspberry Pi /
 Mac mini) — only the host changes.
