@@ -1,15 +1,22 @@
 {
-  "date": "2026-06-12",
-  "updated_at": "2026-06-12T10:06:59+00:00",
-  "alerts": [],
+  "date": "2026-06-13",
+  "updated_at": "2026-06-13T09:00:47+00:00",
+  "alerts": [
+    {
+      "house": "Christie's",
+      "level": "ERROR",
+      "today": 0,
+      "previous": 138,
+      "note": "house absent from today's lot scrape (was present yesterday)"
+    }
+  ],
   "counts": {
     "Marteau & Co": 33,
     "Antiquorum": 249,
-    "Christie's": 138,
     "Monaco Legend": 2,
     "Phillips": 153,
-    "Sotheby's": 1
+    "Sotheby's": 916
   },
-  "total_live_lots": 576,
-  "houses_tracked": 6
+  "total_live_lots": 1353,
+  "houses_tracked": 5
 }
