@@ -171,8 +171,11 @@ diagram, data model, and folder layout.
   — its lot pages 403 datacenter IPs (Cloudflare), so `enumerate_bonhams` is
   dormant in CI; the laptop `launchd` agent (`bonhams_lots_scraper.py`) scrapes
   it into a SEPARATE `public/bonhams_lots.json` (frontend folds it by URL key;
-  CI's `auction_lots.json` would otherwise clobber it). Calendar still scrapes
-  in CI. Setup/operate: `scripts/RESIDENTIAL_SCRAPE_SETUP.md`. Don't try to
+  CI's `auction_lots.json` would otherwise clobber it). **The calendar
+  (`bonhams_auctions_scraper.py`) ALSO 403s CI now** (B-72, froze 2026-04-28) —
+  scraper code is fine, the department page just blocks datacenter IPs too;
+  move it to the residential agent like the lots. Setup/operate:
+  `scripts/RESIDENTIAL_SCRAPE_SETUP.md`. Don't try to
   un-block Bonhams in CI — the residential host is the answer.
   Mechanics per house live as comments in `auction_lots_scraper.py`.
 - **Archive pipeline:** append to `data/manual_archive_sales.json`, run

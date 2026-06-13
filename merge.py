@@ -1015,6 +1015,8 @@ EXCLUDE_CATALOG_TITLES = [
     "Espionage: Fact & Fiction",     # Bonhams 32384 — spy memorabilia
     "Fine Jewelry",                  # Sotheby's L26050 — jewels (~6 watches in ~225 lots);
                                      # recurring Sotheby's sale name, all non-watch
+    "Artistic Luxury",               # Sotheby's N12xxx — Fabergé/gold boxes/silver/ceramics (Mark 2026-06-13)
+    "Maurice Tempelsman",            # Sotheby's "A Marvelous Journey: The Collection of…" — jewels/objets (Mark 2026-06-13)
 ]
 # URL-slug blocklist — the calendar sometimes carries a MISLEADING title: the
 # Sotheby's L26050 jewels sale is cross-listed in the watches category with the
