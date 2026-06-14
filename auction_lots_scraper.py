@@ -760,6 +760,43 @@ def _christies_fetch(sale_url):
     return requests.get(sale_url, headers=HEADERS, timeout=30)
 
 
+# Christie's sale-location → image-path code (the `NYR` in
+# /img/LotImages/2026/NYR/2026_NYR_<sale>_<lot>_000.jpg). Used to
+# reconstruct online-only lot images (B-73): onlineonly.christies.com
+# IP-gates the lot image to CI (serves a roundel placeholder), but the real
+# image lives on www.christies.com (loads fine from CI) at a deterministic
+# path. Keyed on the calendar sale's city/title.
+CHRISTIES_LOC_CODES = {
+    "new york": "NYR", "hong kong": "HGK", "geneva": "GNV", "genève": "GNV",
+    "london": "KSS", "paris": "PAR", "amsterdam": "AMS", "dubai": "DXB",
+    "shanghai": "SHG", "milan": "MIL", "los angeles": "LA",
+}
+
+
+def _christies_online_image(sale_url, cal_sale, lot):
+    """Reconstruct an online-only lot's real image URL (B-73). Returns the
+    embedded image_src untouched when it's already a real LotImages URL
+    (residential runs get the real one); otherwise — CI gets a roundel
+    placeholder — builds the deterministic www.christies.com path from the
+    sale number (sso URL), year (sale dates), location code (sale city) and
+    zero-padded lot number. Slug-less form verified to resolve (HTTP 200).
+    Falls back to whatever was embedded if any part is missing."""
+    embedded = (lot.get("image") or {}).get("image_src") or ""
+    if "LotImages" in embedded:
+        return embedded
+    m = re.search(r"SaleNumber=(\d+)", sale_url or "")
+    salenum = m.group(1) if m else None
+    year = next((str(d)[:4] for d in (cal_sale.get("dateStart"), cal_sale.get("dateEnd"))
+                 if isinstance(d, str) and str(d)[:4].isdigit()), None)
+    hay = f"{cal_sale.get('location', '')} {cal_sale.get('title', '')}".lower()
+    loc = next((c for kw, c in CHRISTIES_LOC_CODES.items() if kw in hay), None)
+    lotnum = re.sub(r"\D", "", str(lot.get("lot_number") or lot.get("lot_id_txt") or ""))
+    if salenum and year and loc and lotnum:
+        return (f"https://www.christies.com/img/LotImages/{year}/{loc}/"
+                f"{year}_{loc}_{salenum}_{lotnum.zfill(4)}_000.jpg?mode=max")
+    return embedded or None
+
+
 def enumerate_christies(sale_url, sale=None):
     """Return a list of (url, lot dict) tuples for a Christie's sale.
 
@@ -774,6 +811,10 @@ def enumerate_christies(sale_url, sale=None):
     silently dropped the rest (Christie's flagship May sale was
     showing 82/229).
     """
+    # Keep the CALENDAR sale (caller's arg) — the inline `sale` below is
+    # overwritten by the page's own sale object, which lacks the location /
+    # dates we need to reconstruct online-only image URLs (B-73).
+    cal_sale = sale if isinstance(sale, dict) else {}
     try:
         r = _christies_fetch(sale_url)
         r.raise_for_status()
@@ -857,6 +898,10 @@ def enumerate_christies(sale_url, sale=None):
                        or img_block.get("image_desktop_src")
                        or img_block.get("image_tablet_src")
                        or img_block.get("image_mobile_src"))
+        # Online-only (B-73): CI gets a roundel placeholder for the image;
+        # reconstruct the real www.christies.com URL from sale/lot fields.
+        if is_online_only and (not img_url or "roundel" in (img_url or "")):
+            img_url = _christies_online_image(sale_url, cal_sale, lot) or img_url
         # Per-lot detail fetch for Lot Essay (Mark feedback 2026-05-19:
         # "we are discarding the sothebys essays" applied to Christie's
         # too). The bulk chrComponents.lots blob only carries title +
