@@ -22424,6 +22424,10 @@
     "source": "hairspring_finds",
     "source_type": "editorial_finds",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "design"
+    ],
     "title": "FP Journe Vagabondage II Platinum",
     "updated_at": "2026-06-14",
     "url": "https://hairspring.com/blogs/finds/fp-journe-vagabondage-ii-platinum-1",
@@ -29198,6 +29202,10 @@
     "source": "hairspring_finds",
     "source_type": "editorial_finds",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "design"
+    ],
     "title": "'Nacre' FP Journe Chronomètre Souverain",
     "updated_at": "2026-06-09",
     "url": "https://hairspring.com/blogs/finds/nacre-fp-journe-chronometre-souverain",

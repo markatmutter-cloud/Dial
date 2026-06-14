@@ -14952,7 +14952,9 @@
     "source": "fratello",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "collecting_philosophy"
+    ],
     "title": "Fratello EDC: Jorg Shares His Everyday Carry Essentials From Olympus, Omega, Pentel, And More",
     "updated_at": "2022-07-12",
     "url": "https://www.fratellowatches.com/fratello-edc-jorg-shares-his-everyday-carry-essentials-from-olympus-omega-pentel-and-more/",
@@ -78125,6 +78127,11 @@
     "source": "fratello",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "market_commentary",
+      "design"
+    ],
     "title": "Value In Vintage: IWC “Calatravas” From The 1950s And ’60s",
     "updated_at": "2026-06-13",
     "url": "https://www.fratellowatches.com/value-in-vintage-iwc-calatravas-from-the-1950s-and-60s/",
