@@ -545,7 +545,10 @@ export function MobileShell(props) {
               calendar modal (the sale-picker); the active sale shows in the
               grid's sale-context header, with its own Clear there. Auction
               surfaces only. */}
-          {tab === "listings" && (listingsSubTab === "auctions" || listingsSubTab === "sold") && onOpenCalendar && (
+          {/* Auction Calendar pill: Auctions sub-tab only. Removed from Sold
+              (Mark 2026-06-14) — the calendar is upcoming sales, irrelevant to
+              Sold, and dropping it lets the filter pills sit on one line. */}
+          {tab === "listings" && listingsSubTab === "auctions" && onOpenCalendar && (
             <button onClick={onOpenCalendar} title="Browse the auction calendar"
               style={{
                 ...pillBase(false),

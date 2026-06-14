@@ -278,8 +278,11 @@ export function DesktopShell(props) {
       search={expandingSearchJSX}
       pills={
         <>
-          {/* Auction calendar launcher (Phase 4) — far left, Auctions/Sold only. */}
-          {tab === "listings" && (listingsSubTab === "auctions" || listingsSubTab === "sold") && !!onOpenCalendar && (
+          {/* Auction calendar launcher (Phase 4) — Auctions sub-tab only.
+              Removed from Sold (Mark 2026-06-14): the calendar is upcoming
+              sales, irrelevant to Sold, and dropping it keeps the filter pills
+              on one line. */}
+          {tab === "listings" && listingsSubTab === "auctions" && !!onOpenCalendar && (
             <button onClick={onOpenCalendar}
               title="Browse the auction calendar"
               style={{
