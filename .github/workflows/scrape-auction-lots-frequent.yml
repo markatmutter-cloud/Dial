@@ -113,11 +113,18 @@ jobs:
           BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
         run: node cache_watchlist_images.mjs
 
+      - name: Record per-house auction health (B-75)
+        # Runs BEFORE the commit so the updated consecutive-empty counts in
+        # data/auction_health_state.json get committed by `git add data/`.
+        # Always exits 0 (the --check step below decides pass/fail).
+        if: always()
+        run: python3 auction_health.py --record
+
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add public/auction_lots.json public/loupethis_lots.json
+          git add public/auction_lots.json public/loupethis_lots.json data/auction_health_state.json
           if git diff --staged --quiet; then
             echo "No changes to commit"
             exit 0
@@ -133,3 +140,11 @@ jobs:
           done
           echo "Push still failing after 3 retries"
           exit 1
+
+      - name: Auction-health gate (B-75)
+        # Runs LAST with always() — after the data is committed — so it can
+        # red the job (→ notify-scrape-failure opens an issue) when a house
+        # has a published catalog but 0 lots for THRESHOLD consecutive runs
+        # (the Sotheby's / Christie's / Bonhams silent-zero failure mode).
+        if: always()
+        run: python3 auction_health.py --check
