@@ -343,7 +343,7 @@ KNOWN_BRANDS_SET = (
     | {'Other'}  # Treat literal "Other" as known so we don't loop on it.
 )
 
-FX = {'GBP': 1.27, 'EUR': 1.08, 'CHF': 1.13, 'JPY': 0.0067, 'CNY': 0.14, 'HKD': 0.128, 'USD': 1.0}
+FX = {'GBP': 1.27, 'EUR': 1.08, 'CHF': 1.13, 'JPY': 0.0067, 'CNY': 0.14, 'HKD': 0.128, 'DKK': 0.145, 'USD': 1.0}
 
 # Disappearance debounce (B-15). A listing must be ABSENT from this many
 # consecutive runs before it flips to sold. 1 = the old behavior, where a
