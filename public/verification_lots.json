@@ -1,14 +1,15 @@
 {
-  "date": "2026-06-13",
-  "updated_at": "2026-06-13T21:28:34+00:00",
+  "date": "2026-06-14",
+  "updated_at": "2026-06-14T09:15:59+00:00",
   "alerts": [],
   "counts": {
     "Marteau & Co": 33,
     "Antiquorum": 249,
+    "Christie's": 87,
     "Monaco Legend": 2,
     "Phillips": 76,
     "Sotheby's": 622
   },
-  "total_live_lots": 982,
-  "houses_tracked": 5
+  "total_live_lots": 1069,
+  "houses_tracked": 6
 }
