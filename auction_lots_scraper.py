@@ -743,6 +743,23 @@ def _chr_num(x):
         return None
 
 
+def _christies_fetch(sale_url):
+    """Fetch a Christie's auction page.
+
+    onlineonly.christies.com (the online-only platform, B-73) read-times-out
+    plain `requests` from CI's datacenter IPs — same Cloudflare slow-walling
+    that blocked watchcenter (B-58), which curl_cffi's Chrome-TLS impersonation
+    cleared. So fetch online-only via curl_cffi when available; the main
+    www.christies.com host works fine with plain requests (lighter), so keep
+    it. curl_cffi's response mirrors requests (.text/.url/.raise_for_status).
+    Follows redirects so `.url` is the resolved onlineonly listing URL."""
+    if "onlineonly.christies.com" in sale_url and _curl_cffi_requests is not None:
+        return _curl_cffi_requests.get(
+            sale_url, headers=HEADERS, impersonate=_BONHAMS_IMPERSONATE,
+            timeout=45, allow_redirects=True)
+    return requests.get(sale_url, headers=HEADERS, timeout=30)
+
+
 def enumerate_christies(sale_url, sale=None):
     """Return a list of (url, lot dict) tuples for a Christie's sale.
 
@@ -758,7 +775,7 @@ def enumerate_christies(sale_url, sale=None):
     showing 82/229).
     """
     try:
-        r = requests.get(sale_url, headers=HEADERS, timeout=30)
+        r = _christies_fetch(sale_url)
         r.raise_for_status()
     except Exception as e:
         print(f"  [Christie's] auction page fetch failed: {e}")
@@ -790,7 +807,7 @@ def enumerate_christies(sale_url, sale=None):
         page_url = f"{resolved_url}{sep}page={pages_needed}"
         try:
             time.sleep(PER_LOT_SLEEP_SECONDS)
-            pr = requests.get(page_url, headers=HEADERS, timeout=30)
+            pr = _christies_fetch(page_url)
             pr.raise_for_status()
             pdata = _christies_lots_blob(pr.text)
             if pdata:
