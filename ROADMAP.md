@@ -298,6 +298,22 @@ the active mode until the Stop rule triggers.
 Serves **job #1** (auction side) and is the substrate **job #4** draws from.
 Three layers: calendar ✓, live lots ✓, archive ✓ (expanding on demand).
 
+**Follow + email reminders (2026-06-14, Mark — quick plan, not built).** "Follow"
+= opt into notifications for an **auction** (catalog) or a **lot**. Recommend
+reusing the existing heart (lot) / Save-catalog (auction) as the follow signal,
+gated by ONE Settings opt-in ("Email me auction reminders") — avoids a 2nd
+per-item control (add a distinct bell later only if save≠notify is wanted).
+Pieces: (1) Settings opt-in toggle (emails the account address) in a user-prefs
+row; (2) data = hearted lots + saved catalogs (both exist) + a `reminders_sent`
+dedup table; (3) **daily GitHub Actions cron** (Python) emails per opted-in user
+when a followed *lot* is ≤3 days from close or a followed *auction* publishes/
+opens — send via **Resend** (needs API key); (4) **Home "ending soon" strip**
+(signed-in): followed *lots* ≤3 days from closing, soonest first; followed
+*auctions* show their catalog card in the same space; hidden when empty.
+**Sequence:** Phase A frontend (Settings toggle + Home strip, no email infra) →
+Phase B backend (cron + Resend + dedup). **Open decisions:** email provider
+(Resend?) · follow == save/heart vs a separate bell.
+
 **All 6 houses scrape lots:** Antiquorum, Christie's, Monaco Legend, Sotheby's,
 Phillips in CI; **Bonhams via a residential host** (B-24/B-25, shipped
 2026-05-26). Bonhams' lot pages 403 GitHub's datacenter IPs (Cloudflare), so
