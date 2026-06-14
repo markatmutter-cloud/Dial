@@ -35,7 +35,7 @@ export function daysOnSaleLabel(days) {
 }
 
 export const GLOBAL_MAX = 600000;
-export const CURRENCY_SYM = { USD: "$", GBP: "£", EUR: "€", CHF: "CHF ", HKD: "HK$", JPY: "¥" };
+export const CURRENCY_SYM = { USD: "$", GBP: "£", EUR: "€", CHF: "CHF ", HKD: "HK$", JPY: "¥", DKK: "DKK " };
 
 // USD-per-unit rates for client-side conversion to the user's primary
 // display currency. Mirrors merge.py's FX dict (line 144) so backend
@@ -54,6 +54,7 @@ export const FX_RATES_USD_PER = {
   CHF: 1.13,
   JPY: 0.0067,
   CNY: 0.14,
+  DKK: 0.145,
 };
 
 // Convert an item's price to a target display currency using priceUSD
