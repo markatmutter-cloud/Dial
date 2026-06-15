@@ -88,7 +88,7 @@ const FEATURES = [
 // always-on "how to" reachable from About helps people get to the
 // right surface.
 const HOW_TO_USE = [
-  ["Heart watches", "Tap the heart on any card. Hearted watches show up under Saved → ♡ Saved (the default sub-tab)."],
+  ["Heart watches", "Tap the heart on any card. Hearted watches show up under Saved → ♡ Watches (the default sub-tab)."],
   ["Save searches", "Type a query in the Watches tab, then tap the heart next to the search bar. Saved searches re-run across every dealer."],
   ["Build a list",  "Saved → Lists → + New list. Or hit ⋯ on any card → Add to… to add to an existing list."],
   ["Share a list",  "Open the list, tap Manage. Share a View Only Link, or invite by email for a Collaboration Link (they can add watches alongside you)."],
