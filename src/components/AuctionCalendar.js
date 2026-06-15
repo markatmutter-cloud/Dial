@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { innerToggleButton } from "../styles";
 import { imgSrc, fmtSaleDateRange } from "../utils";
+import { houseTint, HouseLogo } from "./auctionThumb";
 
 // Auction calendar — month-banded list of every auction-house sale
 // in the emitted feed. Live + upcoming render in the top section;
@@ -22,62 +23,9 @@ function fmtMonthBand(key) {
 // fmtShortDate + fmtSaleDateRange moved to ../utils (Phase 4) so the
 // sale-sectioned auctions grid can share them. Imported above.
 
-// Deterministic muted tint for the text-only calendar placeholder —
-// shown before a sale publishes a cover image (Mark spec 2026-05-26,
-// mirroring the auction houses' "Weekly Watches London" colored card).
-// Each house gets a stable soft colour so the squares read as branded,
-// not random. Light pastels read as image stand-ins in both themes.
-const PLACEHOLDER_TINTS = [
-  { bg: "#ece3da", fg: "#3a3128" }, // warm sand
-  { bg: "#e3e7ec", fg: "#2c343d" }, // cool slate
-  { bg: "#e7e9e2", fg: "#33372c" }, // olive stone
-  { bg: "#ece2e4", fg: "#3d2c30" }, // muted rose
-  { bg: "#e2e8e8", fg: "#2a3838" }, // teal grey
-  { bg: "#eae4ec", fg: "#352c3d" }, // mauve
-];
-function houseTint(house) {
-  const s = String(house || "");
-  let h = 0;
-  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
-  return PLACEHOLDER_TINTS[h % PLACEHOLDER_TINTS.length];
-}
-
-// House-logo slug for the cover stand-in (Mark 2026-06-06): when a sale
-// has no scraped cover image, show the house's logo from public/logos/
-// instead of the bare name. Files are <slug>.svg with a .png fallback;
-// HouseLogo onError falls back to the text mark, so houses whose logo
-// hasn't been collected yet keep today's treatment — drop a file in
-// public/logos/ and it lights up with no code change.
-function houseLogoSlug(house) {
-  return String(house || "")
-    .toLowerCase()
-    .replace(/&/g, "and")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
-
-function HouseLogo({ house }) {
-  // try .svg first, then .png, then the text mark
-  const [attempt, setAttempt] = useState(0);
-  const slug = houseLogoSlug(house);
-  if (!slug || attempt >= 2) {
-    return (
-      <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.06em",
-                    textTransform: "uppercase", lineHeight: 1.25 }}>
-        {house || "Auction"}
-      </div>
-    );
-  }
-  const ext = attempt === 0 ? "svg" : "png";
-  return (
-    <img src={`/logos/${slug}.${ext}`} alt={house || "Auction house"}
-      loading="lazy" decoding="async"
-      onError={() => setAttempt(a => a + 1)}
-      style={{ maxWidth: "78%", maxHeight: "55%", objectFit: "contain",
-               // logos are dark ink on transparent — blend onto the tint
-               mixBlendMode: "multiply" }} />
-  );
-}
+// houseTint / houseLogoSlug / HouseLogo moved to ./auctionThumb (2026-06-15)
+// so the Home "Finishing soon" followed-auction tiles share them without
+// pulling this lazy-loaded module into the main bundle. Imported above.
 
 // Short month label for the month-jump nav ("2026-06" → "Jun", or
 // "Jun '27" when not the current year).

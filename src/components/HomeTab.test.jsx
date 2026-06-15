@@ -14,6 +14,7 @@ function baseProps(overrides = {}) {
   return {
     homeRecentAdded: [], homeRecentSold: [], homeEndingNext: [],
     homeFinishingSoon: [], goToFinishingSoon: noop,
+    homeFinishingSoonSales: [], onOpenSale: noop,
     homeRecentlyHearted: [], goToSavedHearts: noop,
     homeRecentArticles: [], goToArticles: noop,
     homeDealerSources: [], homeJumpToDealer: noop,
@@ -63,6 +64,17 @@ describe("HomeTab", () => {
     };
     render(<HomeTab {...baseProps({ user: { id: "u1" }, homeFinishingSoon: [lot] })} />);
     expect(screen.getByText("Finishing soon")).toBeInTheDocument();
+  });
+
+  test("renders the followed-auctions tiles when you follow a catalog", () => {
+    const sale = {
+      url: "https://example.com/auction/1", house: "Sotheby's",
+      title: "Important Watches", dateStart: "2026-06-15", dateEnd: "2026-06-15",
+      image: "", _heroImg: "", _lotCount: 210,
+    };
+    render(<HomeTab {...baseProps({ user: { id: "u1" }, homeFinishingSoonSales: [sale] })} />);
+    expect(screen.getByText("Auctions you're following")).toBeInTheDocument();
+    expect(screen.getByText("Important Watches")).toBeInTheDocument();
   });
 
   test("the bottom bleed band is gone", () => {

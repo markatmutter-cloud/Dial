@@ -3593,6 +3593,20 @@ export default function Watchlist() {
     });
     return soon.sort((a, b) => Date.parse(a.auction_end) - Date.parse(b.auction_end)).slice(0, 20);
   }, [user, auctionLotItems, watchlist, hidden, adminHidden, homeHidden]);
+  // Auction-LEVEL follows (saved catalogs) for the "Finishing soon" area —
+  // shown as calendar-style thumbnail tiles alongside the followed lots
+  // (Mark 2026-06-15). Followed sales that haven't closed yet, soonest end
+  // first. Reuses savedAuctionItems (the saved→calendar join with hero +
+  // lot count). Signed-in only.
+  const homeFinishingSoonSales = useMemo(() => {
+    if (!user) return [];
+    const cutoff = Date.now() - 24 * 60 * 60 * 1000;   // keep through end-of-sale day
+    const keyEnd = (a) => Date.parse(a.dateEnd || a.dateStart || "") || Infinity;
+    return savedAuctionItems
+      .filter(a => keyEnd(a) >= cutoff)
+      .sort((a, b) => keyEnd(a) - keyEnd(b))
+      .slice(0, 12);
+  }, [user, savedAuctionItems]);
   const homeRecentSold = useMemo(() => {
     const merged = [...items, ...auctionLotItems].filter(i => {
       if (hidden[i.id] || adminHidden.has(i.id) || homeHidden.has(i.id)) return false;
@@ -4334,6 +4348,8 @@ export default function Watchlist() {
       homeRecentSold={homeRecentSold}
       homeEndingNext={homeEndingNext}
       homeFinishingSoon={homeFinishingSoon}
+      homeFinishingSoonSales={homeFinishingSoonSales}
+      onOpenSale={handleOpenSale}
       goToFinishingSoon={() => { setTab("watchlist"); setWatchTopTab("hearted"); setPage(1); }}
       goToRecentAdded={() => { setTab("listings"); setListingsSubTab("live"); setPage(1); }}
       goToRecentSold={() => { setTab("listings"); setListingsSubTab("sold"); setPage(1); }}

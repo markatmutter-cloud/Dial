@@ -7,6 +7,7 @@ import { articleAsListing } from "./EditorialView";
 import { askLumeAbout } from "./LumeBus";
 import { SearchIcon, TabIcon } from "./icons";
 import { imgSrc } from "../utils";
+import { AuctionThumb } from "./auctionThumb";
 import { MoonPhaseIndicator } from "./MoonPhaseIndicator";
 
 // Home tab — phase 4 polish (2026-05-11).
@@ -800,6 +801,7 @@ export function HomeTab(props) {
   const {
     homeRecentAdded, homeRecentSold, homeEndingNext,
     homeFinishingSoon, goToFinishingSoon,
+    homeFinishingSoonSales, onOpenSale,
     homeRecentlyHearted, goToSavedHearts,
     homeRecentArticles, goToArticles,
     homeDealerSources, homeJumpToDealer,
@@ -963,6 +965,31 @@ export function HomeTab(props) {
           openCollectionPicker={openCollectionPicker} isAdmin={isAdmin}
           user={user} compact={compact}
         />
+      )}
+      {/* Auction-LEVEL follows (Mark 2026-06-15): the auction catalogs you
+          follow (saved), as calendar-style thumbnail tiles in the same
+          finishing-soon space. Tapping a tile opens the catalogue. Shared
+          AuctionThumb so it can't drift from the calendar's cards. */}
+      {homeFinishingSoonSales?.length > 0 && (
+        <div style={{ marginBottom: isMobile ? 20 : 26 }}>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 8,
+                        padding: `0 ${shellPad}px`, marginBottom: 10 }}>
+            <h2 style={{ fontSize: isMobile ? 15 : 16, fontWeight: 600, margin: 0,
+                         color: "var(--text1)", letterSpacing: "0.01em" }}>
+              Auctions you're following
+            </h2>
+            <span style={{ fontSize: 12, color: "var(--text3)" }}>Tap to view the catalogue</span>
+          </div>
+          <div style={{
+            display: "flex", gap: 10, overflowX: "auto",
+            padding: `0 ${shellPad}px 4px`, scrollSnapType: "x proximity",
+            WebkitOverflowScrolling: "touch", scrollbarWidth: "none",
+          }}>
+            {homeFinishingSoonSales.map((s) => (
+              <AuctionThumb key={s.url} sale={s} onOpen={onOpenSale} />
+            ))}
+          </div>
+        </div>
       )}
       <SectionStrip
         heading="Recently added"
