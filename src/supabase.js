@@ -1852,19 +1852,25 @@ export function useSavedAuctions(user) {
 const ALLOWED_CURRENCIES = ['USD', 'GBP', 'EUR'];
 const DEFAULT_CURRENCY = 'USD';
 
+// Allowed default-landing values (null = no preference → Home). Only 'lume'
+// today ("Make Lumé my home"); add more landing targets here as they qualify.
+const ALLOWED_LANDINGS = ['lume'];
+
 export function useUserSettings(user) {
   const [primaryCurrency, setPrimaryCurrencyLocal] = useState(DEFAULT_CURRENCY);
+  const [defaultLandingTab, setDefaultLandingTabLocal] = useState(null);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     if (!user || !supabase) {
       setPrimaryCurrencyLocal(DEFAULT_CURRENCY);
+      setDefaultLandingTabLocal(null);
       setLoaded(true);
       return;
     }
     let cancelled = false;
     supabase.from('user_settings')
-      .select('primary_currency')
+      .select('primary_currency, default_landing_tab')
       .eq('user_id', user.id)
       .maybeSingle()
       .then(({ data, error }) => {
@@ -1874,6 +1880,8 @@ export function useUserSettings(user) {
         setPrimaryCurrencyLocal(
           ALLOWED_CURRENCIES.includes(v) ? v : DEFAULT_CURRENCY
         );
+        const land = data?.default_landing_tab;
+        setDefaultLandingTabLocal(ALLOWED_LANDINGS.includes(land) ? land : null);
         setLoaded(true);
       });
     return () => { cancelled = true; };
@@ -1892,7 +1900,22 @@ export function useUserSettings(user) {
     return { error: error?.message || null };
   }, [user]);
 
-  return { primaryCurrency, setPrimaryCurrency, loaded };
+  // null clears the preference (→ Home). Optimistic local update + async upsert,
+  // same shape as currency.
+  const setDefaultLandingTab = useCallback(async (next) => {
+    const val = ALLOWED_LANDINGS.includes(next) ? next : null;
+    setDefaultLandingTabLocal(val);
+    if (!user || !supabase) return { error: null };
+    const { error } = await supabase.from('user_settings').upsert({
+      user_id:             user.id,
+      default_landing_tab: val,
+      updated_at:          new Date().toISOString(),
+    }, { onConflict: 'user_id' });
+    if (error) console.warn('user_settings save failed', error);
+    return { error: error?.message || null };
+  }, [user]);
+
+  return { primaryCurrency, setPrimaryCurrency, defaultLandingTab, setDefaultLandingTab, loaded };
 }
 
 
