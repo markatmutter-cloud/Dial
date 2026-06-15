@@ -13,6 +13,7 @@ const noop = () => {};
 function baseProps(overrides = {}) {
   return {
     homeRecentAdded: [], homeRecentSold: [], homeEndingNext: [],
+    homeFinishingSoon: [], goToFinishingSoon: noop,
     homeRecentlyHearted: [], goToSavedHearts: noop,
     homeRecentArticles: [], goToArticles: noop,
     homeDealerSources: [], homeJumpToDealer: noop,
@@ -46,6 +47,22 @@ describe("HomeTab", () => {
     render(<HomeTab {...baseProps()} />);
     // Masthead tab from the shared model renders.
     expect(screen.getByText("Reference Guides")).toBeInTheDocument();
+  });
+
+  test("no 'Finishing soon' strip when there are no followed lots closing soon", () => {
+    render(<HomeTab {...baseProps({ homeFinishingSoon: [] })} />);
+    expect(screen.queryByText("Finishing soon")).toBeNull();
+  });
+
+  test("renders the 'Finishing soon' strip when a followed lot is closing soon", () => {
+    const lot = {
+      id: "lot-1", title: "Rolex Submariner 5513", brand: "Rolex",
+      price: 12000, currency: "USD", source: "Sotheby's", house: "Sotheby's",
+      url: "https://example.com/lot-1", image: "https://example.com/i.jpg",
+      auction_end: "2026-06-16T14:00:00Z", sold: false,
+    };
+    render(<HomeTab {...baseProps({ user: { id: "u1" }, homeFinishingSoon: [lot] })} />);
+    expect(screen.getByText("Finishing soon")).toBeInTheDocument();
   });
 
   test("the bottom bleed band is gone", () => {
