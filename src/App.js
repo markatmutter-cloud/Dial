@@ -1202,7 +1202,20 @@ export default function Watchlist() {
   // which are per-device localStorage. Default 'USD' until the user
   // changes it. Plumbs through shellProps → Card so every card
   // surface honours the preference.
-  const { primaryCurrency, setPrimaryCurrency } = useUserSettings(user);
+  const { primaryCurrency, setPrimaryCurrency, defaultLandingTab, setDefaultLandingTab, loaded: userSettingsLoaded } = useUserSettings(user);
+  // Honor a signed-in user's "Make Lumé my home" preference: on a totally bare
+  // cold open (no query params at all → not a deep link or share), land on the
+  // Lumé tab instead of Home. Fires exactly once when settings load, and only
+  // while still on the default Home — never hijacks a tab the user chose.
+  const bareInitialUrlRef = useRef(typeof window !== "undefined" && !window.location.search);
+  const landingAppliedRef = useRef(false);
+  useEffect(() => {
+    if (!userSettingsLoaded || landingAppliedRef.current) return;
+    landingAppliedRef.current = true;
+    if (defaultLandingTab === "lume" && tab === "home" && bareInitialUrlRef.current) {
+      setTab("lume");
+    }
+  }, [userSettingsLoaded, defaultLandingTab, tab]);
   const { displayName, setDisplayName } = useUserProfile(user);
   const [settingsModalOpen, setSettingsModalOpen] = useState(false);
 
@@ -4850,6 +4863,8 @@ export default function Watchlist() {
       setDisplayName={setDisplayName}
       primaryCurrency={primaryCurrency}
       setPrimaryCurrency={setPrimaryCurrency}
+      defaultLandingTab={defaultLandingTab}
+      setDefaultLandingTab={setDefaultLandingTab}
       isMobile={isMobile}
       dark={dark}
       setDarkOverride={setDarkOverride}
