@@ -599,6 +599,24 @@ component, not a per-view variant ([[project_chrome_unification]], cross-surface
 consistency). Pairs with the dispatch-layer work; design + build after the current
 scrape-health fixes.
 
+**Saved-tab restructure + landing auction surfacing (2026-06-15, Mark) — DESIGN PLAN NEEDED.**
+The "Saved ▸ ♡ Saved" sub-tab echoes its parent; the sub-tabs are really *types of
+saved things*. Restructure:
+- **Sub-tabs → ♡ Watches · Auctions · Lists · Searches** (rename ♡ Saved → **♡ Watches**;
+  add **Auctions** in the 2nd slot). Splits time-sensitive auction items out of ♡ Watches
+  into their own view. (Overrides the standing "always ♡ Saved, never relabel" rule —
+  Mark's call. NB "Watches" now appears as both a top tab and a Saved sub-tab; the heart +
+  "Saved" parent disambiguate.)
+- **Auctions sub-tab surfaces CLOSING-SOON** for saved auction lots — the in-app home of the
+  Lumé catch-up journeys #7 (hearted lots closing soon) / #8 (taste-fit lots ending <7d).
+- **Fold in saved auction CATALOGS** somehow alongside saved lots — *design plan needed*
+  (reconcile saved-lots vs saved-whole-catalogs; one view or two groupings?).
+- **Landing/Home reshuffle:** move the **"ending soon" strip to the 2nd row** (off the top
+  row); and pull **"auctions closing soon" out of a strip into a TOP-OF-SCREEN BANNER** —
+  *design plan needed* (banner placement/persistence/dismiss; ties to the closing-soon
+  surfacing above + the [[watchlists_pulse]] line). Epic 9 IA + Epic 2 auctions; separate
+  build from the in-flight Lumé-tab work.
+
 ## Epic 10: Lumé — the AI spine
 
 The AI concierge of OUR corpus (grounded, cite-or-don't), not a general watch
