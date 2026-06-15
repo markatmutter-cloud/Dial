@@ -64,8 +64,10 @@ import { DesktopShell } from "./components/DesktopShell";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { ConfirmHost } from "./components/ConfirmModal";
 import { ChatBubbleHost } from "./components/ChatBubbleHost";
+import { useLumeChat } from "./components/LumeConversation";
+import { LumeTab } from "./components/LumeTab";
 import { PageHeader } from "./components/PageHeader";
-import { registerActionHandlers, registerItemResolver } from "./components/ActionBus";
+import { registerActionHandlers, registerItemResolver, dispatchAction, resolveItemByUrl } from "./components/ActionBus";
 // IdentityBand import retired 2026-05-22 — component file still in
 // the repo for git history, no current call site.
 // import { IdentityBand } from "./components/IdentityBand";
@@ -570,7 +572,7 @@ export default function Watchlist() {
   // entry point (Mark spec, eBay analogy: "kind of like my ebay"). The
   // URL key `?tab=watchbox` is canonical; legacy `?tab=watchlist&sub=my-collection`
   // redirects to it on init.
-  const TAB_VALUES = ["home", "listings", "watchlist", "watchbox", "references", "admin"];
+  const TAB_VALUES = ["home", "listings", "watchlist", "watchbox", "references", "admin", "lume"];
   // URL-key translation. Stale `share` URLs route to Watchlists >
   // Lists (where the Shared with me group lives now). `learn` also
   // still routes to references for back-compat. `mywatches` is a
@@ -846,6 +848,17 @@ export default function Watchlist() {
   // The shared item the floating Lumé launcher should open SEEDED with (set by
   // ShareReceiver while a share surface is up; null otherwise). 2026-06-01.
   const [lumeSeedItem, setLumeSeedItem] = useState(null);
+  // Lumé full-page tab: its conversation state lives HERE (not inside the tab) so
+  // it survives the full-page share surface taking over when a watch link opens —
+  // returning to the tab restores the thread. The corner bubble keeps its own.
+  const lumeChat = useLumeChat();
+  // Open a watch from a Lumé-tab reply link in-app (the shared surface). No
+  // minimise — the tab's conversation persists in App and is restored on return.
+  const openLumeItemInApp = useCallback((url) => {
+    const item = resolveItemByUrl(url);
+    const payload = item ? { itemId: item.id, itemUrl: item.url } : { itemUrl: url };
+    dispatchAction({ type: "open_watch", payload });
+  }, []);
   // Same one-bit mirror for Watch Challenges receive flow (v1.5).
   // Either of these flips the shell into "focused landing surface"
   // mode (regular browse chrome hidden).
@@ -4620,6 +4633,16 @@ export default function Watchlist() {
   // strip, no sub-tab strip above. Internal pre-tab-watchbox URLs
   // (?tab=watchlist&sub=my-collection) redirect to ?tab=watchbox on
   // init via the legacy-URL handler in setTab.
+  const lumeTabJSX = (
+    <LumeTab
+      chat={lumeChat}
+      user={user}
+      isMobile={isMobile}
+      onOpenItem={openLumeItemInApp}
+      onSignIn={triggerSignInPrompt}
+    />
+  );
+
   const watchboxTabJSX = (
     <CollectionsTab
       user={user}
@@ -5093,6 +5116,7 @@ export default function Watchlist() {
     // Collections style) computed by `savedContentJSX`.
     watchlistTabJSX: savedContentJSX,
     watchboxTabJSX,
+    lumeTabJSX,
     adminTabJSX, referencesTabJSX, collectionsTabJSX, homeTabJSX,
     lotMigrationBannerJSX,
     userLimitBannerJSX,
