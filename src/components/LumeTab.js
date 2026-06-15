@@ -33,7 +33,7 @@ export function LumeTab({ chat, user, isMobile = false, onOpenItem, onActionResu
         </div>
         <div style={{ fontSize: 15, lineHeight: 1.55, color: "var(--text1)" }}>
           Sign in to chat with <strong>Lumé</strong>, your watch guide. Catch up on what you
-          missed, dig into a reference, and save things to your lists — all in one place.
+          missed, dig into a reference, and save things to your lists, all in one place.
         </div>
         <button onClick={() => { try { onSignIn && onSignIn(); } catch {} }} style={{
           border: "none", background: "var(--brand-olive)", color: "#fff",
