@@ -4671,7 +4671,7 @@ export default function Watchlist() {
   const watchSubTabsJSX = tab !== "watchlist" ? null : (
     <SubTabBar
       ariaLabel="Lists views"
-      tabs={[["hearted", "♡ Saved"], ["lists", "Lists"], ["searches", "Searches"]]}
+      tabs={[["hearted", "♡ Watches"], ["lists", "Lists"], ["searches", "Searches"]]}
       activeKey={watchTopTab}
       // Re-tapping the ACTIVE sub-tab returns to its landing (P-22, Mark
       // 2026-06-03): inside a drilled-in list, tapping "Lists" used to be a
