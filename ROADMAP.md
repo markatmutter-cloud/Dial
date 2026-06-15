@@ -305,7 +305,9 @@ featured at the top, signed-in only. "Follow" = the existing heart/Save-catalog
 showing their catalog tile in the same Finishing-soon space (needs a sale-tile +
 onOpenSale in HomeTab); (b) **Phase B email reminders** — Settings opt-in toggle
 + daily cron (Resend) emailing followed lots ≤3 days / followed auctions on
-publish-open; dedup table. **Open decisions:** email provider (Resend?) · keep
+publish-open; dedup table. **NEXT SESSION + voiced as Lumé** (Mark 2026-06-15):
+the reminder email reads as a message *from Lumé* (its voice/persona), not a
+generic system alert — ties the reminders into the Lumé surface (Epic 10). **Open decisions:** email provider (Resend?) · keep
 follow==heart or add a separate bell. Original plan detail: "Follow"
 = opt into notifications for an **auction** (catalog) or a **lot**. Recommend
 reusing the existing heart (lot) / Save-catalog (auction) as the follow signal,
