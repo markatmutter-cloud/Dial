@@ -199,6 +199,9 @@ within each section roughly last.
   watches as deep as page ~150). Prior-CSV URLs unseen by the capped walk now
   re-verify each run (available → tracked for life, sold → drop); 36 finds seeded
   + a production cron confirmed the fill.
+- **2026-06-12 — Scrape-health gate debounced + maunder hardened + Node-20 bump (#876, B-66/67/68).**
+  The gate now pages only after a source misses THRESHOLD=3 consecutive runs (`data/scrape_health_state.json`),
+  not on one transient flap; maunderwatches → curl_cffi; checkout@v5 / setup-python@v6 / setup-node@v5.
 
 ## Epic 2 — Auction houses
 
@@ -284,6 +287,24 @@ within each section roughly last.
 - **2026-06-06 — Past-sale catalogs + house-logo stand-ins (#831/#833).** Archive calendar rows get
   "View results →" into the sale's Sold catalog (sold lots now count toward the sale map; past sales gain
   top-lot heroes); coverless tiles render public/logos/<house>.svg|png with text fallback (logos pending Mark).
+- **2026-06-12 — Sotheby's lots → GraphQL (#877, B-69).** Their SSR algoliaJson went empty; rewrote
+  `enumerate_sothebys` onto the `lotCardsConnection` GraphQL API (clientapi.prod.sothelabs.com), paginated.
+  1 lot → 414, with estimates/images/realised prices.
+- **2026-06-12 — Monaco Legend sold prices fixed (#878, B-70).** CHF thousands separator is the HTML entity
+  `&#039;`; `html.unescape()` before parsing — was reading CHF 32'500 as 32.
+- **2026-06-13 — Non-watch Sotheby's sales excluded (#880, B-71).** Added Artistic Luxury + Maurice
+  Tempelsman to `EXCLUDE_CATALOG_TITLES` (both lockstep copies).
+- **2026-06-13 — Bonhams calendar → residential (#882, B-72).** Department page now 403s CI too; the laptop
+  wrapper runs the calendar scraper + commits `data/bonhams_auctions.csv`. Fixed `has_catalog` count-span regex.
+- **2026-06-13/14 — Christie's "Watches Online" online-only (#881/#883/#884/#886, B-73).** Read the whole-blob
+  `chrComponents`, route the sso URL to the enumerator, curl_cffi the CI-timing-out fetch, reconstruct the
+  IP-gated lot images from the deterministic LotImages path. 0 → 87 lots + images, verified in CI.
+- **2026-06-14 — DKK added to FX tables (#885, B-74).** Bonhams Copenhagen prices were showing raw DKK as `$`.
+- **2026-06-14 — Per-house auction health check (#888, B-75).** `auction_health.py` reds the job when a house
+  has a published current catalog but 0 lots (debounced, THRESHOLD=3) — catches the silent-zero enumerator break.
+- **2026-06-14/15 — Follow feature, Phase A (#889/#890).** "Follow" = the existing heart/Save-catalog. Home
+  **"Finishing soon"** strip (followed lots closing ≤3 days) + **"Auctions you're following"** calendar-style
+  catalog tiles (shared `auctionThumb.js`). Phase B (email reminders, Lumé-voiced) is next session.
 
 ## Epic 3 — Watchlist
 
@@ -578,6 +599,9 @@ within each section roughly last.
   six count-free capability cards incl. **Ask (Lumé)**, How-it-works second view with current naming, letter badges + stale counts gone; B-56 modal half.
 - **2026-06-07 — Home bottom bleed band removed (#851, #852).** Briefly re-anchored Watchbox → Reference
   Guides, then cut entirely per Mark; dead LiveCounts/homeCounts gone; HomeTab + AboutModal got their first direct render tests.
+- **2026-06-13 — Auction catalogue = full-page surface (#879).** Drilling into a sale promotes it to a
+  full-page view like the calendar: green bar + sale title + persistent × → calendar, Save/Share/Auction-house
+  row beneath; both shells via a shared `catalogFullPage` chrome takeover.
 
 ## Epic 10 — Lumé (AI spine)
 
@@ -737,3 +761,5 @@ within each section roughly last.
   Durable rule → BRAND.md voice + a hard line in Lumé's system prompt so generated replies comply. The LLM-tell that costs credibility.
 - **2026-06-07 — copy-guard.test.js (#855).** Jest enforcement of the BRAND.md em-dash ban
   (chrome-guard pattern: comments stripped, placeholder "—" glyphs allowed); caught + fixed 8 strings the #840 sweep missed.
+- **2026-06-14 — Sold sub-tab drops the Auction-Calendar pill (#887).** The calendar is upcoming-sales nav,
+  irrelevant on Sold; gated to the Auctions sub-tab only (both shells) so the Sold filter pills fit one line.

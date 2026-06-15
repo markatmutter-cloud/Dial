@@ -143,6 +143,16 @@ diagram, data model, and folder layout.
   absolute), skip the CSV write so `merge.py` keeps prior state. Scrape
   failures auto-open a GitHub Issue via `notify-scrape-failure.yml` — fix the
   flap, don't silence the alert. `python3 health.py` is the read-only status check.
+- **CI ≠ residential — verify the CI-committed output, not a laptop run.**
+  Auction houses gate datacenter (GitHub Actions) IPs differently from
+  residential: a scraper that returns full data on your machine can still 403,
+  time out, or serve placeholders (roundel images, anti-bot 202) in CI
+  (Sotheby's/Christie's/Bonhams, B-69/72/73). When a scrape "works locally"
+  but a source is empty, check the actual run log + the committed JSON before
+  declaring it fixed. Playbook for a CI block: curl_cffi Chrome-impersonation
+  first (TLS/JA3), residential laptop agent if the IP itself is blocked.
+  `auction_health.py` (B-75) pages when a house has a published catalog but 0
+  lots — the per-house safety net.
 - **Verify display currency from the storefront, not the TLD** (`.com` ≠ USD;
   HK shops serve `.com`/HKD). Grep the storefront for `data-currency` before
   setting `merge.py` SOURCES. A wrong mapping goes silently 8× off.

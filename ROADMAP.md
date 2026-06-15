@@ -586,7 +586,7 @@ is repeatable (`walk.py`) for a before/after once it ships.
 - **Phase 3** — two-door planning + journey coach. The **RAG Q&A bot** and the
   **missed-it / discovery bot** are each their own dedicated session.
 
-**Auction catalogue = full-page surface (2026-06-12, Mark).** When you open an
+**Auction catalogue = full-page surface (2026-06-12, Mark) — SHIPPED #879.** When you open an
 auction catalogue (e.g. Phillips "New York Watch Auction: XIV"), promote it to a
 **full-page view matching the auction calendar's** — a green bar pinned at the top
 carrying the **auction title**, with a **persistent white × top-right** that stays
