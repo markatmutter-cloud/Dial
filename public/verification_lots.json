@@ -1,15 +1,23 @@
 {
-  "date": "2026-06-14",
-  "updated_at": "2026-06-14T09:15:59+00:00",
-  "alerts": [],
+  "date": "2026-06-15",
+  "updated_at": "2026-06-15T11:56:43+00:00",
+  "alerts": [
+    {
+      "house": "Phillips",
+      "level": "WARN",
+      "today": 1,
+      "median": 153,
+      "note": "count is 1% of recent median (1 vs ~153)"
+    }
+  ],
   "counts": {
     "Marteau & Co": 33,
     "Antiquorum": 249,
     "Christie's": 87,
     "Monaco Legend": 2,
-    "Phillips": 76,
+    "Phillips": 1,
     "Sotheby's": 622
   },
-  "total_live_lots": 1069,
+  "total_live_lots": 994,
   "houses_tracked": 6
 }
