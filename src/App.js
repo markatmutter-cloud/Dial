@@ -3572,6 +3572,27 @@ export default function Watchlist() {
     });
     return active.sort((a, b) => Date.parse(a.auction_end) - Date.parse(b.auction_end)).slice(0, 20);
   }, [auctionLotItems, hidden, adminHidden, homeHidden]);
+  // "Finishing soon" — Follow feature, Phase A (Mark 2026-06-14). The
+  // followed (= hearted) auction lots that close within 3 days, soonest
+  // first. "Follow" reuses the existing heart (no separate signal) — a
+  // hearted lot you can still bid on, ≤3 days from its auction_end, is
+  // what you most need surfaced. Signed-in only; intersect live
+  // auctionLotItems (fresh auction_end) with the watchlist (followed).
+  // Auction-LEVEL follows (saved catalogs) get their own catalog tiles in
+  // the same section — see homeFinishingSoonSales below.
+  const FINISHING_SOON_MS = 3 * 24 * 60 * 60 * 1000;
+  const homeFinishingSoon = useMemo(() => {
+    if (!user) return [];
+    const now = Date.now();
+    const soon = auctionLotItems.filter(i => {
+      if (!watchlist[i.id]) return false;            // followed (hearted) only
+      if (i.sold) return false;
+      if (hidden[i.id] || adminHidden.has(i.id) || homeHidden.has(i.id)) return false;
+      const end = i.auction_end ? Date.parse(i.auction_end) : NaN;
+      return !Number.isNaN(end) && end > now && (end - now) <= FINISHING_SOON_MS;
+    });
+    return soon.sort((a, b) => Date.parse(a.auction_end) - Date.parse(b.auction_end)).slice(0, 20);
+  }, [user, auctionLotItems, watchlist, hidden, adminHidden, homeHidden]);
   const homeRecentSold = useMemo(() => {
     const merged = [...items, ...auctionLotItems].filter(i => {
       if (hidden[i.id] || adminHidden.has(i.id) || homeHidden.has(i.id)) return false;
@@ -4312,6 +4333,8 @@ export default function Watchlist() {
       homeRecentAdded={homeRecentAdded}
       homeRecentSold={homeRecentSold}
       homeEndingNext={homeEndingNext}
+      homeFinishingSoon={homeFinishingSoon}
+      goToFinishingSoon={() => { setTab("watchlist"); setWatchTopTab("hearted"); setPage(1); }}
       goToRecentAdded={() => { setTab("listings"); setListingsSubTab("live"); setPage(1); }}
       goToRecentSold={() => { setTab("listings"); setListingsSubTab("sold"); setPage(1); }}
       goToEndingNext={() => { setTab("listings"); setListingsSubTab("auctions"); setPage(1); }}

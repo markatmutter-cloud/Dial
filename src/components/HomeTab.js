@@ -799,6 +799,7 @@ function FooterBand({ openAbout, signInWithGoogle, user }) {
 export function HomeTab(props) {
   const {
     homeRecentAdded, homeRecentSold, homeEndingNext,
+    homeFinishingSoon, goToFinishingSoon,
     homeRecentlyHearted, goToSavedHearts,
     homeRecentArticles, goToArticles,
     homeDealerSources, homeJumpToDealer,
@@ -943,6 +944,26 @@ export function HomeTab(props) {
           </div>
         )}
       </div>
+      {/* Finishing soon (Follow feature, Phase A — Mark 2026-06-14): the
+          auction lots you've followed (hearted) that close within 3 days,
+          soonest first. Featured at the TOP — it's the most time-sensitive
+          thing on the page. Renders only when you have followed lots closing
+          soon (SectionStrip also returns null on empty). */}
+      {homeFinishingSoon?.length > 0 && (
+        <SectionStrip
+          heading="Finishing soon"
+          descriptor="Followed lots closing within 3 days"
+          items={homeFinishingSoon}
+          priorityFirst
+          onViewAll={goToFinishingSoon}
+          isMobile={isMobile} shellPad={shellPad}
+          watchlist={watchlist} hidden={hidden} handleWish={handleWish}
+          toggleHide={toggleHide} primaryCurrency={primaryCurrency}
+          onShare={onShare} onView={onView} onClickListing={onClickListing}
+          openCollectionPicker={openCollectionPicker} isAdmin={isAdmin}
+          user={user} compact={compact}
+        />
+      )}
       <SectionStrip
         heading="Recently added"
         items={homeRecentAdded}
