@@ -10,6 +10,7 @@ import { JOURNEYS, journeyLine } from "./LumeJourneyGrid";
 import { renderLumeListingCard, renderLumeArticleCard } from "./lumeCards";
 import { selectMissed, deriveTasteSets, urlKey } from "../lumeMissed";
 import { recordVisit, recordJourney, rankJourneys, buildGreeting } from "../lumeColdOpen";
+import { buildHook } from "../lumeHooks";
 import { matchesSearch } from "../utils";
 
 // LumeCanvas — the host-agnostic morphing surface. Owns the view router
@@ -32,7 +33,7 @@ const titleFor = (key) => (JOURNEYS.find((j) => j.key === key) || {}).label || "
 
 export default function LumeCanvas({
   chat, user, isMobile = false, onOpenItem,
-  liveItems = [], auctionLotItems = [], articles = [], watchlist = {},
+  liveItems = [], auctionLotItems = [], articles = [], watchlist = {}, savedSearches = [],
   cardCtx = {},
 }) {
   const listingCard = (it) => renderLumeListingCard(it, cardCtx);
@@ -119,41 +120,19 @@ export default function LumeCanvas({
     return ordered.filter((j) => !heroKeys.has(j.key));
   }, [ordered, heroes]);
 
-  // The PERCEPTIVE hook — a named, behaviour-aware line built from real data
-  // (the "it knew that" feeling). Prefers the got-away sting (specific model +
-  // how fast it sold), then a fresh in-lane arrival, then auctions/reading.
+  // The PERCEPTIVE hook — a named, behaviour-aware line from real data (the "it
+  // knew that" feeling). The hook library (lumeHooks) picks the most perceptive
+  // signal: saved-search activity > taste-matched catalog > got-away > missed.
   const greeting = useMemo(() => {
     const firstName = String(user?.user_metadata?.name || user?.user_metadata?.full_name || "").trim().split(/\s+/)[0] || "";
-    const nameOf = (it) => {
-      if (!it) return "";
-      const m = String(it.model || it.model_line || "").trim();
-      return `${it.brand || ""} ${m}`.trim();
-    };
-    const soldDays = (it) => {
-      if (!it || !it.firstSeen || !it.soldAt) return null;
-      return Math.max(0, Math.round((Date.parse(it.soldAt) - Date.parse(it.firstSeen)) / 86400000));
-    };
-    const ga = results.got_away.items[0];
-    const miss = results.missed_live.items[0];
-    const more = results.missed_live.count;
-    let hook = "";
-    if (ga && nameOf(ga)) {
-      const d = soldDays(ga);
-      const lead = d != null
-        ? `That ${nameOf(ga)} you'd have liked sold in ${d} day${d !== 1 ? "s" : ""}`
-        : `A ${nameOf(ga)} you'd have liked just sold`;
-      hook = more > 1 ? `${lead}, and a few more slipped by.` : `${lead}.`;
-    } else if (miss && nameOf(miss)) {
-      hook = more > 1
-        ? `A ${nameOf(miss)} just surfaced in your lane, with a few others.`
-        : `A ${nameOf(miss)} just surfaced, right in your lane.`;
-    } else if (results.auctions_soon.count) {
-      hook = "A few lots are about to go under the hammer.";
-    } else if (results.articles.count) {
-      hook = "There's some new reading waiting.";
-    }
+    const hook = buildHook({
+      liveItems, auctionLotItems, savedSearches, tasteBrands: tasteSets.tasteBrands,
+      gotAway: results.got_away.items, missed: results.missed_live.items,
+      missedCount: results.missed_live.count,
+      auctionsSoonCount: results.auctions_soon.count, articlesCount: results.articles.count,
+    });
     return buildGreeting({ firstName, hour: new Date().getHours(), daysAway: usage?.daysAway, hook });
-  }, [user, results, usage]);
+  }, [user, results, usage, liveItems, auctionLotItems, savedSearches, tasteSets]);
 
   // Unified in-canvas search across the in-memory types (listings / sold /
   // auctions), reusing the app's shared matchesSearch. Articles + reference
