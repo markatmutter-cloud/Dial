@@ -1,13 +1,13 @@
 {
-  "date": "2026-06-15",
-  "updated_at": "2026-06-15T11:56:43+00:00",
+  "date": "2026-06-16",
+  "updated_at": "2026-06-16T11:07:04+00:00",
   "alerts": [
     {
       "house": "Phillips",
       "level": "WARN",
       "today": 1,
-      "median": 153,
-      "note": "count is 1% of recent median (1 vs ~153)"
+      "median": 76,
+      "note": "count is 1% of recent median (1 vs ~76)"
     }
   ],
   "counts": {
@@ -16,8 +16,8 @@
     "Christie's": 87,
     "Monaco Legend": 2,
     "Phillips": 1,
-    "Sotheby's": 622
+    "Sotheby's": 620
   },
-  "total_live_lots": 994,
+  "total_live_lots": 992,
   "houses_tracked": 6
 }
