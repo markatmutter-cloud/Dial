@@ -160,6 +160,12 @@ export default function LumeCanvas({
     };
   }, [view.intent, results]);
 
+  // The chat opener should be WARM + CONNECTED to the same perceptive context as
+  // the landing (Mark: the old "what's your watch problem" rail greeting "doesn't
+  // make sense" next to the warm left). Open with the greeting + an invite, not
+  // the generic static cold open.
+  const railGreeting = `${greeting.hello}\n\n${greeting.notable}\n\nWhat do you want to dig into? Ask me anything.`;
+
   const onSelectJourney = (key) => { recordJourney(key); setView({ kind: "result", intent: key }); };
   const goHome = () => setView({ kind: "home", intent: null });
   const submitSearch = (text) => setView({ kind: "search", intent: null, query: text });
@@ -214,7 +220,7 @@ export default function LumeCanvas({
               cursor: "pointer", fontFamily: "inherit",
             }}>← Back to start</button>
           </div>
-          <LumeConversation chat={chat} onOpenItem={onOpenItem} isMobile suggestions={[]} />
+          <LumeConversation chat={chat} greeting={railGreeting} onOpenItem={onOpenItem} isMobile suggestions={[]} />
         </div>
       );
     }
@@ -245,7 +251,7 @@ export default function LumeCanvas({
         }}>
           <LumeIcon size={18} /> Ask Lumé
         </div>
-        <LumeConversation chat={chat} onOpenItem={onOpenItem} isMobile={false} />
+        <LumeConversation chat={chat} greeting={railGreeting} onOpenItem={onOpenItem} isMobile={false} />
       </aside>
     </div>
   );

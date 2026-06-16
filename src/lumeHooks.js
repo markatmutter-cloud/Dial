@@ -29,7 +29,6 @@ function nameOf(it) {
   return `${it.brand || ""} ${m}`.trim();
 }
 const norm = (s) => String(s == null ? "" : s).toLowerCase();
-const pluralize = (label) => (label + (/s$/i.test(label) ? "" : "s"));
 
 function savedSearchHook({ savedSearches, liveItems, now }) {
   if (!Array.isArray(savedSearches) || !savedSearches.length || !Array.isArray(liveItems)) return "";
@@ -49,9 +48,10 @@ function savedSearchHook({ savedSearches, liveItems, now }) {
     if (score > 0 && (!best || score > best.score)) best = { label: s.label || q, newly, soldFast, score };
   }
   if (!best) return "";
-  if (best.soldFast) return `A few ${pluralize(best.label)} from your saved search sold almost instantly.`;
-  const noun = best.newly === 1 ? best.label : pluralize(best.label);
-  return `${best.newly} ${noun} from your saved search just listed.`;
+  // Quote the label rather than pluralizing it — saved-search labels are free
+  // text ("Jackie DateJust") and "Jackies DateJusts" reads wrong.
+  if (best.soldFast) return `A few from your "${best.label}" search sold almost instantly.`;
+  return `${best.newly} new on your "${best.label}" search.`;
 }
 
 function newCatalogHook({ auctionLotItems, tasteBrands, now }) {

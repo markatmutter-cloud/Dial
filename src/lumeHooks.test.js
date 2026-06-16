@@ -11,16 +11,16 @@ describe("buildHook — saved-search activity", () => {
       { brand: "Omega", ref: "Speedmaster Professional", sold: true, firstSeen: "2026-06-15", soldAt: "2026-06-16", priceUSD: 6000 },
     ];
     expect(buildHook({ savedSearches, liveItems, now: NOW }))
-      .toBe("A few Speedmasters from your saved search sold almost instantly.");
+      .toBe('A few from your "Speedmaster" search sold almost instantly.');
   });
 
-  test("new listings read as 'just listed' (singular when one)", () => {
-    const savedSearches = [{ label: "Explorer", query: "explorer" }];
+  test("new listings quote the label (no clumsy pluralizing)", () => {
+    const savedSearches = [{ label: "Jackie DateJust", query: "datejust" }];
     const liveItems = [
-      { brand: "Rolex", ref: "Explorer 1016", sold: false, firstSeen: "2026-06-15", priceUSD: 9000 },
+      { brand: "Rolex", ref: "DateJust 6917", sold: false, firstSeen: "2026-06-15", priceUSD: 9000 },
     ];
     expect(buildHook({ savedSearches, liveItems, now: NOW }))
-      .toBe("1 Explorer from your saved search just listed.");
+      .toBe('1 new on your "Jackie DateJust" search.');
   });
 
   test("respects the saved search's price band", () => {
@@ -65,7 +65,7 @@ describe("buildHook — priority + fallback", () => {
     const liveItems = [{ brand: "Omega", ref: "Speedmaster", sold: false, firstSeen: "2026-06-15" }];
     const gotAway = [{ brand: "Rolex", model: "Sub", firstSeen: "2026-06-14", soldAt: "2026-06-16" }];
     expect(buildHook({ savedSearches, liveItems, gotAway, missedCount: 2, now: NOW }))
-      .toMatch(/saved search/);
+      .toMatch(/your ".*" search/);
   });
 
   test("falls back to auctions / reading, then empty", () => {
