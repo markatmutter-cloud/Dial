@@ -8,6 +8,7 @@ import { JOURNEYS } from "./LumeJourneyGrid";
 import { renderLumeListingCard, renderLumeArticleCard } from "./lumeCards";
 import { selectMissed, deriveTasteSets, urlKey } from "../lumeMissed";
 import { recordVisit, recordJourney, lumeColdOpen, rankJourneys } from "../lumeColdOpen";
+import { matchesSearch } from "../utils";
 
 // LumeCanvas — the host-agnostic morphing surface. Owns the view router
 // (home / result / chat) and computes each journey's panel from data already
@@ -126,9 +127,26 @@ export default function LumeCanvas({
     };
   }, [view.intent, liveItems, auctionLotItems, articles, tasteSets, byId, byUrl]);
 
+  // Unified in-canvas search across the in-memory types (listings / sold /
+  // auctions), reusing the app's shared matchesSearch. Articles + reference
+  // guides are the queued follow-up (lazy corpus + a net-new guide index).
+  const searchGroups = useMemo(() => {
+    if (view.kind !== "search") return null;
+    const q = view.query || "";
+    const live = liveItems.filter((i) => i && !i.sold && matchesSearch(i, q)).slice(0, 24);
+    const sold = liveItems.filter((i) => i && i.sold && matchesSearch(i, q)).slice(0, 24);
+    const auctions = auctionLotItems.filter((i) => i && matchesSearch(i, q)).slice(0, 24);
+    return [
+      { key: "listings", title: "Listings", items: live },
+      { key: "sold", title: "Sold", items: sold },
+      { key: "auctions", title: "Auctions", items: auctions },
+    ].filter((g) => g.items.length);
+  }, [view.kind, view.query, liveItems, auctionLotItems]);
+
   const onSelectJourney = (key) => { recordJourney(key); setView({ kind: "result", intent: key }); };
   const goHome = () => setView({ kind: "home", intent: null });
-  const submitText = (text) => { setView({ kind: "chat", intent: null }); chat.send(text); };
+  const submitSearch = (text) => setView({ kind: "search", intent: null, query: text });
+  const submitAsk = (text) => { setView({ kind: "chat", intent: null }); chat.send(text); };
 
   const rootStyle = { display: "flex", flexDirection: "column", height: "100%", minHeight: 0 };
   const scrollStyle = { flex: 1, overflowY: "auto", overscrollBehavior: "contain", padding: isMobile ? "16px 16px 8px" : "22px 20px 10px" };
@@ -153,7 +171,25 @@ export default function LumeCanvas({
     <div style={rootStyle}>
       <div style={scrollStyle}>
         <div style={innerStyle}>
-          {view.kind === "result" && panel ? (
+          {view.kind === "search" ? (
+            <LumeResultPanel
+              title={`Results for "${view.query}"`}
+              onBack={goHome}
+              isEmpty={!searchGroups || !searchGroups.length}
+              emptyText={"No matches in our listings. Try fewer words, or tap Ask to let Lumé dig in."}
+            >
+              <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
+                {(searchGroups || []).map((g) => (
+                  <div key={g.key}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text2)", textTransform: "uppercase", letterSpacing: 0.4, marginBottom: 10 }}>
+                      {g.title} <span style={{ color: "var(--text3)" }}>{g.items.length}</span>
+                    </div>
+                    <LumeResultGrid items={g.items} renderCard={listingCard} isMobile={isMobile} />
+                  </div>
+                ))}
+              </div>
+            </LumeResultPanel>
+          ) : view.kind === "result" && panel ? (
             <LumeResultPanel title={panel.title} voice={panel.voice} onBack={goHome}
               isEmpty={panel.isEmpty} emptyText={panel.emptyText}>
               <LumeResultGrid items={panel.items}
@@ -165,7 +201,7 @@ export default function LumeCanvas({
           )}
         </div>
       </div>
-      <LumeComposer chat={chat} onSend={submitText} isMobile={isMobile} />
+      <LumeComposer chat={chat} onSearch={submitSearch} onAsk={submitAsk} isMobile={isMobile} />
     </div>
   );
 }

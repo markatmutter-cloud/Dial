@@ -100,9 +100,11 @@ they are instead of presenting one fixed menu.
 
 ## What's queued next
 
-- **Unified search in the canvas** — the input should also run the app's existing
-  cross-type "Search all" (listings, articles, auctions, sold, reference guides)
-  and render those results in the canvas, not only route to chat. The next slice.
+- **Unified search in the canvas** — the input has two explicit actions, Search
+  and Ask. Search renders visual cross-type results in the canvas. **Shipped:
+  listings / sold / auctions** (reusing the app's `matchesSearch`). **Follow-up:
+  articles** (needs the lazy editorial corpus wired in) **and reference guides**
+  (a net-new client guide index — not in the app's existing Search-all either).
 - **Conversational depth** — reference dossiers + two-reference comparison panels.
 - **New-data journeys** — saved-search deltas; curated "auctions of note."
 - **Durable usage profile** — move the local usage signals into the Lumé

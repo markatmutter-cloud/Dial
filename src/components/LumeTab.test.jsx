@@ -31,11 +31,13 @@ describe("LumeTab", () => {
     expect(onSignIn).toHaveBeenCalled();
   });
 
-  test("signed-in: renders the journey cards + the unified input", () => {
+  test("signed-in: renders the journey cards + the dual-action input", () => {
     render(<LumeTab chat={mkChat()} user={{ id: "u1" }} />);
     expect(screen.getByText("Just listed")).toBeInTheDocument();
     expect(screen.getByText("What I might have missed")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/Ask Lumé about any reference/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/Search watches, or ask/i)).toBeInTheDocument();
+    expect(screen.getByText("Search")).toBeInTheDocument();
+    expect(screen.getByText("Ask")).toBeInTheDocument();
   });
 
   test("tapping a journey morphs the canvas into its result panel", () => {
@@ -47,13 +49,24 @@ describe("LumeTab", () => {
     expect(screen.getByText(/Heart a few watches/i)).toBeInTheDocument();
   });
 
-  test("submitting a question hands off to the chat send loop", () => {
+  test("Ask hands the draft off to the chat send loop", () => {
     // draft is owned by useLumeChat; preset it (the mock setDraft is a no-op,
-    // so a controlled-input change wouldn't stick) and submit.
+    // so a controlled-input change wouldn't stick) and tap Ask.
     const chat = mkChat({ draft: "what's a tropical dial" });
     render(<LumeTab chat={chat} user={{ id: "u1" }} />);
-    const input = screen.getByPlaceholderText(/Ask Lumé about any reference/i);
-    fireEvent.keyDown(input, { key: "Enter" });
+    fireEvent.click(screen.getByText("Ask"));
     expect(chat.send).toHaveBeenCalledWith("what's a tropical dial");
+  });
+
+  test("Search (Enter) morphs the canvas into a results view", () => {
+    const chat = mkChat({ draft: "submariner" });
+    render(<LumeTab chat={chat} user={{ id: "u1" }} watchlist={{}} liveItems={[]} auctionLotItems={[]} />);
+    const input = screen.getByPlaceholderText(/Search watches, or ask/i);
+    fireEvent.keyDown(input, { key: "Enter" });
+    // No data in the test -> the empty results state, with the query echoed and
+    // a back affordance proving we morphed off the landing.
+    expect(screen.getByText(/Results for "submariner"/i)).toBeInTheDocument();
+    expect(screen.getByText("← Back")).toBeInTheDocument();
+    expect(chat.send).not.toHaveBeenCalled();
   });
 });
