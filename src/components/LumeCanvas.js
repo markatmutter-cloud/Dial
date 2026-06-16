@@ -4,6 +4,8 @@ import LumeResultPanel from "./LumeResultPanel";
 import LumeResultGrid from "./LumeResultGrid";
 import LumeComposer from "./LumeComposer";
 import { LumeConversation } from "./LumeConversation";
+import LumeSearchBar from "./LumeSearchBar";
+import { LumeIcon } from "./LumeIcon";
 import { JOURNEYS, journeyLine } from "./LumeJourneyGrid";
 import { renderLumeListingCard, renderLumeArticleCard } from "./lumeCards";
 import { selectMissed, deriveTasteSets, urlKey } from "../lumeMissed";
@@ -158,56 +160,84 @@ export default function LumeCanvas({
   const scrollStyle = { flex: 1, overflowY: "auto", overscrollBehavior: "contain", padding: isMobile ? "16px 16px 8px" : "22px 20px 10px" };
   const innerStyle = { maxWidth: 880, margin: "0 auto", width: "100%" };
 
-  if (view.kind === "chat") {
+  // The morphing content (home / result / search) — shared by both layouts.
+  const content = (
+    view.kind === "search" ? (
+      <LumeResultPanel
+        title={`Results for "${view.query}"`}
+        onBack={goHome}
+        isEmpty={!searchGroups || !searchGroups.length}
+        emptyText={"No matches in our listings. Try fewer words, or ask Lumé to dig in."}
+      >
+        <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
+          {(searchGroups || []).map((g) => (
+            <div key={g.key}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text2)", textTransform: "uppercase", letterSpacing: 0.4, marginBottom: 10 }}>
+                {g.title} <span style={{ color: "var(--text3)" }}>{g.items.length}</span>
+              </div>
+              <LumeResultGrid items={g.items} renderCard={listingCard} isMobile={isMobile} />
+            </div>
+          ))}
+        </div>
+      </LumeResultPanel>
+    ) : view.kind === "result" && panel ? (
+      <LumeResultPanel title={panel.title} voice={panel.voice} onBack={goHome}
+        isEmpty={panel.isEmpty} emptyText={panel.emptyText}>
+        <LumeResultGrid items={panel.items}
+          renderCard={panel.kind === "article" ? articleCard : listingCard}
+          isMobile={isMobile} />
+      </LumeResultPanel>
+    ) : (
+      <LumeHome greeting={greeting} hero={hero} journeys={secondary} onSelect={onSelectJourney} isMobile={isMobile} />
+    )
+  );
+
+  // Mobile: single column. Search + Ask share one composer; chat is a view you
+  // switch into (no room for a side rail).
+  if (isMobile) {
+    if (view.kind === "chat") {
+      return (
+        <div style={rootStyle}>
+          <div style={{ flexShrink: 0, padding: "10px 14px", borderBottom: "0.5px solid var(--border)" }}>
+            <button onClick={goHome} aria-label="Back to journeys" style={{
+              border: "0.5px solid var(--border)", background: "var(--surface)", color: "var(--text1)",
+              borderRadius: 999, padding: "5px 12px", fontSize: 13, fontWeight: 500,
+              cursor: "pointer", fontFamily: "inherit",
+            }}>← Back to start</button>
+          </div>
+          <LumeConversation chat={chat} onOpenItem={onOpenItem} isMobile suggestions={[]} />
+        </div>
+      );
+    }
     return (
       <div style={rootStyle}>
-        <div style={{ flexShrink: 0, padding: "10px 14px", borderBottom: "0.5px solid var(--border)" }}>
-          <button onClick={goHome} aria-label="Back to journeys" style={{
-            border: "0.5px solid var(--border)", background: "var(--surface)", color: "var(--text1)",
-            borderRadius: 999, padding: "5px 12px", fontSize: 13, fontWeight: 500,
-            cursor: "pointer", fontFamily: "inherit",
-          }}>← Back to start</button>
-        </div>
-        <LumeConversation chat={chat} onOpenItem={onOpenItem} isMobile={isMobile} suggestions={[]} />
+        <div style={scrollStyle}><div style={innerStyle}>{content}</div></div>
+        <LumeComposer chat={chat} onSearch={submitSearch} onAsk={submitAsk} isMobile />
       </div>
     );
   }
 
+  // Desktop: two-pane. Content + a Search bar on the LEFT; an always-on chat
+  // rail (Ask) on the RIGHT. Tapping a journey/card updates the left while the
+  // conversation persists on the right.
   return (
-    <div style={rootStyle}>
-      <div style={scrollStyle}>
-        <div style={innerStyle}>
-          {view.kind === "search" ? (
-            <LumeResultPanel
-              title={`Results for "${view.query}"`}
-              onBack={goHome}
-              isEmpty={!searchGroups || !searchGroups.length}
-              emptyText={"No matches in our listings. Try fewer words, or tap Ask to let Lumé dig in."}
-            >
-              <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
-                {(searchGroups || []).map((g) => (
-                  <div key={g.key}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text2)", textTransform: "uppercase", letterSpacing: 0.4, marginBottom: 10 }}>
-                      {g.title} <span style={{ color: "var(--text3)" }}>{g.items.length}</span>
-                    </div>
-                    <LumeResultGrid items={g.items} renderCard={listingCard} isMobile={isMobile} />
-                  </div>
-                ))}
-              </div>
-            </LumeResultPanel>
-          ) : view.kind === "result" && panel ? (
-            <LumeResultPanel title={panel.title} voice={panel.voice} onBack={goHome}
-              isEmpty={panel.isEmpty} emptyText={panel.emptyText}>
-              <LumeResultGrid items={panel.items}
-                renderCard={panel.kind === "article" ? articleCard : listingCard}
-                isMobile={isMobile} />
-            </LumeResultPanel>
-          ) : (
-            <LumeHome greeting={greeting} hero={hero} journeys={secondary} onSelect={onSelectJourney} isMobile={isMobile} />
-          )}
-        </div>
+    <div style={{ display: "flex", height: "100%", minHeight: 0 }}>
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
+        <div style={scrollStyle}><div style={{ width: "100%" }}>{content}</div></div>
+        <LumeSearchBar onSearch={submitSearch} />
       </div>
-      <LumeComposer chat={chat} onSearch={submitSearch} onAsk={submitAsk} isMobile={isMobile} />
+      <aside style={{
+        width: 380, flexShrink: 0, borderLeft: "0.5px solid var(--border)",
+        display: "flex", flexDirection: "column", minHeight: 0, background: "var(--bg)",
+      }}>
+        <div style={{
+          flexShrink: 0, padding: "12px 14px", borderBottom: "0.5px solid var(--border)",
+          display: "flex", alignItems: "center", gap: 8, fontWeight: 600, fontSize: 14,
+        }}>
+          <LumeIcon size={18} /> Ask Lumé
+        </div>
+        <LumeConversation chat={chat} onOpenItem={onOpenItem} isMobile={false} />
+      </aside>
     </div>
   );
 }

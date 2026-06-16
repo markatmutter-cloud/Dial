@@ -31,6 +31,13 @@ The canvas is one host-agnostic component. It proves out in the Lumé tab today
 and graduates into a full-screen, full-bleed surface summoned from the launcher
 later, unchanged.
 
+**Layout.** On a wide screen it's a **two-pane split**: the morphing **content on
+the left** (with a Search bar) and an **always-on chat rail on the right** (Ask).
+Tapping a journey or card updates the left while the conversation persists on the
+right, so search-vs-ask is spatial, not a mode toggle. On mobile there's no room
+to split, so it stays single-column: Search + Ask share one input and chat is a
+view you switch into.
+
 ## The journeys
 
 The Phase-1 journeys are all backed by data already in the app, so they render

@@ -42,7 +42,9 @@ export function LumeTab({
     // tune live if the composer sits a touch high/low.
     <div style={{
       height: isMobile ? "calc(100dvh - 124px)" : "calc(100dvh - 140px)",
-      maxWidth: 920, margin: "0 auto", width: "100%",
+      // Desktop runs the two-pane (content + chat rail), so it needs the room;
+      // mobile is single-column and stays narrow.
+      maxWidth: isMobile ? 920 : 1280, margin: "0 auto", width: "100%",
     }}>
       <LumeCanvas
         chat={chat}
