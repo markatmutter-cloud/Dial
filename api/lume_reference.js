@@ -44,6 +44,26 @@ export function norm(s) {
   return String(s == null ? "" : s).toLowerCase();
 }
 
+// ── model routing (SDK-free so jest can test it without loading chat.js) ──
+export const MODEL_FAST = "claude-haiku-4-5";   // default — cheap/fast, fine for grounded Q&A + the opener
+export const MODEL_SMART = "claude-opus-4-8";   // routed-to for compare / why / recommend turns
+
+// chooseModel — Haiku by default, Opus for hard-reasoning turns (long prompts or
+// compare/why/recommend intents). TEMPORARY DIAGNOSTIC SWITCH (Mark 2026-06-16):
+// LUME_FORCE_SMART_MODEL=true forces EVERY chat turn onto the smart model, so we
+// can A/B Haiku vs Opus against the EXACT same prompt + UI and isolate whether
+// the weak chat feel is model size vs prompt vs UI. Default behaviour is
+// unchanged when the env var is unset (or anything other than the string "true").
+export function chooseModel(text) {
+  if (process.env.LUME_FORCE_SMART_MODEL === "true") return MODEL_SMART;
+  const t = norm(text);
+  if (t.length > 400) return MODEL_SMART;
+  if (/\b(why|compare|comparison|vs\.?|versus|recommend|recommendation|should i|which (one|watch|should)|better|worth it|instead|trade[- ]?off|pros and cons|help me (decide|choose)|what (would|should) you)\b/.test(t)) {
+    return MODEL_SMART;
+  }
+  return MODEL_FAST;
+}
+
 // ── "what did I miss" retrieval (find_missed) ─────────────────────────
 // Normalise a listing URL to a stable key so saved-state matching works
 // across the two surfaces (watchlist_items.listing_snapshot.url vs the

@@ -36,11 +36,12 @@ import {
   WEB_SEARCH_TOOL,
   collectWebCitations,
   collectWebSearchQueries,
+  chooseModel,
+  MODEL_FAST,
+  MODEL_SMART,
 } from "./lume_reference.js";
 
 // ── config ───────────────────────────────────────────────────────────
-const MODEL_FAST = "claude-haiku-4-5";   // default — cheap/fast, fine for grounded Q&A + the opener
-const MODEL_SMART = "claude-opus-4-8";   // routed-to for compare / why / recommend turns
 const MAX_OUTPUT_TOKENS = 1024;
 const MAX_TOOL_ROUNDS = 6;               // bound the agentic loop (cost backstop)
 const MAX_HISTORY_MSGS = 20;             // server-side history truncation
@@ -364,16 +365,6 @@ async function runTool(name, input, sb) {
   } catch (e) {
     return { error: `tool ${name} failed: ${e.message}` };
   }
-}
-
-// ── model routing — Opus only for hard-reasoning turns ────────────────
-function chooseModel(text) {
-  const t = _norm(text);
-  if (t.length > 400) return MODEL_SMART;
-  if (/\b(why|compare|comparison|vs\.?|versus|recommend|recommendation|should i|which (one|watch|should)|better|worth it|instead|trade[- ]?off|pros and cons|help me (decide|choose)|what (would|should) you)\b/.test(t)) {
-    return MODEL_SMART;
-  }
-  return MODEL_FAST;
 }
 
 function lastUserText(messages) {
