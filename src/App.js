@@ -4653,6 +4653,14 @@ export default function Watchlist() {
       isMobile={isMobile}
       onOpenItem={openLumeItemInApp}
       onSignIn={triggerSignInPrompt}
+      liveItems={items}
+      auctionLotItems={auctionLotItems}
+      articles={adminHidden.size ? homeArticles.filter(a => !adminHidden.has(shortHash(a.url))) : homeArticles}
+      watchlist={watchlist}
+      cardCtx={{
+        watchlist, hidden, handleWish, isAdmin, toggleHide, user,
+        openCollectionPicker, primaryCurrency, handleShare, observeCard, onClickListing,
+      }}
     />
   );
 

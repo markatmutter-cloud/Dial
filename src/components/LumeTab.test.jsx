@@ -2,7 +2,7 @@ import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { LumeTab } from "./LumeTab";
 
-// LumeTab is the full-page Lumé surface. Shell tests render a mock for it, so
+// LumeTab hosts the morphing LumeCanvas. Shell tests render a mock for it, so
 // give it a direct render test (a ReferenceError here would otherwise ship green).
 jest.mock("../supabase", () => ({
   supabase: { auth: { getSession: async () => ({ data: { session: null } }) } },
@@ -21,6 +21,8 @@ const mkChat = (over = {}) => ({
 });
 
 describe("LumeTab", () => {
+  beforeEach(() => { try { localStorage.clear(); } catch {} });
+
   test("signed-out: shows a sign-in prompt", () => {
     const onSignIn = jest.fn();
     render(<LumeTab chat={mkChat()} user={null} onSignIn={onSignIn} />);
@@ -29,17 +31,29 @@ describe("LumeTab", () => {
     expect(onSignIn).toHaveBeenCalled();
   });
 
-  test("signed-in: renders journey launchers + composer", () => {
+  test("signed-in: renders the journey cards + the unified input", () => {
     render(<LumeTab chat={mkChat()} user={{ id: "u1" }} />);
-    expect(screen.getByText("What I missed")).toBeInTheDocument();
-    expect(screen.getByText("The ones that got away")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Ask about a watch…")).toBeInTheDocument();
+    expect(screen.getByText("Just listed")).toBeInTheDocument();
+    expect(screen.getByText("What I might have missed")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/Ask Lumé about any reference/i)).toBeInTheDocument();
   });
 
-  test("tapping a journey launcher sends its prompt", () => {
-    const chat = mkChat();
+  test("tapping a journey morphs the canvas into its result panel", () => {
+    render(<LumeTab chat={mkChat()} user={{ id: "u1" }} watchlist={{}} liveItems={[]} />);
+    fireEvent.click(screen.getByText("What I might have missed"));
+    // Empty taste (no hearts) -> the panel shows its guidance empty-state, with
+    // a back affordance proving we left the landing grid.
+    expect(screen.getByText("← Back")).toBeInTheDocument();
+    expect(screen.getByText(/Heart a few watches/i)).toBeInTheDocument();
+  });
+
+  test("submitting a question hands off to the chat send loop", () => {
+    // draft is owned by useLumeChat; preset it (the mock setDraft is a no-op,
+    // so a controlled-input change wouldn't stick) and submit.
+    const chat = mkChat({ draft: "what's a tropical dial" });
     render(<LumeTab chat={chat} user={{ id: "u1" }} />);
-    fireEvent.click(screen.getByText("Latest listed"));
-    expect(chat.send).toHaveBeenCalledWith("Show me the latest watches listed.");
+    const input = screen.getByPlaceholderText(/Ask Lumé about any reference/i);
+    fireEvent.keyDown(input, { key: "Enter" });
+    expect(chat.send).toHaveBeenCalledWith("what's a tropical dial");
   });
 });
