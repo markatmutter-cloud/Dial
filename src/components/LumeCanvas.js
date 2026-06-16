@@ -4,21 +4,21 @@ import LumeResultPanel from "./LumeResultPanel";
 import LumeResultGrid from "./LumeResultGrid";
 import LumeComposer from "./LumeComposer";
 import { LumeConversation } from "./LumeConversation";
-import LumeSearchBar from "./LumeSearchBar";
 import { LumeIcon } from "./LumeIcon";
-import { JOURNEYS, journeyLine } from "./LumeJourneyGrid";
+import { JOURNEYS } from "./LumeJourneyGrid";
 import { renderLumeListingCard, renderLumeArticleCard } from "./lumeCards";
+import { reasonFor } from "../lumeReasons";
 import { selectMissed, deriveTasteSets, urlKey } from "../lumeMissed";
-import { recordVisit, recordJourney, rankJourneys, buildGreeting } from "../lumeColdOpen";
-import { buildHook } from "../lumeHooks";
+import { recordVisit, recordJourney, buildGreeting } from "../lumeColdOpen";
+import { buildLead } from "../lumeHooks";
 import { matchesSearch } from "../utils";
 
-// LumeCanvas — the host-agnostic morphing surface. Owns the view router
-// (home / result / search / chat) and computes each journey's results from data
-// already in app memory (no /api/chat round-trip for the catch-up journeys).
-// The landing is a warm, personal greeting + a promoted hero journey (with a
-// content peek) + the rest as live-count cards. The always-present input weaves
-// typed questions into the conversation, or runs a unified in-canvas search.
+// LumeCanvas — the host-agnostic guided-session surface. Vertical rhythm on the
+// canvas: a light greeting line, ONE "Start here" lead (with visible evidence),
+// then curated supporting shelves (Worth your attention / Useful comps / Rabbit
+// holes). The chat rail is a SESSION GUIDE (contextual prompts about the current
+// view, not an onboarding intro). Search is chat-driven: a show_listings action
+// from the chat renders results in the canvas (intercepted, not the tab).
 
 const VOICE = {
   latest: "Freshest first. Here's what's just been listed.",
@@ -28,115 +28,96 @@ const VOICE = {
   auctions_soon: "Auction lots closing soonest.",
   articles: "New reading from the journals.",
 };
-
-const titleFor = (key) => (JOURNEYS.find((j) => j.key === key) || {}).label || "";
+const titleFor = (key) => (JOURNEYS.find((j) => j.key === key) || {}).label || "Results";
+// Which grounded reason chip a result/shelf's cards carry.
+const SOURCE = { missed_live: "attention", latest: "latest", got_away: "comp", saved_sold: "comp", auctions_soon: "auction", articles: null };
 
 export default function LumeCanvas({
   chat, user, isMobile = false, onOpenItem,
   liveItems = [], auctionLotItems = [], articles = [], watchlist = {}, savedSearches = [],
   cardCtx = {},
 }) {
-  const listingCard = (it) => renderLumeListingCard(it, cardCtx);
-  const articleCard = (a) => renderLumeArticleCard(a, cardCtx);
   const [view, setView] = useState({ kind: "home", intent: null });
   const [usage, setUsage] = useState(null);
-
-  // Record the visit once on mount; drives journey ranking + the greeting.
   useEffect(() => { setUsage(recordVisit()); }, []);
 
   const tasteSets = useMemo(() => deriveTasteSets(watchlist), [watchlist]);
-  const hasTaste = tasteSets.tasteBrands.size > 0;
 
-  // url/id index so selectMissed's projected results map back to the FULL
-  // listing object (with image/price) for card render + hero thumbnails.
-  const byId = useMemo(() => {
-    const m = new Map();
-    for (const it of liveItems) if (it && it.id) m.set(it.id, it);
-    return m;
-  }, [liveItems]);
-  const byUrl = useMemo(() => {
-    const m = new Map();
-    for (const it of liveItems) if (it && it.url) m.set(urlKey(it.url), it);
-    return m;
-  }, [liveItems]);
+  const byId = useMemo(() => { const m = new Map(); for (const it of liveItems) if (it && it.id) m.set(it.id, it); return m; }, [liveItems]);
+  const byUrl = useMemo(() => { const m = new Map(); for (const it of liveItems) if (it && it.url) m.set(urlKey(it.url), it); return m; }, [liveItems]);
 
-  // Compute every journey's results once (cheap O(n) passes over in-memory
-  // feeds) so the landing can show live counts + hero thumbnails, and a tap
-  // reuses the same computed set.
+  // Per-journey results (items + counts), computed once from in-memory feeds.
   const results = useMemo(() => {
     const hydrate = (res) => res.map((r) => byId.get(r.id) || byUrl.get(urlKey(r.url))).filter(Boolean);
     const now = Date.now();
     const out = {};
-
-    const liveAll = liveItems
-      .filter((i) => i && !i.sold && i.firstSeen)
+    const liveAll = liveItems.filter((i) => i && !i.sold && i.firstSeen)
       .sort((a, b) => (Date.parse(b.firstSeen) || 0) - (Date.parse(a.firstSeen) || 0));
-    out.latest = { items: liveAll.slice(0, 24), count: liveAll.length, kind: "listing",
-      empty: "Nothing new has landed just yet." };
-
+    out.latest = { items: liveAll.slice(0, 24), count: liveAll.length, kind: "listing", empty: "Nothing new has landed just yet." };
     const ml = selectMissed(liveItems, { mode: "live_unsaved", ...tasteSets, limit: 15 });
-    out.missed_live = { items: hydrate(ml.results), count: ml.count, kind: "listing",
-      empty: hasTaste ? "Nothing in your taste slipped past you this week." : "Heart a few watches and I'll start spotting what you missed." };
-
+    out.missed_live = { items: hydrate(ml.results), count: ml.count, kind: "listing", empty: "Heart a few watches and I'll start spotting what you missed." };
     const ga = selectMissed(liveItems, { mode: "sold_unsaved", ...tasteSets, limit: 15 });
-    out.got_away = { items: hydrate(ga.results), count: ga.count, kind: "listing",
-      empty: hasTaste ? "Nothing notable got away this week." : "Heart a few watches and I'll flag the ones that get away." };
-
+    out.got_away = { items: hydrate(ga.results), count: ga.count, kind: "listing", empty: "Nothing notable got away this week." };
     const ss = selectMissed(liveItems, { mode: "sold_saved", ...tasteSets, limit: 15 });
-    out.saved_sold = { items: hydrate(ss.results), count: ss.count, kind: "listing",
-      empty: "None of your saved watches have sold recently." };
-
-    const auctAll = auctionLotItems
-      .filter((i) => i && !i.sold && i.auction_end && (Date.parse(i.auction_end) || 0) > now)
+    out.saved_sold = { items: hydrate(ss.results), count: ss.count, kind: "listing", empty: "None of your saved watches have sold recently." };
+    const auctAll = auctionLotItems.filter((i) => i && !i.sold && i.auction_end && (Date.parse(i.auction_end) || 0) > now)
       .sort((a, b) => (Date.parse(a.auction_end) || 0) - (Date.parse(b.auction_end) || 0));
-    out.auctions_soon = { items: auctAll.slice(0, 24), count: auctAll.length, kind: "listing",
-      empty: auctionLotItems.length === 0 ? "Loading auction lots…" : "No lots are closing in the next while." };
-
+    out.auctions_soon = { items: auctAll.slice(0, 24), count: auctAll.length, kind: "listing", empty: "No lots are closing in the next while." };
     const arts = articles || [];
-    out.articles = { items: arts.slice(0, 24), count: arts.length, kind: "article",
-      empty: "No fresh articles right now." };
-
+    out.articles = { items: arts.slice(0, 24), count: arts.length, kind: "article", empty: "No fresh articles right now." };
     return out;
-  }, [liveItems, auctionLotItems, articles, tasteSets, hasTaste, byId, byUrl]);
+  }, [liveItems, auctionLotItems, articles, tasteSets, byId, byUrl]);
 
-  // Context-aware order, then enrich with live counts + the hero's content peek.
-  const auctionsSoonCount = results.auctions_soon.count;
-  const ordered = useMemo(() => {
-    const { order } = rankJourneys(usage || {}, { auctionsSoonCount, visitsLast24h: usage && usage.visitsLast24h });
-    return order
-      .map((k) => JOURNEYS.find((j) => j.key === k))
-      .filter(Boolean)
-      .map((j) => {
-        const r = results[j.key] || { items: [], count: 0 };
-        return { ...j, count: r.count, line: journeyLine(j.key, r.count), thumbItems: r.items.slice(0, 4) };
-      });
-  }, [usage, auctionsSoonCount, results]);
+  // Card renderers: a base listing/article card, and reason-chipped variants.
+  const listingCard = (it) => renderLumeListingCard(it, cardCtx);
+  const articleCard = (a) => renderLumeArticleCard(a, cardCtx);
+  const reasonedCard = (source) => (it) => renderLumeListingCard(it, cardCtx, source ? reasonFor(it, source) : "");
 
-  // The top journeys (with content) get the hero + content-peek treatment;
-  // the rest stay as small live-count cards (Mark: "hero for the top say 3").
-  const heroes = useMemo(() => ordered.filter((j) => j.count > 0).slice(0, 3), [ordered]);
-  const secondary = useMemo(() => {
-    const heroKeys = new Set(heroes.map((h) => h.key));
-    return ordered.filter((j) => !heroKeys.has(j.key));
-  }, [ordered, heroes]);
+  // The ONE lead (Start here), with visible evidence.
+  const lead = useMemo(() => buildLead({
+    liveItems, savedSearches, gotAway: results.got_away.items, missed: results.missed_live.items,
+  }), [liveItems, savedSearches, results]);
 
-  // The PERCEPTIVE hook — a named, behaviour-aware line from real data (the "it
-  // knew that" feeling). The hook library (lumeHooks) picks the most perceptive
-  // signal: saved-search activity > taste-matched catalog > got-away > missed.
+  // A light personal greeting line (hello only — the substance lives in the lead).
   const greeting = useMemo(() => {
     const firstName = String(user?.user_metadata?.name || user?.user_metadata?.full_name || "").trim().split(/\s+/)[0] || "";
-    const hook = buildHook({
-      liveItems, auctionLotItems, savedSearches, tasteBrands: tasteSets.tasteBrands,
-      gotAway: results.got_away.items, missed: results.missed_live.items,
-      missedCount: results.missed_live.count,
-      auctionsSoonCount: results.auctions_soon.count, articlesCount: results.articles.count,
-    });
-    return buildGreeting({ firstName, hour: new Date().getHours(), daysAway: usage?.daysAway, hook });
-  }, [user, results, usage, liveItems, auctionLotItems, savedSearches, tasteSets]);
+    return buildGreeting({ firstName, hour: new Date().getHours(), daysAway: usage?.daysAway });
+  }, [user, usage]);
 
-  // Unified in-canvas search across the in-memory types (listings / sold /
-  // auctions), reusing the app's shared matchesSearch. Articles + reference
-  // guides are the queued follow-up.
+  // Curated supporting shelves (not feature categories). Plain const (cheap to
+  // build each render) so the reason-chipped renderers don't fight memo deps.
+  const shelves = (() => {
+    const out = [];
+    // Worth your attention: in-taste live (fall back to just-listed for cold users).
+    const attn = results.missed_live.items.length ? { src: "missed_live", chip: "attention" } : { src: "latest", chip: "latest" };
+    out.push({
+      key: "attention", eyebrow: "WORTH YOUR ATTENTION",
+      heading: results.missed_live.items.length ? "Close to what you've been saving" : "Just landed",
+      dek: results.missed_live.items.length ? "Live now, in the lane you've been in." : "The freshest listings, newest first.",
+      items: results[attn.src].items, count: results[attn.src].count,
+      renderCard: reasonedCard(attn.chip), ctaLabel: "See all", onCta: () => openResult(attn.src),
+    });
+    // Useful comps: what sold, how fast, at what price.
+    out.push({
+      key: "comps", eyebrow: "USEFUL COMPS",
+      heading: "What moved, and how fast",
+      dek: "Recent sold examples to calibrate price, speed, and condition.",
+      items: results.got_away.items, count: results.got_away.count,
+      renderCard: reasonedCard("comp"), ctaLabel: "See comps", onCta: () => openResult("got_away"),
+    });
+    // Rabbit holes: reading + references connected to their interests.
+    out.push({
+      key: "rabbit", eyebrow: "RABBIT HOLES",
+      heading: "Worth reading",
+      dek: "Articles and references that connect to what you're into.",
+      items: results.articles.items, count: results.articles.count,
+      renderCard: articleCard, ctaLabel: "More reading", onCta: () => openResult("articles"),
+    });
+    return out;
+  })();
+
+  // Chat-driven search: a show_listings action from the chat renders results in
+  // THIS canvas (left), instead of bouncing to the Listings tab.
   const searchGroups = useMemo(() => {
     if (view.kind !== "search") return null;
     const q = view.query || "";
@@ -144,9 +125,9 @@ export default function LumeCanvas({
     const sold = liveItems.filter((i) => i && i.sold && matchesSearch(i, q)).slice(0, 24);
     const auctions = auctionLotItems.filter((i) => i && matchesSearch(i, q)).slice(0, 24);
     return [
-      { key: "listings", title: "Listings", items: live },
-      { key: "sold", title: "Sold", items: sold },
-      { key: "auctions", title: "Auctions", items: auctions },
+      { key: "listings", title: "Listings", items: live, source: null },
+      { key: "sold", title: "Sold", items: sold, source: "comp" },
+      { key: "auctions", title: "Auctions", items: auctions, source: "auction" },
     ].filter((g) => g.items.length);
   }, [view.kind, view.query, liveItems, auctionLotItems]);
 
@@ -154,104 +135,119 @@ export default function LumeCanvas({
     const key = view.intent;
     if (!key || !results[key]) return null;
     const r = results[key];
-    return {
-      title: titleFor(key), voice: VOICE[key] || "",
-      items: r.items, kind: r.kind, isEmpty: !r.items.length, emptyText: r.empty,
-    };
+    return { title: titleFor(key), voice: VOICE[key] || "", items: r.items, kind: r.kind, source: SOURCE[key], isEmpty: !r.items.length, emptyText: r.empty };
   }, [view.intent, results]);
 
-  // The chat opener should be WARM + CONNECTED to the same perceptive context as
-  // the landing (Mark: the old "what's your watch problem" rail greeting "doesn't
-  // make sense" next to the warm left). Open with the greeting + an invite, not
-  // the generic static cold open.
-  const railGreeting = `${greeting.hello}\n\n${greeting.notable}\n\nWhat do you want to dig into? Ask me anything.`;
-
-  const onSelectJourney = (key) => { recordJourney(key); setView({ kind: "result", intent: key }); };
+  function openResult(key) { recordJourney(key); setView({ kind: "result", intent: key }); }
   const goHome = () => setView({ kind: "home", intent: null });
-  const submitSearch = (text) => setView({ kind: "search", intent: null, query: text });
-  const submitAsk = (text) => { setView({ kind: "chat", intent: null }); chat.send(text); };
+  const askInRail = (text) => { if (isMobile) setView({ kind: "chat", intent: null }); chat.send(text); };
+  // Lead CTAs
+  const onLeadPrimary = () => {
+    if (lead.source === "saved_search" && lead.searchLabel) setView({ kind: "search", intent: null, query: lead.searchLabel });
+    else if (lead.source === "got_away") openResult("got_away");
+    else if (lead.source === "missed_live") openResult("missed_live");
+    else askInRail("What should I look at first?");
+  };
+  const onLeadSecondary = () => askInRail("Why do these matter, and what should I focus on?");
+  // Intercept show_listings from the chat → render in the canvas.
+  const onChatAction = (a) => {
+    if (a && a.type === "show_listings") {
+      const p = a.payload || {};
+      const q = (p.query || [p.brand, p.model, p.ref].filter(Boolean).join(" ") || "").trim();
+      if (q) { setView({ kind: "search", intent: null, query: q }); return true; }
+    }
+    return false;
+  };
+
+  // Contextual rail prompts — about the CURRENT view, not onboarding.
+  const railPrompts = useMemo(() => {
+    if (view.kind === "result" || view.kind === "search") {
+      return ["Why were these surfaced?", "Which is the useful comp?", "Show adjacent references", "What should I ignore?"];
+    }
+    return ["Why these?", "Where should I start?", "What should I ignore?"];
+  }, [view.kind]);
 
   const rootStyle = { display: "flex", flexDirection: "column", height: "100%", minHeight: 0 };
-  const scrollStyle = { flex: 1, overflowY: "auto", overscrollBehavior: "contain", padding: isMobile ? "16px 16px 8px" : "22px 20px 10px" };
+  const scrollStyle = { flex: 1, overflowY: "auto", overscrollBehavior: "contain", padding: isMobile ? "16px 16px 8px" : "24px 22px 14px" };
   const innerStyle = { maxWidth: 880, margin: "0 auto", width: "100%" };
 
-  // The morphing content (home / result / search) — shared by both layouts.
+  // The morphing content (home / result / search), shared by both layouts.
   const content = (
     view.kind === "search" ? (
-      <LumeResultPanel
-        title={`Results for "${view.query}"`}
-        onBack={goHome}
+      <LumeResultPanel title={`Results for "${view.query}"`} onBack={goHome}
         isEmpty={!searchGroups || !searchGroups.length}
-        emptyText={"No matches in our listings. Try fewer words, or ask Lumé to dig in."}
-      >
+        emptyText={"No matches in our listings. Try fewer words, or ask Lumé to dig in."}>
         <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
           {(searchGroups || []).map((g) => (
             <div key={g.key}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text2)", textTransform: "uppercase", letterSpacing: 0.4, marginBottom: 10 }}>
-                {g.title} <span style={{ color: "var(--text3)" }}>{g.items.length}</span>
-              </div>
-              <LumeResultGrid items={g.items} renderCard={listingCard} isMobile={isMobile} />
+              <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text2)", textTransform: "uppercase", letterSpacing: 0.4, marginBottom: 10 }}>{g.title}</div>
+              <LumeResultGrid items={g.items} renderCard={g.source ? reasonedCard(g.source) : listingCard} isMobile={isMobile} />
             </div>
           ))}
         </div>
       </LumeResultPanel>
     ) : view.kind === "result" && panel ? (
-      <LumeResultPanel title={panel.title} voice={panel.voice} onBack={goHome}
-        isEmpty={panel.isEmpty} emptyText={panel.emptyText}>
+      <LumeResultPanel title={panel.title} voice={panel.voice} onBack={goHome} isEmpty={panel.isEmpty} emptyText={panel.emptyText}>
         <LumeResultGrid items={panel.items}
-          renderCard={panel.kind === "article" ? articleCard : listingCard}
-          isMobile={isMobile} />
+          renderCard={panel.kind === "article" ? articleCard : reasonedCard(panel.source)} isMobile={isMobile} />
       </LumeResultPanel>
     ) : (
-      <LumeHome greeting={greeting} heroes={heroes} journeys={secondary} onSelect={onSelectJourney} isMobile={isMobile} />
+      <LumeHome greeting={greeting} lead={lead} shelves={shelves}
+        onLeadPrimary={onLeadPrimary} onLeadSecondary={onLeadSecondary} onOpenItem={onOpenItem} isMobile={isMobile} />
     )
   );
 
-  // Mobile: single column. Search + Ask share one composer; chat is a view you
-  // switch into (no room for a side rail).
+  // The session-guide rail: "Ask Lumé about this view" + contextual prompt chips
+  // (no greeting repeat), then the conversation.
+  const railHeader = (
+    <div style={{ flexShrink: 0, borderBottom: "0.5px solid var(--border)", padding: "12px 14px", display: "flex", flexDirection: "column", gap: 10 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, fontWeight: 600, fontSize: 14 }}>
+        <LumeIcon size={18} /> Ask Lumé about this view
+      </div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+        {railPrompts.map((p) => (
+          <button key={p} onClick={() => askInRail(p)} style={{
+            border: "0.5px solid var(--border)", background: "var(--surface)", color: "var(--text1)",
+            borderRadius: 999, padding: "5px 11px", fontSize: 12, cursor: "pointer", fontFamily: "inherit",
+          }}>{p}</button>
+        ))}
+      </div>
+    </div>
+  );
+
+  // Mobile: single column; chat is a switch-in view (no side rail). Search is
+  // chat-driven, so the only input is the chat composer.
   if (isMobile) {
     if (view.kind === "chat") {
       return (
         <div style={rootStyle}>
           <div style={{ flexShrink: 0, padding: "10px 14px", borderBottom: "0.5px solid var(--border)" }}>
-            <button onClick={goHome} aria-label="Back to journeys" style={{
+            <button onClick={goHome} aria-label="Back" style={{
               border: "0.5px solid var(--border)", background: "var(--surface)", color: "var(--text1)",
-              borderRadius: 999, padding: "5px 12px", fontSize: 13, fontWeight: 500,
-              cursor: "pointer", fontFamily: "inherit",
+              borderRadius: 999, padding: "5px 12px", fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "inherit",
             }}>← Back to start</button>
           </div>
-          <LumeConversation chat={chat} greeting={railGreeting} onOpenItem={onOpenItem} isMobile suggestions={[]} />
+          <LumeConversation chat={chat} greeting="" suggestions={railPrompts} onOpenItem={onOpenItem} onAction={onChatAction} isMobile />
         </div>
       );
     }
     return (
       <div style={rootStyle}>
         <div style={scrollStyle}><div style={innerStyle}>{content}</div></div>
-        <LumeComposer chat={chat} onSearch={submitSearch} onAsk={submitAsk} isMobile />
+        <LumeComposer chat={chat} onSend={askInRail} isMobile />
       </div>
     );
   }
 
-  // Desktop: two-pane. Content + a Search bar on the LEFT; an always-on chat
-  // rail (Ask) on the RIGHT. Tapping a journey/card updates the left while the
-  // conversation persists on the right.
+  // Desktop: content left, always-on session-guide rail right (the only input).
   return (
     <div style={{ display: "flex", height: "100%", minHeight: 0 }}>
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
-        <div style={scrollStyle}><div style={{ width: "100%" }}>{content}</div></div>
-        <LumeSearchBar onSearch={submitSearch} />
+      <div style={{ flex: 1, minWidth: 0, overflowY: "auto", overscrollBehavior: "contain", padding: "24px 24px 24px" }}>
+        <div style={{ width: "100%" }}>{content}</div>
       </div>
-      <aside style={{
-        width: 380, flexShrink: 0, borderLeft: "0.5px solid var(--border)",
-        display: "flex", flexDirection: "column", minHeight: 0, background: "var(--bg)",
-      }}>
-        <div style={{
-          flexShrink: 0, padding: "12px 14px", borderBottom: "0.5px solid var(--border)",
-          display: "flex", alignItems: "center", gap: 8, fontWeight: 600, fontSize: 14,
-        }}>
-          <LumeIcon size={18} /> Ask Lumé
-        </div>
-        <LumeConversation chat={chat} greeting={railGreeting} onOpenItem={onOpenItem} isMobile={false} />
+      <aside style={{ width: 380, flexShrink: 0, borderLeft: "0.5px solid var(--border)", display: "flex", flexDirection: "column", minHeight: 0, background: "var(--bg)" }}>
+        {railHeader}
+        <LumeConversation chat={chat} greeting="" suggestions={[]} onOpenItem={onOpenItem} onAction={onChatAction} isMobile={false} />
       </aside>
     </div>
   );

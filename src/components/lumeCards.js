@@ -4,6 +4,7 @@ import CardShell from "./CardShell";
 import { articleAsListing } from "./EditorialView";
 import { imgSrc } from "../utils";
 import { askLumeAbout } from "./LumeBus";
+import LumeReasonChip from "./LumeReasonChip";
 
 // lumeCards — card construction for the Lumé canvas, isolated here so the
 // canvas/panel stay layout-only and App.js only has to hand over a `cardCtx`
@@ -12,12 +13,12 @@ import { askLumeAbout } from "./LumeBus";
 // mirrors the Home article tile (HomeTab.js ~1021) so hearts/menu/Share-with-
 // Lumé behave identically to the rest of the app.
 
-export function renderLumeListingCard(item, ctx = {}) {
+export function renderLumeListingCard(item, ctx = {}, reason = "") {
   const {
     watchlist = {}, hidden = {}, handleWish, isAdmin, toggleHide, user,
     openCollectionPicker, primaryCurrency = "USD", handleShare, observeCard, onClickListing,
   } = ctx;
-  return (
+  const card = (
     <Card
       item={item}
       wished={!!watchlist[item.id]}
@@ -30,6 +31,14 @@ export function renderLumeListingCard(item, ctx = {}) {
       onView={observeCard}
       onClickListing={onClickListing}
     />
+  );
+  if (!reason) return card;
+  // Reason chip above the card so every surfaced watch says why it's here.
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      <LumeReasonChip label={reason} />
+      {card}
+    </div>
   );
 }
 

@@ -105,3 +105,74 @@ export function buildHook(ctx = {}) {
   }
   return "";
 }
+
+// The matched ITEMS behind the saved-search lead (not just a count) — fast
+// sells first (the ones taste alone could never catch), then fresh listings —
+// so the "Start here" hero can SHOW its evidence, not just assert it.
+function savedSearchMatches({ savedSearches, liveItems, now }) {
+  if (!Array.isArray(savedSearches) || !savedSearches.length || !Array.isArray(liveItems)) return null;
+  let best = null;
+  for (const s of savedSearches) {
+    const q = (s && (s.query || s.label)) || "";
+    if (!q) continue;
+    const matched = [];
+    for (const it of liveItems) {
+      if (!it || !matchesSearch(it, q)) continue;
+      if (s.min_price && it.priceUSD && it.priceUSD < s.min_price) continue;
+      if (s.max_price && it.priceUSD && it.priceUSD > s.max_price) continue;
+      const fast = it.sold && recentWithin(it.soldAt, now) && (soldDays(it) ?? 99) <= 2;
+      const fresh = !it.sold && recentWithin(it.firstSeen, now);
+      if (fast || fresh) matched.push({ it, fast });
+    }
+    if (matched.length && (!best || matched.length > best.matched.length)) best = { label: s.label || q, matched };
+  }
+  if (!best) return null;
+  best.matched.sort((a, b) => (b.fast ? 1 : 0) - (a.fast ? 1 : 0));
+  return { label: best.label, items: best.matched.map((m) => m.it).slice(0, 3) };
+}
+
+// buildLead — the ONE "Start here" lead for the canvas: the strongest signal,
+// rendered with VISIBLE evidence (Mark's revised spec). Generalizes the
+// headline (no awkward raw saved-search label up front) and exposes the
+// specific basis (searchLabel + the matched items) as the evidence beneath.
+// `reasonSource` drives the per-item reason chip (see lumeReasons).
+export function buildLead(ctx = {}) {
+  const now = ctx.now || Date.now();
+
+  const ss = savedSearchMatches({ savedSearches: ctx.savedSearches, liveItems: ctx.liveItems, now });
+  if (ss && ss.items.length) {
+    return {
+      source: "saved_search", eyebrow: "START HERE",
+      headline: "A few watches from your saved searches moved quickly.",
+      dek: "Useful for calibrating what disappears fast, what sits, and what's just noise.",
+      searchLabel: ss.label, items: ss.items, reasonSource: "saved_search",
+      primaryCta: "Review what moved", secondaryCta: "Ask Lumé why these matter",
+    };
+  }
+  const gotAway = (ctx.gotAway || []).slice(0, 3);
+  if (gotAway.length) {
+    return {
+      source: "got_away", eyebrow: "START HERE",
+      headline: "A few in your taste sold before you saw them.",
+      dek: "Worth knowing what's disappearing fast, and at what price.",
+      items: gotAway, reasonSource: "comp",
+      primaryCta: "Review what moved", secondaryCta: "Ask Lumé why these matter",
+    };
+  }
+  const missed = (ctx.missed || []).slice(0, 3);
+  if (missed.length) {
+    return {
+      source: "missed_live", eyebrow: "START HERE",
+      headline: "A few you haven't seen, right in your lane.",
+      dek: "Still live, and close to what you've been saving. Worth a look before they move.",
+      items: missed, reasonSource: "attention",
+      primaryCta: "See what's worth your attention", secondaryCta: "Ask Lumé why these matter",
+    };
+  }
+  return {
+    source: "cold", eyebrow: "START HERE",
+    headline: "Let's find your lane.",
+    dek: "Heart a few watches or tell me what you're into, and I'll start surfacing what actually matters to you.",
+    items: [], reasonSource: null, primaryCta: null, secondaryCta: "Tell Lumé what you like",
+  };
+}

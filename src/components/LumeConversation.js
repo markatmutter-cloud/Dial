@@ -200,6 +200,8 @@ export function LumeConversation({
   suggestions = SUGGESTIONS,
   onOpenItem,
   onActionResult,
+  onAction,            // optional pre-handler: return true to intercept an action
+                       // (e.g. route show_listings into the canvas, not the tab)
   isMobile = false,
   scrollStyle,
 }) {
@@ -252,7 +254,7 @@ export function LumeConversation({
                       // Visited chips keep the ✓ but stay CLICKABLE (Mark: after
                       // opening a link I want to go back and re-open it). Only a
                       // chip mid-run is disabled.
-                      <button key={ai} onClick={() => runAction(a, key).then((res) => onActionResult && onActionResult(a, res))} disabled={running}
+                      <button key={ai} onClick={() => { if (onAction && onAction(a)) return; runAction(a, key).then((res) => onActionResult && onActionResult(a, res)); }} disabled={running}
                         title={failed ? st.message : undefined}
                         style={{
                           border: "none", borderRadius: 999, padding: "6px 12px", fontSize: 13,

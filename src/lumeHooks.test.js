@@ -1,4 +1,24 @@
-import { buildHook } from "./lumeHooks";
+import { buildHook, buildLead } from "./lumeHooks";
+
+describe("buildLead — the Start-here lead with visible evidence", () => {
+  const NOW = Date.parse("2026-06-16T12:00:00Z");
+  test("saved-search lead exposes the label + matched items + CTAs", () => {
+    const savedSearches = [{ label: "Speedmaster", query: "speedmaster" }];
+    const liveItems = [{ brand: "Omega", ref: "Speedmaster", sold: true, firstSeen: "2026-06-15", soldAt: "2026-06-16", url: "u1", id: "1" }];
+    const lead = buildLead({ savedSearches, liveItems, now: NOW });
+    expect(lead.source).toBe("saved_search");
+    expect(lead.searchLabel).toBe("Speedmaster");
+    expect(lead.items.length).toBeGreaterThan(0);
+    expect(lead.primaryCta).toBeTruthy();
+  });
+  test("falls back got-away -> missed -> cold", () => {
+    expect(buildLead({ gotAway: [{ brand: "Rolex" }], now: NOW }).source).toBe("got_away");
+    expect(buildLead({ missed: [{ brand: "Tudor" }], now: NOW }).source).toBe("missed_live");
+    const cold = buildLead({ now: NOW });
+    expect(cold.source).toBe("cold");
+    expect(cold.items).toEqual([]);
+  });
+});
 
 // The perceptive hooks turn real data into a named, "it-knew-that" line. Test
 // the real selection logic (not a mock) per the test-the-conversation rule.
