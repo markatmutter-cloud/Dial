@@ -1,4 +1,22 @@
-import { lumeColdOpen, recordVisit, recordJourney, readUsage, rankJourneys } from "./lumeColdOpen";
+import { lumeColdOpen, recordVisit, recordJourney, readUsage, rankJourneys, buildGreeting } from "./lumeColdOpen";
+
+describe("buildGreeting (warm, personal opener)", () => {
+  test("names the person + the time of day, and what's notable", () => {
+    const g = buildGreeting({ firstName: "Mark", hour: 19, notables: ["2 lots closing soon", "4 fresh in your taste"] });
+    expect(g.hello).toBe("Good evening, Mark.");
+    expect(g.notable).toContain("2 lots closing soon");
+    expect(g.notable).toContain("4 fresh in your taste");
+  });
+  test("falls back gracefully when nothing is notable", () => {
+    const g = buildGreeting({ hour: 9 });
+    expect(g.hello).toBe("Good morning.");
+    expect(g.notable).toBeTruthy();
+  });
+  test("no em-dashes in any greeting copy", () => {
+    const g = buildGreeting({ firstName: "X", hour: 2, notables: ["a", "b", "c", "d"] });
+    expect(`${g.hello} ${g.notable}`).not.toContain("—");
+  });
+});
 
 // The cold open must EXIST for newcomers, EVOLVE for the familiar, and
 // DISAPPEAR for veterans (Mark, 2026-06-16) — driven by local usage signals.

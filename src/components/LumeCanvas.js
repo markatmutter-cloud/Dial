@@ -4,19 +4,18 @@ import LumeResultPanel from "./LumeResultPanel";
 import LumeResultGrid from "./LumeResultGrid";
 import LumeComposer from "./LumeComposer";
 import { LumeConversation } from "./LumeConversation";
-import { JOURNEYS } from "./LumeJourneyGrid";
+import { JOURNEYS, journeyLine } from "./LumeJourneyGrid";
 import { renderLumeListingCard, renderLumeArticleCard } from "./lumeCards";
 import { selectMissed, deriveTasteSets, urlKey } from "../lumeMissed";
-import { recordVisit, recordJourney, lumeColdOpen, rankJourneys } from "../lumeColdOpen";
+import { recordVisit, recordJourney, rankJourneys, buildGreeting } from "../lumeColdOpen";
 import { matchesSearch } from "../utils";
 
 // LumeCanvas — the host-agnostic morphing surface. Owns the view router
-// (home / result / chat) and computes each journey's panel from data already
-// in app memory (no /api/chat round-trip for the catch-up journeys). The
-// always-present composer weaves typed questions into the conversation view.
-//
-// Mounted in LumeTab today (the proving ground); the same component graduates
-// into the full-screen launcher takeover later (Phase 3) unchanged.
+// (home / result / search / chat) and computes each journey's results from data
+// already in app memory (no /api/chat round-trip for the catch-up journeys).
+// The landing is a warm, personal greeting + a promoted hero journey (with a
+// content peek) + the rest as live-count cards. The always-present input weaves
+// typed questions into the conversation, or runs a unified in-canvas search.
 
 const VOICE = {
   latest: "Freshest first. Here's what's just been listed.",
@@ -39,36 +38,14 @@ export default function LumeCanvas({
   const [view, setView] = useState({ kind: "home", intent: null });
   const [usage, setUsage] = useState(null);
 
-  // Record the visit once on mount; drives the evolving cold open.
+  // Record the visit once on mount; drives journey ranking + the greeting.
   useEffect(() => { setUsage(recordVisit()); }, []);
 
   const tasteSets = useMemo(() => deriveTasteSets(watchlist), [watchlist]);
-  const heartedCount = useMemo(() => Object.keys(watchlist || {}).length, [watchlist]);
-
-  // How many auction lots are actually closing within ~3 days — the signal that
-  // bumps "under the hammer" to the lead (Mark's context-priority brief).
-  const auctionsSoonCount = useMemo(() => {
-    const now = Date.now();
-    const horizon = now + 3 * 86400000;
-    return auctionLotItems.filter((i) => {
-      if (!i || i.sold || !i.auction_end) return false;
-      const t = Date.parse(i.auction_end);
-      return Number.isFinite(t) && t > now && t <= horizon;
-    }).length;
-  }, [auctionLotItems]);
-
-  const coldOpen = useMemo(
-    () => lumeColdOpen(usage || {}, { heartedCount, auctionsSoon: auctionsSoonCount > 0 }),
-    [usage, heartedCount, auctionsSoonCount]
-  );
-  // Reorder the journey cards so the lead matches the user's likely intent.
-  const orderedJourneys = useMemo(() => {
-    const { order } = rankJourneys(usage || {}, { auctionsSoonCount, visitsLast24h: usage && usage.visitsLast24h });
-    return order.map((k) => JOURNEYS.find((j) => j.key === k)).filter(Boolean);
-  }, [usage, auctionsSoonCount]);
+  const hasTaste = tasteSets.tasteBrands.size > 0;
 
   // url/id index so selectMissed's projected results map back to the FULL
-  // listing object (with image/price) for card render.
+  // listing object (with image/price) for card render + hero thumbnails.
   const byId = useMemo(() => {
     const m = new Map();
     for (const it of liveItems) if (it && it.id) m.set(it.id, it);
@@ -80,56 +57,75 @@ export default function LumeCanvas({
     return m;
   }, [liveItems]);
 
-  const panel = useMemo(() => {
-    const key = view.intent;
-    if (!key) return null;
+  // Compute every journey's results once (cheap O(n) passes over in-memory
+  // feeds) so the landing can show live counts + hero thumbnails, and a tap
+  // reuses the same computed set.
+  const results = useMemo(() => {
     const hydrate = (res) => res.map((r) => byId.get(r.id) || byUrl.get(urlKey(r.url))).filter(Boolean);
-    const hasTaste = tasteSets.tasteBrands.size > 0;
-    let items = [];
-    let kind = "listing";
-    let emptyText = "Nothing to show here yet.";
+    const now = Date.now();
+    const out = {};
 
-    if (key === "latest") {
-      items = liveItems
-        .filter((i) => i && !i.sold && i.firstSeen)
-        .sort((a, b) => (Date.parse(b.firstSeen) || 0) - (Date.parse(a.firstSeen) || 0))
-        .slice(0, 15);
-      emptyText = "Nothing new has landed just yet.";
-    } else if (key === "missed_live") {
-      items = hydrate(selectMissed(liveItems, { mode: "live_unsaved", ...tasteSets, limit: 15 }).results);
-      emptyText = hasTaste ? "Nothing in your taste slipped past you this week." : "Heart a few watches and I'll start spotting what you missed.";
-    } else if (key === "got_away") {
-      items = hydrate(selectMissed(liveItems, { mode: "sold_unsaved", ...tasteSets, limit: 15 }).results);
-      emptyText = hasTaste ? "Nothing notable got away this week." : "Heart a few watches and I'll flag the ones that get away.";
-    } else if (key === "saved_sold") {
-      items = hydrate(selectMissed(liveItems, { mode: "sold_saved", ...tasteSets, limit: 15 }).results);
-      emptyText = "None of your saved watches have sold recently.";
-    } else if (key === "auctions_soon") {
-      const now = Date.now();
-      items = auctionLotItems
-        .filter((i) => i && !i.sold && i.auction_end && (Date.parse(i.auction_end) || 0) > now)
-        .sort((a, b) => (Date.parse(a.auction_end) || 0) - (Date.parse(b.auction_end) || 0))
-        .slice(0, 15);
-      emptyText = auctionLotItems.length === 0 ? "Loading auction lots…" : "No lots are closing in the next while.";
-    } else if (key === "articles") {
-      items = (articles || []).slice(0, 15);
-      kind = "article";
-      emptyText = "No fresh articles right now.";
-    }
+    const liveAll = liveItems
+      .filter((i) => i && !i.sold && i.firstSeen)
+      .sort((a, b) => (Date.parse(b.firstSeen) || 0) - (Date.parse(a.firstSeen) || 0));
+    out.latest = { items: liveAll.slice(0, 24), count: liveAll.length, kind: "listing",
+      empty: "Nothing new has landed just yet." };
 
-    return {
-      title: titleFor(key),
-      voice: VOICE[key] || "",
-      items,
-      kind,
-      isEmpty: !items.length,
-      emptyText,
-    };
-  }, [view.intent, liveItems, auctionLotItems, articles, tasteSets, byId, byUrl]);
+    const ml = selectMissed(liveItems, { mode: "live_unsaved", ...tasteSets, limit: 15 });
+    out.missed_live = { items: hydrate(ml.results), count: ml.count, kind: "listing",
+      empty: hasTaste ? "Nothing in your taste slipped past you this week." : "Heart a few watches and I'll start spotting what you missed." };
+
+    const ga = selectMissed(liveItems, { mode: "sold_unsaved", ...tasteSets, limit: 15 });
+    out.got_away = { items: hydrate(ga.results), count: ga.count, kind: "listing",
+      empty: hasTaste ? "Nothing notable got away this week." : "Heart a few watches and I'll flag the ones that get away." };
+
+    const ss = selectMissed(liveItems, { mode: "sold_saved", ...tasteSets, limit: 15 });
+    out.saved_sold = { items: hydrate(ss.results), count: ss.count, kind: "listing",
+      empty: "None of your saved watches have sold recently." };
+
+    const auctAll = auctionLotItems
+      .filter((i) => i && !i.sold && i.auction_end && (Date.parse(i.auction_end) || 0) > now)
+      .sort((a, b) => (Date.parse(a.auction_end) || 0) - (Date.parse(b.auction_end) || 0));
+    out.auctions_soon = { items: auctAll.slice(0, 24), count: auctAll.length, kind: "listing",
+      empty: auctionLotItems.length === 0 ? "Loading auction lots…" : "No lots are closing in the next while." };
+
+    const arts = articles || [];
+    out.articles = { items: arts.slice(0, 24), count: arts.length, kind: "article",
+      empty: "No fresh articles right now." };
+
+    return out;
+  }, [liveItems, auctionLotItems, articles, tasteSets, hasTaste, byId, byUrl]);
+
+  // Context-aware order, then enrich with live counts + the hero's content peek.
+  const auctionsSoonCount = results.auctions_soon.count;
+  const ordered = useMemo(() => {
+    const { order } = rankJourneys(usage || {}, { auctionsSoonCount, visitsLast24h: usage && usage.visitsLast24h });
+    return order
+      .map((k) => JOURNEYS.find((j) => j.key === k))
+      .filter(Boolean)
+      .map((j) => {
+        const r = results[j.key] || { items: [], count: 0 };
+        return { ...j, count: r.count, line: journeyLine(j.key, r.count), thumbItems: r.items.slice(0, 4) };
+      });
+  }, [usage, auctionsSoonCount, results]);
+
+  const hero = useMemo(() => ordered.find((j) => j.count > 0) || null, [ordered]);
+  const secondary = useMemo(() => ordered.filter((j) => j !== hero), [ordered, hero]);
+
+  // Warm, personal opener that names what's notable right now.
+  const greeting = useMemo(() => {
+    const firstName = String(user?.user_metadata?.name || user?.user_metadata?.full_name || "").trim().split(/\s+/)[0] || "";
+    const notables = [];
+    if (results.auctions_soon.count) notables.push(`${results.auctions_soon.count} lot${results.auctions_soon.count > 1 ? "s" : ""} closing soon`);
+    if (results.missed_live.count) notables.push(`${results.missed_live.count} fresh in your taste`);
+    if (results.articles.count) notables.push(`${results.articles.count} new to read`);
+    if (notables.length < 2 && results.latest.count) notables.push(`${results.latest.count} just listed`);
+    return buildGreeting({ firstName, hour: new Date().getHours(), notables });
+  }, [user, results]);
 
   // Unified in-canvas search across the in-memory types (listings / sold /
   // auctions), reusing the app's shared matchesSearch. Articles + reference
-  // guides are the queued follow-up (lazy corpus + a net-new guide index).
+  // guides are the queued follow-up.
   const searchGroups = useMemo(() => {
     if (view.kind !== "search") return null;
     const q = view.query || "";
@@ -142,6 +138,16 @@ export default function LumeCanvas({
       { key: "auctions", title: "Auctions", items: auctions },
     ].filter((g) => g.items.length);
   }, [view.kind, view.query, liveItems, auctionLotItems]);
+
+  const panel = useMemo(() => {
+    const key = view.intent;
+    if (!key || !results[key]) return null;
+    const r = results[key];
+    return {
+      title: titleFor(key), voice: VOICE[key] || "",
+      items: r.items, kind: r.kind, isEmpty: !r.items.length, emptyText: r.empty,
+    };
+  }, [view.intent, results]);
 
   const onSelectJourney = (key) => { recordJourney(key); setView({ kind: "result", intent: key }); };
   const goHome = () => setView({ kind: "home", intent: null });
@@ -197,7 +203,7 @@ export default function LumeCanvas({
                 isMobile={isMobile} />
             </LumeResultPanel>
           ) : (
-            <LumeHome coldOpen={coldOpen} journeys={orderedJourneys} onSelect={onSelectJourney} isMobile={isMobile} />
+            <LumeHome greeting={greeting} hero={hero} journeys={secondary} onSelect={onSelectJourney} isMobile={isMobile} />
           )}
         </div>
       </div>

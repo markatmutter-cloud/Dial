@@ -33,6 +33,35 @@ export const JOURNEYS = [
   { key: "articles", icon: "articles", label: "Worth reading", sub: "Fresh from the journals" },
 ];
 
+// The hero's warm one-line, contextual to live counts (Mark: "conversation
+// around each"). Used by LumeHeroCard for the lead journey.
+export function journeyLine(key, n) {
+  switch (key) {
+    case "auctions_soon": return n ? `${n} lot${n > 1 ? "s" : ""} about to go under the hammer.` : "Auctions are quiet right now.";
+    case "latest": return n ? `${n} just landed. Freshest first.` : "Nothing brand new this minute.";
+    case "missed_live": return n ? `${n} in your taste you haven't seen yet.` : "You're caught up on your taste.";
+    case "got_away": return n ? `${n} sold before you could save ${n > 1 ? "them" : "it"}.` : "Nothing slipped away lately.";
+    case "saved_sold": return n ? `${n} of your saved watches ${n > 1 ? "have" : "has"} sold.` : "None of your saved have sold.";
+    case "articles": return n ? `${n} fresh read${n > 1 ? "s" : ""} from the journals.` : "No new reading right now.";
+    default: return "";
+  }
+}
+
+// The small-card live subtitle (count-aware). Falls back to the static `sub`
+// when a journey has nothing right now.
+export function journeySub(key, n) {
+  if (!n) return null;
+  switch (key) {
+    case "auctions_soon": return `${n} closing soon`;
+    case "latest": return `${n} just listed`;
+    case "missed_live": return `${n} in your taste`;
+    case "got_away": return `${n} this week`;
+    case "saved_sold": return `${n} sold`;
+    case "articles": return `${n} new`;
+    default: return null;
+  }
+}
+
 export default function LumeJourneyGrid({ journeys = JOURNEYS, onSelect, isMobile }) {
   return (
     <div style={{
@@ -40,25 +69,30 @@ export default function LumeJourneyGrid({ journeys = JOURNEYS, onSelect, isMobil
       gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(240px, 1fr))",
       gap: 12,
     }}>
-      {journeys.map((j) => (
-        <button key={j.key} onClick={() => onSelect && onSelect(j.key)} style={{
-          display: "flex", alignItems: "flex-start", gap: 12, textAlign: "left",
-          border: "0.5px solid var(--border)", background: "var(--surface)", color: "var(--text1)",
-          borderRadius: 14, padding: "16px 16px", cursor: "pointer", fontFamily: "inherit",
-        }}>
-          <span style={{
-            flexShrink: 0, width: 34, height: 34, borderRadius: 9,
-            background: "var(--brand-olive-tint, rgba(125,134,94,0.14))", color: "var(--brand-olive)",
-            display: "flex", alignItems: "center", justifyContent: "center",
+      {journeys.map((j) => {
+        const live = journeySub(j.key, j.count);
+        return (
+          <button key={j.key} onClick={() => onSelect && onSelect(j.key)} style={{
+            display: "flex", alignItems: "flex-start", gap: 12, textAlign: "left",
+            border: "0.5px solid var(--border)", background: "var(--surface)", color: "var(--text1)",
+            borderRadius: 14, padding: "16px 16px", cursor: "pointer", fontFamily: "inherit",
           }}>
-            {ICONS[j.icon] || ICONS.latest}
-          </span>
-          <span style={{ display: "flex", flexDirection: "column", gap: 3, minWidth: 0 }}>
-            <span style={{ fontSize: 15, fontWeight: 600, lineHeight: 1.25 }}>{j.label}</span>
-            <span style={{ fontSize: 13, color: "var(--text2)", lineHeight: 1.3 }}>{j.sub}</span>
-          </span>
-        </button>
-      ))}
+            <span style={{
+              flexShrink: 0, width: 34, height: 34, borderRadius: 9,
+              background: "var(--brand-olive-tint, rgba(125,134,94,0.14))", color: "var(--brand-olive)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              {ICONS[j.icon] || ICONS.latest}
+            </span>
+            <span style={{ display: "flex", flexDirection: "column", gap: 3, minWidth: 0 }}>
+              <span style={{ fontSize: 15, fontWeight: 600, lineHeight: 1.25 }}>{j.label}</span>
+              <span style={{ fontSize: 13, color: live ? "var(--brand-olive)" : "var(--text2)", lineHeight: 1.3, fontWeight: live ? 600 : 400 }}>
+                {live || j.sub}
+              </span>
+            </span>
+          </button>
+        );
+      })}
     </div>
   );
 }

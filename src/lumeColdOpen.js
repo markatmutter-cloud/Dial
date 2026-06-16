@@ -121,6 +121,19 @@ export function lumeColdOpen(usage = {}, signals = {}) {
   return { line: REGULAR[visits % REGULAR.length], sub: "", prominence: "line" };
 }
 
+// buildGreeting — a warm, personal opener that NAMES what's notable right now
+// (Mark, 2026-06-16: "warmer as a starter" + "conversation around each").
+// `hello` is a time-of-day + first-name address; `notable` is a short briefing
+// of what actually moved, joined with middots. No em-dashes (BRAND voice).
+export function buildGreeting({ firstName = "", hour = 12, notables = [] } = {}) {
+  const period = hour < 5 ? "Still up" : hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+  const name = (firstName || "").trim();
+  const hello = name ? `${period}, ${name}.` : `${period}.`;
+  const clean = (notables || []).filter(Boolean).slice(0, 3);
+  const notable = clean.length ? clean.join("  ·  ") : "Quiet right now. Here's where to look.";
+  return { hello, notable };
+}
+
 // rankJourneys — the most likely thing a user wants changes with context
 // (Mark, 2026-06-16). Reorders the journey cards so the lead matches intent:
 //   auction closing soon  -> what's under the hammer

@@ -55,6 +55,16 @@ visit, how often you return in a day, how many watches you've hearted). No backe
 required for the behaviour; the durable, cross-device version rides on the Lumé
 profile/memory store later.
 
+### 0. A warm, designed starter (not a banner over a menu)
+
+The landing leads with a **personal greeting that names what's notable right now**
+("Good evening, Mark. 2 lots closing soon · 4 fresh in your taste · 3 new to read"),
+then **promotes the best-placed journey into a hero card** that carries its own warm
+line *and a peek of the real watches* (thumbnails) — content sells itself. The rest
+sit below as cards with **live count subtitles** ("3 just listed", "4 in your taste").
+The contextual conversation lives *on* the content, never as a banner floating above
+a uniform grid. This is the "make it impactful" pass (Mark, 2026-06-16).
+
 ### 1. The cold open has a lifecycle: exist → evolve → recede → disappear
 
 A single greeting goes stale. So the opener moves through stages:
