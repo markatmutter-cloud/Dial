@@ -605,6 +605,16 @@ within each section roughly last.
 
 ## Epic 10 — Lumé (AI spine)
 
+- **2026-06-16 — Lumé full-page surface (#871–#873, #891, #893).** A real **Lumé tab** (journey
+  launchers + inline chat) over a shared `LumeConversation` core extracted from the bubble; bubble
+  gained desktop **expand-to-fullscreen**; shared-surface link gets a top-right × + stays open on
+  desktop (#871); **"Make Lumé my home"** default-landing pref (#893, `user_settings.default_landing_tab`).
+- **2026-06-16 — Lumé find_missed fix + catch-up journeys (#869/#870).** Killed the quoted listing
+  count (tool no longer hands the model the total); every named watch is now an inline link + action
+  chips; the "what did I miss" family chains live → got-away → widen-30d → hearted-sold → latest.
+- **2026-06-16 — Saved sub-tab ♡ Saved → ♡ Watches (#892).** Kills the Saved▸Saved echo; label-only,
+  internal `hearted` key unchanged. (Auctions-promotion restructure logged in ROADMAP Epic 9, not built.)
+
 - **2026-06-03 — Lumé seed re-send fix (#785).** Reopening a seeded chat no longer re-fires the
   seed question (one wasted model turn per round-trip); transcripts persist in the bubble.
 - **2026-06-03 — One Lumé list.** docs/LUME_ROADMAP.md retired; all AI direction lives as ROADMAP
