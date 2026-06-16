@@ -1,29 +1,20 @@
 import React from "react";
-import { LumeConversation, NAME } from "./LumeConversation";
+import { NAME } from "./LumeConversation";
+import LumeCanvas from "./LumeCanvas";
 import { LumeIcon } from "./LumeIcon";
 
-// LumeTab — the full-page Lumé surface (Epic 10). A real destination tab that
-// hosts the catch-up journeys as one-tap launchers above the SAME conversation
-// engine the bubble uses (LumeConversation). The chat state lives in App
-// (useLumeChat passed in as `chat`), so opening a watch full-page and coming
-// back keeps the thread intact.
+// LumeTab — the full-page Lumé surface (Epic 10). A thin host: the signed-out
+// sign-in gate, then the host-agnostic LumeCanvas (the morphing prompt-driven
+// surface). The chat state lives in App (useLumeChat passed in as `chat`), so
+// opening a watch full-page and coming back keeps the thread intact.
 //
-// Journey prompts mirror the #870 prompt orchestration — Lumé chains the rest
-// (got-away → widen → hearted-that-sold → latest) from there.
-const JOURNEYS = [
-  { label: "What I missed", prompt: "What have I missed this week that I haven't saved but fits my taste?" },
-  { label: "The ones that got away", prompt: "What sold this week that I missed and would have liked?" },
-  { label: "Latest listed", prompt: "Show me the latest watches listed." },
-  { label: "My saved that sold", prompt: "Have any of my saved watches sold recently?" },
-];
-
-const journeyChip = {
-  border: "0.5px solid var(--border)", background: "var(--surface)", color: "var(--text1)",
-  borderRadius: 999, padding: "8px 14px", fontSize: 13, fontWeight: 500,
-  cursor: "pointer", fontFamily: "inherit",
-};
-
-export function LumeTab({ chat, user, isMobile = false, onOpenItem, onActionResult, onSignIn }) {
+// The canvas itself is placement-agnostic — the same component graduates into
+// the full-screen launcher takeover later (Phase 3) unchanged; this tab is the
+// proving ground.
+export function LumeTab({
+  chat, user, isMobile = false, onOpenItem, onSignIn,
+  liveItems, auctionLotItems, articles, watchlist, cardCtx,
+}) {
   if (!user) {
     return (
       <div style={{ maxWidth: 560, margin: "0 auto", padding: "40px 20px", display: "flex", flexDirection: "column", gap: 16, alignItems: "flex-start" }}>
@@ -45,33 +36,24 @@ export function LumeTab({ chat, user, isMobile = false, onOpenItem, onActionResu
   }
 
   return (
-    // Bound the surface to the viewport so LumeConversation's flex layout keeps
-    // the composer pinned at the bottom (the shells use body-flow scroll, so we
+    // Bound the surface to the viewport so the canvas's flex layout keeps the
+    // composer pinned at the bottom (the shells use body-flow scroll, so we
     // can't rely on a height-bounded parent). The chrome offset is approximate —
     // tune live if the composer sits a touch high/low.
     <div style={{
-      display: "flex", flexDirection: "column",
       height: isMobile ? "calc(100dvh - 124px)" : "calc(100dvh - 140px)",
-      maxWidth: 820, margin: "0 auto", width: "100%",
+      maxWidth: 920, margin: "0 auto", width: "100%",
     }}>
-      <div style={{ flexShrink: 0, padding: "14px 16px 10px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-          <LumeIcon size={20} />
-          <span style={{ fontSize: 17, fontWeight: 600, letterSpacing: "-0.01em" }}>{NAME}</span>
-          <span style={{ fontSize: 13, color: "var(--text2)" }}>· pick up where you left off</span>
-        </div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-          {JOURNEYS.map((j) => (
-            <button key={j.label} onClick={() => chat.send(j.prompt)} style={journeyChip}>{j.label}</button>
-          ))}
-        </div>
-      </div>
-      <LumeConversation
+      <LumeCanvas
         chat={chat}
-        onOpenItem={onOpenItem}
-        onActionResult={onActionResult}
+        user={user}
         isMobile={isMobile}
-        suggestions={[]}
+        onOpenItem={onOpenItem}
+        liveItems={liveItems}
+        auctionLotItems={auctionLotItems}
+        articles={articles}
+        watchlist={watchlist}
+        cardCtx={cardCtx}
       />
     </div>
   );
