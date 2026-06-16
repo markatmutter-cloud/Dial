@@ -111,19 +111,49 @@ export default function LumeCanvas({
       });
   }, [usage, auctionsSoonCount, results]);
 
-  const hero = useMemo(() => ordered.find((j) => j.count > 0) || null, [ordered]);
-  const secondary = useMemo(() => ordered.filter((j) => j !== hero), [ordered, hero]);
+  // The top journeys (with content) get the hero + content-peek treatment;
+  // the rest stay as small live-count cards (Mark: "hero for the top say 3").
+  const heroes = useMemo(() => ordered.filter((j) => j.count > 0).slice(0, 3), [ordered]);
+  const secondary = useMemo(() => {
+    const heroKeys = new Set(heroes.map((h) => h.key));
+    return ordered.filter((j) => !heroKeys.has(j.key));
+  }, [ordered, heroes]);
 
-  // Warm, personal opener that names what's notable right now.
+  // The PERCEPTIVE hook — a named, behaviour-aware line built from real data
+  // (the "it knew that" feeling). Prefers the got-away sting (specific model +
+  // how fast it sold), then a fresh in-lane arrival, then auctions/reading.
   const greeting = useMemo(() => {
     const firstName = String(user?.user_metadata?.name || user?.user_metadata?.full_name || "").trim().split(/\s+/)[0] || "";
-    const notables = [];
-    if (results.auctions_soon.count) notables.push(`${results.auctions_soon.count} lot${results.auctions_soon.count > 1 ? "s" : ""} closing soon`);
-    if (results.missed_live.count) notables.push(`${results.missed_live.count} fresh in your taste`);
-    if (results.articles.count) notables.push(`${results.articles.count} new to read`);
-    if (notables.length < 2 && results.latest.count) notables.push(`${results.latest.count} just listed`);
-    return buildGreeting({ firstName, hour: new Date().getHours(), notables });
-  }, [user, results]);
+    const nameOf = (it) => {
+      if (!it) return "";
+      const m = String(it.model || it.model_line || "").trim();
+      return `${it.brand || ""} ${m}`.trim();
+    };
+    const soldDays = (it) => {
+      if (!it || !it.firstSeen || !it.soldAt) return null;
+      return Math.max(0, Math.round((Date.parse(it.soldAt) - Date.parse(it.firstSeen)) / 86400000));
+    };
+    const ga = results.got_away.items[0];
+    const miss = results.missed_live.items[0];
+    const more = results.missed_live.count;
+    let hook = "";
+    if (ga && nameOf(ga)) {
+      const d = soldDays(ga);
+      const lead = d != null
+        ? `That ${nameOf(ga)} you'd have liked sold in ${d} day${d !== 1 ? "s" : ""}`
+        : `A ${nameOf(ga)} you'd have liked just sold`;
+      hook = more > 1 ? `${lead}, and a few more slipped by.` : `${lead}.`;
+    } else if (miss && nameOf(miss)) {
+      hook = more > 1
+        ? `A ${nameOf(miss)} just surfaced in your lane, with a few others.`
+        : `A ${nameOf(miss)} just surfaced, right in your lane.`;
+    } else if (results.auctions_soon.count) {
+      hook = "A few lots are about to go under the hammer.";
+    } else if (results.articles.count) {
+      hook = "There's some new reading waiting.";
+    }
+    return buildGreeting({ firstName, hour: new Date().getHours(), daysAway: usage?.daysAway, hook });
+  }, [user, results, usage]);
 
   // Unified in-canvas search across the in-memory types (listings / sold /
   // auctions), reusing the app's shared matchesSearch. Articles + reference
@@ -188,7 +218,7 @@ export default function LumeCanvas({
           isMobile={isMobile} />
       </LumeResultPanel>
     ) : (
-      <LumeHome greeting={greeting} hero={hero} journeys={secondary} onSelect={onSelectJourney} isMobile={isMobile} />
+      <LumeHome greeting={greeting} heroes={heroes} journeys={secondary} onSelect={onSelectJourney} isMobile={isMobile} />
     )
   );
 

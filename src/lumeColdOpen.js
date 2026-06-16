@@ -121,17 +121,32 @@ export function lumeColdOpen(usage = {}, signals = {}) {
   return { line: REGULAR[visits % REGULAR.length], sub: "", prominence: "line" };
 }
 
-// buildGreeting — a warm, personal opener that NAMES what's notable right now
-// (Mark, 2026-06-16: "warmer as a starter" + "conversation around each").
-// `hello` is a time-of-day + first-name address; `notable` is a short briefing
-// of what actually moved, joined with middots. No em-dashes (BRAND voice).
-export function buildGreeting({ firstName = "", hour = 12, notables = [] } = {}) {
-  const period = hour < 5 ? "Still up" : hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+// buildGreeting — a warm, PERCEPTIVE opener (Mark, 2026-06-16: "warmer", "more
+// towards the creepy it-knew-that-so-well feeling"). Two registers:
+//   gap return (away 2+ days) -> casual "Hey Mark, it's been a few days." then
+//     an offer/hook (his own example voice).
+//   same session -> a time-of-day address + the perceptive `hook` (a named,
+//     behaviour-aware line built by the canvas from real data, e.g. "That Rolex
+//     Sea-Dweller you'd have liked sold in a day").
+// The specificity (real model names + behaviour) is what reads as intelligent;
+// generic counts kill it. No em-dashes (BRAND voice).
+export function buildGreeting({ firstName = "", hour = 12, daysAway = 0, hook = "" } = {}) {
   const name = (firstName || "").trim();
-  const hello = name ? `${period}, ${name}.` : `${period}.`;
-  const clean = (notables || []).filter(Boolean).slice(0, 3);
-  const notable = clean.length ? clean.join("  ·  ") : "Quiet right now. Here's where to look.";
-  return { hello, notable };
+  const nameComma = name ? `, ${name}` : "";
+  const away = Number(daysAway) || 0;
+
+  if (away >= 2) {
+    const gap = away < 7 ? "a few days" : away < 14 ? "a week or so" : "a while";
+    return {
+      hello: `Hey${nameComma}, it's been ${gap}.`,
+      notable: hook || "Want to see what you've missed and what's changed?",
+    };
+  }
+  const period = hour < 5 ? "Still up" : hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+  return {
+    hello: `${period}${nameComma}.`,
+    notable: hook || "Let's find something worth your time.",
+  };
 }
 
 // rankJourneys — the most likely thing a user wants changes with context

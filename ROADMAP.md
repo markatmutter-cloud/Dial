@@ -679,9 +679,31 @@ article surface, **B-51**, still unbuilt). Three builds, sequenced so each verif
    expand-to-fullscreen, shared-surface × + keep-open, and the **"Make Lumé my home"**
    default-landing pref. *Live-tuning pending (next session):* chat height calc, mobile 5th-pill
    crowding, masthead-search-on-tab suppression. *Later:* unify bubble+tab into one conversation.
-3. **Varied cold opens (NOT built — next).** Different openers for new · signed-out · how-long-away
-   (not the same engagement each time), plus a surprising new-user journey running all the way to
-   "want to see something on the **edge** of your recommendations?" (ties pillar 5 / RECOMMENDER_STRATEGY edge modes).
+3. **Varied cold opens — being delivered by the morphing canvas (2026-06-16, below).**
+
+**Active thread (2026-06-16, Mark) — the morphing canvas landing.** The Lumé surface is
+being rebuilt from a chat transcript into a **prompt-driven morphing canvas**: a journey-card
+grid that morphs into **visual result panels** (card grids + show-more horizontal scroll), an
+always-present input with **two explicit actions (Search / Ask)**, and a **desktop two-pane**
+(content left + always-on chat rail right; single-column on mobile). The landing is **warm +
+perceptive**: a personal greeting with **named, behaviour-aware hooks** ("That Sea-Dweller you'd
+have liked sold in a day") + a casual gap voice ("Hey Mark, it's been a few days…"), the **top
+~3 journeys promoted to hero cards with content thumbnails**, and the rest as **live-count cards**.
+Adaptive layer (cheap local usage signals): **context-aware journey ordering** (auction-soon /
+week-away / same-day / frequent-return) + the evolving cold open. **Shipped this session: #894
+(canvas) · #895 (unified in-canvas search: listings/sold/auctions) · #896 (warm landing) · #897
+(two-pane)** + the perceptive-voice + multi-hero PR. **End-state placement:** a full-screen,
+full-bleed takeover summoned from the bottom-left launcher (supersedes the "default landing tab"
+idea). Design bible: **docs/LUME_LANDING_DESIGN.md**. *Queued:* search over **articles + reference
+guides** · conversational **dossier/compare** panels · new-data journeys (**saved-search deltas**,
+curated **auctions-of-note**) · durable usage profile (pillar 4) → LLM-personalised opener.
+
+**Thread — swappable LLM engine (2026-06-16, Mark).** Make the chat backend **provider-pluggable**
+(Claude default, **OpenAI/ChatGPT swappable**) as a hedge. Backend job in `api/chat.js`: one
+provider interface behind an env switch + an OpenAI client; the wrinkle is **tool-calling differs**
+between Anthropic and OpenAI, so the tool layer needs a small translation shim (+ the system-prompt
++ web-search wiring re-mapped). Not started. NB voice issues are a prompt fix first ([[feedback_lume_voice_rules]]),
+not a reason to switch; this is about optionality, not fixing Lumé.
 
 **Six capability pillars** (KNOWS · DOES · KNOWS-YOU · TAKES-YOU · NUDGES):
 1. **Knowledge — references & watches.** Built: ref index + 7 model-line deep-dives + lexicon P1. Next: attribute-level knowledge (**B-45**), more synthesis nodes, fact-vs-opinion tagging per claim.
