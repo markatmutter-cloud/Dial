@@ -1,38 +1,34 @@
 import React from "react";
-import LumeJourneyGrid from "./LumeJourneyGrid";
-import LumeHeroCard from "./LumeHeroCard";
+import LumeLead from "./LumeLead";
+import LumeModule from "./LumeModule";
 
-// LumeHome — the warm landing: a personal, perceptive greeting (the
-// "conversation"), the top journeys promoted to HERO cards with a content peek,
-// then the rest as a tighter grid with live count subtitles. The free-text
-// composer is rendered by the canvas below this.
-export default function LumeHome({ greeting, heroes = [], journeys = [], onSelect, isMobile }) {
-  const { hello = "", notable = "" } = greeting || {};
+// LumeHome — the guided session: a light personal line, ONE "Start here" lead
+// hero (with visible evidence), then curated supporting shelves (Worth your
+// attention / Useful comps / Rabbit holes). Not a greeting over equal tiles.
+// The canvas builds the lead + shelf configs (items, framing, renderers, CTAs).
+export default function LumeHome({ greeting, lead, shelves = [], onLeadPrimary, onLeadSecondary, onOpenItem, isMobile }) {
+  const { hello = "" } = greeting || {};
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-        {hello && (
-          <div style={{ fontSize: isMobile ? 22 : 26, fontWeight: 600, letterSpacing: "-0.015em", lineHeight: 1.2 }}>
-            {hello}
-          </div>
-        )}
-        {notable && (
-          <div style={{ fontSize: isMobile ? 14 : 15, lineHeight: 1.5, color: "var(--text2)" }}>{notable}</div>
-        )}
-      </div>
+    <div style={{ display: "flex", flexDirection: "column", gap: isMobile ? 28 : 38 }}>
+      {hello && <div style={{ fontSize: 14, fontWeight: 500, color: "var(--text2)" }}>{hello}</div>}
 
-      {heroes.length > 0 && (
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          {heroes.map((h) => (
-            <LumeHeroCard key={h.key} journey={h} onSelect={onSelect} isMobile={isMobile} />
-          ))}
-        </div>
-      )}
+      <LumeLead lead={lead} onPrimary={onLeadPrimary} onSecondary={onLeadSecondary} onOpenItem={onOpenItem} isMobile={isMobile} />
 
-      {journeys.length > 0 && (
-        <LumeJourneyGrid journeys={journeys} onSelect={onSelect} isMobile={isMobile} />
-      )}
+      {shelves.map((s) => (
+        <LumeModule
+          key={s.key}
+          eyebrow={s.eyebrow}
+          heading={s.heading}
+          dek={s.dek}
+          count={s.count}
+          items={s.items}
+          renderCard={s.renderCard}
+          ctaLabel={s.ctaLabel}
+          onCta={s.onCta}
+          isMobile={isMobile}
+        />
+      ))}
     </div>
   );
 }
