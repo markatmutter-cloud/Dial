@@ -1,19 +1,27 @@
 import { lumeColdOpen, recordVisit, recordJourney, readUsage, rankJourneys, buildGreeting } from "./lumeColdOpen";
 
-describe("buildGreeting (warm, personal opener)", () => {
-  test("names the person + the time of day, and what's notable", () => {
-    const g = buildGreeting({ firstName: "Mark", hour: 19, notables: ["2 lots closing soon", "4 fresh in your taste"] });
+describe("buildGreeting (warm, perceptive opener)", () => {
+  test("same session: time-of-day address + the perceptive hook verbatim", () => {
+    const g = buildGreeting({ firstName: "Mark", hour: 19, hook: "That Rolex Sea-Dweller you'd have liked sold in a day." });
     expect(g.hello).toBe("Good evening, Mark.");
-    expect(g.notable).toContain("2 lots closing soon");
-    expect(g.notable).toContain("4 fresh in your taste");
+    expect(g.notable).toBe("That Rolex Sea-Dweller you'd have liked sold in a day.");
   });
-  test("falls back gracefully when nothing is notable", () => {
+  test("returning after a gap: casual 'it's been a few days' voice", () => {
+    const g = buildGreeting({ firstName: "Mark", hour: 10, daysAway: 4 });
+    expect(g.hello).toBe("Hey, Mark, it's been a few days.");
+    expect(g.notable.toLowerCase()).toMatch(/missed|changed/);
+  });
+  test("longer gap softens to 'a week or so' / 'a while'", () => {
+    expect(buildGreeting({ daysAway: 9 }).hello).toContain("a week or so");
+    expect(buildGreeting({ daysAway: 30 }).hello).toContain("a while");
+  });
+  test("falls back gracefully with no hook", () => {
     const g = buildGreeting({ hour: 9 });
     expect(g.hello).toBe("Good morning.");
     expect(g.notable).toBeTruthy();
   });
   test("no em-dashes in any greeting copy", () => {
-    const g = buildGreeting({ firstName: "X", hour: 2, notables: ["a", "b", "c", "d"] });
+    const g = buildGreeting({ firstName: "X", hour: 2, daysAway: 5, hook: "a, b, c, d" });
     expect(`${g.hello} ${g.notable}`).not.toContain("—");
   });
 });

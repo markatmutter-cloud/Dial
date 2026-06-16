@@ -13,7 +13,7 @@ import { LumeIcon } from "./LumeIcon";
 // proving ground.
 export function LumeTab({
   chat, user, isMobile = false, onOpenItem, onSignIn,
-  liveItems, auctionLotItems, articles, watchlist, cardCtx,
+  liveItems, auctionLotItems, articles, watchlist, savedSearches, cardCtx,
 }) {
   if (!user) {
     return (
@@ -55,6 +55,7 @@ export function LumeTab({
         auctionLotItems={auctionLotItems}
         articles={articles}
         watchlist={watchlist}
+        savedSearches={savedSearches}
         cardCtx={cardCtx}
       />
     </div>

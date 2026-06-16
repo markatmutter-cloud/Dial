@@ -4657,6 +4657,7 @@ export default function Watchlist() {
       auctionLotItems={auctionLotItems}
       articles={adminHidden.size ? homeArticles.filter(a => !adminHidden.has(shortHash(a.url))) : homeArticles}
       watchlist={watchlist}
+      savedSearches={userSearches}
       cardCtx={{
         watchlist, hidden, handleWish, isAdmin, toggleHide, user,
         openCollectionPicker, primaryCurrency, handleShare, observeCard, onClickListing,

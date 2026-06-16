@@ -10,6 +10,7 @@ import { JOURNEYS, journeyLine } from "./LumeJourneyGrid";
 import { renderLumeListingCard, renderLumeArticleCard } from "./lumeCards";
 import { selectMissed, deriveTasteSets, urlKey } from "../lumeMissed";
 import { recordVisit, recordJourney, rankJourneys, buildGreeting } from "../lumeColdOpen";
+import { buildHook } from "../lumeHooks";
 import { matchesSearch } from "../utils";
 
 // LumeCanvas — the host-agnostic morphing surface. Owns the view router
@@ -32,7 +33,7 @@ const titleFor = (key) => (JOURNEYS.find((j) => j.key === key) || {}).label || "
 
 export default function LumeCanvas({
   chat, user, isMobile = false, onOpenItem,
-  liveItems = [], auctionLotItems = [], articles = [], watchlist = {},
+  liveItems = [], auctionLotItems = [], articles = [], watchlist = {}, savedSearches = [],
   cardCtx = {},
 }) {
   const listingCard = (it) => renderLumeListingCard(it, cardCtx);
@@ -111,19 +112,27 @@ export default function LumeCanvas({
       });
   }, [usage, auctionsSoonCount, results]);
 
-  const hero = useMemo(() => ordered.find((j) => j.count > 0) || null, [ordered]);
-  const secondary = useMemo(() => ordered.filter((j) => j !== hero), [ordered, hero]);
+  // The top journeys (with content) get the hero + content-peek treatment;
+  // the rest stay as small live-count cards (Mark: "hero for the top say 3").
+  const heroes = useMemo(() => ordered.filter((j) => j.count > 0).slice(0, 3), [ordered]);
+  const secondary = useMemo(() => {
+    const heroKeys = new Set(heroes.map((h) => h.key));
+    return ordered.filter((j) => !heroKeys.has(j.key));
+  }, [ordered, heroes]);
 
-  // Warm, personal opener that names what's notable right now.
+  // The PERCEPTIVE hook — a named, behaviour-aware line from real data (the "it
+  // knew that" feeling). The hook library (lumeHooks) picks the most perceptive
+  // signal: saved-search activity > taste-matched catalog > got-away > missed.
   const greeting = useMemo(() => {
     const firstName = String(user?.user_metadata?.name || user?.user_metadata?.full_name || "").trim().split(/\s+/)[0] || "";
-    const notables = [];
-    if (results.auctions_soon.count) notables.push(`${results.auctions_soon.count} lot${results.auctions_soon.count > 1 ? "s" : ""} closing soon`);
-    if (results.missed_live.count) notables.push(`${results.missed_live.count} fresh in your taste`);
-    if (results.articles.count) notables.push(`${results.articles.count} new to read`);
-    if (notables.length < 2 && results.latest.count) notables.push(`${results.latest.count} just listed`);
-    return buildGreeting({ firstName, hour: new Date().getHours(), notables });
-  }, [user, results]);
+    const hook = buildHook({
+      liveItems, auctionLotItems, savedSearches, tasteBrands: tasteSets.tasteBrands,
+      gotAway: results.got_away.items, missed: results.missed_live.items,
+      missedCount: results.missed_live.count,
+      auctionsSoonCount: results.auctions_soon.count, articlesCount: results.articles.count,
+    });
+    return buildGreeting({ firstName, hour: new Date().getHours(), daysAway: usage?.daysAway, hook });
+  }, [user, results, usage, liveItems, auctionLotItems, savedSearches, tasteSets]);
 
   // Unified in-canvas search across the in-memory types (listings / sold /
   // auctions), reusing the app's shared matchesSearch. Articles + reference
@@ -188,7 +197,7 @@ export default function LumeCanvas({
           isMobile={isMobile} />
       </LumeResultPanel>
     ) : (
-      <LumeHome greeting={greeting} hero={hero} journeys={secondary} onSelect={onSelectJourney} isMobile={isMobile} />
+      <LumeHome greeting={greeting} heroes={heroes} journeys={secondary} onSelect={onSelectJourney} isMobile={isMobile} />
     )
   );
 
