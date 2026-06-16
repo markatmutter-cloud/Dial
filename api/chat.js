@@ -481,7 +481,10 @@ export default async function handler(req, res) {
   }
 
   // 4) Tool-use loop (manual; bounded). Cheap model unless the turn needs reasoning.
-  const model = chooseModel(lastUserText(messages));
+  // TEMP A/B (2026-06-16): force every chat turn to Opus to judge the redesign on
+  // the smart model. REVERT to the chooseModel line below when the test is done.
+  // const model = chooseModel(lastUserText(messages));
+  const model = MODEL_SMART;
   const anthropic = new Anthropic({ apiKey: ANTHROPIC_API_KEY });
 
   // Lumé memory: load this user's evolving taste profile (RLS-scoped to them;
