@@ -1,4 +1,4 @@
 house,title,location,date_start,date_end,date_label,url,has_catalog,source,status_hint
-Bonhams,Paris Fine Watches,"Paris, Avenue Hoche",,,"17 June, 14:00 CEST",https://www.bonhams.com/auction/31779/paris-fine-watches/,True,Bonhams,live
+Bonhams,Paris Fine Watches,"Paris, Avenue Hoche",2026-06-17,2026-06-17,17 June,https://www.bonhams.com/auction/31779/paris-fine-watches/,False,Bonhams,
 Bonhams,Weekly: Watches,"Online, London, Knightsbridge",2026-06-26,2026-07-08,26 June - 8 July,https://www.bonhams.com/auction/31991/weekly-watches/,False,Bonhams,upcoming
 Bonhams,New York Watches,"Online, New York",2026-10-06,2026-10-16,6 - 16 October,https://www.bonhams.com/auction/31892/new-york-watches/,False,Bonhams,
