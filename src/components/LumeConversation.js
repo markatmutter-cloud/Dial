@@ -2,11 +2,11 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { supabase } from "../supabase";
 import { dispatchAction, resolveItemByUrl } from "./ActionBus";
 
-// LumeConversation — the conversation CORE shared by both Lumé surfaces: the
-// floating ChatBubbleHost and the inline LumeTab. It owns the message list +
-// composer render and the chat state/loop (via useLumeChat), so the bubble and
-// the full-page tab can't drift in how a reply renders, how links route, or how
-// the agentic send loop behaves. Surface-specific behaviour (minimise on action,
+// LumeConversation — the conversation CORE shared across Lumé surfaces: the
+// floating ChatBubbleHost (corner frame) and the desktop expanded-bubble canvas
+// (LumeCanvas's chat rail). It owns the message list + composer render and the
+// chat state/loop (via useLumeChat), so the surfaces can't drift in how a reply
+// renders, how links route, or how the agentic send loop behaves. Surface-specific behaviour (minimise on action,
 // how a watch link opens) is injected by the parent via onOpenItem/onActionResult.
 //
 // NB: solid-olive surfaces use #fff text, NOT --brand-olive-ink (that ink is the

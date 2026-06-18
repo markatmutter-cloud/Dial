@@ -26,7 +26,6 @@ export function SettingsModal({
   user,
   displayName, setDisplayName,
   primaryCurrency, setPrimaryCurrency,
-  defaultLandingTab, setDefaultLandingTab,
   isMobile,
   dark, setDarkOverride,
   mobileCols, setMobileCols,
@@ -136,29 +135,6 @@ export function SettingsModal({
             );
           })}
         </div>
-
-        {user && setDefaultLandingTab && (() => {
-          const lumeHome = defaultLandingTab === "lume";
-          return (
-            <>
-              <div style={{ ...sectionLabel, marginTop: 22 }}>Where the app opens</div>
-              <div style={{ fontSize: 12, color: "var(--text2)", marginBottom: 12, lineHeight: 1.5 }}>
-                Land straight in Lumé, your watch guide, instead of Home when you open the app.
-                Synced across your devices.
-              </div>
-              <button onClick={() => setDefaultLandingTab(lumeHome ? null : "lume")} style={{
-                padding: "10px 14px", borderRadius: 8,
-                border: "0.5px solid var(--border)",
-                background: lumeHome ? "var(--brand-olive)" : "var(--card-bg)",
-                color: lumeHome ? "#fff" : "var(--text1)",
-                cursor: "pointer", fontFamily: "inherit",
-                fontSize: 13, fontWeight: lumeHome ? 600 : 500,
-              }}>
-                {lumeHome ? "✓ Lumé is your home" : "Make Lumé my home"}
-              </button>
-            </>
-          );
-        })()}
 
         <div style={sectionLabel}>Theme</div>
         <div style={{ display: "flex", gap: 6 }}>

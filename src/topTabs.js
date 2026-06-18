@@ -21,11 +21,6 @@ export const TOP_TABS = [
   // "Reference Guides" on desktop, "Guides" on mobile (Mark's call — bare
   // "Reference" reads as ref-numbers; the full label doesn't fit mobile).
   { key: "guides", label: "Reference Guides", mobileLabel: "Guides", icon: "references", tab: "references", sub: "references" },
-  // Lumé — the full-page AI conversation surface (2026-06-15). A real
-  // destination so a signed-in user can launch the catch-up journeys and set
-  // it as their default landing. Placed last to leave the established nav order
-  // intact; easily reordered.
-  { key: "lume", label: "Lumé", icon: "lume" },
 ];
 
 export function isTopTabActive(entry, tab, referencesSubTab) {
