@@ -611,3 +611,37 @@ def test_richard_mille_detects_and_resists_enicar_002_cross_match():
     assert not item.get("model_line"), (
         f"Enicar model_line leaked onto a Richard Mille: {item.get('model_line')!r}"
     )
+
+
+# ── Auction calendar status (B-78) ───────────────────────────────────────────
+
+def test_emit_auction_status_demotes_stale_upcoming_to_past():
+    """B-78: Bonhams recycles weekly-sale ids, so a long-closed "Weekly
+    Watches" keeps statusHint='upcoming' frozen in the registry. Once its end
+    date is in the past, the calendar must emit 'past', not 'upcoming'."""
+    assert merge.emit_auction_status("2026-04-28", "2026-05-05", "upcoming",
+                                     today="2026-06-18") == "past"
+
+
+def test_emit_auction_status_demotes_stale_live_to_past():
+    assert merge.emit_auction_status("2026-05-01", "2026-05-06", "live",
+                                     today="2026-06-18") == "past"
+
+
+def test_emit_auction_status_keeps_genuine_upcoming():
+    """A future sale with an 'upcoming' hint stays upcoming."""
+    assert merge.emit_auction_status("2026-06-26", "2026-07-08", "upcoming",
+                                     today="2026-06-18") == "upcoming"
+
+
+def test_emit_auction_status_keeps_live_during_window():
+    """Sale open today (start ≤ today ≤ end) with a 'live' hint stays live."""
+    assert merge.emit_auction_status("2026-06-15", "2026-06-30", "live",
+                                     today="2026-06-18") == "live"
+
+
+def test_emit_auction_status_derives_from_dates_without_hint():
+    assert merge.emit_auction_status("2026-07-01", "2026-07-08", "",
+                                     today="2026-06-18") == "upcoming"
+    assert merge.emit_auction_status("2026-05-01", "2026-05-05", "",
+                                     today="2026-06-18") == "past"

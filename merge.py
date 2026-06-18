@@ -1075,6 +1075,28 @@ def _days_since(date_str, today=TODAY):
         return None
 
 
+def emit_auction_status(date_start, date_end, hint, today=TODAY):
+    """The status auctions.json emits for one registry entry: trust the
+    scraper's statusHint when present, else derive from dates — THEN apply a
+    date-sanity override.
+
+    The override matters because statusHint is frozen in the registry from the
+    last scrape that touched the row. A 'live' OR 'upcoming' hint can't outlast
+    the sale's end date: Bonhams recycles its weekly-sale ids, so a long-closed
+    "Weekly Watches" sale stays flagged 'upcoming' forever otherwise (B-78,
+    2026-06-18). Once the end date has passed, the sale is 'past' regardless of
+    the stale hint. Past sales are still emitted (kept indefinitely for the
+    Archive) — this only fixes their bucket, it doesn't drop them.
+    """
+    status = hint if hint in ('live', 'upcoming', 'past') else auction_status(date_start, date_end, today)
+    end = date_end or date_start
+    if end:
+        ds = _days_since(end, today)
+        if ds is not None and ds > 0 and status in ('live', 'upcoming'):
+            status = 'past'
+    return status
+
+
 def process_auctions():
     """Build public/auctions.json from public/auctions_state.json (the
     registry of every auction we've ever seen) — NOT just from the
@@ -1190,14 +1212,10 @@ def process_auctions():
         date_start = entry.get('dateStart') or ''
         date_end   = entry.get('dateEnd') or date_start
 
-        # Status: prefer scraper hint, else derive from dates. Then
-        # date-sanity override (a 'live' hint can't outlast the end).
-        hint = entry.get('statusHint') or ''
-        status = hint if hint in ('live', 'upcoming', 'past') else auction_status(date_start, date_end)
-        if (date_end or date_start):
-            ds = _days_since(date_end or date_start)
-            if ds is not None and ds > 0 and status == 'live':
-                status = 'past'
+        # Status: scraper hint else dates, with a date-sanity override that
+        # demotes a stale 'live'/'upcoming' hint to 'past' once the sale's end
+        # date has passed (B-78). See emit_auction_status.
+        status = emit_auction_status(date_start, date_end, entry.get('statusHint') or '')
 
         auctions.append({
             # Prefer the preserved catalogUrl over lastUrl — catalogUrl
