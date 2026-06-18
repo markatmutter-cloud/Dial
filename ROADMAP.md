@@ -298,12 +298,13 @@ the active mode until the Stop rule triggers.
 Serves **job #1** (auction side) and is the substrate **job #4** draws from.
 Three layers: calendar ✓, live lots ✓, archive ✓ (expanding on demand).
 
-**Follow + email reminders (2026-06-14, Mark). Phase A SHIPPED (#889):** Home
-**"Finishing soon" strip** — followed (hearted) auction lots closing within 3 days,
-featured at the top, signed-in only. "Follow" = the existing heart/Save-catalog
-(no separate signal). **Remaining:** (a) auction-LEVEL follows (saved catalogs)
-showing their catalog tile in the same Finishing-soon space (needs a sale-tile +
-onOpenSale in HomeTab); (b) **Phase B email reminders** — Settings opt-in toggle
+**Follow + email reminders (2026-06-14, Mark). Phase A REMOVED 2026-06-18 (Mark,
+PR #904):** the Home **"Finishing soon" strip** (followed lots ≤3 days) **and** the
+auction-LEVEL **"Auctions you're following"** catalog tiles (both #889) are gone —
+after living with them Mark judged the on-Home "ending soon" surfacing wrong and
+wants **a better approach (design TBD)**. **Do not rebuild the two Home strips
+without that new design.** The **email-reminder** thread below stands on its own
+and is unaffected by the removal. **Remaining:** **Phase B email reminders** — Settings opt-in toggle
 + daily cron (Resend) emailing followed lots ≤3 days / followed auctions on
 publish-open; dedup table. **NEXT SESSION + voiced as Lumé** (Mark 2026-06-15):
 the reminder email reads as a message *from Lumé* (its voice/persona), not a
@@ -331,6 +332,14 @@ they're scraped from a residential machine (Mark's laptop, launchd) into a
 separate `bonhams_lots.json` the frontend folds in by URL key; the Bonhams
 calendar still runs in CI. **Heritage** is parked behind DataDome (developer API
 is the legit path; a residential test is worth trying now the host exists).
+
+- **Bonhams-network affiliated houses (B-78, 2026-06-18, Mark):** Bruun Rasmussen
+  (`bruun-rasmussen.dk`) and Bukowskis (`bukowskis.com`) run watch sales that show
+  on Bonhams' **main** calendar (`/auctions/`) but **not** the watches *department*
+  page our scraper reads, so they're invisible to us. Capturing them = scrape the
+  main calendar for network-house watch sales (keep the off-domain URLs), then
+  eventually per-house lot scrapers on their own platforms. New-source effort; not
+  a quick fix.
 
 - **Residential host unlocks the CI-IP-blocked sources** (B-25, shipped). The
   same path that fixed Bonhams could now reach **Phillips lot-detail + essays**
