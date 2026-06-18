@@ -26595,20 +26595,16 @@
     "model_line": "World Time",
     "published_at": "2026-05-18",
     "reference_no": "2523",
-    "scraped_at": "2026-05-19T12:43:04Z",
+    "scraped_at": "2026-06-18T17:04:31Z",
     "slug": "prototype-2523-patek-philippe-world-time",
     "sold_price_usd": null,
     "source": "hairspring_finds",
     "source_type": "editorial_finds",
     "sub_model": null,
-    "themes": [
-      "reference_profile",
-      "brand_history"
-    ],
     "title": "Prototype 2523 Patek Philippe World Time",
     "updated_at": "2026-05-19",
     "url": "https://hairspring.com/blogs/finds/prototype-2523-patek-philippe-world-time",
-    "word_count": 372
+    "word_count": 371
   },
   "https://hairspring.com/blogs/finds/prototype-dial-22410-universal-geneve-compax": {
     "author": "Erik Gustafson",
@@ -29909,6 +29905,28 @@
     "updated_at": "2023-01-19",
     "url": "https://hairspring.com/blogs/finds/state-of-qatar-16014-rolex-datejust",
     "word_count": 328
+  },
+  "https://hairspring.com/blogs/finds/stealth-111-025-a-lange-sohne-little-lange-1": {
+    "author": "Erik Gustafson",
+    "brand": "A. Lange & Söhne",
+    "case_size": "36mm",
+    "currency": "USD",
+    "excerpt": "The 111.025 is a bit of an enigma: short-lived, widely collected, and in production for a flash. Most estimate total production well under 100 pieces. Most early Little Lange 1 references were produced before 2001–2002, and by the early",
+    "image": "https://hairspring.com/cdn/shop/articles/Little-Lange-1-Stealth-111.025-2.jpg",
+    "model": null,
+    "model_line": null,
+    "published_at": "2026-06-17",
+    "reference_no": null,
+    "scraped_at": "2026-06-18T17:04:30Z",
+    "slug": "stealth-111-025-a-lange-sohne-little-lange-1",
+    "sold_price_usd": 75000,
+    "source": "hairspring_finds",
+    "source_type": "editorial_finds",
+    "sub_model": null,
+    "title": "'Stealth' 111.025 A. Lange & Söhne Little Lange 1",
+    "updated_at": "2026-06-18",
+    "url": "https://hairspring.com/blogs/finds/stealth-111-025-a-lange-sohne-little-lange-1",
+    "word_count": 384
   },
   "https://hairspring.com/blogs/finds/steel-565-patek-philippe-calatrava": {
     "author": "Erik Gustafson",
