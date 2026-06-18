@@ -1,17 +1,6 @@
 {
   "history": [
     {
-      "date": "2026-06-06",
-      "counts": {
-        "Watches of Knightsbridge": 60,
-        "Antiquorum": 93,
-        "Christie's": 138,
-        "Monaco Legend": 2,
-        "Phillips": 154,
-        "Sotheby's": 1
-      }
-    },
-    {
       "date": "2026-06-07",
       "counts": {
         "Marteau & Co": 33,
@@ -149,6 +138,16 @@
         "Monaco Legend": 2,
         "Phillips": 1,
         "Sotheby's": 620
+      }
+    },
+    {
+      "date": "2026-06-18",
+      "counts": {
+        "Antiquorum": 249,
+        "Christie's": 85,
+        "Monaco Legend": 2,
+        "Phillips": 1,
+        "Sotheby's": 261
       }
     }
   ]
