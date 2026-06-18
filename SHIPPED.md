@@ -605,6 +605,20 @@ within each section roughly last.
 
 ## Epic 10 — Lumé (AI spine)
 
+- **2026-06-18 — Lumé canvas: prompt-driven → guided editorial session (#894–#901).** Built the Lumé
+  tab from a static page into a morphing canvas: prompt-driven view router + unified in-canvas search
+  over listings/sold/auctions (#894/#895), warm designed landing with greeting + hero + live counts
+  (#896), desktop two-pane content/chat-rail (#897), a perceptive hook library that turns real data
+  into one named "it-knew-that" opener (#898), warmer chat-rail cold open + saved-search grammar fix
+  (#899). Then re-cut to Mark's revised spec (#901): ONE "Start here" lead with visible evidence,
+  curated shelves (Worth your attention / Useful comps / Rabbit holes) over feature-category views,
+  grounded reason chips, demoted counts, and a contextual session-guide rail ("Ask Lumé about this
+  view"). New: lumeHooks/lumeReasons/lumeColdOpen + LumeLead/LumeModule/LumeReasonChip.
+- **2026-06-18 — Lumé model-routing A/B switch (#900, #902→#903).** `LUME_FORCE_SMART_MODEL` env switch
+  + `chooseModel`/`MODEL_FAST`/`MODEL_SMART` in api/lume_reference.js (SDK-free so jest can test it) to
+  isolate weak-chat-feel as Haiku-tier vs prompt-overload. #902 temporarily forced chat to Opus for a
+  live A/B; reverted in #903 (chat is back on the Haiku-default router).
+
 - **2026-06-16 — Lumé full-page surface (#871–#873, #891, #893).** A real **Lumé tab** (journey
   launchers + inline chat) over a shared `LumeConversation` core extracted from the bubble; bubble
   gained desktop **expand-to-fullscreen**; shared-surface link gets a top-right × + stays open on

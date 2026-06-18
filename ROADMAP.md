@@ -690,20 +690,29 @@ perceptive**: a personal greeting with **named, behaviour-aware hooks** ("That S
 have liked sold in a day") + a casual gap voice ("Hey Mark, it's been a few days…"), the **top
 ~3 journeys promoted to hero cards with content thumbnails**, and the rest as **live-count cards**.
 Adaptive layer (cheap local usage signals): **context-aware journey ordering** (auction-soon /
-week-away / same-day / frequent-return) + the evolving cold open. **Shipped this session: #894
-(canvas) · #895 (unified in-canvas search: listings/sold/auctions) · #896 (warm landing) · #897
-(two-pane)** + the perceptive-voice + multi-hero PR. **End-state placement:** a full-screen,
-full-bleed takeover summoned from the bottom-left launcher (supersedes the "default landing tab"
-idea). Design bible: **docs/LUME_LANDING_DESIGN.md**. *Queued:* search over **articles + reference
-guides** · conversational **dossier/compare** panels · new-data journeys (**saved-search deltas**,
-curated **auctions-of-note**) · durable usage profile (pillar 4) → LLM-personalised opener.
+week-away / same-day / frequent-return) + the evolving cold open. **Shipped (2026-06-16→18): #894
+(canvas) · #895 (in-canvas search) · #896 (warm landing) · #897 (two-pane) · #898 (perceptive hooks
++ multi-hero) · #899 (warm rail cold open + grammar fix) · #900 (model-routing A/B switch).** Then
+**re-cut to a guided editorial session (#901, Mark's revised spec):** the canvas read as a feature
+dashboard + chat rail, so it was reshaped into ONE `START HERE` lead with **visible evidence** →
+**curated shelves** (Worth your attention / Useful comps / Rabbit holes, not feature-category views)
+with **grounded reason chips** + **demoted counts** → a **contextual session-guide rail** ("Ask Lumé
+about this view", no greeting repeat). **End-state placement:** a full-screen, full-bleed takeover
+summoned from the bottom-left launcher (supersedes the "default landing tab" idea). Design bible:
+**docs/LUME_LANDING_DESIGN.md**. *Queued:* search over **articles + reference guides** ·
+conversational **dossier/compare** panels · new-data journeys (**saved-search deltas**, curated
+**auctions-of-note**) · durable usage profile (pillar 4) → LLM-personalised opener. *Diagnosed
+chat-quality levers (deferred):* prompt trim + chat-renders-cards-not-link-lists; weak feel is
+Haiku-tier × prompt-overload, isolated via the #900 switch (#902 forced Opus for a live A/B,
+reverted #903).
 
 **Thread — swappable LLM engine (2026-06-16, Mark).** Make the chat backend **provider-pluggable**
 (Claude default, **OpenAI/ChatGPT swappable**) as a hedge. Backend job in `api/chat.js`: one
 provider interface behind an env switch + an OpenAI client; the wrinkle is **tool-calling differs**
 between Anthropic and OpenAI, so the tool layer needs a small translation shim (+ the system-prompt
-+ web-search wiring re-mapped). Not started. NB voice issues are a prompt fix first ([[feedback_lume_voice_rules]]),
-not a reason to switch; this is about optionality, not fixing Lumé.
++ web-search wiring re-mapped). Not started, **and deliberately parked (Mark, 2026-06-18):** do the
+model A/B + design pass first; don't jump to the provider swap. NB voice issues are a prompt fix
+first ([[feedback_lume_voice_rules]]), not a reason to switch; this is about optionality, not fixing Lumé.
 
 **Six capability pillars** (KNOWS · DOES · KNOWS-YOU · TAKES-YOU · NUDGES):
 1. **Knowledge — references & watches.** Built: ref index + 7 model-line deep-dives + lexicon P1. Next: attribute-level knowledge (**B-45**), more synthesis nodes, fact-vs-opinion tagging per claim.
