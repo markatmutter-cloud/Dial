@@ -5,6 +5,7 @@ import { dispatchAction, resolveItemByUrl } from "./ActionBus";
 import { registerLumeOpener } from "./LumeBus";
 import { LumeIcon } from "./LumeIcon";
 import { useLumeChat, LumeConversation, describeItem, NAME, GREETING, SUGGESTIONS } from "./LumeConversation";
+import LumeCanvas from "./LumeCanvas";
 
 // renderInline now lives with the conversation core; re-export it so the
 // existing ChatBubbleHost.test.jsx import keeps working.
@@ -15,8 +16,10 @@ export { renderInline } from "./LumeConversation";
 // Mounts ONCE at the top of the app next to <ConfirmHost/> (App.js), as a
 // sibling of the shells — its surface state lives here, App.js gains no new
 // hooks (no React #310 risk) and no shellProps. The conversation itself (state +
-// message/composer render) is the shared LumeConversation, so the bubble and the
-// inline LumeTab can't drift. Theme inherits via :root CSS vars (portal → body).
+// message/composer render) is the shared LumeConversation. On desktop the ⤢
+// expanded bubble mounts the full LumeCanvas (the guided-session design that used
+// to be the standalone Lumé tab, re-homed here 2026-06-18); the corner frame and
+// mobile sheet stay the bare conversation. Theme inherits via :root CSS vars (portal → body).
 //
 // Signed-OUT users see the launcher too (B-43) — tapping it prompts sign-in.
 // Signed-in: the grounded chat. The cold-open VOICE + grounding live server-side
@@ -28,7 +31,15 @@ export { renderInline } from "./LumeConversation";
 const Z = 1400; // below confirm/overlay modals, above page content
 const OPENED_KEY = "lume_opened_v1";
 
-export function ChatBubbleHost({ seedItem = null }) {
+export function ChatBubbleHost({
+  seedItem = null,
+  // Feed data for the desktop EXPANDED canvas (the old Lumé-tab design, re-homed
+  // here 2026-06-18). Only the ⤢-expanded desktop bubble mounts LumeCanvas; the
+  // corner frame and mobile sheet stay the bare conversation, so these are unused
+  // until the user expands.
+  liveItems = [], auctionLotItems = [], articles = [], watchlist = {},
+  savedSearches = [], cardCtx = {},
+}) {
   // seedItem (Mark 2026-06-01): on the share-receive surfaces the floating
   // launcher STAYS, but it pops out an "Ask Lumé" callout and opens SEEDED with
   // the shared item (so the chat is about what's on screen, not blank). Off the
@@ -253,18 +264,40 @@ export function ChatBubbleHost({ seedItem = null }) {
       </div>
     );
   } else {
-    // Signed-in: the full chat (header + the shared conversation core).
+    // Signed-in. The corner frame + mobile sheet stay the bare conversation.
+    // Desktop EXPANDED mounts the full guided-session canvas (the re-homed
+    // Lumé-tab design: greeting + lead + shelves + morphing results, with the
+    // conversation as the right rail). Same `chat` instance flows through both,
+    // so expanding/collapsing keeps the thread. The canvas owns its own scroll,
+    // so it slots into a flex:1 body below the shared header.
     node = (
       <div style={{ ...panelFrame, ...(isMobile || isExpanded ? {} : { height: "min(560px, calc(100vh - 120px))" }) }} role="dialog" aria-label={NAME}>
         {header}
-        <LumeConversation
-          chat={chat}
-          onOpenItem={openItemInApp}
-          onActionResult={(a, res) => { if (res && res.ok) setOpen(false); }}
-          isMobile={isMobile}
-          greeting={GREETING}
-          suggestions={SUGGESTIONS}
-        />
+        {isExpanded ? (
+          <div style={{ flex: 1, minHeight: 0, display: "flex" }}>
+            <LumeCanvas
+              chat={chat}
+              user={user}
+              isMobile={false}
+              onOpenItem={openItemInApp}
+              liveItems={liveItems}
+              auctionLotItems={auctionLotItems}
+              articles={articles}
+              watchlist={watchlist}
+              savedSearches={savedSearches}
+              cardCtx={cardCtx}
+            />
+          </div>
+        ) : (
+          <LumeConversation
+            chat={chat}
+            onOpenItem={openItemInApp}
+            onActionResult={(a, res) => { if (res && res.ok) setOpen(false); }}
+            isMobile={isMobile}
+            greeting={GREETING}
+            suggestions={SUGGESTIONS}
+          />
+        )}
       </div>
     );
   }

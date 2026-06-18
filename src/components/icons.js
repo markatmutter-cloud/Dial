@@ -57,10 +57,6 @@ export function TabIcon({ kind }) {
   if (kind === "searches") return (
     <svg {...props}><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
   );
-  if (kind === "lume") return (
-    // Four-point sparkle — Lumé's glow, the AI conversation tab.
-    <svg {...props}><path d="M12 3l1.9 5.6L19.5 10l-5.6 1.9L12 17l-1.9-5.1L4.5 10l5.6-1.4z"/></svg>
-  );
   if (kind === "watchlist") return (
     // Bookmark glyph (2026-05-09). Pre-Bundle-2A this tab was a heart
     // — fitting when the tab WAS hearts. Now Watchlists holds Lists,

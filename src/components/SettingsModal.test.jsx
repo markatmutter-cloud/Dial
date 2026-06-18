@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 
 // SettingsModal pulls in LumeMemorySettings → supabase.useAuth. Mock
 // the supabase module so the modal renders without a network call.
@@ -46,24 +46,10 @@ describe("SettingsModal", () => {
     expect(screen.getByRole("button", { name: /EUR/ })).toBeInTheDocument();
   });
 
-  test("no 'Make Lumé my home' toggle when signed out", () => {
-    render(<SettingsModal open={true} {...baseProps} />);
+  test("the default-landing 'Make Lumé my home' preference is gone (removed with the Lumé tab 2026-06-18)", () => {
+    render(<SettingsModal open={true} {...baseProps} user={{ id: "u1" }} />);
     expect(screen.queryByText("Make Lumé my home")).not.toBeInTheDocument();
-  });
-
-  test("signed-in: the default-landing toggle reflects + flips the preference", () => {
-    const setDefaultLandingTab = jest.fn();
-    render(<SettingsModal open={true} {...baseProps} user={{ id: "u1" }}
-      defaultLandingTab={null} setDefaultLandingTab={setDefaultLandingTab} />);
-    const btn = screen.getByText("Make Lumé my home");
-    fireEvent.click(btn);
-    expect(setDefaultLandingTab).toHaveBeenCalledWith("lume");
-  });
-
-  test("signed-in: toggle shows the on-state when Lumé is home", () => {
-    render(<SettingsModal open={true} {...baseProps} user={{ id: "u1" }}
-      defaultLandingTab="lume" setDefaultLandingTab={() => {}} />);
-    expect(screen.getByText("✓ Lumé is your home")).toBeInTheDocument();
+    expect(screen.queryByText("Where the app opens")).not.toBeInTheDocument();
   });
 
   test("renders the mobile column picker (1/2/3) when isMobile", () => {

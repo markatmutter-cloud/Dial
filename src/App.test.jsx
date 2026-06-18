@@ -91,8 +91,6 @@ jest.mock("./supabase", () => {
     useUserSettings: () => ({
       primaryCurrency: "USD",
       setPrimaryCurrency: () => {},
-      defaultLandingTab: null,
-      setDefaultLandingTab: () => {},
       loaded: true,
     }),
     useUserProfile: () => ({

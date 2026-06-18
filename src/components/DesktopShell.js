@@ -67,7 +67,6 @@ export function DesktopShell(props) {
     catalogBarJSX,
     catalogActionRowJSX,
     watchboxTabJSX,
-    lumeTabJSX,
     referencesTabJSX, collectionsTabJSX,
     lotMigrationBannerJSX,
     userLimitBannerJSX,
@@ -806,7 +805,6 @@ export function DesktopShell(props) {
                 : tab === "references" ? referencesTabJSX
                 : tab === "admin" ? adminTabJSX
                 : tab === "watchbox" ? watchboxTabJSX
-                : tab === "lume" ? lumeTabJSX
                 : watchlistTabJSX}
             </>
           )}
