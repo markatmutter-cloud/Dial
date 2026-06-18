@@ -3525,7 +3525,15 @@ export default function Watchlist() {
   // that warning. Origin: 2026-05-11 hotfix after PR #223 shipped
   // with them too deep and white-screened production.)
   const homeRecentAdded = useMemo(() => {
-    const live = items.filter(i => !i.sold && !hidden[i.id] && !adminHidden.has(i.id) && !homeHidden.has(i.id));
+    // Exclude `backfilled` items: on a newly-onboarded source the whole
+    // catalog lands at once with firstSeen=the-day-we-added-the-source, NOT
+    // the day each listing appeared. Sorting those by firstSeen floods
+    // "Recently added" with a back-catalog that isn't genuinely new (Menta,
+    // 2026-06-18 — they showed on Home but not at the top of "View all").
+    // The Listings live feed already excludes backfilled from "new" + sorts
+    // it last (allFiltered, `!i.backfilled`); mirror that here so the strip
+    // and the View-all destination agree.
+    const live = items.filter(i => !i.sold && !i.backfilled && !hidden[i.id] && !adminHidden.has(i.id) && !homeHidden.has(i.id));
     const sortKey = (i) => i.firstSeen || i.scrapedAt || "";
     return [...live].sort((a, b) => (sortKey(b) || "").localeCompare(sortKey(a) || "")).slice(0, 20);
   }, [items, hidden, adminHidden, homeHidden]);
