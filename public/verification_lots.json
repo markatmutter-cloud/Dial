@@ -1,22 +1,7 @@
 {
-  "date": "2026-06-18",
-  "updated_at": "2026-06-18T10:19:56+00:00",
-  "alerts": [
-    {
-      "house": "Marteau & Co",
-      "level": "ERROR",
-      "today": 0,
-      "previous": 33,
-      "note": "house absent from today's lot scrape (was present yesterday)"
-    },
-    {
-      "house": "Phillips",
-      "level": "WARN",
-      "today": 1,
-      "median": 76,
-      "note": "count is 1% of recent median (1 vs ~76)"
-    }
-  ],
+  "date": "2026-06-19",
+  "updated_at": "2026-06-19T10:25:50+00:00",
+  "alerts": [],
   "counts": {
     "Antiquorum": 249,
     "Christie's": 85,
