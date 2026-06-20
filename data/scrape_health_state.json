@@ -1,18 +1,1 @@
-{
-  "maunderwatches": {
-    "misses": 2,
-    "reason": "no CSV produced this run"
-  },
-  "pascalkarp": {
-    "misses": 2,
-    "reason": "no CSV produced this run"
-  },
-  "watchesoflancashire": {
-    "misses": 2,
-    "reason": "no CSV produced this run"
-  },
-  "wok": {
-    "misses": 2,
-    "reason": "no CSV produced this run"
-  }
-}
+{}
