@@ -1,50 +1,18 @@
 {
-  "analogshift": {
-    "misses": 1,
-    "reason": "no CSV produced this run"
-  },
-  "ccny": {
-    "misses": 1,
-    "reason": "no CSV produced this run"
-  },
-  "craftandtailored": {
-    "misses": 1,
-    "reason": "no CSV produced this run"
-  },
-  "falco": {
-    "misses": 1,
-    "reason": "no CSV produced this run"
-  },
-  "hairspring": {
-    "misses": 1,
-    "reason": "no CSV produced this run"
-  },
   "maunderwatches": {
-    "misses": 1,
-    "reason": "no CSV produced this run"
-  },
-  "oliverandclarke": {
-    "misses": 1,
+    "misses": 2,
     "reason": "no CSV produced this run"
   },
   "pascalkarp": {
-    "misses": 1,
-    "reason": "no CSV produced this run"
-  },
-  "romainrea": {
-    "misses": 1,
-    "reason": "no CSV produced this run"
-  },
-  "tokant": {
-    "misses": 1,
+    "misses": 2,
     "reason": "no CSV produced this run"
   },
   "watchesoflancashire": {
-    "misses": 1,
+    "misses": 2,
     "reason": "no CSV produced this run"
   },
   "wok": {
-    "misses": 1,
+    "misses": 2,
     "reason": "no CSV produced this run"
   }
 }
