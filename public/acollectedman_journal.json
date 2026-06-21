@@ -13,6 +13,9 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history"
+    ],
     "title": "A brief history of De Bethune",
     "updated_at": "2026-01-27",
     "url": "https://www.acollectedman.com/blogs/journal/a-brief-history-of-de-bethune",
@@ -32,6 +35,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "vintage_care"
+    ],
     "title": "A collector's guide: Patek Philippe 3800 Nautilus",
     "updated_at": "2026-02-05",
     "url": "https://www.acollectedman.com/blogs/journal/a-collector-s-guide-to-the-nautilus-3800",
@@ -51,6 +58,11 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "vintage_care",
+      "market_commentary"
+    ],
     "title": "A collector's guide: The Patek Philippe 3970",
     "updated_at": "2026-02-05",
     "url": "https://www.acollectedman.com/blogs/journal/a-collectors-guide-the-3970",
@@ -70,6 +82,11 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history",
+      "vintage_care"
+    ],
     "title": "A collector's guide: Early F.P. Journe, chapter two",
     "updated_at": "2026-01-27",
     "url": "https://www.acollectedman.com/blogs/journal/a-collectors-guide-to-early-f-p-journe",
@@ -89,6 +106,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "market_commentary",
+      "collecting_philosophy"
+    ],
     "title": "A year in watches: 2021",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/a-year-in-watches-2021",
@@ -108,6 +129,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "military",
+      "brand_history"
+    ],
     "title": "What came after the Dirty Dozen?",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/after-dirty-dozen",
@@ -127,6 +152,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "collecting_philosophy"
+    ],
     "title": "An afternoon with Daniel Roth",
     "updated_at": "2026-01-27",
     "url": "https://www.acollectedman.com/blogs/journal/an-afternoon-with-daniel-roth",
@@ -169,6 +198,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "community_ethics"
+    ],
     "title": "An afternoon with Luca Soprana",
     "updated_at": "2025-12-11",
     "url": "https://www.acollectedman.com/blogs/journal/an-afternoon-with-luca-soprana",
@@ -188,6 +221,11 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "design",
+      "brand_history",
+      "collecting_philosophy"
+    ],
     "title": "An honest take on integrated bracelet sports watches",
     "updated_at": "2023-08-16",
     "url": "https://www.acollectedman.com/blogs/journal/an-honest-take-on-integrated-bracelet-watches",
@@ -207,6 +245,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "collector_mindset"
+    ],
     "title": "Understanding Andy Warhol as a collector",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/andy-warhol-collector",
@@ -226,6 +268,9 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy"
+    ],
     "title": "Can we compare art and watches?",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/art-and-watches",
@@ -245,6 +290,9 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "design"
+    ],
     "title": "The art of dial finishing",
     "updated_at": "2026-03-19",
     "url": "https://www.acollectedman.com/blogs/journal/art-dial-finishing",
@@ -264,6 +312,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "collecting_philosophy"
+    ],
     "title": "Becoming Rexhep Rexhepi",
     "updated_at": "2026-02-13",
     "url": "https://www.acollectedman.com/blogs/journal/becoming-rexhepi-rexhepi",
@@ -283,6 +335,7 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [],
     "title": "Our advice for better watch photography",
     "updated_at": "2026-01-27",
     "url": "https://www.acollectedman.com/blogs/journal/better-watch-photography",
@@ -302,6 +355,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "design"
+    ],
     "title": "Borgel – The master casemaker you haven’t heard of",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/borgel-casemaker",
@@ -321,6 +378,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "reference_profile"
+    ],
     "title": "A brief history of Urban Jürgensen",
     "updated_at": "2025-06-17",
     "url": "https://www.acollectedman.com/blogs/journal/brief-history-urban-jurgensen",
@@ -340,6 +401,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "market_commentary",
+      "collector_mindset"
+    ],
     "title": "Can and should watches be investments ?",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/can-watches-be-investments",
@@ -359,6 +424,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "complications",
+      "brand_history"
+    ],
     "title": "Five ways watchmakers chase accuracy",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/chasing-accuracy",
@@ -378,6 +447,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "market_commentary"
+    ],
     "title": "How collaborations shaped the watch world",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/collaborations-watchmaking",
@@ -397,6 +470,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "design",
+      "brand_history"
+    ],
     "title": "A collector's guide: Asymmetrical watches",
     "updated_at": "2026-02-05",
     "url": "https://www.acollectedman.com/blogs/journal/collector-guide-asymmetrical-watches",
@@ -416,6 +493,11 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "design",
+      "brand_history"
+    ],
     "title": "A collector’s guide: The Audemars Piguet Royal Oak ref. 14790",
     "updated_at": "2026-02-05",
     "url": "https://www.acollectedman.com/blogs/journal/collectors-guide-audemars-piguet-14790",
@@ -435,6 +517,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "reference_profile"
+    ],
     "title": "A collectors' guide to Urwerk : Part one",
     "updated_at": "2025-12-11",
     "url": "https://www.acollectedman.com/blogs/journal/collectors-guide-urwerk-part-one",
@@ -454,6 +540,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history"
+    ],
     "title": "A collectors' guide to Urwerk: Part two",
     "updated_at": "2025-12-11",
     "url": "https://www.acollectedman.com/blogs/journal/collectors-guide-urwerk-part-two",
@@ -473,6 +563,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "design",
+      "brand_history"
+    ],
     "title": "In practice: Enamel dials at Émailleurs de la Cité",
     "updated_at": "2026-01-28",
     "url": "https://www.acollectedman.com/blogs/journal/craft-contemporain-enamel-dials",
@@ -492,6 +586,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "design"
+    ],
     "title": "The daring creations Of Cartier London",
     "updated_at": "2026-02-05",
     "url": "https://www.acollectedman.com/blogs/journal/daring-creations-cartier-london",
@@ -511,6 +609,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history"
+    ],
     "title": "A collector's guide: The Datograph",
     "updated_at": "2026-02-05",
     "url": "https://www.acollectedman.com/blogs/journal/datograph-collectors-guide",
@@ -530,6 +632,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "collecting_philosophy"
+    ],
     "title": "Derek Pratt: The forgotten watchmaker",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/derek-pratt-the-forgotten-watchmaker",
@@ -549,6 +655,9 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history"
+    ],
     "title": "Disciplines that influenced watchmaking",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/disciplines-influenced-watchmaking",
@@ -568,6 +677,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "design"
+    ],
     "title": "Discovering Bernhard Zwinz",
     "updated_at": "2023-10-17",
     "url": "https://www.acollectedman.com/blogs/journal/discovering-bernhard-zwinz",
@@ -587,6 +700,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "collecting_philosophy"
+    ],
     "title": "An exploration of double-signed watches",
     "updated_at": "2023-08-04",
     "url": "https://www.acollectedman.com/blogs/journal/double-signed-watches",
@@ -606,6 +723,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "life_lessons"
+    ],
     "title": "Downtime: Nigel Cabourn",
     "updated_at": "2023-08-04",
     "url": "https://www.acollectedman.com/blogs/journal/downtime-nigel-cabourn",
@@ -625,6 +746,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "celebrity",
+      "collecting_philosophy"
+    ],
     "title": "Downtime: Jack Peñate",
     "updated_at": "2023-08-10",
     "url": "https://www.acollectedman.com/blogs/journal/downtime-with-jack-penate",
@@ -644,6 +769,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "market_commentary"
+    ],
     "title": "The early days of wristwatch collecting",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/early-days-wristwatch-collecting",
@@ -663,6 +792,9 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "market_commentary"
+    ],
     "title": "The economics of brands in the secondary market",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/economics-brands-secondary-market",
@@ -682,6 +814,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "celebrity"
+    ],
     "title": "The enigmatic Khanjar watches of the Sultan of Oman",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/enigmatic-khanjar-watches-sultan-of-oman",
@@ -701,6 +837,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "design"
+    ],
     "title": "The evolving craft of British watchmaking",
     "updated_at": "2026-01-27",
     "url": "https://www.acollectedman.com/blogs/journal/evolving-craft-of-british-watchmaking",
@@ -720,6 +860,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collector_mindset",
+      "community_ethics"
+    ],
     "title": "How five collectors under-30 approach watches",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/five-collectors-under-30",
@@ -739,6 +883,7 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [],
     "title": "Five iconic chairs and the people who sit in them",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/five-iconic-chairs",
@@ -758,6 +903,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "complications",
+      "brand_history"
+    ],
     "title": "Five movements that changed the world – part I",
     "updated_at": "2026-02-05",
     "url": "https://www.acollectedman.com/blogs/journal/five-movements-changed-world-part-i",
@@ -777,6 +926,9 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history"
+    ],
     "title": "Five places that changed watchmaking",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/five-places-that-changed-watchmaking",
@@ -796,6 +948,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "complications",
+      "brand_history"
+    ],
     "title": "Five watchmakers pick their favourite movement",
     "updated_at": "2023-08-08",
     "url": "https://www.acollectedman.com/blogs/journal/five-watchmakers-favourite-movement",
@@ -815,6 +971,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "complications",
+      "brand_history"
+    ],
     "title": "Five watchmakers pick their favourite movement - Part II",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/five-watchmakers-favourite-movement-part-ii",
@@ -834,6 +994,9 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "market_commentary"
+    ],
     "title": "What is the future of watch retail?",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/future-of-watch-retail",
@@ -853,6 +1016,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "community_ethics"
+    ],
     "title": "An introduction to gem-setting with Pierre Salanitro",
     "updated_at": "2026-01-27",
     "url": "https://www.acollectedman.com/blogs/journal/gem-setting-pierre-salanitro",
@@ -872,6 +1039,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "design"
+    ],
     "title": "Gérald Genta: Beyond the Royal Oak and Nautilus",
     "updated_at": "2023-09-21",
     "url": "https://www.acollectedman.com/blogs/journal/gentas-designs",
@@ -891,6 +1062,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "brand_history"
+    ],
     "title": "George Daniels the collector",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/george-daniels-collector",
@@ -910,6 +1085,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "reference_profile"
+    ],
     "title": "George Margetts - The unknown watchmaker who inspired George Daniels",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/george-margetts",
@@ -929,6 +1108,9 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "design"
+    ],
     "title": "What makes gratté finishing so special?",
     "updated_at": "2025-12-11",
     "url": "https://www.acollectedman.com/blogs/journal/gratte-finishing-petermann-bedat",
@@ -948,6 +1130,9 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history"
+    ],
     "title": "The life and career of Günter Blümlein",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/gunter-blumlein-life-career",
@@ -967,6 +1152,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "community_ethics"
+    ],
     "title": "The hidden names behind movements",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/hidden-names",
@@ -986,6 +1175,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "design"
+    ],
     "title": "The history of A. Lange & Söhne design with Anthony de Haas",
     "updated_at": "2026-01-27",
     "url": "https://www.acollectedman.com/blogs/journal/history-a-lange-sohne-anthony-de-hass",
@@ -1005,6 +1198,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history"
+    ],
     "title": "How the reverso flipped its script",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/history-jaeger-lecoultre-reverso",
@@ -1024,6 +1221,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "complications",
+      "design"
+    ],
     "title": "In Practice: Making and tuning gongs with Hazemann & Monnin",
     "updated_at": "2025-12-11",
     "url": "https://www.acollectedman.com/blogs/journal/hm-gongs",
@@ -1043,6 +1244,9 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history"
+    ],
     "title": "How Hermès became the masters of leather",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/how-hermes-became-the-masters-of-leather",
@@ -1062,6 +1266,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "design",
+      "brand_history"
+    ],
     "title": "Gone fishing: How the salmon dial came to be",
     "updated_at": "2026-02-05",
     "url": "https://www.acollectedman.com/blogs/journal/how-salmon-dial-came-to-be",
@@ -1081,6 +1289,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "design",
+      "brand_history"
+    ],
     "title": "Ikepod: Design and the art of time",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/ikepod-design",
@@ -1100,6 +1312,11 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "complications",
+      "design"
+    ],
     "title": "In Focus: Haldimann H1 Flying Tourbillon",
     "updated_at": "2025-05-13",
     "url": "https://www.acollectedman.com/blogs/journal/in-focus-haldimann-h1-flying-tourbillon",
@@ -1119,6 +1336,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "brand_history"
+    ],
     "title": "What is independent watchmaking?",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/independent-watchmaking",
@@ -1138,6 +1359,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "brand_history"
+    ],
     "title": "Inspirations behind today’s independent watchmakers",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/inspirations-independent-watchmakers",
@@ -1157,6 +1382,7 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [],
     "title": "Interview: Alex Innes – Head of coach-build design for Rolls-Royce",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/interview-alex-innes",
@@ -1176,6 +1402,9 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history"
+    ],
     "title": "Interview: Andrea Zagato",
     "updated_at": "2023-08-07",
     "url": "https://www.acollectedman.com/blogs/journal/interview-andrea-zagato",
@@ -1195,6 +1424,7 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [],
     "title": "Interview: Buzz Tang",
     "updated_at": "2023-08-11",
     "url": "https://www.acollectedman.com/blogs/journal/interview-buzz-tang-1",
@@ -1214,6 +1444,7 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [],
     "title": "Interview: Claudio Silvestrin",
     "updated_at": "2023-08-07",
     "url": "https://www.acollectedman.com/blogs/journal/interview-claudio-silvestrin",
@@ -1233,6 +1464,7 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [],
     "title": "Interview: Dafydd Jones",
     "updated_at": "2023-08-11",
     "url": "https://www.acollectedman.com/blogs/journal/interview-dafydd-jones",
@@ -1252,6 +1484,7 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [],
     "title": "Interview: David Coggins",
     "updated_at": "2023-08-07",
     "url": "https://www.acollectedman.com/blogs/journal/interview-david-coggins",
@@ -1271,6 +1504,7 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [],
     "title": "Interview: David Rockwell",
     "updated_at": "2023-09-12",
     "url": "https://www.acollectedman.com/blogs/journal/interview-david-rockwell",
@@ -1290,6 +1524,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collector_mindset",
+      "community_ethics"
+    ],
     "title": "A closer look at collecting with Doo Sik Lew",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/interview-doo-sik-lew",
@@ -1309,6 +1547,7 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [],
     "title": "Interview: Ed Tsuwaki",
     "updated_at": "2023-08-17",
     "url": "https://www.acollectedman.com/blogs/journal/interview-ed-tsuwaki",
@@ -1328,6 +1567,9 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history"
+    ],
     "title": "Interview: François-Henry Bennahmias CEO of Audemars Piguet",
     "updated_at": "2023-08-08",
     "url": "https://www.acollectedman.com/blogs/journal/interview-francois-henry-bennahmias",
@@ -1347,6 +1589,9 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy"
+    ],
     "title": "The philosophies of Guy Salter",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/interview-guy-salter",
@@ -1366,6 +1611,9 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "community_ethics"
+    ],
     "title": "Interview: Han Ates",
     "updated_at": "2023-08-07",
     "url": "https://www.acollectedman.com/blogs/journal/interview-han-ates",
@@ -1385,6 +1633,7 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [],
     "title": "The philosophies of Hans Ulrich Obrist",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/interview-hans-ulrich-obrist",
@@ -1404,6 +1653,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "collecting_philosophy"
+    ],
     "title": "The Morteau Makers: What’s next for Alexandre Hazemann & Victor Monnin?",
     "updated_at": "2025-12-11",
     "url": "https://www.acollectedman.com/blogs/journal/interview-hazemann-and-monnin",
@@ -1423,6 +1676,7 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [],
     "title": "Interview: Hiroyuki Nagatomi",
     "updated_at": "2023-08-07",
     "url": "https://www.acollectedman.com/blogs/journal/interview-hiroyuki-nagatomi",
@@ -1442,6 +1696,7 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [],
     "title": "Interview: Hosanna Swee, photographer and Leica ambassador",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/interview-hosanna-swee-photographer-and-leica-ambassador",
@@ -1461,6 +1716,7 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [],
     "title": "Interview: Jason Atherton",
     "updated_at": "2023-08-07",
     "url": "https://www.acollectedman.com/blogs/journal/interview-jason-atherton",
@@ -1480,6 +1736,7 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [],
     "title": "Interview: Jason Jules",
     "updated_at": "2023-09-12",
     "url": "https://www.acollectedman.com/blogs/journal/interview-jason-jules",
@@ -1499,6 +1756,7 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [],
     "title": "Interview: Jaume Plensa",
     "updated_at": "2023-08-21",
     "url": "https://www.acollectedman.com/blogs/journal/interview-jaume-plensa",
@@ -1518,6 +1776,7 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [],
     "title": "The philosophies of John Pawson",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/interview-john-pawson",
@@ -1537,6 +1796,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "community_ethics"
+    ],
     "title": "Interview: Nicholas Biebuyck",
     "updated_at": "2023-08-08",
     "url": "https://www.acollectedman.com/blogs/journal/interview-nicholas-biebuyck",
@@ -1556,6 +1819,7 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [],
     "title": "Interview: Oliver Spencer",
     "updated_at": "2023-08-11",
     "url": "https://www.acollectedman.com/blogs/journal/interview-oliver-spencer",
@@ -1575,6 +1839,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collector_mindset",
+      "community_ethics"
+    ],
     "title": "A closer look at collecting with Osama Sendi (The Journe Guy)",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/interview-osama-sendi",
@@ -1594,6 +1862,7 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [],
     "title": "Interview: Patrick Johnson",
     "updated_at": "2023-09-12",
     "url": "https://www.acollectedman.com/blogs/journal/interview-patrick-johnson",
@@ -1613,6 +1882,7 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [],
     "title": "Interview: Rankin",
     "updated_at": "2023-08-07",
     "url": "https://www.acollectedman.com/blogs/journal/interview-rankin",
@@ -1632,6 +1902,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "design"
+    ],
     "title": "An afternoon with Raúl Pagès",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/interview-raul-pages",
@@ -1651,6 +1925,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "design"
+    ],
     "title": "An afternoon with Rémi Maillat",
     "updated_at": "2025-12-11",
     "url": "https://www.acollectedman.com/blogs/journal/interview-remi-maillat",
@@ -1670,6 +1948,7 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [],
     "title": "The philosophies of Ross Lovegrove",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/interview-ross-lovegrove",
@@ -1689,6 +1968,7 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [],
     "title": "Interview: Shinobu Namae",
     "updated_at": "2023-09-12",
     "url": "https://www.acollectedman.com/blogs/journal/interview-shinobu-namae",
@@ -1708,6 +1988,7 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [],
     "title": "Obsessions: Menswear with Simon Compton",
     "updated_at": "2023-08-10",
     "url": "https://www.acollectedman.com/blogs/journal/interview-simon-crompton",
@@ -1727,6 +2008,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "collecting_philosophy"
+    ],
     "title": "The philosophies of Stephen Forsey",
     "updated_at": "2025-12-11",
     "url": "https://www.acollectedman.com/blogs/journal/interview-stephen-forsey",
@@ -1746,6 +2031,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "collecting_philosophy"
+    ],
     "title": "The Morteau Makers: What drives Théo Auffret?",
     "updated_at": "2024-09-13",
     "url": "https://www.acollectedman.com/blogs/journal/interview-theo-auffret",
@@ -1765,6 +2054,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "community_ethics",
+      "collecting_philosophy"
+    ],
     "title": "A closer look at collecting in Singapore with Tom Chng",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/interview-tom-chng",
@@ -1784,6 +2077,7 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [],
     "title": "The philosophies of Tom Dixon",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/interview-tom-dixon",
@@ -1803,6 +2097,7 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [],
     "title": "Interview: Torafu Architects",
     "updated_at": "2023-08-07",
     "url": "https://www.acollectedman.com/blogs/journal/interview-torafu-architects",
@@ -1822,6 +2117,7 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [],
     "title": "Interview: Vicky Cheng",
     "updated_at": "2023-08-11",
     "url": "https://www.acollectedman.com/blogs/journal/interview-vicky-cheng",
@@ -1841,6 +2137,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "community_ethics",
+      "collecting_philosophy"
+    ],
     "title": "Interview with Aurel Bacs",
     "updated_at": "2023-08-18",
     "url": "https://www.acollectedman.com/blogs/journal/interview-with-aurel-bacs",
@@ -1860,6 +2160,7 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [],
     "title": "Interview: Christian Kimber",
     "updated_at": "2023-08-10",
     "url": "https://www.acollectedman.com/blogs/journal/interview-with-christian-kimber",
@@ -1879,6 +2180,9 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy"
+    ],
     "title": "Interview: Riley Harper",
     "updated_at": "2023-08-07",
     "url": "https://www.acollectedman.com/blogs/journal/interview-with-riley-harper",
@@ -1898,6 +2202,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "collecting_philosophy"
+    ],
     "title": "An introduction to Rexhep Rexhepi",
     "updated_at": "2026-02-13",
     "url": "https://www.acollectedman.com/blogs/journal/introduction-to-rexhep-rexhepi",
@@ -1917,6 +2225,9 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history"
+    ],
     "title": "A potted history of Japanese whisky collecting",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/japanese-whisky",
@@ -1936,6 +2247,11 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history",
+      "design"
+    ],
     "title": "How the Lange 1 became a modern icon",
     "updated_at": "2026-02-05",
     "url": "https://www.acollectedman.com/blogs/journal/lange-1-modern-icon",
@@ -1955,6 +2271,9 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history"
+    ],
     "title": "The importance of London watchmaking",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/london-watchmaking",
@@ -1974,6 +2293,11 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history",
+      "complications"
+    ],
     "title": "Is the Longines 13ZN still collectible?",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/longines-13zn-still-collectible",
@@ -1993,6 +2317,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "collector_mindset"
+    ],
     "title": "The philosophies of Matt Jacobson",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/matt-jacobson",
@@ -2012,6 +2340,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "collecting_philosophy"
+    ],
     "title": "From the bench: Max Busser",
     "updated_at": "2026-01-27",
     "url": "https://www.acollectedman.com/blogs/journal/max-busser-interview",
@@ -2031,6 +2363,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "design",
+      "collecting_philosophy"
+    ],
     "title": "Has minimalism in watch design gone too far?",
     "updated_at": "2023-08-04",
     "url": "https://www.acollectedman.com/blogs/journal/minimalism-watch-design",
@@ -2050,6 +2386,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "design"
+    ],
     "title": "Looking back to look forward at the Musée Atelier Audemars Piguet",
     "updated_at": "2025-12-11",
     "url": "https://www.acollectedman.com/blogs/journal/musee-atelier-audemars-piguet",
@@ -2069,6 +2409,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "community_ethics"
+    ],
     "title": "The museum every watch collector has to visit",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/musee-international-d-horlogerie",
@@ -2088,6 +2432,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "collecting_philosophy"
+    ],
     "title": "A collector’s guide: Parmigiani Fleurier",
     "updated_at": "2026-02-05",
     "url": "https://www.acollectedman.com/blogs/journal/parmigiani-fleurier-guide",
@@ -2107,6 +2455,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "collecting_philosophy"
+    ],
     "title": "The curious case of the Patek Philippe Golden Ellipse lighter",
     "updated_at": "2026-01-27",
     "url": "https://www.acollectedman.com/blogs/journal/patek-ellipse-lighter",
@@ -2126,6 +2478,9 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history"
+    ],
     "title": "How Paul Dupré-Lafon became ‘The Decorator of Millionaires’",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/paul-dupre-lafon",
@@ -2145,6 +2500,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "design"
+    ],
     "title": "How Philippe Dufour crafts the world’s finest watches",
     "updated_at": "2023-08-15",
     "url": "https://www.acollectedman.com/blogs/journal/philippe-dufour-crafts-watches",
@@ -2164,6 +2523,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "collecting_philosophy"
+    ],
     "title": "The watchmaking journey of Philippe Dufour",
     "updated_at": "2026-01-27",
     "url": "https://www.acollectedman.com/blogs/journal/philippe-dufour-journey-to-watchmaking",
@@ -2183,6 +2546,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "collecting_philosophy"
+    ],
     "title": "The philosophies of Felix Baumgartner and Martin Frei",
     "updated_at": "2024-05-23",
     "url": "https://www.acollectedman.com/blogs/journal/philosophies-felix-baumgartner-and-martin-frei",
@@ -2202,6 +2569,9 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy"
+    ],
     "title": "The philosophies of Stephen McDonnell",
     "updated_at": "2025-04-10",
     "url": "https://www.acollectedman.com/blogs/journal/philosophies-of-stephen-mcdonnell",
@@ -2221,6 +2591,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "design"
+    ],
     "title": "Chasing elegance: A history of Piaget watches",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/piaget-design-ultra-thin",
@@ -2240,6 +2614,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "design",
+      "reference_profile"
+    ],
     "title": "Subtle Complexities: Sylvain Pinaud on matte finishing",
     "updated_at": "2025-12-11",
     "url": "https://www.acollectedman.com/blogs/journal/pinaud-matte-finishing",
@@ -2259,6 +2637,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "brand_history"
+    ],
     "title": "Do people still care about pocket watches?",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/pocket-watches-collecting",
@@ -2278,6 +2660,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "community_ethics"
+    ],
     "title": "Why does provenance in watches matter?",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/provenance-in-watches",
@@ -2297,6 +2683,11 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "market_commentary",
+      "brand_history",
+      "collecting_philosophy"
+    ],
     "title": "Have we been too quick to dismiss quartz?",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/quartz-revisited",
@@ -2316,6 +2707,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "reference_profile"
+    ],
     "title": "A visual guide to rare Patek Philippe Calatravas",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/rare-unusual-patek-calatrava",
@@ -2335,6 +2730,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "collecting_philosophy"
+    ],
     "title": "A collector's guide: Early F.P. Journe, chapter three",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/rare-unusual-watches-early-f-p-journe",
@@ -2354,6 +2753,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "brand_history"
+    ],
     "title": "Rediscovering the romance of travel clocks",
     "updated_at": "2026-01-27",
     "url": "https://www.acollectedman.com/blogs/journal/rediscovering-travel-clocks",
@@ -2373,6 +2776,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "design",
+      "brand_history"
+    ],
     "title": "Independent watchmakers reinventing the future",
     "updated_at": "2026-01-27",
     "url": "https://www.acollectedman.com/blogs/journal/reinventing-the-future",
@@ -2392,6 +2799,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "collecting_philosophy"
+    ],
     "title": "The Morteau Makers: Rémy Cools",
     "updated_at": "2025-07-17",
     "url": "https://www.acollectedman.com/blogs/journal/remy-cools",
@@ -2411,6 +2822,11 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "diving",
+      "brand_history",
+      "market_commentary"
+    ],
     "title": "Race to the bottom: Rolex and Omega's fight over COMEX",
     "updated_at": "2023-08-07",
     "url": "https://www.acollectedman.com/blogs/journal/rolex-omega-fight-over-comex",
@@ -2430,6 +2846,11 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history",
+      "collecting_philosophy"
+    ],
     "title": "Is the Rolex Pre-Daytona a forgotten classic?",
     "updated_at": "2023-08-04",
     "url": "https://www.acollectedman.com/blogs/journal/rolex-pre-daytona-forgotten-classic",
@@ -2449,6 +2870,11 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "design",
+      "celebrity",
+      "brand_history"
+    ],
     "title": "Making the case for round and shaped watches",
     "updated_at": "2026-02-05",
     "url": "https://www.acollectedman.com/blogs/journal/round-shaped-cases",
@@ -2468,6 +2894,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "design"
+    ],
     "title": "What made the Royal Oak a cultural icon?",
     "updated_at": "2025-09-08",
     "url": "https://www.acollectedman.com/blogs/journal/royal-oak-a-cultural-icon",
@@ -2487,6 +2917,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "design",
+      "complications"
+    ],
     "title": "The bare bones of the skeletonised watch",
     "updated_at": "2026-02-05",
     "url": "https://www.acollectedman.com/blogs/journal/skeletonised",
@@ -2506,6 +2940,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "community_ethics",
+      "collector_mindset"
+    ],
     "title": "Has social media been a force for good in the watch world?",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/social-media-watch-world",
@@ -2525,6 +2963,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "complications"
+    ],
     "title": "The story of early Roger Dubuis",
     "updated_at": "2026-01-27",
     "url": "https://www.acollectedman.com/blogs/journal/story-early-roger-dubuis-watches",
@@ -2544,6 +2986,9 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history"
+    ],
     "title": "The story of Atelier de Chronométrie",
     "updated_at": "2025-12-11",
     "url": "https://www.acollectedman.com/blogs/journal/story-of-adc",
@@ -2563,6 +3008,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "reference_profile"
+    ],
     "title": "The story of AKRIVIA",
     "updated_at": "2025-06-05",
     "url": "https://www.acollectedman.com/blogs/journal/story-of-akrivia",
@@ -2582,6 +3031,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history"
+    ],
     "title": "The story of the Audemars Piguet Star Wheel",
     "updated_at": "2026-02-05",
     "url": "https://www.acollectedman.com/blogs/journal/story-of-the-audemars-piguet-star-wheel",
@@ -2601,6 +3054,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "market_commentary"
+    ],
     "title": "Swatch - The last great innovation in horology?",
     "updated_at": "2026-02-05",
     "url": "https://www.acollectedman.com/blogs/journal/swatch-last-great-innovation-horology",
@@ -2620,6 +3077,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "complications",
+      "brand_history"
+    ],
     "title": "Technical: Deadbeat seconds",
     "updated_at": "2025-07-03",
     "url": "https://www.acollectedman.com/blogs/journal/technical-deadbeat-seconds",
@@ -2639,6 +3100,11 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "complications",
+      "brand_history"
+    ],
     "title": "Technical: The mechanics behind the Heart Return",
     "updated_at": "2026-04-03",
     "url": "https://www.acollectedman.com/blogs/journal/technical-mechanics-winnerl-heart-return",
@@ -2658,6 +3124,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "collecting_philosophy"
+    ],
     "title": "Ten independent watchmakers you may not know, but really should...",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/ten-independent-watchmakers-to-know",
@@ -2677,6 +3147,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "design",
+      "brand_history"
+    ],
     "title": "The art of movement finishing",
     "updated_at": "2026-03-19",
     "url": "https://www.acollectedman.com/blogs/journal/the-art-of-movement-finishing",
@@ -2696,6 +3170,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "design",
+      "brand_history"
+    ],
     "title": "The colourful world of Rolex Stella dials",
     "updated_at": "2023-08-04",
     "url": "https://www.acollectedman.com/blogs/journal/the-colourful-world-of-rolex-stella-dials",
@@ -2715,6 +3193,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "design"
+    ],
     "title": "The origins of Sylvain Pinaud",
     "updated_at": "2026-01-27",
     "url": "https://www.acollectedman.com/blogs/journal/the-origins-of-sylvain-pinaud",
@@ -2734,6 +3216,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "community_ethics"
+    ],
     "title": "The origins of the AHCI",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/the-origins-of-the-ahci",
@@ -2753,6 +3239,7 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [],
     "title": "The rise and fall of Lancia cars",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/the-rise-and-fall-of-lancia-cars",
@@ -2772,6 +3259,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "market_commentary"
+    ],
     "title": "The rise of Neo-Vintage watches",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/the-rise-of-neo-vintage-watches",
@@ -2791,6 +3282,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "design",
+      "brand_history"
+    ],
     "title": "The space age with Pierre Cardin watches",
     "updated_at": "2026-01-27",
     "url": "https://www.acollectedman.com/blogs/journal/the-space-age-with-pierre-cardin-watches",
@@ -2810,6 +3305,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "collecting_philosophy"
+    ],
     "title": "A collector’s guide: Early F.P. Journe, chapter one",
     "updated_at": "2026-01-27",
     "url": "https://www.acollectedman.com/blogs/journal/the-story-of-early-f-p-journe",
@@ -2829,6 +3328,11 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "complications",
+      "brand_history"
+    ],
     "title": "The birth of ultra-thin, automatic perpetual calendars",
     "updated_at": "2026-02-05",
     "url": "https://www.acollectedman.com/blogs/journal/ultra-thin-automatic-perpetual-calendars",
@@ -2848,6 +3352,9 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history"
+    ],
     "title": "The untold story of the Finnish School of Watchmaking",
     "updated_at": "2023-08-15",
     "url": "https://www.acollectedman.com/blogs/journal/untold-story-finnish-school-watchmaking",
@@ -2867,6 +3374,11 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history",
+      "vintage_care"
+    ],
     "title": "Collectors’ guide to Urban Jürgensen wristwatches",
     "updated_at": "2026-01-27",
     "url": "https://www.acollectedman.com/blogs/journal/urban-jurgensen-wristwatches",
@@ -2886,6 +3398,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "vintage_care"
+    ],
     "title": "Collectors’ guide to Urban Jürgensen",
     "updated_at": "2025-12-11",
     "url": "https://www.acollectedman.com/blogs/journal/urbanjurgensen-pocketwatches",
@@ -2905,6 +3421,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "complications"
+    ],
     "title": "The watchmaking journey of Vianney Halter",
     "updated_at": "2026-01-27",
     "url": "https://www.acollectedman.com/blogs/journal/vianney-halter-journey",
@@ -2924,6 +3444,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "market_commentary",
+      "auction_results"
+    ],
     "title": "A study of the watch auction market in 2022",
     "updated_at": "2026-01-27",
     "url": "https://www.acollectedman.com/blogs/journal/watch-auction-market",
@@ -2943,6 +3467,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "market_commentary",
+      "collector_mindset"
+    ],
     "title": "Are there bubbles in the watch market?",
     "updated_at": "2025-12-11",
     "url": "https://www.acollectedman.com/blogs/journal/watch-market-bubble",
@@ -2962,6 +3490,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "celebrity",
+      "community_ethics"
+    ],
     "title": "How watches end up in films",
     "updated_at": "2025-12-11",
     "url": "https://www.acollectedman.com/blogs/journal/watches-in-films",
@@ -2981,6 +3513,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "design"
+    ],
     "title": "The watchmaking journey of Kari Voutilainen",
     "updated_at": "2026-01-27",
     "url": "https://www.acollectedman.com/blogs/journal/watchmaking-journey-kari-voutilainen",
@@ -3000,6 +3536,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "collecting_philosophy"
+    ],
     "title": "The watchmaking journey of Roger W. Smith",
     "updated_at": "2026-01-27",
     "url": "https://www.acollectedman.com/blogs/journal/watchmaking-journey-roger-w-smith",
@@ -3019,6 +3559,9 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history"
+    ],
     "title": "The women behind Cartier",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/women-behind-cartier",
@@ -3038,6 +3581,9 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history"
+    ],
     "title": "Women in watchmaking",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/women-in-watchmaking",
@@ -3057,6 +3603,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "design"
+    ],
     "title": "Zeitgeist: A new short film",
     "updated_at": "2025-12-11",
     "url": "https://www.acollectedman.com/blogs/journal/zeitgeist-a-new-short-film",
