@@ -305,6 +305,13 @@ within each section roughly last.
 - **2026-06-14/15 — Follow feature, Phase A (#889/#890).** "Follow" = the existing heart/Save-catalog. Home
   **"Finishing soon"** strip (followed lots closing ≤3 days) + **"Auctions you're following"** calendar-style
   catalog tiles (shared `auctionThumb.js`). Phase B (email reminders, Lumé-voiced) is next session.
+- **2026-06-18 — Finishing-soon Home section removed (#904).** Both Phase-A strips
+  ("Finishing soon" + "Auctions you're following") dropped — Mark judged the on-Home
+  ending-soon surfacing wrong after living with it; a better approach is TBD.
+- **2026-06-18 — Bonhams calendar: stale 'upcoming' → past (#906, B-78).** Extracted
+  `emit_auction_status()`; the date-sanity override now demotes both stale 'live' AND
+  'upcoming' hints to 'past' once the end date passes (recycled weekly-sale ids kept
+  closed Weeklys flagged 'upcoming' forever). Shared, all houses. +5 pytest cases.
 
 ## Epic 3 — Watchlist
 
@@ -618,6 +625,11 @@ within each section roughly last.
   + `chooseModel`/`MODEL_FAST`/`MODEL_SMART` in api/lume_reference.js (SDK-free so jest can test it) to
   isolate weak-chat-feel as Haiku-tier vs prompt-overload. #902 temporarily forced chat to Opus for a
   live A/B; reverted in #903 (chat is back on the Haiku-default router).
+- **2026-06-18 — Standalone Lumé tab removed; design re-homed in the bubble (#905).** Dropped the 5th
+  "Lumé" top pill, `lumeTabJSX`, the App-owned `lumeChat` instance, and the "Make Lumé my home" landing
+  pref (DB column left dormant). The bubble's desktop ⤢-expanded mode now mounts the full `LumeCanvas`
+  (greeting + lead + shelves + chat rail); the corner frame + mobile keep the bare `LumeConversation`.
+  `ChatBubbleHost` gained the feed props; `LumeTab.test.jsx` → `LumeCanvas.test.jsx`.
 
 - **2026-06-16 — Lumé full-page surface (#871–#873, #891, #893).** A real **Lumé tab** (journey
   launchers + inline chat) over a shared `LumeConversation` core extracted from the bubble; bubble
@@ -787,3 +799,6 @@ within each section roughly last.
   (chrome-guard pattern: comments stripped, placeholder "—" glyphs allowed); caught + fixed 8 strings the #840 sweep missed.
 - **2026-06-14 — Sold sub-tab drops the Auction-Calendar pill (#887).** The calendar is upcoming-sales nav,
   irrelevant on Sold; gated to the Auctions sub-tab only (both shells) so the Sold filter pills fit one line.
+- **2026-06-18 — Home "Recently added" excludes backfilled (#907).** A newly-onboarded source (Menta)
+  lands its whole back-catalog flagged `backfilled` with firstSeen=today, flooding the strip while
+  "View all" parked it last; the strip now mirrors the live feed's `!i.backfilled` rule so the two agree.
