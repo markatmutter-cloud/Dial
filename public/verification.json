@@ -1,6 +1,6 @@
 {
-  "date": "2026-06-21",
-  "updated_at": "2026-06-21T21:47:07+00:00",
+  "date": "2026-06-22",
+  "updated_at": "2026-06-22T07:49:36+00:00",
   "alerts": [],
   "counts": {
     "Wind Vintage": 112,
@@ -12,15 +12,15 @@
     "Tokant": 37,
     "Romain R\u00e9a": 230,
     "Grey & Patina": 52,
-    "Oliver & Clarke": 90,
+    "Oliver & Clarke": 88,
     "Craft & Tailored": 65,
     "Watch Brothers London": 9,
     "MVV Watches": 46,
     "DB1983": 23,
     "Hairspring": 35,
     "Somlo": 195,
-    "Analog Shift": 603,
-    "Watches of Knightsbridge": 63,
+    "Analog Shift": 615,
+    "Watches of Knightsbridge": 60,
     "Belmont Watches": 29,
     "Bob's Watches": 36,
     "Watchfid": 74,
@@ -38,6 +38,7 @@
     "Watchurbia": 9,
     "Maunder Watches": 82,
     "Watch Club": 62,
+    "Vintage Watch Shop": 26,
     "Watches of Lancashire": 58,
     "Heuertime": 23,
     "ClassicHeuer": 43,
@@ -45,9 +46,8 @@
     "S.Song Watches": 19,
     "Swiss Hours": 66,
     "Watch Center": 269,
-    "eBay": 24,
-    "Vintage Watch Shop": 26
+    "eBay": 24
   },
-  "total_listings": 3989,
+  "total_listings": 3996,
   "sources_tracked": 44
 }
