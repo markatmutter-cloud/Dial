@@ -1,6 +1,6 @@
 {
-  "date": "2026-06-27",
-  "updated_at": "2026-06-27T21:37:47+00:00",
+  "date": "2026-06-28",
+  "updated_at": "2026-06-28T06:52:33+00:00",
   "alerts": [],
   "counts": {
     "Wind Vintage": 125,
@@ -19,7 +19,7 @@
     "DB1983": 28,
     "Hairspring": 35,
     "Somlo": 196,
-    "Analog Shift": 626,
+    "Analog Shift": 625,
     "Watches of Knightsbridge": 60,
     "Belmont Watches": 28,
     "Bob's Watches": 41,
@@ -36,18 +36,18 @@
     "Vintage Watch Collective": 33,
     "Vision Vintage Watches": 47,
     "Watchurbia": 9,
-    "Maunder Watches": 82,
+    "Maunder Watches": 89,
     "Watch Club": 62,
-    "Watches of Lancashire": 55,
+    "Vintage Watch Shop": 26,
+    "Watches of Lancashire": 59,
     "Heuertime": 23,
     "ClassicHeuer": 43,
     "Luna Royster": 37,
     "S.Song Watches": 19,
     "Swiss Hours": 66,
     "Watch Center": 268,
-    "eBay": 28,
-    "Vintage Watch Shop": 26
+    "eBay": 28
   },
-  "total_listings": 4125,
+  "total_listings": 4135,
   "sources_tracked": 44
 }
