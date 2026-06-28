@@ -17173,7 +17173,9 @@
     "source": "fratello",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "news"
+    ],
     "title": "Fratello On Air: WASP 3.0 — Rolex, Citizen, Glashütte Original, TAG Heuer Take To The Ice",
     "updated_at": "2021-03-13",
     "url": "https://www.fratellowatches.com/fratello-on-air-wasp-3-0-rolex-citizen-glashutte-original-tag-heuer-take-to-the-ice/",
@@ -17193,7 +17195,9 @@
     "source": "fratello",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "collecting_philosophy"
+    ],
     "title": "Fratello On Air: WASP 4.0 — Featuring Rolex, HYT, Citizen, And A Ton Of Sports Jerseys",
     "updated_at": "2021-03-20",
     "url": "https://www.fratellowatches.com/fratello-on-air-wasp-4-0-featuring-rolex-hyt-citizen-and-a-ton-of-sports-jerseys/",
@@ -70651,6 +70655,9 @@
     "source": "fratello",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "review"
+    ],
     "title": "The Best Summer Watches: Jorg’s Picks From Traska, Aquastar, Nomos, Zenith, And Rolex (Again)",
     "updated_at": "2026-06-23",
     "url": "https://www.fratellowatches.com/the-best-summer-watches-jorgs-picks/",
@@ -70670,6 +70677,9 @@
     "source": "fratello",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "review"
+    ],
     "title": "The Best Summer Watches — Nacho’s Picks From Vaer, Doxa, Omega, And More",
     "updated_at": "2026-06-28",
     "url": "https://www.fratellowatches.com/the-best-summer-watches-nachos-picks-from-vaer-doxa-omega-and-more/",
