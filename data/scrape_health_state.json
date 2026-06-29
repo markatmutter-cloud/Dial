@@ -1,17 +1,5 @@
 {
-  "Vintage Watch Shop": {
-    "misses": 1,
-    "reason": "verify_sources ERROR: source absent from today's listings (was present yesterday)"
-  },
-  "ssongwatches": {
-    "misses": 1,
-    "reason": "no CSV produced this run"
-  },
-  "swisshours": {
-    "misses": 1,
-    "reason": "no CSV produced this run"
-  },
-  "watchcenter": {
+  "greyandpatina": {
     "misses": 1,
     "reason": "no CSV produced this run"
   }
