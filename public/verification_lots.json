@@ -1,14 +1,28 @@
 {
-  "date": "2026-06-30",
-  "updated_at": "2026-06-30T09:05:03+00:00",
-  "alerts": [],
+  "date": "2026-07-01",
+  "updated_at": "2026-07-01T09:38:07+00:00",
+  "alerts": [
+    {
+      "house": "Phillips",
+      "level": "ERROR",
+      "today": 0,
+      "previous": 1,
+      "note": "house absent from today's lot scrape (was present yesterday)"
+    },
+    {
+      "house": "Antiquorum",
+      "level": "WARN",
+      "today": 49,
+      "median": 248,
+      "note": "count is 20% of recent median (49 vs ~248)"
+    }
+  ],
   "counts": {
-    "Antiquorum": 87,
+    "Antiquorum": 49,
     "Christie's": 85,
-    "Monaco Legend": 2,
-    "Phillips": 1,
+    "Monaco Legend": 50,
     "Sotheby's": 289
   },
-  "total_live_lots": 464,
-  "houses_tracked": 5
+  "total_live_lots": 473,
+  "houses_tracked": 4
 }
