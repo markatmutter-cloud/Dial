@@ -1,14 +1,7 @@
 {
-  "date": "2026-07-01",
-  "updated_at": "2026-07-01T09:38:07+00:00",
+  "date": "2026-07-02",
+  "updated_at": "2026-07-02T08:51:22+00:00",
   "alerts": [
-    {
-      "house": "Phillips",
-      "level": "ERROR",
-      "today": 0,
-      "previous": 1,
-      "note": "house absent from today's lot scrape (was present yesterday)"
-    },
     {
       "house": "Antiquorum",
       "level": "WARN",
