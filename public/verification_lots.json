@@ -1,15 +1,7 @@
 {
-  "date": "2026-07-02",
-  "updated_at": "2026-07-02T08:51:22+00:00",
-  "alerts": [
-    {
-      "house": "Antiquorum",
-      "level": "WARN",
-      "today": 49,
-      "median": 248,
-      "note": "count is 20% of recent median (49 vs ~248)"
-    }
-  ],
+  "date": "2026-07-03",
+  "updated_at": "2026-07-03T08:56:43+00:00",
+  "alerts": [],
   "counts": {
     "Antiquorum": 49,
     "Christie's": 85,
