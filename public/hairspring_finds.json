@@ -16439,21 +16439,16 @@
     "model_line": "Chronograph",
     "published_at": "2026-06-02",
     "reference_no": "3970",
-    "scraped_at": "2026-06-03T18:33:16Z",
+    "scraped_at": "2026-07-03T21:06:55Z",
     "slug": "breguet-salmon-dial-3970ep-patek-phillipe-perpetual-calendar-chronograph",
     "sold_price_usd": 1860000,
     "source": "hairspring_finds",
     "source_type": "editorial_finds",
     "sub_model": null,
-    "themes": [
-      "reference_profile",
-      "auction_results",
-      "market_commentary"
-    ],
     "title": "Breguet Salmon Dial 3970EP Patek Phillipe Perpetual Calendar Chronograph",
     "updated_at": "2026-06-03",
     "url": "https://hairspring.com/blogs/finds/breguet-salmon-dial-3970ep-patek-phillipe-perpetual-calendar-chronograph",
-    "word_count": 315
+    "word_count": 311
   },
   "https://hairspring.com/blogs/finds/breguet-type-xx-flyback-civile": {
     "author": "Erik Gustafson",
