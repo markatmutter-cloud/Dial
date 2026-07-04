@@ -1,6 +1,6 @@
 {
   "date": "2026-07-04",
-  "updated_at": "2026-07-04T15:48:47+00:00",
+  "updated_at": "2026-07-04T21:27:43+00:00",
   "alerts": [],
   "counts": {
     "Wind Vintage": 118,
@@ -10,10 +10,10 @@
     "Falco Watches": 106,
     "Pascal Karp": 89,
     "Tokant": 35,
-    "Romain R\u00e9a": 231,
+    "Romain R\u00e9a": 230,
     "Grey & Patina": 47,
     "Oliver & Clarke": 96,
-    "Craft & Tailored": 75,
+    "Craft & Tailored": 74,
     "Watch Brothers London": 10,
     "MVV Watches": 49,
     "DB1983": 27,
@@ -36,8 +36,8 @@
     "Vintage Watch Collective": 31,
     "Vision Vintage Watches": 47,
     "Watchurbia": 9,
-    "Maunder Watches": 84,
-    "Watch Club": 58,
+    "Maunder Watches": 82,
+    "Watch Club": 57,
     "Vintage Watch Shop": 26,
     "Watches of Lancashire": 58,
     "Heuertime": 23,
@@ -46,8 +46,8 @@
     "S.Song Watches": 21,
     "Swiss Hours": 68,
     "Watch Center": 266,
-    "eBay": 30
+    "eBay": 31
   },
-  "total_listings": 4148,
+  "total_listings": 4144,
   "sources_tracked": 44
 }
