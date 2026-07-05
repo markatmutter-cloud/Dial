@@ -1,6 +1,6 @@
 {
   "date": "2026-07-05",
-  "updated_at": "2026-07-05T15:52:53+00:00",
+  "updated_at": "2026-07-05T21:27:23+00:00",
   "alerts": [],
   "counts": {
     "Wind Vintage": 117,
@@ -17,9 +17,9 @@
     "Watch Brothers London": 10,
     "MVV Watches": 49,
     "DB1983": 27,
-    "Hairspring": 36,
+    "Hairspring": 35,
     "Somlo": 194,
-    "Analog Shift": 616,
+    "Analog Shift": 619,
     "Watches of Knightsbridge": 74,
     "Belmont Watches": 29,
     "Bob's Watches": 46,
@@ -42,12 +42,12 @@
     "Watches of Lancashire": 58,
     "Heuertime": 23,
     "ClassicHeuer": 41,
-    "Luna Royster": 43,
+    "Luna Royster": 42,
     "S.Song Watches": 21,
     "Swiss Hours": 69,
     "Watch Center": 266,
     "eBay": 31
   },
-  "total_listings": 4143,
+  "total_listings": 4144,
   "sources_tracked": 44
 }
