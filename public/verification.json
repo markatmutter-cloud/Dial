@@ -1,9 +1,9 @@
 {
-  "date": "2026-07-04",
-  "updated_at": "2026-07-04T21:27:43+00:00",
+  "date": "2026-07-05",
+  "updated_at": "2026-07-05T06:40:19+00:00",
   "alerts": [],
   "counts": {
-    "Wind Vintage": 118,
+    "Wind Vintage": 117,
     "Tropical Watch": 116,
     "Menta Watches": 39,
     "Collectors Corner NY": 66,
@@ -48,6 +48,6 @@
     "Watch Center": 266,
     "eBay": 31
   },
-  "total_listings": 4144,
+  "total_listings": 4143,
   "sources_tracked": 44
 }
