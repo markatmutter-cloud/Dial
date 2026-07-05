@@ -175,6 +175,10 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "community_ethics"
+    ],
     "title": "An Afternoon with Dann Phimphrachanh",
     "updated_at": "2026-06-30",
     "url": "https://www.acollectedman.com/blogs/journal/an-afternoon-with-dann-phimphrachanh",
@@ -2073,7 +2077,9 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "collecting_philosophy"
+    ],
     "title": "The philosophies of Tom Dixon",
     "updated_at": "2026-02-04",
     "url": "https://www.acollectedman.com/blogs/journal/interview-tom-dixon",
