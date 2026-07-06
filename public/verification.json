@@ -1,6 +1,6 @@
 {
-  "date": "2026-07-05",
-  "updated_at": "2026-07-05T21:27:23+00:00",
+  "date": "2026-07-06",
+  "updated_at": "2026-07-06T06:53:28+00:00",
   "alerts": [],
   "counts": {
     "Wind Vintage": 117,
@@ -8,18 +8,18 @@
     "Menta Watches": 39,
     "Collectors Corner NY": 66,
     "Falco Watches": 106,
-    "Pascal Karp": 89,
+    "Pascal Karp": 88,
     "Tokant": 35,
     "Romain R\u00e9a": 230,
-    "Grey & Patina": 47,
-    "Oliver & Clarke": 96,
+    "Grey & Patina": 52,
+    "Oliver & Clarke": 94,
     "Craft & Tailored": 74,
     "Watch Brothers London": 10,
-    "MVV Watches": 49,
+    "MVV Watches": 50,
     "DB1983": 27,
     "Hairspring": 35,
     "Somlo": 194,
-    "Analog Shift": 619,
+    "Analog Shift": 626,
     "Watches of Knightsbridge": 74,
     "Belmont Watches": 29,
     "Bob's Watches": 46,
@@ -48,6 +48,6 @@
     "Watch Center": 266,
     "eBay": 31
   },
-  "total_listings": 4144,
+  "total_listings": 4154,
   "sources_tracked": 44
 }
