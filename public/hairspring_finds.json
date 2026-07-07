@@ -2367,6 +2367,28 @@
     "url": "https://hairspring.com/blogs/finds/150th-anniversary-cartier-tank-basculante",
     "word_count": 286
   },
+  "https://hairspring.com/blogs/finds/151-021-a-lange-sohne-lange-1-wellendorff": {
+    "author": "Erik Gustafson",
+    "brand": "A. Lange & Söhne",
+    "case_size": "39mm",
+    "currency": "USD",
+    "excerpt": "When A. Lange & Söhne numbered its early Lange 1s, the reference told you how the watch was delivered: 101-series watches came on alligator, while 151-series watches wore an integrated precious-metal bracelet manufactured by Wellendorff",
+    "image": "https://hairspring.com/cdn/shop/articles/Lange-151.021-Wellendorff-12.jpg",
+    "model": null,
+    "model_line": null,
+    "published_at": "2026-07-06",
+    "reference_no": null,
+    "scraped_at": "2026-07-07T16:37:27Z",
+    "slug": "151-021-a-lange-sohne-lange-1-wellendorff",
+    "sold_price_usd": 75000,
+    "source": "hairspring_finds",
+    "source_type": "editorial_finds",
+    "sub_model": null,
+    "title": "151.021 A. Lange & Söhne Lange 1 Wellendorff",
+    "updated_at": "2026-07-07",
+    "url": "https://hairspring.com/blogs/finds/151-021-a-lange-sohne-lange-1-wellendorff",
+    "word_count": 347
+  },
   "https://hairspring.com/blogs/finds/1518-patek-philippe-perpetual-calendar-chronograph-in-pink-gold": {
     "author": "Erik Gustafson",
     "brand": "Patek Philippe",
@@ -31672,20 +31694,16 @@
     "model_line": null,
     "published_at": "2026-06-06",
     "reference_no": null,
-    "scraped_at": "2026-06-07T15:32:43Z",
+    "scraped_at": "2026-07-07T16:37:28Z",
     "slug": "piece-unique-voutilainen-28sc",
     "sold_price_usd": 175000,
     "source": "hairspring_finds",
     "source_type": "editorial_finds",
     "sub_model": null,
-    "themes": [
-      "reference_profile",
-      "design"
-    ],
     "title": "Piece Unique Voutilainen 28SC",
     "updated_at": "2026-06-07",
     "url": "https://hairspring.com/blogs/finds/piece-unique-voutilainen-28sc",
-    "word_count": 310
+    "word_count": 306
   },
   "https://hairspring.com/blogs/finds/piece-unique-voutilainen-lesprit-du-bois-decimal-repeater": {
     "author": "Erik Gustafson",
