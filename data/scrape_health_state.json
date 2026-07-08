@@ -1,10 +1,1 @@
-{
-  "db1983": {
-    "misses": 1,
-    "reason": "no CSV produced this run"
-  },
-  "visionvintagewatches": {
-    "misses": 1,
-    "reason": "no CSV produced this run"
-  }
-}
+{}
