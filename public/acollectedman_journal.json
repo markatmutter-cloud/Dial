@@ -335,7 +335,9 @@
     "source": "acollectedman_journal",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "design"
+    ],
     "title": "Our advice for better watch photography",
     "updated_at": "2026-01-27",
     "url": "https://www.acollectedman.com/blogs/journal/better-watch-photography",

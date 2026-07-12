@@ -2384,6 +2384,10 @@
     "source": "hairspring_finds",
     "source_type": "editorial_finds",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "design"
+    ],
     "title": "151.021 A. Lange & Söhne Lange 1 Wellendorff",
     "updated_at": "2026-07-07",
     "url": "https://hairspring.com/blogs/finds/151-021-a-lange-sohne-lange-1-wellendorff",
@@ -9262,6 +9266,10 @@
     "source": "hairspring_finds",
     "source_type": "editorial_finds",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "design"
+    ],
     "title": "46003 Vacheron Constantin 222",
     "updated_at": "2026-07-12",
     "url": "https://hairspring.com/blogs/finds/46003-vacheron-constantin-222",
@@ -29505,6 +29513,10 @@
     "source": "hairspring_finds",
     "source_type": "editorial_finds",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "design"
+    ],
     "title": "'Nacre' FP Journe Chronomètre Souverain",
     "updated_at": "2026-06-09",
     "url": "https://hairspring.com/blogs/finds/nacre-fp-journe-chronometre-souverain",
@@ -31718,6 +31730,10 @@
     "source": "hairspring_finds",
     "source_type": "editorial_finds",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "design"
+    ],
     "title": "Piece Unique Voutilainen 28SC",
     "updated_at": "2026-06-07",
     "url": "https://hairspring.com/blogs/finds/piece-unique-voutilainen-28sc",

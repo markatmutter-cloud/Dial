@@ -2864,6 +2864,9 @@
     "source": "hodinkee_bring_a_loupe",
     "source_type": "editorial_column",
     "sub_model": null,
+    "themes": [
+      "auction_results"
+    ],
     "title": "Bring a Loupe: A Million Valjoux 72, An 18k Gold Constellation, And A Sarpaneva Moomin",
     "updated_at": "2026-07-03",
     "url": "https://www.hodinkee.com/articles/bring-a-loupe-july-3",
@@ -3230,6 +3233,9 @@
     "source": "hodinkee_bring_a_loupe",
     "source_type": "editorial_column",
     "sub_model": null,
+    "themes": [
+      "auction_results"
+    ],
     "title": "Bring a Loupe: A Cartier Platinum Pocket Watch, A Gilt Rolex Explorer, An Omega Railmaster, And A Broad Arrow Polerouter",
     "updated_at": "2026-06-05",
     "url": "https://www.hodinkee.com/articles/bring-a-loupe-june-5-2026",
@@ -4060,6 +4066,9 @@
     "source": "hodinkee_bring_a_loupe",
     "source_type": "editorial_column",
     "sub_model": null,
+    "themes": [
+      "auction_results"
+    ],
     "title": "Bring a Loupe: A Polerouter Super, A Movado Bill Time, A Vintage Rolex Sub, And A Louis Vuitton Monterey II",
     "updated_at": "2026-05-29",
     "url": "https://www.hodinkee.com/articles/bring-a-loupe-may-29",

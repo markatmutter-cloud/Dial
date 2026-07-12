@@ -2887,6 +2887,7 @@
     "source": "screwdowncrown",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [],
     "title": "Methods of the Monopoly Man",
     "updated_at": "2026-07-09",
     "url": "https://www.screwdowncrown.com/p/methods-of-the-monopoly-man-duveen",
@@ -5316,6 +5317,9 @@
     "source": "screwdowncrown",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collector_mindset"
+    ],
     "title": "Thinking, Fast and Slow... Again.",
     "updated_at": "2026-06-05",
     "url": "https://www.screwdowncrown.com/p/thinking-fast-and-slow-daniel-kahneman-updated",
