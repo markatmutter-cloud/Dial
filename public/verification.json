@@ -1,14 +1,14 @@
 {
   "date": "2026-07-12",
-  "updated_at": "2026-07-12T15:38:29+00:00",
+  "updated_at": "2026-07-12T21:15:49+00:00",
   "alerts": [],
   "counts": {
-    "Wind Vintage": 116,
+    "Wind Vintage": 115,
     "Tropical Watch": 118,
     "Menta Watches": 41,
-    "Collectors Corner NY": 75,
-    "Falco Watches": 118,
-    "Pascal Karp": 90,
+    "Collectors Corner NY": 76,
+    "Falco Watches": 117,
+    "Pascal Karp": 87,
     "Tokant": 39,
     "Romain R\u00e9a": 230,
     "Grey & Patina": 56,
@@ -18,7 +18,7 @@
     "MVV Watches": 44,
     "DB1983": 25,
     "Hairspring": 34,
-    "Somlo": 192,
+    "Somlo": 191,
     "Analog Shift": 645,
     "Watches of Knightsbridge": 74,
     "Belmont Watches": 23,
@@ -48,6 +48,6 @@
     "Watch Center": 266,
     "eBay": 27
   },
-  "total_listings": 4197,
+  "total_listings": 4192,
   "sources_tracked": 44
 }
