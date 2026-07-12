@@ -2850,6 +2850,25 @@
     "url": "https://www.hodinkee.com/articles/bring-a-loupe-july-29-2016",
     "word_count": 730
   },
+  "https://www.hodinkee.com/articles/bring-a-loupe-july-3": {
+    "author": "Weston Cutter",
+    "brand": "",
+    "excerpt": "Happy Friday again, Ballers, and congrats to whoever snagged the Omega 2998-4 on Goodwill earlier this week. I'm fighting multiple aspects of my nature—as a midwesterner and a dad—to avoid making lame jokes about the heat, but fingers",
+    "image": "https://hodinkee.imgix.net/uploads/images/0259fb82-9748-4de3-b207-e01f14cf39e2/Hero.jpg?ixlib=rails-1.1.0&fm=jpg&q=55&auto=format&usm=12",
+    "model": null,
+    "model_line": null,
+    "published_at": "2026-07-03",
+    "reference_no": null,
+    "scraped_at": "2026-07-12T16:44:27Z",
+    "slug": "bring-a-loupe-july-3",
+    "source": "hodinkee_bring_a_loupe",
+    "source_type": "editorial_column",
+    "sub_model": null,
+    "title": "Bring a Loupe: A Million Valjoux 72, An 18k Gold Constellation, And A Sarpaneva Moomin",
+    "updated_at": "2026-07-03",
+    "url": "https://www.hodinkee.com/articles/bring-a-loupe-july-3",
+    "word_count": 1459
+  },
   "https://www.hodinkee.com/articles/bring-a-loupe-july-31-2015": {
     "author": "Louis Westphalen",
     "brand": "Omega",
@@ -3206,14 +3225,11 @@
     "model_line": null,
     "published_at": "2026-06-05",
     "reference_no": null,
-    "scraped_at": "2026-06-07T17:04:35Z",
+    "scraped_at": "2026-07-12T16:44:28Z",
     "slug": "bring-a-loupe-june-5-2026",
     "source": "hodinkee_bring_a_loupe",
     "source_type": "editorial_column",
     "sub_model": null,
-    "themes": [
-      "auction_results"
-    ],
     "title": "Bring a Loupe: A Cartier Platinum Pocket Watch, A Gilt Rolex Explorer, An Omega Railmaster, And A Broad Arrow Polerouter",
     "updated_at": "2026-06-05",
     "url": "https://www.hodinkee.com/articles/bring-a-loupe-june-5-2026",
@@ -4039,14 +4055,11 @@
     "model_line": null,
     "published_at": "2026-05-29",
     "reference_no": null,
-    "scraped_at": "2026-05-31T16:56:10Z",
+    "scraped_at": "2026-07-12T16:44:29Z",
     "slug": "bring-a-loupe-may-29",
     "source": "hodinkee_bring_a_loupe",
     "source_type": "editorial_column",
     "sub_model": null,
-    "themes": [
-      "auction_results"
-    ],
     "title": "Bring a Loupe: A Polerouter Super, A Movado Bill Time, A Vintage Rolex Sub, And A Louis Vuitton Monterey II",
     "updated_at": "2026-05-29",
     "url": "https://www.hodinkee.com/articles/bring-a-loupe-may-29",
