@@ -1,12 +1,12 @@
 {
-  "date": "2026-07-11",
-  "updated_at": "2026-07-11T21:25:05+00:00",
+  "date": "2026-07-12",
+  "updated_at": "2026-07-12T05:56:22+00:00",
   "alerts": [],
   "counts": {
     "Wind Vintage": 116,
-    "Tropical Watch": 121,
+    "Tropical Watch": 119,
     "Menta Watches": 41,
-    "Collectors Corner NY": 76,
+    "Collectors Corner NY": 75,
     "Falco Watches": 118,
     "Pascal Karp": 90,
     "Tokant": 39,
@@ -26,11 +26,11 @@
     "Watchfid": 73,
     "Bulang & Sons": 182,
     "Moonphase": 19,
-    "Huntington Company": 86,
+    "Huntington Company": 85,
     "The Vintage Watch": 30,
     "Chronoholic": 4,
     "Vintage Watch Fam": 541,
-    "Shuck the Oyster": 134,
+    "Shuck the Oyster": 133,
     "Central Watch": 185,
     "European Watch": 21,
     "Vintage Watch Collective": 31,
@@ -48,6 +48,6 @@
     "Watch Center": 266,
     "eBay": 27
   },
-  "total_listings": 4202,
+  "total_listings": 4197,
   "sources_tracked": 44
 }
