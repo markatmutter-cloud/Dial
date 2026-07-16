@@ -1,14 +1,6 @@
 {
-  "Vintage Watch Shop": {
-    "misses": 1,
-    "reason": "verify_sources ERROR: source absent from today's listings (was present yesterday)"
-  },
   "watchcenter": {
-    "misses": 20,
-    "reason": "no CSV produced this run"
-  },
-  "watchfid": {
-    "misses": 1,
+    "misses": 21,
     "reason": "no CSV produced this run"
   }
 }
