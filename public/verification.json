@@ -1,6 +1,6 @@
 {
   "date": "2026-07-19",
-  "updated_at": "2026-07-19T05:42:22+00:00",
+  "updated_at": "2026-07-19T15:26:53+00:00",
   "alerts": [],
   "counts": {
     "Wind Vintage": 112,
@@ -11,9 +11,9 @@
     "Pascal Karp": 86,
     "Tokant": 40,
     "Romain R\u00e9a": 230,
-    "Grey & Patina": 51,
-    "Oliver & Clarke": 107,
-    "Craft & Tailored": 64,
+    "Grey & Patina": 48,
+    "Oliver & Clarke": 105,
+    "Craft & Tailored": 63,
     "Watch Brothers London": 6,
     "MVV Watches": 40,
     "DB1983": 21,
@@ -48,6 +48,6 @@
     "Watch Center": 265,
     "eBay": 28
   },
-  "total_listings": 4153,
+  "total_listings": 4147,
   "sources_tracked": 44
 }
