@@ -1,18 +1,6 @@
 {
-  "craftandtailored": {
+  "vintagewatchfam": {
     "misses": 1,
-    "reason": "no CSV produced this run"
-  },
-  "hairspring": {
-    "misses": 1,
-    "reason": "no CSV produced this run"
-  },
-  "oliverandclarke": {
-    "misses": 1,
-    "reason": "no CSV produced this run"
-  },
-  "watchcenter": {
-    "misses": 28,
     "reason": "no CSV produced this run"
   }
 }
