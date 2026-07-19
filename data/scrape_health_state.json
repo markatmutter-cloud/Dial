@@ -1,1 +1,10 @@
-{}
+{
+  "craftandtailored": {
+    "misses": 1,
+    "reason": "no CSV produced this run"
+  },
+  "oliverandclarke": {
+    "misses": 1,
+    "reason": "no CSV produced this run"
+  }
+}
