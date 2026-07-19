@@ -5408,7 +5408,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "review"
+    ],
     "title": "Rolex Wrist Shot of The Day:  Black Explorer II",
     "updated_at": "2014-09-23",
     "url": "https://www.rolexmagazine.com/2008/05/rolex-wrist-shot-of-day-black-explorer.html",
@@ -9440,7 +9442,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "racing"
+    ],
     "title": "Night & Daytona...",
     "updated_at": "2008-11-25",
     "url": "https://www.rolexmagazine.com/2008/06/night-daytona.html",
@@ -10351,7 +10355,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "design"
+    ],
     "title": "Rolex Explorer II White Dial Jungle Shot...",
     "updated_at": "2010-06-02",
     "url": "https://www.rolexmagazine.com/2008/06/rolex-explorer-ii-white-dial-jungle.html",
@@ -11442,7 +11448,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "review"
+    ],
     "title": "Rolex LV Submariner Garden Shot...",
     "updated_at": "2008-11-24",
     "url": "https://www.rolexmagazine.com/2008/06/rolex-lv-submariner-garden-shot.html",
@@ -11566,7 +11574,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "design"
+    ],
     "title": "Rolex Macro Shot of the Day: GMT II",
     "updated_at": "2008-11-25",
     "url": "https://www.rolexmagazine.com/2008/06/rolex-macro-shot-of-day-gmt-ii.html",
@@ -12545,7 +12555,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "review"
+    ],
     "title": "Rolex Yachtmaster II in White Gold...",
     "updated_at": "2008-11-25",
     "url": "https://www.rolexmagazine.com/2008/06/rolex-yachtmaster-ii-in-white-gold.html",
@@ -13034,7 +13046,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "celebrity"
+    ],
     "title": "Supreme Court of the United States Judge Clarence Thomas...",
     "updated_at": "2008-11-23",
     "url": "https://www.rolexmagazine.com/2008/06/supreme-court-of-united-states-judge.html",
@@ -13087,7 +13101,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "design"
+    ],
     "title": "This is a Great Rolex work of Art from the Idle Swede of Boca Raton...",
     "updated_at": "2008-11-25",
     "url": "https://www.rolexmagazine.com/2008/06/this-is-great-rolex-work-of-art-from.html",
@@ -22459,7 +22475,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "collecting_philosophy"
+    ],
     "title": "Wrist Shot of the Day: Marin Mountain Biking With My Rolex LV Submariner...",
     "updated_at": "2009-01-20",
     "url": "https://www.rolexmagazine.com/2009/01/wrist-shot-of-day-marin-mountain-biking.html",
@@ -22976,7 +22994,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "design"
+    ],
     "title": "Macro Shot of the Day: Rolex Crown Coronet Etching",
     "updated_at": "2009-02-07",
     "url": "https://www.rolexmagazine.com/2009/02/macro-shot-of-day-rolex-crown-coronet.html",
@@ -23709,7 +23729,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "review"
+    ],
     "title": "Rolex Wrist Shot of the Day: Air King",
     "updated_at": "2009-02-02",
     "url": "https://www.rolexmagazine.com/2009/02/rolex-wrist-shot-of-day-air-king.html",
@@ -26264,7 +26286,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "design"
+    ],
     "title": "Macro Shot of the Month: Eduardo's Daytona...",
     "updated_at": "2022-06-13",
     "url": "https://www.rolexmagazine.com/2009/04/macro-shot-of-month-eduardos-daytona.html",
@@ -28758,7 +28782,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "review"
+    ],
     "title": "Rolex Photo Set: A Swedish Explorer by Marcus...",
     "updated_at": "2012-09-05",
     "url": "https://www.rolexmagazine.com/2009/05/rolex-photo-set-swedish-explorer-by.html",
@@ -30453,7 +30479,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "reference_profile"
+    ],
     "title": "Rolex Studio Shot of the day: Rolex GMT Pepsi",
     "updated_at": "2013-04-09",
     "url": "https://www.rolexmagazine.com/2009/06/rolex-gmt-pepsi.html",
@@ -32524,7 +32552,10 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "reference_profile",
+      "design"
+    ],
     "title": "Studio Shot of the Day: Classic Rolex Explorer II...",
     "updated_at": "2009-07-14",
     "url": "https://www.rolexmagazine.com/2009/07/studio-shot-of-day-classic-rolex.html",
@@ -35129,7 +35160,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "design"
+    ],
     "title": "Rolex Macro Shot of the Day Pepsi GMT Master II by Chris B",
     "updated_at": "2009-11-28",
     "url": "https://www.rolexmagazine.com/2009/11/rolex-macro-shot-of-day-pepsi-gmt.html",
@@ -37237,7 +37270,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "diving"
+    ],
     "title": "Rolex Outdoor Shot of the Day: A Swedish SEA-DWELLER by The Sea Shore",
     "updated_at": "2009-12-22",
     "url": "https://www.rolexmagazine.com/2009/12/rolex-outdoor-shot-of-day-swedish-sea.html",
@@ -39908,7 +39943,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "vintage_care"
+    ],
     "title": "Rolex Big Red Panda: Maintaining Perfection",
     "updated_at": "2010-02-24",
     "url": "https://www.rolexmagazine.com/2010/02/rolex-big-red-panda-maintaining.html",
@@ -43307,7 +43344,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "review"
+    ],
     "title": "Rolex Macro Shot Of The Day: Peter's White Gold Yachtmaster II",
     "updated_at": "2013-05-17",
     "url": "https://www.rolexmagazine.com/2010/04/rolex-macro-shot-of-day-peters-white.html",
@@ -43488,7 +43527,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "review"
+    ],
     "title": "Rolex Outdoor Shot Of The Day: Joey's Sea Dweller",
     "updated_at": "2010-04-25",
     "url": "https://www.rolexmagazine.com/2010/04/rolex-outdoor-shot-of-day-joeys-sea.html",
@@ -47331,7 +47372,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "reference_profile"
+    ],
     "title": "Rolex, \"Sushi Submariner\"",
     "updated_at": "2014-09-30",
     "url": "https://www.rolexmagazine.com/2010/08/rolex-sushi-submariner-reference.html",
@@ -47514,7 +47557,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "review"
+    ],
     "title": "Wrist Shot Of The Day: Rolex Explorer's",
     "updated_at": "2010-08-03",
     "url": "https://www.rolexmagazine.com/2010/08/wrist-shot-of-day-rolex-explorers.html",
@@ -48077,7 +48122,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "design"
+    ],
     "title": "Rolex Macro Shot of the Month: Klaus' German Rolex Day-Date Dial",
     "updated_at": "2026-05-16",
     "url": "https://www.rolexmagazine.com/2010/09/rolex-macro-shot-of-month-klaus-german.html",
@@ -48975,7 +49022,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "brand_history"
+    ],
     "title": "1956 Italian Rolex Brochure Cover",
     "updated_at": "2024-08-24",
     "url": "https://www.rolexmagazine.com/2010/11/1956-italian-rolex-brochure-cover.html",
@@ -52685,7 +52734,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "review"
+    ],
     "title": "Rolex Macro Shot Of The Day: Ryan's Rolex Cosmograph",
     "updated_at": "2015-06-11",
     "url": "https://www.rolexmagazine.com/2011/03/rolex-macro-shot-of-day-ryans-rolex.html",
@@ -54628,7 +54679,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "reference_profile"
+    ],
     "title": "2009 SuperCase Rolex GMT Master II Ad Yellow Gold with Ceramic Bezel Insert",
     "updated_at": "2026-02-15",
     "url": "https://www.rolexmagazine.com/2011/06/2009-supercase-rolex-gmt-master-ii-ad.html",
@@ -57067,7 +57120,10 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "collecting_philosophy",
+      "collector_mindset"
+    ],
     "title": "I LOVE FASHION BLOG by Dianne Seerden",
     "updated_at": "2011-11-13",
     "url": "https://www.rolexmagazine.com/2011/11/i-love-fashion-blog-by-dianne-seerden.html",
@@ -60359,7 +60415,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "review"
+    ],
     "title": "Leon's GMT-Master from Germany...",
     "updated_at": "2012-09-22",
     "url": "https://www.rolexmagazine.com/2012/09/leons-gmt-master-from-germany.html",
@@ -62355,7 +62413,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "design"
+    ],
     "title": "Rose Gold Rolex Daytona",
     "updated_at": "2013-04-10",
     "url": "https://www.rolexmagazine.com/2013/04/rose-gold-rolex-daytona.html",
@@ -66203,7 +66263,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "celebrity"
+    ],
     "title": "Range Rover Sport Review",
     "updated_at": "2014-07-19",
     "url": "https://www.rolexmagazine.com/2014/07/range-rover-sport-review.html",
@@ -67545,7 +67607,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "celebrity"
+    ],
     "title": "Adam Scott Master Golfer",
     "updated_at": "2015-05-19",
     "url": "https://www.rolexmagazine.com/2015/05/adam-scott-master-golfer.html",
@@ -73713,7 +73777,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "news"
+    ],
     "title": "National Geographic  Refutes Amelia Earhart History Channel Findings",
     "updated_at": "2017-07-13",
     "url": "https://www.rolexmagazine.com/2017/07/national-geographic-refutes-amelia.html",
@@ -78194,7 +78260,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "reference_profile"
+    ],
     "title": "Rolex Studio Shot Of The Day—GV Milgauss",
     "updated_at": "2025-12-08",
     "url": "https://www.rolexmagazine.com/2018/08/rolex-studio-shot-of-daygv-milgauss.html",
@@ -84062,7 +84130,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "celebrity"
+    ],
     "title": "Cara Barrett interviews Bethenny Frankel...",
     "updated_at": "2020-01-09",
     "url": "https://www.rolexmagazine.com/2020/01/cara-barrett-interviews-bethenny-frankel.html",
@@ -84535,7 +84605,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "news"
+    ],
     "title": "Rolex Pays Tribute to Filmmakers",
     "updated_at": "2020-02-11",
     "url": "https://www.rolexmagazine.com/2020/02/rolex-pays-tribute-to-filmmakers.html",
@@ -86932,7 +87004,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "brand_history"
+    ],
     "title": "Rolex and Roland-Garros",
     "updated_at": "2020-10-10",
     "url": "https://www.rolexmagazine.com/2020/10/rolex-and-roland-garros.html",
@@ -89555,7 +89629,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "brand_history"
+    ],
     "title": "Rolex and Equestrianism",
     "updated_at": "2021-09-17",
     "url": "https://www.rolexmagazine.com/2021/09/rolex-and-equestrianism.html",
@@ -93748,7 +93824,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "celebrity"
+    ],
     "title": "Robert F. Kennedy Jr. | Club Random with Bill Maher",
     "updated_at": "2023-06-25",
     "url": "https://www.rolexmagazine.com/2023/06/robert-f-kennedy-jr-club-random-with.html",
@@ -94865,7 +94943,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "news"
+    ],
     "title": "Rolex Middle Sea Race...",
     "updated_at": "2023-12-06",
     "url": "https://www.rolexmagazine.com/2023/12/rolex-middle-sea-race.html",
@@ -95364,7 +95444,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "design"
+    ],
     "title": "Rolex Submariner: Deep confidence",
     "updated_at": "2024-02-06",
     "url": "https://www.rolexmagazine.com/2024/02/rolex-submariner-deep-confidence.html",
@@ -95831,7 +95913,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "design"
+    ],
     "title": "Rolex Day-Date Rainbow Puzzle Dial",
     "updated_at": "2024-05-19",
     "url": "https://www.rolexmagazine.com/2024/05/rolex-day-date-rainbow-puzzle-dial.html",
@@ -98171,7 +98255,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "news"
+    ],
     "title": "Rolex Perpetual Planet: Shaping the future of our planet",
     "updated_at": "2025-04-23",
     "url": "https://www.rolexmagazine.com/2025/04/rolex-perpetual-planet-shaping-future.html",
