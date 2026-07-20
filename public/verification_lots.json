@@ -1,15 +1,7 @@
 {
-  "date": "2026-07-19",
-  "updated_at": "2026-07-19T08:04:56+00:00",
-  "alerts": [
-    {
-      "house": "Sotheby's",
-      "level": "WARN",
-      "today": 56,
-      "median": 261,
-      "note": "count is 21% of recent median (56 vs ~261)"
-    }
-  ],
+  "date": "2026-07-20",
+  "updated_at": "2026-07-20T08:42:48+00:00",
+  "alerts": [],
   "counts": {
     "Antiquorum": 49,
     "Christie's": 78,
