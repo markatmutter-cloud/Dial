@@ -5453,21 +5453,16 @@
     "model_line": "Royal Oak Perpetual Calendar early variants (additions)",
     "published_at": "2026-06-20",
     "reference_no": "25657",
-    "scraped_at": "2026-06-21T15:58:14Z",
+    "scraped_at": "2026-07-21T21:18:59Z",
     "slug": "25657or-audemars-piguet-perpetual-calendar",
     "sold_price_usd": 32500,
     "source": "hairspring_finds",
     "source_type": "editorial_finds",
     "sub_model": "Perpetual Calendar early variants",
-    "themes": [
-      "reference_profile",
-      "complications",
-      "brand_history"
-    ],
     "title": "25657OR Audemars Piguet Perpetual Calendar",
-    "updated_at": "2026-06-21",
+    "updated_at": "2026-04-15",
     "url": "https://hairspring.com/blogs/finds/25657or-audemars-piguet-perpetual-calendar",
-    "word_count": 455
+    "word_count": 456
   },
   "https://hairspring.com/blogs/finds/25657pt-audemars-piguet-quantieme-perpetual-with-bracelet": {
     "author": "Erik Gustafson",
