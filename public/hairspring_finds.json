@@ -2487,21 +2487,16 @@
     "model_line": null,
     "published_at": "2026-05-22",
     "reference_no": null,
-    "scraped_at": "2026-06-22T18:21:09Z",
+    "scraped_at": "2026-07-22T21:12:55Z",
     "slug": "1530-rolex-oyster-perpetual-date-1",
     "sold_price_usd": 23000,
     "source": "hairspring_finds",
     "source_type": "editorial_finds",
     "sub_model": null,
-    "themes": [
-      "reference_profile",
-      "brand_history",
-      "design"
-    ],
     "title": "1530 Rolex Oyster Perpetual Date",
     "updated_at": "2026-05-23",
     "url": "https://hairspring.com/blogs/finds/1530-rolex-oyster-perpetual-date-1",
-    "word_count": 431
+    "word_count": 436
   },
   "https://hairspring.com/blogs/finds/1530-rolex-oyster-perpetual-date-2": {
     "author": "Erik Gustafson",
