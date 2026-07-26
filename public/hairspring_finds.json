@@ -2493,6 +2493,11 @@
     "source": "hairspring_finds",
     "source_type": "editorial_finds",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history",
+      "design"
+    ],
     "title": "1530 Rolex Oyster Perpetual Date",
     "updated_at": "2026-05-23",
     "url": "https://hairspring.com/blogs/finds/1530-rolex-oyster-perpetual-date-1",
@@ -5454,6 +5459,10 @@
     "source": "hairspring_finds",
     "source_type": "editorial_finds",
     "sub_model": "Perpetual Calendar early variants",
+    "themes": [
+      "reference_profile",
+      "complications"
+    ],
     "title": "25657OR Audemars Piguet Perpetual Calendar",
     "updated_at": "2026-04-15",
     "url": "https://hairspring.com/blogs/finds/25657or-audemars-piguet-perpetual-calendar",
@@ -8843,6 +8852,11 @@
     "source": "hairspring_finds",
     "source_type": "editorial_finds",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "complications",
+      "brand_history"
+    ],
     "title": "43031 Vacheron Constantin Perpetual Calendar",
     "updated_at": "2026-07-21",
     "url": "https://hairspring.com/blogs/finds/43031-vacheron-constantin-perpetual-calendar-1",
@@ -15131,6 +15145,10 @@
     "source": "hairspring_finds",
     "source_type": "editorial_finds",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "auction_results"
+    ],
     "title": "Beyer Dial 3940J Patek Philippe Perpetual Calendar",
     "updated_at": "2026-05-26",
     "url": "https://hairspring.com/blogs/finds/beyer-dial-3940j-patek-philippe-perpetual-calendar",
@@ -40838,6 +40856,10 @@
     "source": "hairspring_finds",
     "source_type": "editorial_finds",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "design"
+    ],
     "title": "Vacheron Constantin Cornes de Vache for Hodinkee",
     "updated_at": "2026-07-26",
     "url": "https://hairspring.com/blogs/finds/vacheron-constantin-cornes-de-vache-for-hodinkee",
