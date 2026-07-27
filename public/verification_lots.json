@@ -1,15 +1,7 @@
 {
-  "date": "2026-07-26",
-  "updated_at": "2026-07-26T08:12:44+00:00",
-  "alerts": [
-    {
-      "house": "Monaco Legend",
-      "level": "ERROR",
-      "today": 0,
-      "previous": 48,
-      "note": "house absent from today's lot scrape (was present yesterday)"
-    }
-  ],
+  "date": "2026-07-27",
+  "updated_at": "2026-07-27T09:12:31+00:00",
+  "alerts": [],
   "counts": {
     "Antiquorum": 49,
     "Christie's": 78,
