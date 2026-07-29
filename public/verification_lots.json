@@ -1,12 +1,19 @@
 {
-  "date": "2026-07-28",
-  "updated_at": "2026-07-28T08:20:22+00:00",
-  "alerts": [],
+  "date": "2026-07-29",
+  "updated_at": "2026-07-29T08:24:42+00:00",
+  "alerts": [
+    {
+      "house": "Antiquorum",
+      "level": "ERROR",
+      "today": 0,
+      "previous": 49,
+      "note": "house absent from today's lot scrape (was present yesterday)"
+    }
+  ],
   "counts": {
-    "Antiquorum": 49,
     "Christie's": 78,
     "Sotheby's": 56
   },
-  "total_live_lots": 183,
-  "houses_tracked": 3
+  "total_live_lots": 134,
+  "houses_tracked": 2
 }
