@@ -92,8 +92,22 @@ export function StandardFilterBar({ pills, search, right, count, isMobile, backg
 // trailing clear × when there's a value. `trailing` slot for per-surface
 // extras (DesktopShell's Save-search heart); `inputRef`/`onKeyDown` for its
 // `/`-shortcut + Esc behavior.
-export function StandardSearchInput({ value, onChange, placeholder, ariaLabel, inputRef, onKeyDown, trailing }) {
-  return (
+// Saved-search recall (2026-07-30). Saved searches used to be reachable only
+// from their own sub-tab on the Saved tab; when that tab collapsed to Lists
+// they kept a section on its landing, but that's a place you go, not a place
+// you're already standing. The moment you actually want a saved search is the
+// moment you touch the search box — so an empty, focused search offers them.
+// The heart INSIDE this box already saves them, so save and recall now sit on
+// the same control.
+//
+// Opt-in: surfaces that don't pass savedSearches render byte-identical DOM to
+// before, no wrapper element, no behaviour change.
+export function StandardSearchInput({ value, onChange, placeholder, ariaLabel, inputRef, onKeyDown, trailing,
+  savedSearches, onRunSavedSearch }) {
+  const [focused, setFocused] = React.useState(false);
+  const recallable = (savedSearches || []).length > 0 && !!onRunSavedSearch;
+  const showRecall = recallable && focused && !String(value || "").trim();
+  const box = (
     <div style={{
       display: "flex", alignItems: "center", gap: 8,
       border: "0.5px solid var(--border)", borderRadius: 20,
@@ -112,6 +126,11 @@ export function StandardSearchInput({ value, onChange, placeholder, ariaLabel, i
         value={value}
         onChange={onChange}
         onKeyDown={onKeyDown}
+        onFocus={recallable ? () => setFocused(true) : undefined}
+        // Blur closes the panel, but a click on a row blurs the input BEFORE
+        // the click lands. The rows fire on mouseDown (which precedes blur),
+        // so no timeout race is needed here.
+        onBlur={recallable ? () => setFocused(false) : undefined}
         placeholder={placeholder}
         aria-label={ariaLabel || placeholder}
         style={{ flex: 1, border: "none", background: "transparent",
@@ -132,6 +151,64 @@ export function StandardSearchInput({ value, onChange, placeholder, ariaLabel, i
           </svg>
         </button>
       )}
+    </div>
+  );
+
+  if (!recallable) return box;
+
+  return (
+    <div style={{ position: "relative", width: "100%", minWidth: 0 }}>
+      {box}
+      {showRecall && (
+        <SavedSearchRecall
+          searches={savedSearches}
+          onRun={(sv) => { setFocused(false); onRunSavedSearch(sv); }}
+        />
+      )}
+    </div>
+  );
+}
+
+// The recall panel itself, split out so the MOBILE shell can mount it above
+// its hand-rolled search input without either duplicating this markup or
+// being restyled into StandardSearchInput. One panel, two hosts — the
+// alternative was two panels that drift (CLAUDE.md: divergence is the bug).
+// Absolutely positioned; the host supplies `position: relative`.
+export function SavedSearchRecall({ searches, onRun }) {
+  return (
+    <div role="listbox" aria-label="Saved searches"
+      style={{
+        position: "absolute", top: "calc(100% + 6px)", left: 0, right: 0,
+        zIndex: 60,
+        background: "var(--surface)",
+        border: "0.5px solid var(--border)", borderRadius: 12,
+        boxShadow: "0 8px 24px rgba(0,0,0,0.14)",
+        padding: 6, maxHeight: 320, overflowY: "auto",
+      }}>
+      <div style={{
+        fontSize: 10, fontWeight: 600, letterSpacing: 0.4,
+        textTransform: "uppercase", color: "var(--text3)",
+        padding: "6px 10px 8px",
+      }}>Saved searches</div>
+      {(searches || []).map((s) => (
+        <button key={s.id} role="option" aria-selected="false"
+          // mouseDown, not click: it fires before the input's blur, so the
+          // panel is still mounted when the handler runs.
+          onMouseDown={(e) => { e.preventDefault(); onRun(s); }}
+          style={{
+            display: "flex", alignItems: "baseline", gap: 8, width: "100%",
+            background: "none", border: "none", cursor: "pointer",
+            textAlign: "left", padding: "8px 10px", borderRadius: 8,
+            fontFamily: "inherit", color: "var(--text1)", fontSize: 13,
+          }}>
+          <span style={{ fontWeight: 500 }}>{s.label || s.query}</span>
+          {s.label && s.query && s.label !== s.query && (
+            <span style={{ fontSize: 11, color: "var(--text3)", minWidth: 0,
+                           overflow: "hidden", textOverflow: "ellipsis",
+                           whiteSpace: "nowrap" }}>{s.query}</span>
+          )}
+        </button>
+      ))}
     </div>
   );
 }

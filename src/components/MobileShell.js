@@ -1,10 +1,11 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { SearchIcon, FilterIcon, HomeIcon } from "./icons";
 import { Chip } from "./Chip";
 import { AboutModal } from "./AboutModal";
 import { SavedHeartLink } from "./SavedHeartLink";
 import { SignInPromptModal } from "./SignInPromptModal";
 import { pillBase, inputBase } from "../styles";
+import { SavedSearchRecall } from "./StandardFilterBar";
 
 // Mobile shell — receives everything the mobile branch needs from
 // App.js as a single props bag. Extracted 2026-04-30 (Stage 2 of
@@ -37,6 +38,8 @@ export function MobileShell(props) {
     // Setters / handlers
     handleWish, openFavPrompt, resetFilters,
     goToSaved,
+    // Saved-search recall under the sticky search row (2026-07-30).
+    savedSearches, runSearch,
     onOpenCalendar,
     setAboutModalOpen, setBrandsExpanded, setModelsExpanded,
     setDrawerOpen,
@@ -84,6 +87,13 @@ export function MobileShell(props) {
   // common on touch, but iPads-with-keyboards and the desktop-narrow
   // layout hit this shell too, and a dead Escape on an open sheet is
   // the "I'm stuck" moment the audit flagged. Self-gates on drawerOpen.
+  // Saved-search recall panel: open while the search input is focused and
+  // empty. Same behaviour as the desktop top-bar search, same panel component.
+  const [searchFocused, setSearchFocused] = useState(false);
+  const recallSearches = tab === "listings" ? (savedSearches || []) : [];
+  const showSearchRecall =
+    recallSearches.length > 0 && !!runSearch && searchFocused && !String(search || "").trim();
+
   useEffect(() => {
     if (!drawerOpen) return undefined;
     const onKey = (e) => { if (e.key === "Escape") setDrawerOpen(false); };
@@ -329,9 +339,17 @@ export function MobileShell(props) {
           && !(tab === "references" && referencesSubTab !== "editorial")
           && (
         <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 16px 4px", borderBottom: "0.5px solid var(--border)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, background: "transparent", border: "0.5px solid var(--border)", borderRadius: 10, padding: "8px 12px", flex: 1, minWidth: 0 }}>
+          <div style={{ position: "relative", display: "flex", alignItems: "center", gap: 8, background: "transparent", border: "0.5px solid var(--border)", borderRadius: 10, padding: "8px 12px", flex: 1, minWidth: 0 }}>
+            {showSearchRecall && (
+              <SavedSearchRecall
+                searches={recallSearches}
+                onRun={(sv) => { setSearchFocused(false); runSearch(sv); }}
+              />
+            )}
             <SearchIcon />
             <input value={search} onChange={e => setSearch(e.target.value)}
+              onFocus={() => setSearchFocused(true)}
+              onBlur={() => setSearchFocused(false)}
               onKeyDown={e => {
                 if (e.key !== "Enter") return;
                 e.target.blur();

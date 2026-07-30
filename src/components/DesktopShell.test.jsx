@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { DesktopShell } from "./DesktopShell";
 import { buildMockShellProps } from "./__fixtures__/mockShellProps";
 
@@ -139,5 +139,64 @@ describe("DesktopShell", () => {
       watchlistTabJSX: <div data-testid="collections-tab" />,
     })} />);
     expect(screen.getByTestId("collections-tab")).toBeInTheDocument();
+  });
+
+  // Saved-search recall (2026-07-30): the search box offers your saved
+  // searches when it's focused and empty. Save (the heart inside the box) and
+  // recall now sit on the same control.
+  test("Saved-search recall: panel opens on focus of an empty search", () => {
+    window.innerWidth = 1440;
+    render(<DesktopShell {...buildMockShellProps({
+      tab: "listings",
+      savedSearches: [{ id: "s1", label: "Explorer under 8k", query: "explorer" }],
+    })} />);
+    expect(screen.queryByRole("listbox", { name: "Saved searches" })).not.toBeInTheDocument();
+    fireEvent.focus(screen.getByLabelText("Search"));
+    expect(screen.getByRole("listbox", { name: "Saved searches" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: /Explorer under 8k/ })).toBeInTheDocument();
+  });
+
+  test("Saved-search recall: stays shut once the user has typed", () => {
+    // The panel is a recall affordance for an EMPTY box, not an autocomplete —
+    // it must never cover results while you're typing a query.
+    window.innerWidth = 1440;
+    render(<DesktopShell {...buildMockShellProps({
+      tab: "listings",
+      search: "submariner",
+      savedSearches: [{ id: "s1", label: "Explorer under 8k", query: "explorer" }],
+    })} />);
+    fireEvent.focus(screen.getByLabelText("Search"));
+    expect(screen.queryByRole("listbox", { name: "Saved searches" })).not.toBeInTheDocument();
+  });
+
+  test("Saved-search recall: choosing one runs it", () => {
+    window.innerWidth = 1440;
+    const runs = [];
+    render(<DesktopShell {...buildMockShellProps({
+      tab: "listings",
+      savedSearches: [{ id: "s1", label: "Explorer under 8k", query: "explorer" }],
+      runSearch: (s) => runs.push(s.id),
+    })} />);
+    fireEvent.focus(screen.getByLabelText("Search"));
+    // mouseDown, not click: the handler deliberately fires before blur.
+    fireEvent.mouseDown(screen.getByRole("option", { name: /Explorer under 8k/ }));
+    expect(runs).toEqual(["s1"]);
+  });
+
+  test("Saved-search recall: not offered on a non-Watches filterable surface", () => {
+    // A saved search applies a query + price band and lands you on Watches >
+    // For sale, so offering it from a drilled-in list would promise the wrong
+    // destination. The drill-in is the right probe here: it's the one non-
+    // Watches surface that still renders the shell filter bar, so the search
+    // input exists and only the gating decides.
+    window.innerWidth = 1440;
+    render(<DesktopShell {...buildMockShellProps({
+      tab: "watchlist",
+      watchTopTab: "lists",
+      colDrillInId: "col-1",
+      savedSearches: [{ id: "s1", label: "Explorer under 8k", query: "explorer" }],
+    })} />);
+    fireEvent.focus(screen.getByLabelText("Search"));
+    expect(screen.queryByRole("listbox", { name: "Saved searches" })).not.toBeInTheDocument();
   });
 });
