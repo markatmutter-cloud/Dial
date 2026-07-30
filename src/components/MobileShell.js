@@ -66,7 +66,6 @@ export function MobileShell(props) {
     catalogFullPage,
     catalogBarJSX,
     catalogActionRowJSX,
-    savedHeaderJSX,
     watchboxTabJSX,
     referencesTabJSX, collectionsTabJSX,
     lotMigrationBannerJSX,
@@ -116,17 +115,15 @@ export function MobileShell(props) {
   // underlying list, so the row carries no function — let the empty
   // state own the screen. (Mirrored in DesktopShell.)
   const savedHeartedEmpty =
-    ((tab === "watchlist" && watchTopTab === "hearted") ||
-     // The Saved slice of Watches (2026-07-30 IA move) — same suppression.
-     (tab === "listings" && listingsSubTab === "saved")) &&
+    tab === "listings" && listingsSubTab === "saved" &&
     Object.keys(watchlist || {}).length === 0;
 
   const noFilterableList =
     tab === "home" ||
     (tab === "listings" && listingsSubTab === "calendar") ||
-    // Lists tab: only the Hearted surface (and a drilled-in list) is a
-    // filterable grid. Lists-landing / Searches / Shared have no filter row.
-    (tab === "watchlist" && watchTopTab !== "hearted" && !inListsDrillIn) ||
+    // Lists tab: only a drilled-in list is a filterable grid. The landing
+    // (lists + searches + shared sections) is not.
+    (tab === "watchlist" && !inListsDrillIn) ||
     savedHeartedEmpty ||
     tab === "references" ||
     tab === "admin";
@@ -618,11 +615,12 @@ export function MobileShell(props) {
                 at the body's 16px inset (PageHeader carries no side padding
                 now), so the title + hairline share the same left edge as every
                 other surface. */}
+            {/* The Saved (hearted) title was the second user of this slot until
+                2026-07-30; saved watches moved to a Watches sub-tab and follow
+                the Watches chrome, so the catalog header is all that's left. */}
             {(() => {
               if (searchAllActive) return null;
-              const h = saleContextHeaderJSX
-                || (tab === "watchlist" && watchTopTab === "hearted" ? savedHeaderJSX : null);
-              return h || null;
+              return saleContextHeaderJSX || null;
             })()}
             {/* identityBandJSX moved into the sticky chrome stack
                 2026-05-21 (PR_Y4) — sits between sub-tabs and the

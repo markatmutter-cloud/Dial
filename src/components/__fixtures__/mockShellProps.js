@@ -106,14 +106,15 @@ export function buildMockShellProps(overrides = {}) {
     listingsGridJSX: <div data-testid="listings-grid" />,
     listingsTabContentJSX: <div data-testid="listings-tab-content" />,
     listingsSubTabsJSX: <div data-testid="listings-sub-tabs" />,
-    // Top-tab model (2026-06-03 IA: Watches · Saved · Articles · Reference
-    // Guides) — mirrors what App.js builds from src/topTabs.js.
-    // referencesSubTabsJSX retired the same pass.
+    // Top-tab model (2026-07-30 IA: Watches · Articles · Reference Guides ·
+    // Lists) — mirrors what App.js builds from src/topTabs.js, ORDER INCLUDED.
+    // Keep this in step with topTabs.js or the shell tests assert a label the
+    // real app doesn't render.
     topTabs: [
       { key: "listings",  label: "Watches",  mobileLabel: "Watches",  icon: "listings",   active: false, onSelect: noop },
-      { key: "watchlist", label: "Saved",    mobileLabel: "Saved",    icon: "watchlist",  active: true,  onSelect: noop },
       { key: "articles",  label: "Articles", mobileLabel: "Articles", icon: "articles",   active: false, onSelect: noop },
       { key: "guides", label: "Reference Guides", mobileLabel: "Guides", icon: "references", active: false, onSelect: noop },
+      { key: "watchlist", label: "Lists",    mobileLabel: "Lists",    icon: "watchlist",  active: true,  onSelect: noop },
     ],
     lotMigrationBannerJSX: null,
     userLimitBannerJSX: null,
@@ -140,7 +141,6 @@ export function buildMockShellProps(overrides = {}) {
     sectionHeadingStyle: { fontSize: 11, fontWeight: 600 },
     settingsModalJSX: null,
     shareReceiverJSX: null,
-    savedHeaderJSX: null,
     statusSegmentJSX: null,
     trackNewItemModalJSX: null,
     // B-08: the Watchlists sub-tab strip was retired (the tab is one

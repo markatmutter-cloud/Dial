@@ -143,63 +143,10 @@ describe("CollectionsTab render-without-crash", () => {
     currency: "USD", url: `https://example.com/${id}`, img: "",
   });
 
-  test("Hearted sub-tab (default landing) renders without throwing", () => {
-    const items = [
-      heartedItem("a", "Rolex", "Wind Vintage", "2026-06-01T00:00:00Z"),
-      heartedItem("b", "Omega", "Menta", "2026-05-30T00:00:00Z"),
-    ];
-    expect(() => {
-      render(<CollectionsTab {...buildProps({ collectionsSubTab: "hearted", watchItems: items })} />);
-    }).not.toThrow();
-  });
-
-  test("Hearted sub-tab grouped by dealer shows group headers (buildGroups)", () => {
-    try { localStorage.setItem("dial_hearted_group_by", "dealer"); } catch {}
-    const items = [
-      heartedItem("a", "Rolex", "Wind Vintage", "2026-06-01T00:00:00Z"),
-      heartedItem("b", "Rolex", "Wind Vintage", "2026-05-31T00:00:00Z"),
-      heartedItem("c", "Omega", "Menta", "2026-05-30T00:00:00Z"),
-    ];
-    render(<CollectionsTab {...buildProps({ collectionsSubTab: "hearted", watchItems: items })} />);
-    // Largest group (Wind Vintage ×2) leads; both dealer groups render.
-    // (Dealer names also appear inside cards, so assert >= 1, not exactly 1.)
-    expect(screen.getAllByText("Wind Vintage").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("Menta").length).toBeGreaterThan(0);
-    try { localStorage.removeItem("dial_hearted_group_by"); } catch {}
-  });
-
-  test("Hearted sub-tab surfaces saved Articles as a type section", () => {
-    const articleSnap = {
-      id: "art1", kind: "article", url: "https://example.com/a", img: "",
-      title: "Why the Seamaster matters", article: { source_label: "Bring a Loupe" },
-    };
-    render(<CollectionsTab {...buildProps({
-      collectionsSubTab: "hearted",
-      watchItems: [],
-      watchlist: { art1: articleSnap },
-    })} />);
-    // Type filter shows Articles; switching to it renders the saved article.
-    const articlesBtn = screen.getByRole("button", { name: /Articles/ });
-    fireEvent.click(articlesBtn);
-    expect(screen.getByText("Why the Seamaster matters")).toBeInTheDocument();
-  });
-
-  test("Hearted sub-tab surfaces saved reference Guides as a type section", () => {
-    const guideSnap = {
-      id: "ref_rolex-submariner-5512-5513", kind: "reference",
-      url: "?tab=references&ref=rolex-submariner-5512-5513", img: "",
-      title: "Rolex Submariner 5513", brand: "Rolex", model_line: "Submariner",
-      reference: { group: "5512 / 5513" },
-    };
-    render(<CollectionsTab {...buildProps({
-      collectionsSubTab: "hearted",
-      watchItems: [],
-      watchlist: { "ref_rolex-submariner-5512-5513": guideSnap },
-    })} />);
-    const guidesBtn = screen.getByRole("button", { name: /Guides/ });
-    fireEvent.click(guidesBtn);
-    expect(screen.getByText("5512 / 5513")).toBeInTheDocument();
-  });
+  // The four Hearted sub-tab tests were removed 2026-07-30 with HeartedView
+  // itself. The behaviour they covered didn't disappear, it moved to each
+  // content type's own tab, where it's covered by DesktopShell/MobileShell
+  // ("Saved sub-tab" pair), EditorialView.test.jsx and ReferenceBrowse.test.jsx.
 
   test("Searches sub-tab renders without throwing", () => {
     expect(() => {

@@ -12,7 +12,6 @@ import { WatchDetailSheet } from "./WatchDetailSheet";
 import { ListReviewMode } from "./ListReviewMode";
 import { articleAsListing } from "./EditorialView";
 import CardShell from "./CardShell";
-import HeartedView from "./HeartedView";
 import { PageHeader } from "./PageHeader";
 import { DossierBlocks } from "./DossierBlocks";
 import { fmtUSD, matchesSearch, imgSrc } from "../utils";
@@ -449,9 +448,8 @@ export function CollectionsTab({
   commitSearch,
   removeSearch,
   runSearch,
-  // Shared active-filters strip (chips + Clear all), rendered atop the
-  // Hearted surface so Lists gets the same affordances as Watches (B-48).
-  activeFiltersStripJSX,
+  // (activeFiltersStripJSX dropped 2026-07-30 with the Hearted surface — the
+  // strip belongs to the Watches filter bar, which now owns saved watches.)
   // After creating a list, drill into it (set by App.js). Consumed in ListsView.
   pendingOpenListId,
   clearPendingOpenList,
@@ -625,39 +623,15 @@ export function CollectionsTab({
   // backward-compat URLs (?sub=wishlist) and stale localStorage
   // values working — the toggle initialises in shortlist mode
   // automatically via currentWatchTopTab.
+  // HeartedView dispatch RETIRED 2026-07-30. It was the app's fourth place to
+  // look at saved things, and the only one that couldn't filter properly. Each
+  // content type now owns its own saved slice, where the type's real filter
+  // bar already works: watches → Watches > ♡ Saved, articles → Articles >
+  // ♡ Saved, guides → Reference Guides > ♡ Saved. HeartedView's own type
+  // toggle (Watches / Articles / Guides) was the tell — it was never one view,
+  // it was three views behind a switch, each a worse copy of its home tab.
   let body;
-  if (subTab === "hearted") {
-    // The Lists tab's default landing — hearted watches in the standard grid
-    // (filter bar + group-by None/Dealer/Brand), with a type filter to the
-    // saved Articles + Sales bookmark sections (Phase 2a — restores what the
-    // old "Saved" band carried). Self-contained component (its own hooks) so
-    // this dispatch stays render-only and #310-safe. Saved articles derive
-    // from the watchlist (kind==='article'); sales come via props.
-    const byRecency = (a, b) => String(b.savedAt || "").localeCompare(String(a.savedAt || ""));
-    const heartedArticles = Object.values(watchlist || {})
-      .filter(v => v && v.kind === "article").sort(byRecency);
-    const heartedGuides = Object.values(watchlist || {})
-      .filter(v => v && v.kind === "reference").sort(byRecency);
-    body = (
-      <HeartedView
-        items={watchItems}
-        articles={heartedArticles}
-        guides={heartedGuides}
-        isMobile={isMobile}
-        gridStyle={gridStyle}
-        compact={compact}
-        primaryCurrency={primaryCurrency}
-        watchlist={watchlist}
-        handleWish={handleWish}
-        handleShare={handleShare}
-        openCollectionPicker={openCollectionPicker}
-        observeCard={observeCard}
-        onClickListing={onClickListing}
-        user={user}
-        activeFiltersStripJSX={activeFiltersStripJSX}
-      />
-    );
-  } else if (subTab === "my-collection" || subTab === "wishlist") {
+  if (subTab === "my-collection" || subTab === "wishlist") {
     body = (
       <MyCollectionView
         owned={hardOwned}
