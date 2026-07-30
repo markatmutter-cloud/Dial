@@ -39,7 +39,6 @@ export function DesktopShell(props) {
     goToSaved,
     MODELS, MODELS_SHOW, modelsExpanded, setModelsExpanded,
     watchTopTab, watchlist,
-    savedHeaderJSX,
     // Setters / handlers
     handleWish, openFavPrompt, resetFilters,
     setAboutModalOpen, setActiveFilterPop, setBrandsExpanded,
@@ -105,24 +104,23 @@ export function DesktopShell(props) {
   // The Saved slice of Watches (2026-07-30 IA move).
   const isListingsSaved = tab === "listings" && listingsSubTab === "saved";
 
-  // Collapsing header (Mark 2026-06-02): on the auction catalog AND the Saved
-  // (hearted) surface the title scrolls away while the filter bar pins. We move
-  // both INTO the scroll pane — title in normal flow (scrolls), filter in a
-  // sticky wrapper (pins). Catalog title = saleContextHeaderJSX (its grid is
-  // flat, no dividers); Saved title = savedHeaderJSX. Other surfaces keep the
-  // filter in the fixed chrome above the pane (their date dividers stick
-  // cleanly below it). On Saved the grouped quick-jump bar scrolls rather than
-  // pinning, so it can't fight the sticky filter for top:0 (see HeartedView).
-  const isSavedHearted = tab === "watchlist" && watchTopTab === "hearted";
-  // Empty Saved suppression (audit:2026-06-06 U-11): with zero hearted
-  // items, the hearted surface showed sort pills + a "0 watches" count
-  // above the sign-in/empty state — noise on a screen whose job is to
-  // invite. No filter can change an empty underlying list, so the row
-  // goes; the title (savedHeaderJSX) stays. (Mirrored in MobileShell.)
+  // Collapsing header (Mark 2026-06-02): on the auction catalog the title
+  // scrolls away while the filter bar pins. Both move INTO the scroll pane —
+  // title in normal flow (scrolls), filter in a sticky wrapper (pins). Other
+  // surfaces keep the filter in the fixed chrome above the pane (their date
+  // dividers stick cleanly below it).
+  //
+  // The Saved (hearted) surface was the second user of this until 2026-07-30;
+  // saved watches are now a Watches sub-tab, which follows the Watches chrome
+  // like its siblings, so the catalog is the only collapsing header left.
+  // Empty Saved suppression (audit:2026-06-06 U-11): with zero saved items the
+  // surface showed sort pills + a "0 watches" count above the sign-in/empty
+  // state — noise on a screen whose job is to invite. No filter can change an
+  // empty underlying list, so the row goes. (Mirrored in MobileShell.)
   const savedHeartedEmpty =
-    (isSavedHearted || isListingsSaved) && Object.keys(watchlist || {}).length === 0;
+    isListingsSaved && Object.keys(watchlist || {}).length === 0;
   const collapsingHeader = (!anyShareActive && !searchAllActive)
-    ? (saleContextHeaderJSX || (isSavedHearted ? savedHeaderJSX : null))
+    ? saleContextHeaderJSX
     : null;
   const useCollapse = !!collapsingHeader;
 
@@ -702,18 +700,15 @@ export function DesktopShell(props) {
           compat with the mock fixture. */}
       {(() => {
         if (anyShareActive || searchAllActive || tab === "home") return null;
-        // On a collapsing-header surface (catalog / Saved) the filter bar
+        // On a collapsing-header surface (the auction catalog) the filter bar
         // renders INSIDE the pane (sticky, below the scrolling title) — see the
         // useCollapse block below.
         if (useCollapse) return null;
         const showFullFilterRow =
           (tab === "listings" && showListingsFilterRow && !savedHeartedEmpty) ||
-          inListsDrillIn ||
-          // Lists tab: the filter row belongs to the Hearted surface only
-          // (2026-06-01). Lists / Searches / Shared are not filterable grids.
-          // (Hearted normally renders via the useCollapse path below; the
-          // savedHeartedEmpty guard here covers U-11 on both paths.)
-          (isSavedHearted && !savedHeartedEmpty);
+          // Lists tab: only a drilled-in list is a filterable grid. The Lists
+          // landing (lists + searches + shared sections) is not.
+          inListsDrillIn;
         // Full filter row carries search + chips + sort. Tabs without
         // an applicable chip set fall through to a slim search-only
         // row so the search stays at the same vertical position

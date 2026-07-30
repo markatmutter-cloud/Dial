@@ -388,28 +388,28 @@ export default function Watchlist() {
   // 2026-06-01 Lists redesign: the Lists tab is sub-tabbed and LANDS ON
   // HEARTED by default. Four real sub-tabs, all rendered through
   // CollectionsTab (the WatchlistTab fork is retired for this tab).
-  const SUB_VALUES = ["hearted", "lists", "searches"];
+  // 2026-07-30: the Lists tab has ONE surface and no sub-tab strip. "hearted"
+  // moved out to Watches > ♡ Saved (saved watches belong with watches, where
+  // the filter bar already works); "searches" was never a separate place —
+  // the unified landing already renders a Searches section, so the sub-tab
+  // was a second door to the same content. `watchTopTab` survives as the
+  // section key the landing + drill-in still read.
+  const SUB_VALUES = ["lists"];
   // Back-compat alias — the savedContentJSX dispatch + tabResetTick guard
   // reference this name. All four sub-tabs now route to CollectionsTab, so
   // SUB_VALUES_COLLECTIONS === SUB_VALUES.
   const SUB_VALUES_COLLECTIONS = SUB_VALUES;
-  // Bundle 2A.2b (2026-05-08) — the three hearted sub-tabs
-  // (listings/auctions/sold) collapse under a single "Saved" pill in
-  // the strip, with an internal Listings/Auctions/Sold toggle below.
-  // Sub-tab values themselves stay unchanged — backward compat for
-  // existing share URLs + localStorage prefs.
-  const SAVED_HEARTED_SUBS = ["listings", "auctions", "sold"];
   const [watchTopTab, setWatchTopTab] = useState(() => {
     // Map any legacy/unknown sub-tab value to the new four-key set.
     // Used for the URL `?sub=` deep-link (so old shared links resolve);
     // legacy hearted/collections subs collapse to the Hearted landing.
-    const normalize = (v) => {
-      if (SUB_VALUES.includes(v)) return v;
-      // "shared" is now a SECTION inside the Lists sub-tab, not its own tab.
-      if (v === "challenges" || v === "shared") return "lists";
-      // listings/auctions/sold/calendar/my-collection/wishlist/etc.
-      return "hearted";
-    };
+    // Every legacy value collapses to the single surface. Old share links and
+    // stored prefs (?sub=hearted, ?sub=searches, my-collection, wishlist,
+    // challenges, shared…) all still resolve — they just land on the landing,
+    // which now carries those as sections. `?sub=hearted` deliberately does
+    // NOT redirect to Watches > ♡ Saved: a cross-tab redirect from a stale
+    // deep link is more disorienting than landing on Lists.
+    const normalize = (v) => (SUB_VALUES.includes(v) ? v : "lists");
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       const t = params.get("tab");
@@ -420,11 +420,9 @@ export default function Watchlist() {
         if (SUB_VALUES.includes(sub)) return sub;
       }
     }
-    // No localStorage restore: the Lists tab always OPENS on Hearted
-    // (Mark 2026-06-01 — "land here when going to lists"). In-session
-    // sub-tab choices live in React state; a fresh load resets to Hearted.
-    // (`dial_watch_top_tab` is still written below — harmless, not read.)
-    return "hearted";
+    // One surface, so there is nothing to restore. (`dial_watch_top_tab` is
+    // still written below — harmless, not read. Never bump that key.)
+    return "lists";
   });
   useEffect(() => {
     try { localStorage.setItem("dial_watch_top_tab", watchTopTab); } catch {}
@@ -685,8 +683,6 @@ export default function Watchlist() {
     else params.set("tab", INTERNAL_TAB_TO_URL[tab] || tab);
     if (tab === "listings" && listingsSubTab !== "live") {
       params.set("sub", listingsSubTab);
-    } else if (tab === "watchlist" && watchTopTab !== "hearted") {
-      params.set("sub", watchTopTab);
     } else if (tab === "references" && referencesSubTab !== "editorial") {
       params.set("sub", referencesSubTab);
     } else {
@@ -752,9 +748,8 @@ export default function Watchlist() {
       if (nextTab === "listings") {
         setListingsSubTab(LISTINGS_SUB_VALUES.includes(sub) ? sub : "live");
       } else if (nextTab === "watchlist") {
-        // Lists is sub-tabbed again (2026-06-01): restore the sub-tab
-        // from ?sub, defaulting to the Hearted landing.
-        setWatchTopTab(SUB_VALUES.includes(sub) ? sub : "hearted");
+        // One surface since 2026-07-30 — every legacy ?sub lands on it.
+        setWatchTopTab("lists");
       } else if (nextTab === "references") {
         setReferencesSubTab(REFERENCES_SUB_VALUES.includes(sub) ? sub : "editorial");
       }
@@ -1111,7 +1106,7 @@ export default function Watchlist() {
     // tapping Watchlists from another tab. Now lands on Lists.
     // On cross-main-tab navigation, reset the destination tab's sub-tab to its first value — do NOT restore from localStorage (Mark spec: clicking a tab loads the first sub-tab).
     if (newTab === "listings") setListingsSubTab("live");
-    else if (newTab === "watchlist") setWatchTopTab("hearted");
+    else if (newTab === "watchlist") setWatchTopTab("lists");
     // `references` is NOT reset here (2026-06-03 IA): Articles and Reference
     // Guides are two top pills over the same internal container, so the
     // caller (selectTopTab / menu tools / challenge receive) sets the sub
@@ -4006,20 +4001,10 @@ export default function Watchlist() {
     </div>
   ) : null;
 
-  // Saved-tab scrolling header (Mark 2026-06-02). On the Saved (hearted)
-  // surface the title scrolls away while the filter bar pins — same collapsing
-  // pattern as the catalog. The shell renders this in the scroll pane above the
-  // sticky filter, so the title must live here (a shell slot), not in
-  // HeartedView. The under-title count was removed 2026-06-03 (P-8, Mark's
-  // verification pass): the count's ONE home is the filter bar's reserved
-  // right slot — the header carried a second, slightly different number
-  // ("434 items" over the grid's "432 watches") right above it.
-  const savedHeaderJSX = (
-    <PageHeader
-      isMobile={isMobile}
-      title="Saved"
-    />
-  );
+  // (savedHeaderJSX retired 2026-07-30 — the Saved tab's scrolling title went
+  // with its hearted surface. The Lists landing renders its own PageHeader,
+  // and Watches > ♡ Saved follows the Watches chrome like its sibling
+  // sub-tabs, so no shell-level title slot is needed on either.)
 
   const listingsGridJSX = (
     <>
@@ -4693,62 +4678,26 @@ export default function Watchlist() {
   // ending-soonest default sort. Const + shellProps wiring removed
   // in the same cleanup pass.)
 
-  // Lists sub-tab strip REBUILT 2026-06-01. The Lists tab is sub-tabbed
-  // again — Hearted (default landing) · Lists · Searches · Shared — using
-  // the shared SubTabBar so it's pixel-identical to the Listings /
-  // Collecting strips. Lands on Hearted: the #1 fix (one tap to your
-  // hearted watches, was two). All four route through CollectionsTab.
-  const watchSubTabsJSX = tab !== "watchlist" ? null : (
-    <SubTabBar
-      ariaLabel="Lists views"
-      tabs={[["hearted", "♡ Watches"], ["lists", "Lists"], ["searches", "Searches"]]}
-      activeKey={watchTopTab}
-      // Re-tapping the ACTIVE sub-tab returns to its landing (P-22, Mark
-      // 2026-06-03): inside a drilled-in list, tapping "Lists" used to be a
-      // no-op (only the "< All lists" breadcrumb exited). The bump feeds the
-      // same tabResetTick CollectionsTab already watches to clear its
-      // drill-in; the breadcrumb stays as the second door.
-      onSelect={(key) => {
-        if (key === watchTopTab) setTabResetTick((n) => n + 1);
-        else setWatchTopTab(key);
-        setDrawerOpen(false); setPage(1);
-      }}
-      isMobile={isMobile}
-      onOlive={isMobile}
-      containerStyle={{
-        background: isMobile ? "var(--brand-olive)" : "var(--bg)",
-        borderBottom: isMobile ? "none" : "0.5px solid var(--border)",
-      }}
-    />
-  );
-
-  // Internal Listings/Auctions/Sold toggle for the Saved tab.
-  // Bundle 2A.2b — the three hearted views still exist as separate
-  // underlying sub-tabs, they just share a top-level pill now.
+  // Lists sub-tab strip RETIRED 2026-07-30. It carried ♡ Watches · Lists ·
+  // Searches; ♡ Watches moved to Watches > ♡ Saved, and Searches was always a
+  // second door to a section the landing already renders. One surface left
+  // means no chooser — a one-item segmented control is chrome that says
+  // "pick a view" while offering no choice.
   //
-  // 2026-05-08 (Mark feedback) — was a separate row above the filter
-  // row; merged into the filter row to save vertical space. Now
-  // returns a JSX fragment of three pills (no wrapper) so each shell
-  // can prepend it to its filter row inline. The cluster is rendered
-  // exactly when the Saved tab is on a hearted sub-tab; outside that
-  // it's null and shells render the filter row unchanged.
-  const watchHeartedToggleJSX = (tab !== "watchlist" || !SAVED_HEARTED_SUBS.includes(watchTopTab)) ? null : (
-    <>
-      {[
-        // "For sale" matches the Watches sub-tab rename (audit:2026-06-06
-        // U-10) — same concept, same word everywhere. Keys unchanged.
-        ["listings", "For sale"],
-        ["auctions", "Auctions"],
-        ["sold",     "Sold"],
-      ].map(([key, label]) => {
-        const active = watchTopTab === key;
-        return (
-          <button key={key} onClick={() => setWatchTopTab(key)}
-            style={innerToggleButton(active)}>{label}</button>
-        );
-      })}
-    </>
-  );
+  // The prop stays in the shellProps bag (both shells destructure it) and is
+  // simply null; shells move in lockstep, so removing the field would be a
+  // separate mechanical change across both shells + mockShellProps.
+  // Re-tap-to-reset moved onto the top tab itself (setTabWithReceiveEscape
+  // already bumps tabResetTick when you re-tap the tab you're on), so the
+  // drill-in exit that used to live here survives.
+  const watchSubTabsJSX = null;
+
+  // Internal Listings/Auctions/Sold toggle RETIRED 2026-07-30 with the Saved
+  // tab's hearted surface. Saved watches now live at Watches > ♡ Saved, where
+  // the real For sale / Auctions / Sold sub-tabs already do this job properly.
+  // Left as null rather than removed from shellProps: both shells destructure
+  // it and guard on it, so the field is a two-shell + mock change of its own.
+  const watchHeartedToggleJSX = null;
 
   // collectionsSubTabsJSX retired in Bundle 2A.2 (2026-05-07) —
   // Collections collapsed into Saved (internal `tab=watchlist`); the
@@ -5118,7 +5067,6 @@ export default function Watchlist() {
     catalogFullPage,
     catalogBarJSX,
     catalogActionRowJSX,
-    savedHeaderJSX,
     // Bundle 2A.2: shells render `watchlistTabJSX` for the Saved
     // tab — the value is now the dispatched content (Watchlist or
     // Collections style) computed by `savedContentJSX`.

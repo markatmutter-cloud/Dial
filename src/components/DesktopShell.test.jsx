@@ -28,14 +28,14 @@ describe("DesktopShell", () => {
     expect(screen.getAllByLabelText("Home").length).toBeGreaterThanOrEqual(1);
   });
 
-  test("renders the four main tabs (Watches / Saved / Articles / Reference Guides)", () => {
+  test("renders the four main tabs (Watches / Articles / Reference Guides / Lists)", () => {
     render(<DesktopShell {...buildMockShellProps()} />);
-    // 2026-06-03 IA restructure: Collecting dissolved into top-level
-    // Articles + Reference Guides; "Lists" tab renamed "Saved". Desktop
-    // shows the full "Reference Guides" label (mobile shows "Guides").
-    // Labels come from the shared topTabs model (src/topTabs.js).
+    // 2026-07-30: the "Saved" tab became "Lists" and moved LAST, after
+    // Reference Guides — everything saved now lives on its own content tab,
+    // so what's left here is lists. Desktop shows the full "Reference Guides"
+    // label (mobile shows "Guides"). Labels come from src/topTabs.js.
     expect(screen.getAllByText("Watches").length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByText("Saved").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText("Lists").length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText("Articles").length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText("Reference Guides")).toBeInTheDocument();
     // Retired labels stay retired.
@@ -52,13 +52,13 @@ describe("DesktopShell", () => {
     expect(screen.getByRole("button", { name: /^Source/ })).toBeInTheDocument();
   });
 
-  test("hides the filter row on Watchlist > Searches sub-tab", () => {
+  test("hides the filter row on the Lists landing (nothing filterable there)", () => {
+    // 2026-07-30: the Lists tab has one surface. Only a drilled-in list is a
+    // filterable grid; the landing (lists + searches + shared sections) isn't.
     render(<DesktopShell {...buildMockShellProps({
       tab: "watchlist",
-      watchTopTab: "searches",
+      watchTopTab: "lists",
     })} />);
-    // Source pill is filter-row-only; on Searches sub-tab a spacer
-    // renders instead.
     expect(screen.queryByRole("button", { name: /^Source/ })).not.toBeInTheDocument();
   });
 

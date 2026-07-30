@@ -13,14 +13,18 @@
 // deep links resolve exactly as before.
 export const TOP_TABS = [
   { key: "listings",  label: "Watches",  icon: "listings" },
-  // "Saved" (2026-06-03, was "Lists") — the truthful umbrella: hearts,
-  // lists and searches are all things you saved. Resolves the documented
-  // Lists/Lists label collision from the #655 rename.
-  { key: "watchlist", label: "Saved", icon: "watchlist" },
   { key: "articles",  label: "Articles", icon: "articles", tab: "references", sub: "editorial" },
   // "Reference Guides" on desktop, "Guides" on mobile (Mark's call — bare
   // "Reference" reads as ref-numbers; the full label doesn't fit mobile).
   { key: "guides", label: "Reference Guides", mobileLabel: "Guides", icon: "references", tab: "references", sub: "references" },
+  // "Lists" (2026-07-30). It was renamed Saved on 2026-06-03 to resolve a
+  // Lists-tab-containing-a-Lists-sub-tab collision; that collision no longer
+  // exists, because ♡ Watches moved to Watches > ♡ Saved and Searches became
+  // a section of this tab's landing. With nothing else under it, "Saved" was
+  // the wrong name: everything saved now lives on its own content tab, and
+  // what remains here is lists. Sits LAST because it's the slowest surface
+  // (a list is something you build over time, not something you browse).
+  { key: "watchlist", label: "Lists", icon: "watchlist" },
 ];
 
 export function isTopTabActive(entry, tab, referencesSubTab) {

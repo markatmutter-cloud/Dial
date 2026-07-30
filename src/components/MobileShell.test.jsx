@@ -48,15 +48,15 @@ describe("MobileShell", () => {
     expect(screen.queryByLabelText("Filters")).not.toBeInTheDocument();
   });
 
-  test("hides the Filters button on Searches sub-tab (no list to filter)", () => {
+  test("hides the Filters button on the Lists landing (no list to filter)", () => {
     render(<MobileShell {...buildMockShellProps({
       tab: "watchlist",
-      watchTopTab: "searches",
+      watchTopTab: "lists",
     })} />);
     expect(screen.queryByLabelText("Filters")).not.toBeInTheDocument();
   });
 
-  test("renders the main tabs: Watches + Saved + Articles + Guides", () => {
+  test("renders the main tabs: Watches + Articles + Guides + Lists", () => {
     render(<MobileShell {...buildMockShellProps()} />);
     // 2026-06-03 IA restructure: Collecting dissolved into top-level
     // Articles + Reference Guides ("Guides" on mobile); "Lists" tab
@@ -64,7 +64,7 @@ describe("MobileShell", () => {
     // (src/topTabs.js). Brand title still says "Watchlist".
     expect(screen.getAllByText("Watchlist").length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText("Watches").length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByText("Saved").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText("Lists").length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText("Articles").length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText("Guides")).toBeInTheDocument();
     expect(screen.queryByText("Collecting")).not.toBeInTheDocument();
