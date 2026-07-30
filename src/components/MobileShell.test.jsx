@@ -28,6 +28,26 @@ describe("MobileShell", () => {
     expect(screen.getByLabelText("Filters")).toBeInTheDocument();
   });
 
+  // Watches > ♡ Saved (2026-07-30 IA move) — mirrors the DesktopShell pair.
+  test("Saved sub-tab: Filters available, ♥ Saved-only pill does not", () => {
+    render(<MobileShell {...buildMockShellProps({
+      tab: "listings",
+      listingsSubTab: "saved",
+      watchlist: { abc: { id: "abc" } },
+    })} />);
+    expect(screen.getByLabelText("Filters")).toBeInTheDocument();
+    expect(screen.queryByTitle("Show only saved")).not.toBeInTheDocument();
+  });
+
+  test("Saved sub-tab with nothing saved: Filters suppressed (U-11)", () => {
+    render(<MobileShell {...buildMockShellProps({
+      tab: "listings",
+      listingsSubTab: "saved",
+      watchlist: {},
+    })} />);
+    expect(screen.queryByLabelText("Filters")).not.toBeInTheDocument();
+  });
+
   test("hides the Filters button on Searches sub-tab (no list to filter)", () => {
     render(<MobileShell {...buildMockShellProps({
       tab: "watchlist",

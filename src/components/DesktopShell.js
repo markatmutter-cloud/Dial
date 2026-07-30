@@ -95,11 +95,15 @@ export function DesktopShell(props) {
   // Live auctions hides dealer chips for the same reason. Sold +
   // Calendar show both. Watchlist tab and other main tabs always
   // see both groups.
+  // Saved cuts across every state, so it needs BOTH source groups (a saved
+  // set can hold dealer listings and auction lots side by side).
   const showDealerSources  = !(tab === "listings" && listingsSubTab === "auctions");
   const showAuctionSources = !(tab === "listings" && listingsSubTab === "live");
   // Whether the filter row should render at all on this sub-tab.
   // Calendar sub-tab has no filterable list — hide the row.
   const showListingsFilterRow = !(tab === "listings" && listingsSubTab === "calendar");
+  // The Saved slice of Watches (2026-07-30 IA move).
+  const isListingsSaved = tab === "listings" && listingsSubTab === "saved";
 
   // Collapsing header (Mark 2026-06-02): on the auction catalog AND the Saved
   // (hearted) surface the title scrolls away while the filter bar pins. We move
@@ -116,7 +120,7 @@ export function DesktopShell(props) {
   // invite. No filter can change an empty underlying list, so the row
   // goes; the title (savedHeaderJSX) stays. (Mirrored in MobileShell.)
   const savedHeartedEmpty =
-    isSavedHearted && Object.keys(watchlist || {}).length === 0;
+    (isSavedHearted || isListingsSaved) && Object.keys(watchlist || {}).length === 0;
   const collapsingHeader = (!anyShareActive && !searchAllActive)
     ? (saleContextHeaderJSX || (isSavedHearted ? savedHeaderJSX : null))
     : null;
@@ -316,7 +320,9 @@ export function DesktopShell(props) {
           {/* ♥ Saved-only — moved IN with the noun filters (P-1, Mark
               2026-06-03): it's a filter, not a sort, so it sits after
               Source/Brand/Model rather than out by the sort pills. */}
-          {tab === "listings" && user && listingsSubTab !== "calendar" && (
+          {/* Hidden on the Saved sub-tab: everything there is already saved,
+              so the toggle could only ever be a no-op. */}
+          {tab === "listings" && user && listingsSubTab !== "calendar" && listingsSubTab !== "saved" && (
             <button onClick={() => setFilterHearted && setFilterHearted(!filterHearted)}
               aria-pressed={!!filterHearted}
               title={filterHearted ? "Show all" : "Show only saved"}
@@ -701,7 +707,7 @@ export function DesktopShell(props) {
         // useCollapse block below.
         if (useCollapse) return null;
         const showFullFilterRow =
-          (tab === "listings" && showListingsFilterRow) ||
+          (tab === "listings" && showListingsFilterRow && !savedHeartedEmpty) ||
           inListsDrillIn ||
           // Lists tab: the filter row belongs to the Hearted surface only
           // (2026-06-01). Lists / Searches / Shared are not filterable grids.

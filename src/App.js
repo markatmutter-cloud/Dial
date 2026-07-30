@@ -460,7 +460,14 @@ export default function Watchlist() {
   // the valid values depend on the active main tab. Persisted under
   // its own localStorage key so switching between Listings and
   // Watchlist doesn't reset the user's sub-tab choice on either side.
-  const LISTINGS_SUB_VALUES = ["live", "auctions", "sold"];
+  //   "saved"    — everything the user has hearted, ACROSS all states
+  //                (2026-07-30 IA move: the ♡ Saved surface left the Saved
+  //                tab and became a fourth slice of Watches, so the standard
+  //                filter bar applies to it like any other sub-tab. The ♥
+  //                filter pill can't do this job: it lives INSIDE a state
+  //                sub-tab, so it can only ever show saved-and-for-sale or
+  //                saved-and-at-auction, never the whole saved set.)
+  const LISTINGS_SUB_VALUES = ["live", "auctions", "sold", "saved"];
   const [listingsSubTab, setListingsSubTab] = useState(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
@@ -2552,7 +2559,11 @@ export default function Watchlist() {
     };
   }, [items]);
 
-  const allFiltered = useMemo(() => {
+  // The live-feed pipeline. `allFiltered` (defined below, after watchItems)
+  // is what the grid actually renders: on the Saved sub-tab it swaps in the
+  // saved set instead, because saved items must survive the listing coming
+  // down — they live in the watchlist snapshot, not in mainFeedItems.
+  const feedFiltered = useMemo(() => {
     // Listings tab: scope by sub-tab BEFORE any other narrowing.
     //   live      — currently-active dealer listings only
     //   auctions  — currently-active auction lots only (live or upcoming)
@@ -2665,8 +2676,9 @@ export default function Watchlist() {
     return its;
   }, [mainFeedItems, filterSources, filterBrands, filterModels, filterRefs, hidden, watchlist, search, sort, minPrice, maxPrice, newDays, listingsSubTab, filterHearted, effectiveSaleUrls]);
 
-  const visible = useMemo(() => allFiltered.slice(0, page * PAGE_SIZE), [allFiltered, page]);
-  const hasMore = visible.length < allFiltered.length;
+  // (`allFiltered` / `visible` / `hasMore` are defined after the watchItems
+  // memo below — the Saved sub-tab feeds off watchItems, so they can't be
+  // declared before it.)
 
   // Callback ref so the IntersectionObserver always tracks the current
   // loader DOM node, even if React swaps it out between page bumps.
@@ -2819,8 +2831,16 @@ export default function Watchlist() {
     // listing-only sub-tabs (Saved listings / auctions / sold) never
     // get an article. The "Saved articles" virtual row in Lists picks
     // them up via its own kind='article' filter pass.
+    // `watchlist_items` is shared with saved ARTICLES (kind='article') and
+    // saved REFERENCE GUIDES (kind='reference'); watches themselves carry no
+    // kind at all. Both non-watch kinds render through their own card
+    // components and belong to their own content tab, so strip them here.
+    // Guides were missing from this filter until 2026-07-30 — latent while
+    // the only consumer was HeartedView's watches branch, but it would have
+    // rendered a saved guide as a dealer Card the moment one existed.
+    const NON_WATCH_KINDS = new Set(["article", "reference"]);
     let its = Object.values({ ...savedItemsSnapshot, ...watchlist })
-      .filter(it => it && it.kind !== "article");
+      .filter(it => it && !NON_WATCH_KINDS.has(it.kind));
     // Tag each entry with its current liveness so we can split into
     // Live/Sold sub-views below. An item is "sold" if the live scrape
     // says it's sold/on-hold OR if it's no longer in the scrape at all
@@ -3075,6 +3095,26 @@ export default function Watchlist() {
   }, [watchlist, savedItemsSnapshot, liveStateById, sort, filterSources, filterBrands, filterModels, filterRefs, search,
       minPrice, maxPrice, watchTopTab,
       trackedLotUrls, trackedLotsState, trackedLotAddedAt]);
+
+  // What the Watches grid renders. Every sub-tab except Saved reads the live
+  // feed; Saved reads the saved set, which is built from the watchlist
+  // snapshot + tracked-lot projections so a watch you saved stays on screen
+  // after the dealer pulls the listing. Both arrays have already had the
+  // SAME filter predicates applied (source / brand / model / ref / search /
+  // price) and the same sort dispatch, so the shared filter bar drives the
+  // Saved sub-tab exactly as it drives the other three.
+  //
+  // Residual tech debt, deliberately not fixed here: those predicates are
+  // still written out twice (feedFiltered + watchItems). Unifying them is a
+  // mechanical extraction worth doing, but not in the same change as an IA
+  // move — the drift that mattered (filters silently not applying to the
+  // saved grid) is gone once both feed one grid through one bar.
+  const allFiltered = useMemo(
+    () => (tab === "listings" && listingsSubTab === "saved" ? watchItems : feedFiltered),
+    [tab, listingsSubTab, watchItems, feedFiltered]
+  );
+  const visible = useMemo(() => allFiltered.slice(0, page * PAGE_SIZE), [allFiltered, page]);
+  const hasMore = visible.length < allFiltered.length;
 
   // (watchLive / watchSold removed 2026-05-04 — Watchlist sub-tabs
   // now scope live vs sold up-front inside the watchItems memo.)
@@ -4010,15 +4050,30 @@ export default function Watchlist() {
         ))}
         {allFiltered.length === 0 && (
           <div style={{ gridColumn: "1/-1" }}>
+            {/* Saved with nothing saved is not a no-results state, it's an
+                invite — so it gets the heart and the explanation rather than
+                "Nothing matches" and a Clear-filters button that would do
+                nothing. Once something IS saved, filters can empty the grid
+                like anywhere else, and then the normal copy applies. */}
             <EmptyState
+              icon={
+                tab === "listings" && listingsSubTab === "saved" && !hasFilters
+                  ? "♡" : undefined
+              }
               heading={
-                tab === "listings" && listingsSubTab === "sold"
+                tab === "listings" && listingsSubTab === "saved"
+                  ? (hasFilters ? "No saved watches match your filters" : "Nothing saved yet")
+                  : tab === "listings" && listingsSubTab === "sold"
                   ? "No sold items match your filters"
                   : tab === "listings" && listingsSubTab === "auctions"
                   ? "No live auction lots match your filters"
                   : "Nothing matches"
               }
-              blurb={hasFilters ? "Loosen the filters and the feed will fill back up." : undefined}
+              blurb={
+                tab === "listings" && listingsSubTab === "saved" && !hasFilters
+                  ? "Tap the heart on any watch as you browse and it lands here, with the price you saved at, even after the dealer takes the listing down."
+                  : hasFilters ? "Loosen the filters and the feed will fill back up." : undefined
+              }
               action={hasFilters ? (
                 <button onClick={resetFilters} style={actionButton()}>Clear filters</button>
               ) : undefined}
@@ -4210,7 +4265,13 @@ export default function Watchlist() {
       // no meaning — outcome words make the row read as a real three-way
       // choice (for sale now / at auction / already sold). Internal key
       // stays `live`; only the label changes.
-      tabs={[["live", "For sale"], ["auctions", "Auctions"], ["sold", "Sold"]]}
+      // "Saved" (2026-07-30) is a fourth SLICE, not a fourth state: For sale /
+      // Auctions / Sold are where a watch sits in the market, Saved is your
+      // relationship to it, cutting across all three. It earns the slot
+      // anyway because nothing else can show your saved set whole — see the
+      // LISTINGS_SUB_VALUES note. Cards keep showing their own state, so the
+      // row still reads honestly.
+      tabs={[["live", "For sale"], ["auctions", "Auctions"], ["sold", "Sold"], ["saved", "♡ Saved"]]}
       activeKey={listingsSubTab}
       onSelect={(key) => { setListingsSubTab(key); setDrawerOpen(false); setPage(1); }}
       isMobile={isMobile}
@@ -4359,9 +4420,9 @@ export default function Watchlist() {
       // Admin × overlay on Home cards writes here (Home-only hide).
       // Signed-in user's most-recently hearted strip + View-all route.
       homeRecentlyHearted={homeRecentlyHearted}
-      // B-08: Watchlists is one unified screen; saved hearts live in
-      // the "Saved" band there. Land on the unified landing ("lists").
-      goToSavedHearts={() => { setTab("watchlist"); setWatchTopTab("hearted"); setPage(1); }}
+      // Saved watches live on Watches > ♡ Saved (2026-07-30 IA move), so
+      // Home's saved-hearts link lands there rather than on the Saved tab.
+      goToSavedHearts={() => { setTab("listings"); setListingsSubTab("saved"); setPage(1); }}
       // Dealer typeahead — popover under the search bar suggests
       // matching dealer names when the user starts typing. Clicking
       // a dealer routes to Listings filtered by that source.
@@ -5005,9 +5066,10 @@ export default function Watchlist() {
     // Routes through setTabWithReceiveEscape (Mark 2026-06-03): the raw
     // setTab changed the tab state but left an active share-receive surface
     // covering the content, so on share pages the heart looked dead — the
-    // wrapper dismisses the receiver (like the Home icon) and its cross-tab
-    // branch already lands Saved on the ♡ Saved sub-tab.
-    goToSaved: () => { setTabWithReceiveEscape("watchlist"); setWatchTopTab("hearted"); setPage(1); },
+    // wrapper dismisses the receiver (like the Home icon) before we route.
+    // 2026-07-30: destination moved from Saved > ♡ Watches to Watches > ♡
+    // Saved, the surface that now holds saved watches across every state.
+    goToSaved: () => { setTabWithReceiveEscape("listings"); setListingsSubTab("saved"); setPage(1); },
     setAboutModalOpen, setActiveFilterPop, setBrandsExpanded,
     setDrawerOpen,
     setFilterBrands, setFilterHearted, setFilterSources, setFilterModels, setFilterSaleUrls,

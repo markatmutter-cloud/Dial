@@ -62,6 +62,33 @@ describe("DesktopShell", () => {
     expect(screen.queryByRole("button", { name: /^Source/ })).not.toBeInTheDocument();
   });
 
+  // Watches > ♡ Saved (2026-07-30 IA move). The whole point of the sub-tab is
+  // that the standard filter bar applies to the saved set, so these pin the
+  // two things that would quietly undo it: the bar disappearing, and the
+  // ♥ Saved-only pill surviving into a view where it can only be a no-op.
+  test("Saved sub-tab: filter bar renders, ♥ Saved-only pill does not", () => {
+    window.innerWidth = 1440;
+    render(<DesktopShell {...buildMockShellProps({
+      tab: "listings",
+      listingsSubTab: "saved",
+      watchlist: { abc: { id: "abc" } },
+    })} />);
+    expect(screen.getByRole("button", { name: /^Source/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^Brand/ })).toBeInTheDocument();
+    expect(screen.queryByTitle("Show only saved")).not.toBeInTheDocument();
+  });
+
+  test("Saved sub-tab with nothing saved: filter bar suppressed (U-11)", () => {
+    // No filter can change an empty list — the empty state owns the screen.
+    window.innerWidth = 1440;
+    render(<DesktopShell {...buildMockShellProps({
+      tab: "listings",
+      listingsSubTab: "saved",
+      watchlist: {},
+    })} />);
+    expect(screen.queryByRole("button", { name: /^Source/ })).not.toBeInTheDocument();
+  });
+
   test("renders the listings tab content on the Listings tab", () => {
     render(<DesktopShell {...buildMockShellProps({ tab: "listings" })} />);
     expect(screen.getByTestId("listings-tab-content")).toBeInTheDocument();
