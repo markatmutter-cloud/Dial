@@ -19025,21 +19025,16 @@
     "model_line": null,
     "published_at": "2026-05-30",
     "reference_no": null,
-    "scraped_at": "2026-06-30T16:33:13Z",
+    "scraped_at": "2026-07-30T21:12:15Z",
     "slug": "darth-101-035-a-lange-sohne-lange-1",
     "sold_price_usd": 40000,
     "source": "hairspring_finds",
     "source_type": "editorial_finds",
     "sub_model": null,
-    "themes": [
-      "reference_profile",
-      "brand_history",
-      "design"
-    ],
     "title": "'Darth' 101.035 A. Lange & Söhne Lange 1",
     "updated_at": "2026-05-31",
     "url": "https://hairspring.com/blogs/finds/darth-101-035-a-lange-sohne-lange-1",
-    "word_count": 532
+    "word_count": 536
   },
   "https://hairspring.com/blogs/finds/darth-101-035-lange-1": {
     "author": "Erik Gustafson",
