@@ -106,6 +106,10 @@ export function buildMockShellProps(overrides = {}) {
     listingsGridJSX: <div data-testid="listings-grid" />,
     listingsTabContentJSX: <div data-testid="listings-tab-content" />,
     listingsSubTabsJSX: <div data-testid="listings-sub-tabs" />,
+    // Saved-search recall (2026-07-30): empty by default so the panel stays
+    // shut unless a test opts in.
+    savedSearches: [],
+    runSearch: noop,
     // Top-tab model (2026-07-30 IA: Watches · Articles · Reference Guides ·
     // Lists) — mirrors what App.js builds from src/topTabs.js, ORDER INCLUDED.
     // Keep this in step with topTabs.js or the shell tests assert a label the

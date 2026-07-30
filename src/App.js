@@ -5018,6 +5018,11 @@ export default function Watchlist() {
     // wrapper dismisses the receiver (like the Home icon) before we route.
     // 2026-07-30: destination moved from Saved > ♡ Watches to Watches > ♡
     // Saved, the surface that now holds saved watches across every state.
+    // Saved-search recall in the search bar (2026-07-30) — the shells render
+    // the panel; runSearch already applies query + price band and lands on
+    // Watches > For sale.
+    savedSearches: userSearches,
+    runSearch,
     goToSaved: () => { setTabWithReceiveEscape("listings"); setListingsSubTab("saved"); setPage(1); },
     setAboutModalOpen, setActiveFilterPop, setBrandsExpanded,
     setDrawerOpen,

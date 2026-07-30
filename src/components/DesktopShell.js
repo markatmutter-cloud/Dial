@@ -37,6 +37,8 @@ export function DesktopShell(props) {
     filterHearted, search, signInPromptOpen, signInWithGoogle, sort,
     tab, user, visibleBrands, visibleSources, visibleModels,
     goToSaved,
+    // Saved-search recall in the top-bar search (2026-07-30).
+    savedSearches, runSearch,
     MODELS, MODELS_SHOW, modelsExpanded, setModelsExpanded,
     watchTopTab, watchlist,
     // Setters / handlers
@@ -197,6 +199,11 @@ export function DesktopShell(props) {
       inputRef={topBarInputRef}
       placeholder={searchPlaceholder}
       ariaLabel="Search"
+      // Recall only where a saved search can actually run: it applies query +
+      // price band and lands you on Watches > For sale, so offering it while
+      // you're searching articles would promise the wrong destination.
+      savedSearches={tab === "listings" ? savedSearches : undefined}
+      onRunSavedSearch={runSearch}
       trailing={search && user ? (
         <button onClick={openFavPrompt}
           aria-label={currentIsSaved ? "Already saved" : "Save search as favorite"}
