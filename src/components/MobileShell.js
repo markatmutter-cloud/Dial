@@ -116,7 +116,9 @@ export function MobileShell(props) {
   // underlying list, so the row carries no function — let the empty
   // state own the screen. (Mirrored in DesktopShell.)
   const savedHeartedEmpty =
-    tab === "watchlist" && watchTopTab === "hearted" &&
+    ((tab === "watchlist" && watchTopTab === "hearted") ||
+     // The Saved slice of Watches (2026-07-30 IA move) — same suppression.
+     (tab === "listings" && listingsSubTab === "saved")) &&
     Object.keys(watchlist || {}).length === 0;
 
   const noFilterableList =
@@ -515,8 +517,9 @@ export function MobileShell(props) {
               feedback: should sit next to Date and Price for
               parity with desktop). Hidden on Calendar (no items).
               On Home the click routes to Listings via the
-              interact-routes effect in App.js. */}
-          {tab === "listings" && user && listingsSubTab !== "calendar" && (
+              interact-routes effect in App.js. Hidden on Saved too — every
+              item there is saved, so the toggle is a no-op. */}
+          {tab === "listings" && user && listingsSubTab !== "calendar" && listingsSubTab !== "saved" && (
             <button onClick={() => setFilterHearted && setFilterHearted(!filterHearted)}
               aria-pressed={!!filterHearted}
               title={filterHearted ? "Show all" : "Show only saved"}
