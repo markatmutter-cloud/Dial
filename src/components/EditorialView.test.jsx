@@ -10,9 +10,14 @@ import { EditorialView } from "./EditorialView";
 //
 // The corpus fetch is stubbed: the real one hits network URLs that don't
 // resolve in jsdom, and the chrome under test renders regardless of it.
+//
+// A PLAIN function, not jest.fn(): CRA sets `resetMocks: true`, which clears
+// every jest.fn implementation before each test, so a jest.fn stub returns
+// undefined by the time the component calls it — and `undefined.catch(...)`
+// throws inside the load effect.
 jest.mock("../utils", () => ({
   ...jest.requireActual("../utils"),
-  fetchJsonCached: jest.fn(() => Promise.resolve({})),
+  fetchJsonCached: () => Promise.resolve({}),
 }));
 
 const buildProps = (overrides = {}) => ({
