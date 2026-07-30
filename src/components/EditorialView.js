@@ -4,6 +4,7 @@ import { pillBase, clearAllPill, editorialTitle, cardGridStyle } from "../styles
 import { Chip } from "./Chip";
 import { PageHeader } from "./PageHeader";
 import { StandardFilterBar, StandardSearchInput } from "./StandardFilterBar";
+import SubTabBar from "./SubTabBar";
 import { shortHash, imgSrc, fetchJsonCached } from "../utils";
 import { HeartIcon } from "./icons";
 
@@ -488,14 +489,20 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
   // hasFilters has to be defined BEFORE the featured memo references
   // it — useMemo callbacks run synchronously on first render, so a
   // forward reference to a const declared further down hits the TDZ.
+  // `heartedOnly` deliberately NOT counted here since it became a sub-tab
+  // (2026-07-30): a sub-tab is a place you are, not a filter you applied, so
+  // it must not raise "× Clear all" on its own or get swept away by it. It
+  // still suppresses the Featured strip below, which is about whether the
+  // list is the default full feed, not about filter chrome.
   const hasFilters =
-    !!search.trim() || activeSources.length > 0 || activeBrands.length > 0 || heartedOnly;
+    !!search.trim() || activeSources.length > 0 || activeBrands.length > 0;
+  const isDefaultFeed = !hasFilters && !heartedOnly;
 
-  // Featured strip — shown only when no search / filter is active.
-  // Top N most-recent articles regardless of which source they came
-  // from. When filters fire, the user has an intent and the featured
+  // Featured strip — shown only on the default full feed. Top N most-recent
+  // articles regardless of which source they came from. When filters fire, or
+  // the user is on the Saved sub-tab, they have an intent and the featured
   // strip would just be visual noise above their results.
-  const showFeatured = !hasFilters;
+  const showFeatured = isDefaultFeed;
   const featured = useMemo(() => {
     if (!showFeatured) return [];
     return [...visibleArticles]
@@ -529,7 +536,6 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
     setSearch("");
     setActiveSources([]);
     setActiveBrands([]);
-    setHeartedOnly(false);
     setActiveFilterPop(null);
   };
 
@@ -579,6 +585,21 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
   // keeps the inline sticky wrapper (its chrome differs; not the B-01 surface).
   const editorialFilterChrome = (
     <>
+      {/* Saved is a SUB-TAB, not a filter pill (2026-07-30). It used to be a
+          ♥ Saved pill sitting among Source / Brand, where it read as one more
+          way to narrow the list and went unnoticed for months — even by Mark,
+          who asked for the feature that already existed. Every content tab now
+          expresses "saved" the same way: a segmented sub-tab row above the
+          filter bar (Watches: For sale / Auctions / Sold / ♡ Saved). Same
+          `heartedOnly` state underneath; only the affordance changed. */}
+      <SubTabBar
+        ariaLabel="Article views"
+        tabs={[["all", "All"], ["saved", "♡ Saved"]]}
+        activeKey={heartedOnly ? "saved" : "all"}
+        onSelect={(key) => setHeartedOnly(key === "saved")}
+        isMobile={isMobile}
+        containerStyle={{ padding: isMobile ? "2px 0 8px" : "4px 0 10px" }}
+      />
       {/* In-Editorial search input retired 2026-05-21 (Mark spec):
           the global top-bar search now serves Editorial too, with a
           context-aware placeholder. The shells (DesktopShell +
@@ -623,15 +644,8 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
               style={pillBase(activeBrands.length > 0 || activeFilterPop === "brand", { compact: true })}>
               Brand{activeBrands.length > 0 ? ` · ${activeBrands.length}` : ""}
             </button>
-            {/* Saved-only toggle (internally heartedOnly). Label is "♥ Saved",
-                never "Hearted" (Mark 2026-06-03 — see no-hearted-label rule). */}
-            <button
-              onClick={() => setHeartedOnly(v => !v)}
-              aria-pressed={heartedOnly}
-              title={heartedOnly ? "Showing saved articles only" : "Filter to saved articles"}
-              style={pillBase(heartedOnly, { compact: true })}>
-              ♥ Saved
-            </button>
+            {/* (The ♥ Saved pill moved out to the sub-tab row above — see the
+                note on SubTabBar in editorialFilterChrome.) */}
             {/* × Clear all — shared olive clearAllPill (same as Listings). */}
             {hasFilters && (
               <button onClick={clearAll} style={clearAllPill}>× Clear all</button>
@@ -766,7 +780,12 @@ export function EditorialView({ isMobile, cols, compact, gridStyle, watchlist, h
             border: "0.5px dashed var(--border)", borderRadius: 8,
             marginTop: 16,
           }}>
-            No articles match your filters.
+            {/* On the Saved sub-tab with nothing saved this is an invite, not
+                a no-results message — "match your filters" would be wrong
+                twice over (no filters are set, and none would help). */}
+            {heartedOnly && !hasFilters
+              ? "Nothing saved yet. Tap the heart on any article and it lands here."
+              : "No articles match your filters."}
           </div>
         )}
 

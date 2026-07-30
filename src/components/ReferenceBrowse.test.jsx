@@ -12,7 +12,13 @@ describe("ReferenceBrowse", () => {
     render(<ReferenceBrowse items={[]} />);
     expect(screen.getByText("Reference guides")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /^Brand/ })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Saved/ })).toBeInTheDocument();
+    // 2026-07-30: ♥ Saved stopped being a filter pill and became a sub-tab
+    // (role="tab"), matching Watches and Articles. Asserting the ROLE is the
+    // point of the test — as a `button` it was indistinguishable from the
+    // filter pills beside it, which is exactly why nobody found it.
+    expect(screen.getByRole("tab", { name: /Saved/ })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: /^All$/ })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Saved/ })).not.toBeInTheDocument();
     // Guide cards carry "BRAND · MODEL LINE" kickers from the node registry.
     expect(screen.getAllByText(/Rolex/).length).toBeGreaterThanOrEqual(1);
   });
