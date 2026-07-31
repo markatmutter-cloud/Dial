@@ -5533,22 +5533,16 @@
     "model_line": null,
     "published_at": "2026-06-30",
     "reference_no": null,
-    "scraped_at": "2026-07-01T16:34:08Z",
+    "scraped_at": "2026-07-31T21:09:39Z",
     "slug": "25668ba-audemars-piguet-perpetual-calendar",
     "sold_price_usd": 65000,
     "source": "hairspring_finds",
     "source_type": "editorial_finds",
     "sub_model": null,
-    "themes": [
-      "reference_profile",
-      "complications",
-      "brand_history",
-      "design"
-    ],
     "title": "25668BA Audemars Piguet Perpetual Calendar Skeleton",
-    "updated_at": "2026-07-01",
+    "updated_at": "2026-07-17",
     "url": "https://hairspring.com/blogs/finds/25668ba-audemars-piguet-perpetual-calendar",
-    "word_count": 420
+    "word_count": 416
   },
   "https://hairspring.com/blogs/finds/25668ba-audemars-piguet-perpetual-calendar-skeleton": {
     "author": "Erik Gustafson",
