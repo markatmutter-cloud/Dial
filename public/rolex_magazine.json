@@ -10100,7 +10100,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "design"
+    ],
     "title": "Rolex Coronet Close Up",
     "updated_at": "2008-11-25",
     "url": "https://www.rolexmagazine.com/2008/06/rolex-coronet-close-up.html",
@@ -14506,7 +14508,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "collecting_philosophy"
+    ],
     "title": "Jake's Quote of the Day: Beating to your own drum...",
     "updated_at": "2008-07-06",
     "url": "https://www.rolexmagazine.com/2008/07/jakes-quote-of-day-beating-to-your-own.html",
@@ -16167,7 +16171,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "design"
+    ],
     "title": "Rolex Macro Shot of the Day: Rolex Yahchtmast II in White Gold..",
     "updated_at": "2010-06-02",
     "url": "https://www.rolexmagazine.com/2008/08/rolex-macro-shot-of-day-rolex.html",
@@ -28663,7 +28669,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "design"
+    ],
     "title": "Rolex Macro Shot: GMT Coronet",
     "updated_at": "2024-08-16",
     "url": "https://www.rolexmagazine.com/2009/05/rolex-macro-shot-gmt-coronet.html",
@@ -31201,7 +31209,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "community_ethics"
+    ],
     "title": "World's Funniest Rolex Photo!!!",
     "updated_at": "2009-12-19",
     "url": "https://www.rolexmagazine.com/2009/06/worlds-funniest-rolex-photo.html",
@@ -35073,7 +35083,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "celebrity"
+    ],
     "title": "Rolex Hotness: Victoria Secret Model",
     "updated_at": "2012-06-25",
     "url": "https://www.rolexmagazine.com/2009/11/rolex-hotness-victoria-secret-model.html",
@@ -45582,7 +45594,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "review"
+    ],
     "title": "Rolex Lume Shot oF The Day: Chris' LV Submariner",
     "updated_at": "2024-07-06",
     "url": "https://www.rolexmagazine.com/2010/06/rolex-lume-shot-of-day-chris-lv.html",
@@ -45608,7 +45622,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "design"
+    ],
     "title": "Rolex Macro Shot Of The Day Bill's Fluted White Gold Bezel",
     "updated_at": "2015-07-25",
     "url": "https://www.rolexmagazine.com/2010/06/rolex-macro-shot-of-day-bills-fluted.html",
@@ -45689,7 +45705,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "community_ethics"
+    ],
     "title": "Please Allow Me To Introduce Myself...",
     "updated_at": "2010-06-01",
     "url": "https://www.rolexmagazine.com/2010/06/rolex-on-nato-straps.html",
@@ -51925,7 +51943,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "brand_history"
+    ],
     "title": "1928 Rolex Ad",
     "updated_at": "2011-03-12",
     "url": "https://www.rolexmagazine.com/2011/03/1928-rolex-ad.html",
@@ -77955,7 +77975,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "brand_history"
+    ],
     "title": "Rolex & National Geographic",
     "updated_at": "2018-08-04",
     "url": "https://www.rolexmagazine.com/2018/07/rolex-national-geographic.html",
@@ -89219,7 +89241,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "racing"
+    ],
     "title": "Fastnet RADical Rolex Race  Preview 2021",
     "updated_at": "2021-08-14",
     "url": "https://www.rolexmagazine.com/2021/08/fastnet-radical-rolex-race-preview-2021.html",
@@ -89834,7 +89858,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "reference_profile"
+    ],
     "title": "THE ROLEX SUBMARINER",
     "updated_at": "2021-09-07",
     "url": "https://www.rolexmagazine.com/2021/09/the-rolex-submariner.html",
