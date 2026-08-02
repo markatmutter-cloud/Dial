@@ -1,10 +1,10 @@
 {
   "date": "2026-08-02",
-  "updated_at": "2026-08-02T06:02:14+00:00",
+  "updated_at": "2026-08-02T15:40:24+00:00",
   "alerts": [],
   "counts": {
     "Wind Vintage": 109,
-    "Tropical Watch": 118,
+    "Tropical Watch": 115,
     "Menta Watches": 39,
     "Collectors Corner NY": 71,
     "Falco Watches": 64,
@@ -40,7 +40,7 @@
     "Watch Club": 54,
     "Vintage Watch Shop": 27,
     "Watches of Lancashire": 52,
-    "Heuertime": 24,
+    "Heuertime": 29,
     "ClassicHeuer": 39,
     "Luna Royster": 36,
     "S.Song Watches": 22,
@@ -48,6 +48,6 @@
     "Watch Center": 264,
     "eBay": 28
   },
-  "total_listings": 4114,
+  "total_listings": 4116,
   "sources_tracked": 44
 }
