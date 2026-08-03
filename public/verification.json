@@ -1,6 +1,6 @@
 {
-  "date": "2026-08-02",
-  "updated_at": "2026-08-02T21:26:40+00:00",
+  "date": "2026-08-03",
+  "updated_at": "2026-08-03T06:13:19+00:00",
   "alerts": [],
   "counts": {
     "Wind Vintage": 108,
@@ -13,9 +13,9 @@
     "Romain R\u00e9a": 236,
     "Grey & Patina": 54,
     "Oliver & Clarke": 110,
-    "Craft & Tailored": 66,
+    "Craft & Tailored": 65,
     "Watch Brothers London": 7,
-    "MVV Watches": 38,
+    "MVV Watches": 37,
     "DB1983": 22,
     "Hairspring": 31,
     "Somlo": 184,
@@ -28,8 +28,7 @@
     "Moonphase": 19,
     "Huntington Company": 85,
     "The Vintage Watch": 30,
-    "Chronoholic": 4,
-    "Vintage Watch Fam": 509,
+    "Vintage Watch Fam": 508,
     "Shuck the Oyster": 144,
     "Central Watch": 174,
     "European Watch": 22,
@@ -46,8 +45,9 @@
     "S.Song Watches": 22,
     "Swiss Hours": 69,
     "Watch Center": 264,
-    "eBay": 28
+    "eBay": 28,
+    "Chronoholic": 119
   },
-  "total_listings": 4116,
+  "total_listings": 4228,
   "sources_tracked": 44
 }
