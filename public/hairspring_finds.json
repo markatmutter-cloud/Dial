@@ -2383,20 +2383,16 @@
     "model_line": null,
     "published_at": "2026-07-06",
     "reference_no": null,
-    "scraped_at": "2026-07-07T16:37:27Z",
+    "scraped_at": "2026-08-07T01:09:59Z",
     "slug": "151-021-a-lange-sohne-lange-1-wellendorff",
     "sold_price_usd": 75000,
     "source": "hairspring_finds",
     "source_type": "editorial_finds",
     "sub_model": null,
-    "themes": [
-      "reference_profile",
-      "design"
-    ],
     "title": "151.021 A. Lange & Söhne Lange 1 Wellendorff",
     "updated_at": "2026-07-07",
     "url": "https://hairspring.com/blogs/finds/151-021-a-lange-sohne-lange-1-wellendorff",
-    "word_count": 347
+    "word_count": 348
   },
   "https://hairspring.com/blogs/finds/1518-patek-philippe-perpetual-calendar-chronograph-in-pink-gold": {
     "author": "Erik Gustafson",
@@ -31831,20 +31827,16 @@
     "model_line": null,
     "published_at": "2026-06-06",
     "reference_no": null,
-    "scraped_at": "2026-07-07T16:37:28Z",
+    "scraped_at": "2026-08-07T01:10:01Z",
     "slug": "piece-unique-voutilainen-28sc",
     "sold_price_usd": 175000,
     "source": "hairspring_finds",
     "source_type": "editorial_finds",
     "sub_model": null,
-    "themes": [
-      "reference_profile",
-      "design"
-    ],
     "title": "Piece Unique Voutilainen 28SC",
     "updated_at": "2026-06-07",
     "url": "https://hairspring.com/blogs/finds/piece-unique-voutilainen-28sc",
-    "word_count": 306
+    "word_count": 312
   },
   "https://hairspring.com/blogs/finds/piece-unique-voutilainen-lesprit-du-bois-decimal-repeater": {
     "author": "Erik Gustafson",
