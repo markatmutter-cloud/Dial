@@ -1,18 +1,10 @@
 {
-  "maunderwatches": {
-    "misses": 1,
-    "reason": "no CSV produced this run"
-  },
   "mvvwatches": {
-    "misses": 8,
-    "reason": "no CSV produced this run"
-  },
-  "watchesoflancashire": {
-    "misses": 1,
+    "misses": 9,
     "reason": "no CSV produced this run"
   },
   "wok": {
-    "misses": 11,
+    "misses": 12,
     "reason": "no CSV produced this run"
   }
 }
