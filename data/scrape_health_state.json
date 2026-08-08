@@ -1,18 +1,18 @@
 {
-  "maunderwatches": {
+  "Vintage Watch Shop": {
     "misses": 1,
+    "reason": "verify_sources ERROR: source absent from today's listings (was present yesterday)"
+  },
+  "maunderwatches": {
+    "misses": 2,
     "reason": "no CSV produced this run"
   },
   "mvvwatches": {
-    "misses": 11,
-    "reason": "no CSV produced this run"
-  },
-  "watchesoflancashire": {
-    "misses": 1,
+    "misses": 12,
     "reason": "no CSV produced this run"
   },
   "wok": {
-    "misses": 14,
+    "misses": 15,
     "reason": "no CSV produced this run"
   }
 }
