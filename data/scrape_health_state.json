@@ -1,14 +1,10 @@
 {
-  "Vintage Watch Shop": {
-    "misses": 1,
-    "reason": "verify_sources ERROR: source absent from today's listings (was present yesterday)"
-  },
   "mvvwatches": {
-    "misses": 15,
+    "misses": 16,
     "reason": "no CSV produced this run"
   },
   "wok": {
-    "misses": 18,
+    "misses": 19,
     "reason": "no CSV produced this run"
   }
 }
