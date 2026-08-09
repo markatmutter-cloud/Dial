@@ -1,26 +1,14 @@
 {
-  "Vintage Watch Collective": {
-    "misses": 1,
-    "reason": "verify_sources ERROR: source absent from today's listings (was present yesterday)"
-  },
   "maunderwatches": {
-    "misses": 3,
+    "misses": 4,
     "reason": "no CSV produced this run"
   },
   "mvvwatches": {
-    "misses": 13,
-    "reason": "no CSV produced this run"
-  },
-  "vintagewatchcollective": {
-    "misses": 1,
-    "reason": "no CSV produced this run"
-  },
-  "watchesoflancashire": {
-    "misses": 1,
+    "misses": 14,
     "reason": "no CSV produced this run"
   },
   "wok": {
-    "misses": 16,
+    "misses": 17,
     "reason": "no CSV produced this run"
   }
 }

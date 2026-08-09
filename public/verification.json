@@ -1,33 +1,25 @@
 {
-  "date": "2026-08-08",
-  "updated_at": "2026-08-08T21:06:14+00:00",
-  "alerts": [
-    {
-      "source": "Vintage Watch Collective",
-      "level": "ERROR",
-      "today": 0,
-      "previous": 37,
-      "note": "source absent from today's listings (was present yesterday)"
-    }
-  ],
+  "date": "2026-08-09",
+  "updated_at": "2026-08-09T04:00:14+00:00",
+  "alerts": [],
   "counts": {
-    "Wind Vintage": 105,
+    "Wind Vintage": 106,
     "Tropical Watch": 123,
     "Menta Watches": 57,
     "Collectors Corner NY": 70,
     "Falco Watches": 64,
-    "Pascal Karp": 87,
+    "Pascal Karp": 86,
     "Tokant": 36,
     "Romain R\u00e9a": 232,
-    "Grey & Patina": 63,
+    "Grey & Patina": 64,
     "Oliver & Clarke": 113,
     "Craft & Tailored": 79,
     "Watch Brothers London": 7,
     "MVV Watches": 35,
     "DB1983": 28,
     "Hairspring": 30,
-    "Somlo": 184,
-    "Analog Shift": 670,
+    "Somlo": 183,
+    "Analog Shift": 674,
     "Watches of Knightsbridge": 81,
     "Belmont Watches": 23,
     "Bob's Watches": 48,
@@ -41,11 +33,11 @@
     "Shuck the Oyster": 127,
     "Central Watch": 171,
     "European Watch": 20,
-    "Vision Vintage Watches": 65,
+    "Vintage Watch Collective": 30,
+    "Vision Vintage Watches": 61,
     "Watchurbia": 5,
     "Maunder Watches": 76,
-    "Watch Club": 59,
-    "Vintage Watch Shop": 29,
+    "Watch Club": 58,
     "Watches of Lancashire": 55,
     "Heuertime": 30,
     "ClassicHeuer": 39,
@@ -53,8 +45,9 @@
     "S.Song Watches": 22,
     "Swiss Hours": 70,
     "Watch Center": 262,
-    "eBay": 32
+    "eBay": 32,
+    "Vintage Watch Shop": 29
   },
-  "total_listings": 4128,
-  "sources_tracked": 43
+  "total_listings": 4157,
+  "sources_tracked": 44
 }
