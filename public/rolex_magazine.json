@@ -11148,7 +11148,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "design"
+    ],
     "title": "Rolex Lume Shot of the Day: LV Coolness...",
     "updated_at": "2008-11-24",
     "url": "https://www.rolexmagazine.com/2008/06/rolex-lume-shot-of-day-lv-coolness.html",
@@ -39999,7 +40001,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "celebrity"
+    ],
     "title": "Rolex Coolness: Bill Cosby Wonderfulness...",
     "updated_at": "2010-02-24",
     "url": "https://www.rolexmagazine.com/2010/02/rolex-coolness-bill-cosby-wonderfulness.html",
@@ -43857,7 +43861,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "design"
+    ],
     "title": "Stefano Mazzariol Rolex Bezel Shot Of The Day",
     "updated_at": "2024-02-16",
     "url": "https://www.rolexmagazine.com/2010/04/stefano-mazzariol-rolex-bezel-shot-of.html",
@@ -82134,7 +82140,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "brand_history"
+    ],
     "title": "Rolex Celebrates 5 New Laureates @ 2019 Rolex Awards",
     "updated_at": "2019-06-19",
     "url": "https://www.rolexmagazine.com/2019/06/rolex-celebrates-5-new-laureates-2019.html",
@@ -90848,7 +90856,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "brand_history"
+    ],
     "title": "Rolex Sydney Hobart Yacht Race",
     "updated_at": "2022-02-07",
     "url": "https://www.rolexmagazine.com/2022/02/rolex-sydney-hobart-yacht-race.html",
