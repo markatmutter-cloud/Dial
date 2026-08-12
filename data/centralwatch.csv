@@ -2,8 +2,7 @@ title,brand,price,url,img,description,source,sold
 2010 Rolex Submariner Date 116613,Rolex,13500,https://centralwatch.com/shop/pre-owned/rolex-submariner-date-2922,https://centralwatch.com/images/products/prod_1986_8001_medium.png,,Central Watch,False
 1979 Rolex Day-Date 18038,Rolex,34995,https://centralwatch.com/shop/pre-owned/rolex-day-date-2876,https://centralwatch.com/images/products/prod_1938_7669_medium.png,,Central Watch,False
 2017 Rolex Oyster Perpetual Datejust 116233,Rolex,10500,https://centralwatch.com/shop/pre-owned/rolex-oyster-perpetual-datejust-2911,https://centralwatch.com/images/products/prod_1980_7947_medium.png,,Central Watch,False
-2022 Rolex Oyster Perpetual 36 126000,Rolex,12995,https://centralwatch.com/shop/pre-owned/rolex-oyster-perpetual-36-2879,https://centralwatch.com/images/products/prod_1955_7775_medium.png,,Central Watch,False
-1994 Cartier Tank Américaine W2603256-1741,Cartier,9995,https://centralwatch.com/shop/pre-owned/cartier-tank-am-ricaine-2898,https://centralwatch.com/images/products/prod_1979_7939_medium.png,,Central Watch,False
+2022 Rolex Oyster Perpetual 36 126000,Rolex,9995,https://centralwatch.com/shop/pre-owned/rolex-oyster-perpetual-36-2879,https://centralwatch.com/images/products/prod_1955_7775_medium.png,,Central Watch,False
 1999 Cartier Tank Basculante W1011258-2405,Cartier,7995,https://centralwatch.com/shop/pre-owned/cartier-tank-basculante-2883,https://centralwatch.com/images/products/prod_1983_7970_medium.png,,Central Watch,False
 1990's Franck Muller Cintrée Curvex 2852SC,Franck Muller,7250,https://centralwatch.com/shop/pre-owned/franck-muller-cintr-e-curvex-3892,https://centralwatch.com/images/products/prod_1930_7593_medium.png,,Central Watch,False
 2000's Audemars Piguet Royal Oak Lady 67601BA.ZZ.D012CR.03,Audemars Piguet,23500,https://centralwatch.com/shop/pre-owned/audemars-piguet-royal-oak-lady,https://centralwatch.com/images/products/prod_1939_7655_medium.png,,Central Watch,False
@@ -22,7 +21,7 @@ title,brand,price,url,img,description,source,sold
 2020's Rolex Oyster Perpetual Datejust 126200,Rolex,6995,https://centralwatch.com/shop/pre-owned/rolex-oyster-perpetual-datejust-36,https://centralwatch.com/images/products/prod_1590_4911_medium.png,,Central Watch,False
 2005 Rolex Oyster Perpetual Datejust 116233,Rolex,13500,https://centralwatch.com/shop/pre-owned/rolex-oyster-perpetual-datejust-2,https://centralwatch.com/images/products/prod_1778_6390_medium.png,,Central Watch,False
 1991 Rolex Oyster Perpetual Datejust 16233,Rolex,7500,https://centralwatch.com/shop/pre-owned/rolex-oyster-perpetual-datejust-2873,https://centralwatch.com/images/products/prod_1952_7755_medium.png,,Central Watch,False
-2007 Rolex Ladies Oyster Perpetual Datejust 178240,Rolex,6550,https://centralwatch.com/shop/pre-owned/rolex-ladies-oyster-perpetual-datejust-1848,https://centralwatch.com/images/products/prod_968_3208_medium.png,,Central Watch,False
+2007 Rolex Ladies Oyster Perpetual Datejust 178240,Rolex,10500,https://centralwatch.com/shop/pre-owned/rolex-ladies-oyster-perpetual-datejust-1848,https://centralwatch.com/images/products/prod_968_3208_medium.png,,Central Watch,False
 1968 Rolex Ladies Oyster Perpetual Date 1503,Rolex,11500,https://centralwatch.com/shop/pre-owned/rolex-ladies-oyster-perpetual-date-1503,https://centralwatch.com/images/products/prod_1503_4679_medium.png,,Central Watch,False
 1995 Rolex Lady-Datejust Pearlmaster 69298,Rolex,24995,https://centralwatch.com/shop/pre-owned/rolex-lady-datejust-pearlmaster,https://centralwatch.com/images/products/prod_1940_7662_medium.png,,Central Watch,False
 2020 Rolex Lady-Datejust 279174,Rolex,16500,https://centralwatch.com/shop/pre-owned/rolex-lady-datejust-2878,https://centralwatch.com/images/products/prod_1926_7563_medium.png,,Central Watch,False
@@ -39,7 +38,6 @@ title,brand,price,url,img,description,source,sold
 2001 Rolex Datejust 36 16233,Rolex,8995,https://centralwatch.com/shop/pre-owned/rolex-datejust-36-2869,https://centralwatch.com/images/products/prod_1885_7290_medium.png,,Central Watch,False
 1984 Rolex Datejust 31 68240,Rolex,5995,https://centralwatch.com/shop/pre-owned/rolex-datejust-31-1758,https://centralwatch.com/images/products/prod_1849_6971_medium.png,,Central Watch,False
 2025 Rolex Sky-Dweller 336934,Rolex,27500,https://centralwatch.com/shop/pre-owned/rolex-sky-dweller,https://centralwatch.com/images/products/prod_1753_6176_medium.png,,Central Watch,False
-1986 Rolex Cellini 4083C,Rolex,11995,https://centralwatch.com/shop/pre-owned/rolex-cellini-2864,https://centralwatch.com/images/products/prod_1876_7214_medium.png,,Central Watch,False
 1995 Rolex Oyster Perpetual 67183,Rolex,14000,https://centralwatch.com/shop/pre-owned/rolex-oyster-perpetual-2909,https://centralwatch.com/images/products/prod_1961_7837_medium.png,,Central Watch,False
 1950's Patek Philippe Vintage Manual 2506/1,Patek Philippe,8495,https://centralwatch.com/shop/pre-owned/patek-philippe-vintage-manual,https://centralwatch.com/images/products/prod_1444_4287_medium.png,,Central Watch,False
 1970's Patek Philippe White Gold Square 3494,Patek Philippe,7500,https://centralwatch.com/shop/pre-owned/patek-philippe-white-gold-square,https://centralwatch.com/images/products/prod_1425_4208_medium.png,,Central Watch,False
@@ -64,6 +62,7 @@ title,brand,price,url,img,description,source,sold
 2012 Cartier Ballon Bleu W69005Z2,Cartier,29995,https://centralwatch.com/shop/pre-owned/cartier-ballon-bleu-,https://centralwatch.com/images/products/prod_1631_5234_medium.png,,Central Watch,False
 1990's Cartier Cougar 887904,Cartier,11500,https://centralwatch.com/shop/pre-owned/cartier-cougar-2887,https://centralwatch.com/images/products/prod_1933_7613_medium.png,,Central Watch,False
 1990 Cartier Santos Ronde 1561 1,Cartier,3250,https://centralwatch.com/shop/pre-owned/cartier-santos-ronde-3894,https://centralwatch.com/images/products/prod_1934_7619_medium.png,,Central Watch,False
+1994 Cartier Tank Américaine W2603256-1741,Cartier,9995,https://centralwatch.com/shop/pre-owned/cartier-tank-am-ricaine-2898,https://centralwatch.com/images/products/prod_1979_7939_medium.png,,Central Watch,False
 2000's Cartier Tri Color Trinity Draped Multicolor Chain Necklace,Cartier,9750,https://centralwatch.com/shop/pre-owned/cartier-tri-color-trinity-draped-multicolor-chain-necklace,https://centralwatch.com/images/products/prod_1647_5448_medium.png,,Central Watch,False
 2021 Cartier Tank Must WSTA0042-4322,Cartier,3995,https://centralwatch.com/shop/pre-owned/cartier-tank-must-8314,https://centralwatch.com/images/products/prod_1976_7911_medium.png,,Central Watch,False
 2000 Cartier Tank Chinoise 2305,Cartier,14250,https://centralwatch.com/shop/pre-owned/cartier-tank-chinoise,https://centralwatch.com/images/products/prod_1695_5698_medium.png,,Central Watch,False
