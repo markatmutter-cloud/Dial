@@ -6206,7 +6206,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "review"
+    ],
     "title": "Rolex Wrist Shot of The Day: Rolex LV Submariner...",
     "updated_at": "2008-11-25",
     "url": "https://www.rolexmagazine.com/2008/05/wrist-shot-of-day.html",
@@ -15872,7 +15874,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "design"
+    ],
     "title": "Macro Shots of the Month...",
     "updated_at": "2008-11-24",
     "url": "https://www.rolexmagazine.com/2008/08/macro-shots-of-month.html",
@@ -17441,7 +17445,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "collector_mindset"
+    ],
     "title": "Rolex Hotness: More is More...",
     "updated_at": "2008-11-23",
     "url": "https://www.rolexmagazine.com/2008/10/rolex-hotness-more-is-more.html",
@@ -19063,7 +19069,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "celebrity"
+    ],
     "title": "Rolex Hotness: Tara Reid...",
     "updated_at": "2012-07-14",
     "url": "https://www.rolexmagazine.com/2008/11/rolex-hotness-tara-reid.html",
@@ -29709,7 +29717,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "celebrity"
+    ],
     "title": "Flipper Friday Season 1 [Episode 8: Countdown For Flipper]",
     "updated_at": "2009-06-12",
     "url": "https://www.rolexmagazine.com/2009/06/flipper-friday-season-1-episode-8.html",
@@ -34470,7 +34480,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "design"
+    ],
     "title": "Macro Shot of the Day: Rolex Crown",
     "updated_at": "2009-11-28",
     "url": "https://www.rolexmagazine.com/2009/11/macro-shot-of-day-rolex-crown.html",
@@ -35872,7 +35884,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "life_lessons"
+    ],
     "title": "An Amazing Christmas Wish & Stunning Time Quote!!!!",
     "updated_at": "2009-12-26",
     "url": "https://www.rolexmagazine.com/2009/12/amazing-christmas-wish-stunning-time.html",
@@ -52656,7 +52670,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "design"
+    ],
     "title": "Rolex Lume Shot Of The Day...",
     "updated_at": "2016-02-26",
     "url": "https://www.rolexmagazine.com/2011/03/rolex-lume-shot-of-day-hourglass-rolex.html",
@@ -53855,7 +53871,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "brand_history"
+    ],
     "title": "1988 U.S. Sailing Team Rolex Ad",
     "updated_at": "2016-08-22",
     "url": "https://www.rolexmagazine.com/2011/05/1988-us-sailing-team-rolex-ad.html",
@@ -63741,7 +63759,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "brand_history"
+    ],
     "title": "Happy Thanksgiving from Jake!!!",
     "updated_at": "2013-11-27",
     "url": "https://www.rolexmagazine.com/2013/11/happy-thanksgiving-from-jake.html",
@@ -70717,7 +70737,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "reference_profile"
+    ],
     "title": "2005 Rolex Explorer II 40MM Polar White Dial",
     "updated_at": "2025-05-25",
     "url": "https://www.rolexmagazine.com/2016/11/2005-rolex-explorer-ii-40mm-polar-white.html",
@@ -87158,7 +87180,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "collecting_philosophy"
+    ],
     "title": "A Note from Jake: Happy Thanksgiving",
     "updated_at": "2020-11-28",
     "url": "https://www.rolexmagazine.com/2020/11/a-note-from-jake-happy-thanksgiving.html",
@@ -98046,7 +98070,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "design"
+    ],
     "title": "Vintage Rolex Milgauss Rolex Magazine Ad",
     "updated_at": "2025-12-20",
     "url": "https://www.rolexmagazine.com/2025/02/vintage-rolex-milgauss-rolex-magazine-ad.html",
@@ -99348,7 +99374,9 @@
     "source": "rolex_magazine",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "design"
+    ],
     "title": "For the LOVE of PEPSI",
     "updated_at": "2026-06-21",
     "url": "https://www.rolexmagazine.com/2025/09/for-love-of-pepsi.html",
