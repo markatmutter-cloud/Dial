@@ -1,12 +1,12 @@
 {
-  "date": "2026-08-15",
-  "updated_at": "2026-08-15T20:46:35+00:00",
+  "date": "2026-08-16",
+  "updated_at": "2026-08-16T04:04:19+00:00",
   "alerts": [],
   "counts": {
-    "Wind Vintage": 112,
+    "Wind Vintage": 99,
     "Tropical Watch": 129,
     "Menta Watches": 51,
-    "Collectors Corner NY": 83,
+    "Collectors Corner NY": 82,
     "Falco Watches": 59,
     "Pascal Karp": 86,
     "Tokant": 37,
@@ -19,7 +19,7 @@
     "DB1983": 26,
     "Hairspring": 28,
     "Somlo": 183,
-    "Analog Shift": 718,
+    "Analog Shift": 717,
     "Watches of Knightsbridge": 81,
     "Belmont Watches": 23,
     "Bob's Watches": 51,
@@ -34,10 +34,11 @@
     "Central Watch": 180,
     "European Watch": 15,
     "Vintage Watch Collective": 29,
-    "Vision Vintage Watches": 64,
+    "Vision Vintage Watches": 63,
     "Watchurbia": 3,
     "Maunder Watches": 76,
-    "Watch Club": 57,
+    "Watch Club": 55,
+    "Vintage Watch Shop": 30,
     "Watches of Lancashire": 55,
     "Heuertime": 30,
     "ClassicHeuer": 39,
@@ -45,9 +46,8 @@
     "S.Song Watches": 22,
     "Swiss Hours": 73,
     "Watch Center": 261,
-    "eBay": 29,
-    "Vintage Watch Shop": 30
+    "eBay": 29
   },
-  "total_listings": 4199,
+  "total_listings": 4181,
   "sources_tracked": 44
 }
