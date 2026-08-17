@@ -881,7 +881,10 @@ def process_listings():
         ('data/oliverandclarke.csv',      'Oliver & Clarke',       'USD'),
         ('data/craftandtailored.csv',     'Craft & Tailored',      'USD'),
         ('data/watchbrotherslondon.csv',  'Watch Brothers London', 'GBP'),
-        ('data/mvvwatches.csv',           'MVV Watches',           'USD'),
+        # Rebranded from MVV Watches to Sierra Time Co (Squarespace ->
+        # Shopify, 2026-08). CSV/source key stays `mvvwatches`; only the
+        # display name follows the storefront. USD confirmed on-site.
+        ('data/mvvwatches.csv',           'Sierra Time Co',        'USD'),
         ('data/db1983.csv',               'DB1983',                'CHF'),
         ('data/hairspring.csv',           'Hairspring',            'USD'),
         ('data/somlo.csv',                'Somlo',                 'GBP'),
