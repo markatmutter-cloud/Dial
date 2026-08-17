@@ -10,25 +10,33 @@ in. ~163 products today.
 
 Run: python3 watchesoflancashire_scraper.py
 Output: watchesoflancashire_listings.csv
+
+Fetched via curl_cffi Chrome impersonation, NOT plain requests. The
+site went behind Cloudflare's TLS-fingerprint check in 2026-08 and
+started serving the "Just a moment..." interstitial (HTTP 403) to
+`requests` from GitHub Actions — every run from 08-07 onward produced
+no CSV. This is a JA3/TLS check, not an IP block: a probe from CI
+confirmed plain requests 403s while `impersonate="chrome"` returns 200
+with full data from the same runner. Use the floating "chrome" alias,
+not a pinned one — "chrome124" was 403 in the same probe.
 """
 import csv
 import re
 import time
 
-import requests
+from curl_cffi import requests as cf_requests
 
 BASE = "https://watchesoflancashire.com"
 API = f"{BASE}/wp-json/wc/store/v1/products"
-HEADERS = {
-    # Same bot-protection quirk as Maunder — long Chrome UA gets 403,
-    # short generic UA passes.
-    "User-Agent": "Mozilla/5.0",
-    "Accept": "application/json, text/plain, */*",
-    "Accept-Language": "en-US,en;q=0.9",
-    "Referer": f"{BASE}/",
-}
-SESSION = requests.Session()
-SESSION.headers.update(HEADERS)
+# Deliberately NO custom header set. curl_cffi's impersonation supplies
+# the full Chrome header block (UA, sec-ch-ua, Accept, Accept-Language,
+# ordering and all) to match the TLS fingerprint it presents. The old
+# hand-rolled headers here — notably the short "Mozilla/5.0" UA that was
+# the pre-Cloudflare workaround — OVERRIDE that block and leave a Chrome
+# JA3 paired with a non-Chrome User-Agent. Cloudflare reads the mismatch
+# and 403s: a CI probe carrying these headers still failed where the bare
+# impersonated call returned 200. Referer is passed per-request instead.
+SESSION = cf_requests.Session(impersonate="chrome")
 
 BRANDS = [
     "Rolex", "Omega", "Patek Philippe", "Tudor", "Breitling", "IWC",
@@ -73,12 +81,12 @@ def fetch_page(page, per_page):
                 "page": page,
                 "status": "publish",
                 "category": "watches",
-            }, timeout=20)
+            }, headers={"Referer": f"{BASE}/"}, timeout=20)
             if r.status_code == 200:
                 return r.json()
             last_err = f"HTTP {r.status_code}"
             time.sleep(2 ** attempt)
-        except requests.RequestException as e:
+        except cf_requests.RequestsError as e:
             last_err = str(e)
             time.sleep(2 ** attempt)
     raise RuntimeError(f"page {page} failed after 3 attempts: {last_err}")
