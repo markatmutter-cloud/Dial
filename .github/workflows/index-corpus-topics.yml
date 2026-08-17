@@ -104,13 +104,12 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/hairspring_finds.json public/bring_a_loupe.json \
-                  public/rolex_magazine.json public/onthedash.json \
-                  public/bulang_watch_talks.json public/hodinkee_shop.json \
-                  public/hodinkee_reference_points.json \
-                  public/acollectedman_journal.json public/screwdowncrown.json \
-                  public/woe_dispatch.json public/christies_stories.json \
-                  public/fratello.json
+          # Broad add. This list used to mirror corpus_topic_indexer.py's
+          # SOURCES by hand, so adding a source there without editing here
+          # meant its freshly-written topic tags were silently discarded
+          # every run. --autostash below already stops an unstaged file
+          # from aborting the rebase; this stops the drift itself.
+          git add public/ data/
           if git diff --staged --quiet; then
             echo "No changes — nothing to commit."
             exit 0
