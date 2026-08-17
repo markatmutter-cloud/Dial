@@ -28,17 +28,15 @@ from curl_cffi import requests as cf_requests
 
 BASE = "https://watchesoflancashire.com"
 API = f"{BASE}/wp-json/wc/store/v1/products"
-HEADERS = {
-    # The UA no longer carries the load — the TLS fingerprint does (see
-    # module docstring). Kept because it costs nothing and keeps the
-    # request shaped like the browser curl_cffi is impersonating.
-    "User-Agent": "Mozilla/5.0",
-    "Accept": "application/json, text/plain, */*",
-    "Accept-Language": "en-US,en;q=0.9",
-    "Referer": f"{BASE}/",
-}
+# Deliberately NO custom header set. curl_cffi's impersonation supplies
+# the full Chrome header block (UA, sec-ch-ua, Accept, Accept-Language,
+# ordering and all) to match the TLS fingerprint it presents. The old
+# hand-rolled headers here — notably the short "Mozilla/5.0" UA that was
+# the pre-Cloudflare workaround — OVERRIDE that block and leave a Chrome
+# JA3 paired with a non-Chrome User-Agent. Cloudflare reads the mismatch
+# and 403s: a CI probe carrying these headers still failed where the bare
+# impersonated call returned 200. Referer is passed per-request instead.
 SESSION = cf_requests.Session(impersonate="chrome")
-SESSION.headers.update(HEADERS)
 
 BRANDS = [
     "Rolex", "Omega", "Patek Philippe", "Tudor", "Breitling", "IWC",
@@ -83,7 +81,7 @@ def fetch_page(page, per_page):
                 "page": page,
                 "status": "publish",
                 "category": "watches",
-            }, timeout=20)
+            }, headers={"Referer": f"{BASE}/"}, timeout=20)
             if r.status_code == 200:
                 return r.json()
             last_err = f"HTTP {r.status_code}"
