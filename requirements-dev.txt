@@ -5,3 +5,7 @@ pytest>=8.0
 # import them to exercise pure parsing functions (e.g.
 # test_sothebys_lots.py) need it present to collect.
 requests==2.32.5
+# Test-only. test_alert_coverage.py parses .github/workflows/*.yml to
+# assert every scheduled workflow is watched by notify-scrape-failure.
+# Pinned like every other dep in this repo (see requirements.txt header).
+PyYAML==6.0.3
