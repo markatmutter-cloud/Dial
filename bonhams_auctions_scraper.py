@@ -18,6 +18,8 @@ in case.
 import requests
 import csv
 import re
+
+from scraper_lib import parse_auction_date_range
 import sys
 from datetime import datetime, date
 
@@ -30,56 +32,12 @@ HEADERS = {
     "Accept-Encoding": "gzip, deflate",
 }
 
-MONTHS = {
-    'january':1, 'february':2, 'march':3, 'april':4, 'may':5, 'june':6,
-    'july':7, 'august':8, 'september':9, 'october':10, 'november':11, 'december':12,
-    'jan':1, 'feb':2, 'mar':3, 'apr':4, 'jun':6, 'jul':7, 'aug':8, 'sep':9, 'sept':9, 'oct':10, 'nov':11, 'dec':12,
-}
-
 
 def parse_date_range(label, fallback_year=None):
-    """Bonhams dates:
-        '28 April - 5 May'    → (Apr 28, May 5)     — spans months
-        '20 May'              → (May 20, May 20)    — single day
-        '18 - 28 May'         → (May 18, May 28)    — same month
-        '26 June - 8 July'    → spans months
-    Year defaults to current calendar year; no year is ever printed on
-    the landing page. If needed later we can add a wrap-to-next-year
-    safety net when the start is before today.
-    """
-    s = label.replace('–', '-').replace('—', '-')
-    s = re.sub(r'\s+', ' ', s).strip()
-    year = fallback_year or date.today().year
-
-    def build(y1, mo1, d1, y2, mo2, d2):
-        try:
-            return (datetime(y1, mo1, d1).date().isoformat(),
-                    datetime(y2, mo2, d2).date().isoformat())
-        except ValueError:
-            return (None, None)
-
-    # Case A: "DD - DD Month" (same-month range)
-    m = re.match(r'(\d+)\s*-\s*(\d+)\s+([A-Za-z]+)$', s)
-    if m:
-        d1, d2, mo = int(m.group(1)), int(m.group(2)), MONTHS.get(m.group(3).lower())
-        if mo:
-            return build(year, mo, d1, year, mo, d2)
-    # Case B: "DD Month - DD Month" (spans months)
-    m = re.match(r'(\d+)\s+([A-Za-z]+)\s*-\s*(\d+)\s+([A-Za-z]+)$', s)
-    if m:
-        d1, mo1 = int(m.group(1)), MONTHS.get(m.group(2).lower())
-        d2, mo2 = int(m.group(3)), MONTHS.get(m.group(4).lower())
-        if mo1 and mo2:
-            y2 = year if mo2 >= mo1 else year + 1   # wrap if crossing Dec→Jan
-            return build(year, mo1, d1, y2, mo2, d2)
-    # Case C: "DD Month" single day
-    m = re.match(r'(\d+)\s+([A-Za-z]+)$', s)
-    if m:
-        d1, mo = int(m.group(1)), MONTHS.get(m.group(2).lower())
-        if mo:
-            return build(year, mo, d1, year, mo, d1)
-    return (None, None)
-
+    """Bonhams labels ("28 April - 5 May"). Their landing page prints no
+    year anywhere, hence fallback_year; a Dec->Jan range rolls the end
+    into the next year. Grammar shared via scraper_lib."""
+    return parse_auction_date_range(label, fallback_year=fallback_year)
 
 def scrape():
     print(f"Fetching {URL} ...")

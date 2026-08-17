@@ -39,6 +39,8 @@ import requests
 import csv
 import re
 import sys
+
+from scraper_lib import parse_auction_date_range
 from datetime import datetime, date, timezone
 
 URL = "https://www.phillips.com/watches"
@@ -59,57 +61,13 @@ def strip_html(t):
     return t.strip()
 
 
-MONTHS = {
-    "january": 1, "february": 2, "march": 3, "april": 4, "may": 5,
-    "june": 6, "july": 7, "august": 8, "september": 9, "october": 10,
-    "november": 11, "december": 12,
-}
-
-
 def parse_date_label(label):
-    """Display date text -> (start_iso, end_iso). ('', '') if unparseable.
-
-    Handles the two shapes Phillips renders:
-      "7 – 8 November 2026"                            day range, one month
-      "4 September 12pm - 11 September 2pm CEST 2026"  full dates + times
-    The year is the trailing 4-digit token in both.
-    """
-    t = html_mod.unescape(label or "")
-    t = t.replace("\u2013", "-").replace("\u2014", "-").replace("\xa0", " ")
-    t = re.sub(r"\s+", " ", t).strip()
-
-    ym = re.search(r"\b(20\d{2})\b", t)
-    if not ym:
-        return "", ""
-    year = int(ym.group(1))
-
-    months_present = [w for w in re.findall(r"[A-Za-z]+", t)
-                      if w.lower() in MONTHS]
-
-    # "D - D Month YYYY" — one month, shared by both days. Must be tried
-    # FIRST: the leading day carries no month of its own, so the generic
-    # day+month scan below sees only "8 November" and would collapse
-    # "7 - 8 November" to a single-day sale.
-    if len(months_present) == 1:
-        m = re.search(r"\b(\d{1,2})\s*-\s*(\d{1,2})\s+([A-Za-z]+)", t)
-        if m and m.group(3).lower() in MONTHS:
-            mi = MONTHS[m.group(3).lower()]
-            try:
-                return (date(year, mi, int(m.group(1))).isoformat(),
-                        date(year, mi, int(m.group(2))).isoformat())
-            except ValueError:
-                return "", ""
-
-    # "D Month ... - D Month ..." — each side carries its own month.
-    pairs = re.findall(r"\b(\d{1,2})\s+([A-Za-z]+)", t)
-    pairs = [(int(d), MONTHS[m.lower()]) for d, m in pairs if m.lower() in MONTHS]
-    if pairs:
-        try:
-            return (date(year, pairs[0][1], pairs[0][0]).isoformat(),
-                    date(year, pairs[-1][1], pairs[-1][0]).isoformat())
-        except ValueError:
-            return "", ""
-    return "", ""
+    """Phillips labels, incl. online sessions carrying times + timezones
+    ("4 September 12pm - 11 September 2pm CEST 2026"). Grammar shared via
+    scraper_lib; returns ("", "") rather than (None, None) because callers
+    here compare against ISO strings."""
+    start, end = parse_auction_date_range(label)
+    return (start or "", end or "")
 
 
 def _card_fields(card_html):

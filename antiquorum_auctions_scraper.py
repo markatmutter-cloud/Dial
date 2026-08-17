@@ -30,6 +30,8 @@ import requests
 import csv
 import json
 import re
+
+from scraper_lib import parse_auction_date_range
 import sys
 from datetime import datetime, date
 
@@ -42,11 +44,6 @@ HEADERS = {
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
     "Accept-Language": "en-US,en;q=0.9",
     "Accept-Encoding": "gzip, deflate",
-}
-
-MONTHS = {
-    'january':1, 'february':2, 'march':3, 'april':4, 'may':5, 'june':6,
-    'july':7, 'august':8, 'september':9, 'october':10, 'november':11, 'december':12,
 }
 
 
@@ -64,32 +61,10 @@ def build_catalog_url(location, date_label):
 
 
 def parse_date_range(date_str):
-    """Parse strings like:
-      'May 9th -10th, 2026'
-      'May 31st, 2026'
-      'November 7th -8th, 2026'
-      'April 23, 2026'
-
-    Returns (start_iso, end_iso) as YYYY-MM-DD strings, or (None, None).
-    """
-    s = date_str.strip()
-    # Drop ordinal suffixes
-    s = re.sub(r'(\d+)(st|nd|rd|th)', r'\1', s, flags=re.IGNORECASE)
-    # "May 9 -10, 2026"  →  month=May, day_start=9, day_end=10, year=2026
-    m = re.match(r'([A-Za-z]+)\s+(\d+)(?:\s*-\s*(\d+))?,?\s*(\d{4})', s)
-    if not m:
-        return (None, None)
-    month_name, d1, d2, year = m.group(1).lower(), int(m.group(2)), m.group(3), int(m.group(4))
-    month = MONTHS.get(month_name)
-    if not month:
-        return (None, None)
-    try:
-        start = datetime(year, month, d1).date().isoformat()
-        end_day = int(d2) if d2 else d1
-        end = datetime(year, month, end_day).date().isoformat()
-    except ValueError:
-        return (None, None)
-    return (start, end)
+    """Antiquorum labels ("May 9th -10th, 2026"). Grammar lives in
+    scraper_lib.parse_auction_date_range — shared with every other
+    calendar scraper so one date bug can't hide in five copies."""
+    return parse_auction_date_range(date_str)
 
 
 def strip_tags(html):
