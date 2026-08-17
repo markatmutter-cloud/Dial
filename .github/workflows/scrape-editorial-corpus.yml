@@ -233,23 +233,20 @@ jobs:
         run: python hodinkee_picks_scraper.py
 
       - name: Commit and push
+        # Stage the whole output tree, not a hand-listed set of files.
+        # The list drifted: hodinkee_picks_scraper.py was added above but
+        # its two JSONs never joined the list, so every run left them
+        # modified-but-unstaged. `git pull --rebase` refuses to run with
+        # unstaged changes, so the moment a parallel workflow pushed to
+        # main first, all three retries died on "cannot pull with rebase"
+        # and the whole scrape was thrown away. That killed every run from
+        # 2026-07-15 to 2026-08-16 (corpus frozen at the 07-12 refresh).
+        # Same broad-add + rebase-retry as scrape-listings.yml; adding a
+        # source no longer means remembering to edit this step.
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add public/bring_a_loupe.json public/bring_a_loupe_bodies.json \
-                  public/rolex_magazine.json public/rolex_magazine_bodies.json \
-                  public/onthedash.json public/onthedash_bodies.json \
-                  public/bulang_watch_talks.json public/bulang_watch_talks_bodies.json \
-                  public/romainrea_editorial.json public/romainrea_editorial_bodies.json \
-                  public/hodinkee_shop.json public/hodinkee_shop_bodies.json \
-                  public/hodinkee_reference_points.json public/hodinkee_reference_points_bodies.json \
-                  public/acollectedman_journal.json public/acollectedman_journal_bodies.json \
-                  public/woe_dispatch.json public/woe_dispatch_bodies.json \
-                  public/screwdowncrown.json public/screwdowncrown_bodies.json \
-                  public/fratello.json public/fratello_bodies.json \
-                  public/le_monde_edmond.json public/le_monde_edmond_bodies.json \
-                  public/strictlyvintagewatches.json public/strictlyvintagewatches_bodies.json \
-                  public/christies_stories.json public/christies_stories_bodies.json
+          git add public/ data/
           if git diff --staged --quiet; then
             echo "No changes to commit"
             exit 0
