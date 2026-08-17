@@ -371,7 +371,7 @@ jobs:
             # state.json), keep our local commit's version. Both runs are
             # legitimate scrapes; the later-finishing one is fresher and
             # safe to keep wholesale.
-            if ! git pull --rebase --strategy-option=theirs; then
+            if ! git pull --rebase --autostash --strategy-option=theirs; then
               echo "Rebase failed, aborting and retrying push"
               git rebase --abort 2>/dev/null || true
             fi

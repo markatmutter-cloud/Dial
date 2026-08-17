@@ -89,7 +89,7 @@ jobs:
           for i in 1 2 3; do
             if git push; then exit 0; fi
             echo "Push failed; rebasing and retrying ($i/3)…"
-            git pull --rebase
+            git pull --rebase --autostash
             sleep 5
           done
           echo "Push failed after 3 attempts."
