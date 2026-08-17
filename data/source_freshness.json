@@ -150,10 +150,10 @@
     "rows": 125
   },
   "Sierra Time Co": {
-    "fingerprint": "4bda3efa28aa8714",
+    "fingerprint": "50d90f4b76c30018",
     "lastChanged": "2026-08-17",
     "lastSeen": "2026-08-17",
-    "rows": 35
+    "rows": 37
   },
   "Somlo": {
     "fingerprint": "4b046e4a3c4bd944",
@@ -162,10 +162,10 @@
     "rows": 183
   },
   "Swiss Hours": {
-    "fingerprint": "6465dc21c86f91c0",
+    "fingerprint": "19bfec7c7d03dac9",
     "lastChanged": "2026-08-17",
     "lastSeen": "2026-08-17",
-    "rows": 78
+    "rows": 77
   },
   "The Vintage Watch": {
     "fingerprint": "57cc7b2549a34008",
@@ -186,7 +186,7 @@
     "rows": 125
   },
   "Vintage Watch Collective": {
-    "fingerprint": "980f8c4c07f75c0b",
+    "fingerprint": "5ccf188d4a838859",
     "lastChanged": "2026-08-17",
     "lastSeen": "2026-08-17",
     "rows": 33
@@ -228,13 +228,13 @@
     "rows": 55
   },
   "Watches of Knightsbridge": {
-    "fingerprint": "10b110acf64de472",
+    "fingerprint": "a84d250e4488ac0b",
     "lastChanged": "2026-08-17",
     "lastSeen": "2026-08-17",
-    "rows": 99
+    "rows": 96
   },
   "Watches of Lancashire": {
-    "fingerprint": "ce629024523a28d2",
+    "fingerprint": "6ec968295a507e1a",
     "lastChanged": "2026-08-17",
     "lastSeen": "2026-08-17",
     "rows": 55
@@ -390,7 +390,7 @@
     "rows": 299
   },
   "merged:auction_lots": {
-    "fingerprint": "cb8688649726db61",
+    "fingerprint": "b3b60eb65c518a08",
     "lastChanged": "2026-08-17",
     "lastSeen": "2026-08-17",
     "rows": 3360
@@ -402,9 +402,9 @@
     "rows": 89
   },
   "merged:listings": {
-    "fingerprint": "9ebf84045df8b213",
+    "fingerprint": "31e37048d10e0912",
     "lastChanged": "2026-08-17",
     "lastSeen": "2026-08-17",
-    "rows": 9274
+    "rows": 9313
   }
 }
