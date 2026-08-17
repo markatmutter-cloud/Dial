@@ -1,5 +1,17 @@
 {
-  "watchfid": {
+  "MVV Watches": {
+    "misses": 1,
+    "reason": "verify_sources ERROR: source absent from today's listings (was present yesterday)"
+  },
+  "maunderwatches": {
+    "misses": 1,
+    "reason": "no CSV produced this run"
+  },
+  "watchesoflancashire": {
+    "misses": 1,
+    "reason": "no CSV produced this run"
+  },
+  "wok": {
     "misses": 1,
     "reason": "no CSV produced this run"
   }

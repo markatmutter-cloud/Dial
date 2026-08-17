@@ -1,7 +1,15 @@
 {
   "date": "2026-08-17",
-  "updated_at": "2026-08-17T08:02:58+00:00",
-  "alerts": [],
+  "updated_at": "2026-08-17T15:59:39+00:00",
+  "alerts": [
+    {
+      "source": "MVV Watches",
+      "level": "ERROR",
+      "today": 0,
+      "previous": 35,
+      "note": "source absent from today's listings (was present yesterday)"
+    }
+  ],
   "counts": {
     "Wind Vintage": 96,
     "Tropical Watch": 125,
@@ -20,7 +28,7 @@
     "Hairspring": 27,
     "Somlo": 183,
     "Analog Shift": 714,
-    "Watches of Knightsbridge": 83,
+    "Watches of Knightsbridge": 78,
     "Belmont Watches": 23,
     "Bob's Watches": 52,
     "Watchfid": 65,
@@ -31,11 +39,11 @@
     "Chronoholic": 4,
     "Vintage Watch Fam": 529,
     "Shuck the Oyster": 119,
-    "Central Watch": 180,
+    "Central Watch": 181,
     "European Watch": 15,
-    "Vintage Watch Collective": 27,
+    "Vintage Watch Collective": 28,
     "Vision Vintage Watches": 72,
-    "Watchurbia": 3,
+    "Watchurbia": 4,
     "Maunder Watches": 75,
     "Watch Club": 55,
     "Vintage Watch Shop": 30,
@@ -44,11 +52,10 @@
     "ClassicHeuer": 39,
     "Luna Royster": 34,
     "S.Song Watches": 23,
-    "Swiss Hours": 74,
+    "Swiss Hours": 75,
     "Watch Center": 261,
-    "eBay": 29,
-    "MVV Watches": 35
+    "eBay": 29
   },
-  "total_listings": 4212,
-  "sources_tracked": 45
+  "total_listings": 4176,
+  "sources_tracked": 44
 }
