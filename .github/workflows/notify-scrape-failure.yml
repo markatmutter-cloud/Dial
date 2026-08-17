@@ -41,6 +41,7 @@ on:
       - "Scrape editorial corpus"
       - "Index editorial corpus topics"
       - "Health report"
+      - "Calendar canary"
     types:
       - completed
 
