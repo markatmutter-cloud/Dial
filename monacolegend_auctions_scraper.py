@@ -33,6 +33,8 @@ import requests
 import csv
 import re
 import sys
+
+from scraper_lib import parse_auction_date_range
 from datetime import datetime, date
 
 BASE = "https://www.monacolegendauctions.com"
@@ -43,40 +45,11 @@ HEADERS = {
     "Accept-Encoding": "gzip, deflate",
 }
 
-MONTHS = {
-    'january':1, 'february':2, 'march':3, 'april':4, 'may':5, 'june':6,
-    'july':7, 'august':8, 'september':9, 'october':10, 'november':11, 'december':12,
-}
-
 
 def parse_date_range(text):
-    """Parse '25 - 26 April 2026' or '14 April 2026' etc. Return (start, end)."""
-    # Normalize dashes + whitespace
-    t = text.replace('–', '-').replace('—', '-')
-    t = re.sub(r'\s+', ' ', t).strip()
-    # '25 - 26 April 2026'
-    m = re.match(r'(\d+)\s*-\s*(\d+)\s+([A-Za-z]+)\s+(\d{4})', t)
-    if m:
-        d1, d2, month, year = int(m.group(1)), int(m.group(2)), m.group(3).lower(), int(m.group(4))
-        mi = MONTHS.get(month)
-        if mi:
-            try:
-                return (datetime(year, mi, d1).date().isoformat(),
-                        datetime(year, mi, d2).date().isoformat())
-            except ValueError:
-                pass
-    # '14 April 2026'
-    m = re.match(r'(\d+)\s+([A-Za-z]+)\s+(\d{4})', t)
-    if m:
-        d, month, year = int(m.group(1)), m.group(2).lower(), int(m.group(3))
-        mi = MONTHS.get(month)
-        if mi:
-            try:
-                iso = datetime(year, mi, d).date().isoformat()
-                return (iso, iso)
-            except ValueError:
-                pass
-    return (None, None)
+    """Monaco Legend labels ("25 - 26 April 2026"), entity soup already
+    normalised by the caller. Grammar shared via scraper_lib."""
+    return parse_auction_date_range(text)
 
 
 def scrape():
