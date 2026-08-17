@@ -40,6 +40,7 @@ on:
       - "Rollup listing events"
       - "Scrape editorial corpus"
       - "Index editorial corpus topics"
+      - "Health report"
     types:
       - completed
 

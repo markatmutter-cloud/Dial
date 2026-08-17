@@ -120,6 +120,16 @@ jobs:
         if: always()
         run: python3 auction_health.py --record
 
+      - name: Record source freshness
+        # Additive: only updates the sources whose artifacts exist in this
+        # checkout, so each workflow contributes its own slice of the
+        # ledger. Runs BEFORE the commit so `git add data/` persists it.
+        # Always exits 0 — the freshness GATE runs in health-report.yml,
+        # not here, so a stale source can't red a scrape that worked.
+        if: always()
+        continue-on-error: true
+        run: python3 source_freshness.py --record
+
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"

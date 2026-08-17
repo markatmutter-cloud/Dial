@@ -864,63 +864,71 @@ def update_state(items, state):
     return enriched
 
 
+# The dealer source table: (csv path, display name, source-default currency).
+# Module-level so other tools can consume it as the single source of truth
+# rather than keeping a parallel copy that silently drifts —
+# source_freshness.py reads it to know which sources are expected to exist.
+# process_listings() below is the only writer of the merged feed.
+LISTING_SOURCES = [
+    ('data/windvintage.csv',          'Wind Vintage',          'USD'),
+    ('data/tropicalwatch.csv',        'Tropical Watch',        'USD'),
+    ('data/menta.csv',                'Menta Watches',         'USD'),
+    ('data/collectorscorner.csv',     'Collectors Corner NY',  'USD'),
+    ('data/falco.csv',                'Falco Watches',         'GBP'),
+    ('data/pascalkarp.csv',           'Pascal Karp',           'EUR'),
+    ('data/tokant.csv',               'Tokant',                'EUR'),
+    ('data/romainrea.csv',            'Romain Réa',            'EUR'),
+    ('data/greyandpatina.csv',        'Grey & Patina',         'USD'),
+    ('data/oliverandclarke.csv',      'Oliver & Clarke',       'USD'),
+    ('data/craftandtailored.csv',     'Craft & Tailored',      'USD'),
+    ('data/watchbrotherslondon.csv',  'Watch Brothers London', 'GBP'),
+    # Rebranded from MVV Watches to Sierra Time Co (Squarespace ->
+    # Shopify, 2026-08). CSV/source key stays `mvvwatches`; only the
+    # display name follows the storefront. USD confirmed on-site.
+    ('data/mvvwatches.csv',           'Sierra Time Co',        'USD'),
+    ('data/db1983.csv',               'DB1983',                'CHF'),
+    ('data/hairspring.csv',           'Hairspring',            'USD'),
+    ('data/somlo.csv',                'Somlo',                 'GBP'),
+    ('data/analogshift.csv',          'Analog Shift',          'USD'),
+    ('data/watchesofknightsbridge.csv', 'Watches of Knightsbridge', 'GBP'),
+    ('data/belmont.csv',              'Belmont Watches',       'USD'),
+    ('data/bobswatches.csv',          "Bob's Watches",         'USD'),
+    ('data/watchfid.csv',             'Watchfid',              'EUR'),
+    ('data/bulangandsons.csv',        'Bulang & Sons',         'EUR'),
+    ('data/moonphase.csv',            'Moonphase',             'EUR'),
+    ('data/huntington.csv',           'Huntington Company',    'USD'),
+    ('data/thevintagewatch.csv',      'The Vintage Watch',     'USD'),
+    ('data/chronoholic.csv',          'Chronoholic',           'USD'),
+    ('data/vintagewatchfam.csv',      'Vintage Watch Fam',     'USD'),
+    ('data/shucktheoyster.csv',       'Shuck the Oyster',      'EUR'),
+    ('data/centralwatch.csv',         'Central Watch',         'USD'),
+    ('data/europeanwatch.csv',        'European Watch',        'USD'),
+    ('data/vintagewatchcollective.csv','Vintage Watch Collective','EUR'),
+    ('data/visionvintagewatches.csv', 'Vision Vintage Watches', 'GBP'),
+    ('data/watchurbia.csv',           'Watchurbia',            'EUR'),
+    ('data/maunderwatches.csv',       'Maunder Watches',       'GBP'),
+    ('data/watchclub.csv',            'Watch Club',            'GBP'),
+    ('data/vintagewatchshop.csv',     'Vintage Watch Shop',    'GBP'),
+    ('data/watchesoflancashire.csv',  'Watches of Lancashire', 'GBP'),
+    ('data/heuertime.csv',            'Heuertime',             'EUR'),
+    ('data/classicheuer.csv',         'ClassicHeuer',          'EUR'),
+    ('data/lunaroyster.csv',          'Luna Royster',          'USD'),
+    ('data/ssongwatches.csv',         'S.Song Watches',        'USD'),
+    ('data/swisshours.csv',           'Swiss Hours',           'HKD'),
+    ('data/watchcenter.csv',          'Watch Center',          'CHF'),
+    # eBay is multi-currency by design — the source-default 'USD'
+    # is just a fallback for rows where the per-row `currency`
+    # column is missing or unrecognized. Each Browse API result
+    # carries its own currency in the CSV.
+    ('data/ebay.csv',                 'eBay',                  'USD'),
+]
+
+
 def process_listings():
     """The listings half of the pipeline. Loads every dealer CSV, merges
     against state.json (firstSeen / priceHistory / sold detection),
     writes public/listings.json. Independent of the auctions pipeline."""
-    sources = [
-        ('data/windvintage.csv',          'Wind Vintage',          'USD'),
-        ('data/tropicalwatch.csv',        'Tropical Watch',        'USD'),
-        ('data/menta.csv',                'Menta Watches',         'USD'),
-        ('data/collectorscorner.csv',     'Collectors Corner NY',  'USD'),
-        ('data/falco.csv',                'Falco Watches',         'GBP'),
-        ('data/pascalkarp.csv',           'Pascal Karp',           'EUR'),
-        ('data/tokant.csv',               'Tokant',                'EUR'),
-        ('data/romainrea.csv',            'Romain Réa',            'EUR'),
-        ('data/greyandpatina.csv',        'Grey & Patina',         'USD'),
-        ('data/oliverandclarke.csv',      'Oliver & Clarke',       'USD'),
-        ('data/craftandtailored.csv',     'Craft & Tailored',      'USD'),
-        ('data/watchbrotherslondon.csv',  'Watch Brothers London', 'GBP'),
-        # Rebranded from MVV Watches to Sierra Time Co (Squarespace ->
-        # Shopify, 2026-08). CSV/source key stays `mvvwatches`; only the
-        # display name follows the storefront. USD confirmed on-site.
-        ('data/mvvwatches.csv',           'Sierra Time Co',        'USD'),
-        ('data/db1983.csv',               'DB1983',                'CHF'),
-        ('data/hairspring.csv',           'Hairspring',            'USD'),
-        ('data/somlo.csv',                'Somlo',                 'GBP'),
-        ('data/analogshift.csv',          'Analog Shift',          'USD'),
-        ('data/watchesofknightsbridge.csv', 'Watches of Knightsbridge', 'GBP'),
-        ('data/belmont.csv',              'Belmont Watches',       'USD'),
-        ('data/bobswatches.csv',          "Bob's Watches",         'USD'),
-        ('data/watchfid.csv',             'Watchfid',              'EUR'),
-        ('data/bulangandsons.csv',        'Bulang & Sons',         'EUR'),
-        ('data/moonphase.csv',            'Moonphase',             'EUR'),
-        ('data/huntington.csv',           'Huntington Company',    'USD'),
-        ('data/thevintagewatch.csv',      'The Vintage Watch',     'USD'),
-        ('data/chronoholic.csv',          'Chronoholic',           'USD'),
-        ('data/vintagewatchfam.csv',      'Vintage Watch Fam',     'USD'),
-        ('data/shucktheoyster.csv',       'Shuck the Oyster',      'EUR'),
-        ('data/centralwatch.csv',         'Central Watch',         'USD'),
-        ('data/europeanwatch.csv',        'European Watch',        'USD'),
-        ('data/vintagewatchcollective.csv','Vintage Watch Collective','EUR'),
-        ('data/visionvintagewatches.csv', 'Vision Vintage Watches', 'GBP'),
-        ('data/watchurbia.csv',           'Watchurbia',            'EUR'),
-        ('data/maunderwatches.csv',       'Maunder Watches',       'GBP'),
-        ('data/watchclub.csv',            'Watch Club',            'GBP'),
-        ('data/vintagewatchshop.csv',     'Vintage Watch Shop',    'GBP'),
-        ('data/watchesoflancashire.csv',  'Watches of Lancashire', 'GBP'),
-        ('data/heuertime.csv',            'Heuertime',             'EUR'),
-        ('data/classicheuer.csv',         'ClassicHeuer',          'EUR'),
-        ('data/lunaroyster.csv',          'Luna Royster',          'USD'),
-        ('data/ssongwatches.csv',         'S.Song Watches',        'USD'),
-        ('data/swisshours.csv',           'Swiss Hours',           'HKD'),
-        ('data/watchcenter.csv',          'Watch Center',          'CHF'),
-        # eBay is multi-currency by design — the source-default 'USD'
-        # is just a fallback for rows where the per-row `currency`
-        # column is missing or unrecognized. Each Browse API result
-        # carries its own currency in the CSV.
-        ('data/ebay.csv',                 'eBay',                  'USD'),
-    ]
+    sources = LISTING_SOURCES
 
     state = load_state()
     state_size_before = len(state)
