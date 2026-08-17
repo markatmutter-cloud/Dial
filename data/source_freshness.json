@@ -150,10 +150,10 @@
     "rows": 125
   },
   "Sierra Time Co": {
-    "fingerprint": "50d90f4b76c30018",
+    "fingerprint": "4bda3efa28aa8714",
     "lastChanged": "2026-08-17",
     "lastSeen": "2026-08-17",
-    "rows": 37
+    "rows": 35
   },
   "Somlo": {
     "fingerprint": "4b046e4a3c4bd944",
@@ -162,10 +162,10 @@
     "rows": 183
   },
   "Swiss Hours": {
-    "fingerprint": "19bfec7c7d03dac9",
+    "fingerprint": "6465dc21c86f91c0",
     "lastChanged": "2026-08-17",
     "lastSeen": "2026-08-17",
-    "rows": 77
+    "rows": 78
   },
   "The Vintage Watch": {
     "fingerprint": "57cc7b2549a34008",
@@ -186,7 +186,7 @@
     "rows": 125
   },
   "Vintage Watch Collective": {
-    "fingerprint": "5ccf188d4a838859",
+    "fingerprint": "980f8c4c07f75c0b",
     "lastChanged": "2026-08-17",
     "lastSeen": "2026-08-17",
     "rows": 33
@@ -228,13 +228,13 @@
     "rows": 55
   },
   "Watches of Knightsbridge": {
-    "fingerprint": "a84d250e4488ac0b",
+    "fingerprint": "10b110acf64de472",
     "lastChanged": "2026-08-17",
     "lastSeen": "2026-08-17",
-    "rows": 96
+    "rows": 99
   },
   "Watches of Lancashire": {
-    "fingerprint": "6ec968295a507e1a",
+    "fingerprint": "ce629024523a28d2",
     "lastChanged": "2026-08-17",
     "lastSeen": "2026-08-17",
     "rows": 55
@@ -300,46 +300,46 @@
     "rows": 30
   },
   "editorial:acollectedman_journal": {
-    "fingerprint": "0a42e1ea44139c3e",
+    "fingerprint": "afe57bb6dbeedc79",
     "lastChanged": "2026-08-17",
     "lastSeen": "2026-08-17",
-    "rows": 161
+    "rows": 162
   },
   "editorial:bring_a_loupe": {
-    "fingerprint": "ea44498084bd422d",
+    "fingerprint": "de67d8e8adaff3e2",
     "lastChanged": "2026-08-17",
     "lastSeen": "2026-08-17",
-    "rows": 255
+    "rows": 256
   },
   "editorial:bulang_watch_talks": {
-    "fingerprint": "88e89d2f3544c8aa",
+    "fingerprint": "c9d257d34a1a5ad9",
     "lastChanged": "2026-08-17",
     "lastSeen": "2026-08-17",
     "rows": 161
   },
   "editorial:christies_stories": {
-    "fingerprint": "e6b5e216076ef2b2",
+    "fingerprint": "893b7663e7510cec",
     "lastChanged": "2026-08-17",
     "lastSeen": "2026-08-17",
     "rows": 25
   },
   "editorial:fratello": {
-    "fingerprint": "99a0a4ffedc9dc5a",
+    "fingerprint": "b3f5476ec73dc886",
     "lastChanged": "2026-08-17",
     "lastSeen": "2026-08-17",
-    "rows": 3763
+    "rows": 3785
   },
   "editorial:hodinkee_picks": {
-    "fingerprint": "60572c9d7df306ad",
+    "fingerprint": "7b7f0d36e4bdb6eb",
     "lastChanged": "2026-08-17",
     "lastSeen": "2026-08-17",
     "rows": 1
   },
   "editorial:hodinkee_reference_points": {
-    "fingerprint": "621798c6084ae0e2",
+    "fingerprint": "99871b56d1956c3f",
     "lastChanged": "2026-08-17",
     "lastSeen": "2026-08-17",
-    "rows": 10
+    "rows": 11
   },
   "editorial:hodinkee_shop": {
     "fingerprint": "97ba4ef4dc868cf3",
@@ -348,43 +348,43 @@
     "rows": 2346
   },
   "editorial:le_monde_edmond": {
-    "fingerprint": "6b0477e608e396a0",
+    "fingerprint": "4139bd36ba9202e6",
     "lastChanged": "2026-08-17",
     "lastSeen": "2026-08-17",
     "rows": 278
   },
   "editorial:onthedash": {
-    "fingerprint": "ee4738f0045a12d7",
+    "fingerprint": "c00f4249ea0a9c70",
     "lastChanged": "2026-08-17",
     "lastSeen": "2026-08-17",
     "rows": 205
   },
   "editorial:rolex_magazine": {
-    "fingerprint": "b1046116206a7be5",
+    "fingerprint": "1e88de8cfd1e74dc",
     "lastChanged": "2026-08-17",
     "lastSeen": "2026-08-17",
     "rows": 3751
   },
   "editorial:romainrea_editorial": {
-    "fingerprint": "a3637316b344772f",
+    "fingerprint": "2e41fa366119e371",
     "lastChanged": "2026-08-17",
     "lastSeen": "2026-08-17",
     "rows": 16
   },
   "editorial:screwdowncrown": {
-    "fingerprint": "d1c157b04f08aacd",
+    "fingerprint": "b0065c7bc286ec3c",
     "lastChanged": "2026-08-17",
     "lastSeen": "2026-08-17",
-    "rows": 273
+    "rows": 281
   },
   "editorial:strictlyvintagewatches": {
-    "fingerprint": "c36ac4ba207f0341",
+    "fingerprint": "604405d56901e0fc",
     "lastChanged": "2026-08-17",
     "lastSeen": "2026-08-17",
     "rows": 55
   },
   "editorial:woe_dispatch": {
-    "fingerprint": "d91e516e762e68e2",
+    "fingerprint": "341dcdf84153475d",
     "lastChanged": "2026-08-17",
     "lastSeen": "2026-08-17",
     "rows": 299
@@ -402,9 +402,9 @@
     "rows": 67
   },
   "merged:listings": {
-    "fingerprint": "31e37048d10e0912",
+    "fingerprint": "9ebf84045df8b213",
     "lastChanged": "2026-08-17",
     "lastSeen": "2026-08-17",
-    "rows": 9313
+    "rows": 9274
   }
 }
