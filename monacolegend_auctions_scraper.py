@@ -5,16 +5,30 @@ Run: python3 monacolegend_auctions_scraper.py
 Requires: pip install requests
 Output: monacolegend_auctions_listings.csv
 
-Monaco Legend doesn't publish a dedicated calendar page; the homepage
-lists upcoming + live + past sales with per-auction URLs. We parse
-the homepage, extract auction URLs and their surrounding context, and
-emit only upcoming + live ones.
+Reads the /auction index, which is the site's real calendar. The
+homepage used to carry a "Bidding Open" card grid and this scraper
+parsed that; Monaco Legend restructured in 2026 and the homepage now
+shows only the most recent result, so the old anchor matched nothing
+and the scraper emitted zero sales from ~2026-07-04 onward.
 
-Status signals in the HTML:
-  'Bidding Open'       — live right now
-  'Upcoming Auction'   — future sale (may or may not have published dates yet)
-  'Auction Result'     — past sale (skipped)
+/auction renders every sale — past and upcoming — as
+<article data-auction-id="NN"> cards inside two Alpine tab panels
+(upcoming / past). NB attributes there are SINGLE-quoted
+(class='auction-name', href='/auction/...'), which is why
+double-quoted patterns find nothing.
+
+Emits past sales as well as upcoming ones. That is deliberate on two
+counts: merge.py derives status from the dates anyway, and a scraper
+whose output legitimately drops to zero cannot be distinguished from a
+broken one — which is exactly the hole auction_calendar_health.py
+gates on. With past sales included, an empty CSV always means broken.
+
+That distinction is real here, not theoretical: Monaco Legend has no
+sale scheduled as of 2026-08-17. The upcoming panel renders a
+"no-upcoming" placeholder ("Our next auction is being curated"). That
+is a quiet season, NOT a parse failure, and is reported as such.
 """
+import html as html_mod
 import requests
 import csv
 import re
@@ -66,114 +80,83 @@ def parse_date_range(text):
 
 
 def scrape():
-    print(f"Fetching {BASE} ...")
-    r = requests.get(BASE, headers=HEADERS, timeout=30)
+    url = f"{BASE}/auction"
+    print(f"Fetching {url} ...")
+    r = requests.get(url, headers=HEADERS, timeout=30)
     r.raise_for_status()
     html = r.text
 
-    # The homepage has three regions:
-    #   1. "Upcoming Auction" hero banner at the top — a promo card that
-    #      links to the featured sale with no date/location text around it.
-    #      Ignore this — it's what caused the previous version to capture
-    #      auctions with empty date fields and then bleed adjacent cards'
-    #      dates into them on dedup.
-    #   2. "Bidding Open" — actual card grid of currently-bidding auctions
-    #      (includes both today's live sale and any pre-bidding upcoming
-    #      ones). This is the only region we parse.
-    #   3. "Auction Result" — past auctions. Skipped.
-    bidding_start = html.find('Bidding Open')
-    if bidding_start < 0:
-        print("No 'Bidding Open' section found; skipping.")
+    # Sale cards carry a stable data-auction-id. Splitting on it is more
+    # robust than anchoring on section headings, which is what broke last
+    # time — headings are copy, ids are structure.
+    cards = re.split(r"<article data-auction-id=", html)[1:]
+    if not cards:
+        # No cards at all. Distinguish "site says nothing is scheduled"
+        # (fine) from "we no longer understand this page" (broken).
+        if "no-upcoming" in html or "next auction is being curated" in html:
+            print("Monaco Legend has no scheduled sale right now "
+                  "(site shows the 'next auction is being curated' notice).")
         return []
-    # End of the section is wherever Auction Result starts next (if any).
-    enders = [p for p in [html.find('Auction Result', bidding_start + 1)] if p >= 0]
-    section_end = min(enders) if enders else len(html)
-    section = html[bidding_start:section_end]
 
-    # Monaco Legend renders two card templates — a featured layout for the
-    # currently-live sale and a grid layout for everything else — but both
-    # contain <p class="auction-date">{date} | {location}</p>. Anchor on
-    # that tag: the date+location come from its text, the href comes from
-    # the nearest auction link within a reasonable window, and the card
-    # spans from one auction-date tag to the next.
-    date_tags = list(re.finditer(
-        r'<p class="auction-date">([^<]+)</p>',
-        section,
-    ))
+    out = {}
+    today_iso = date.today().isoformat()
 
-    by_path = {}
-    today = date.today()
-
-    for i, dm in enumerate(date_tags):
-        next_pos = date_tags[i + 1].start() if i + 1 < len(date_tags) else len(section)
-        chunk = section[dm.start():next_pos]
-        date_raw = dm.group(1)
-
-        hm = re.search(r'href="(auction/[^"#?]+)"', chunk)
-        if not hm:
+    for card in cards:
+        href = re.search(r"href='(/auction/[^']+)'", card)
+        name = re.search(r"<h2 class='auction-name'>\s*(?:<a[^>]*>)?\s*([^<]+)", card)
+        dtag = re.search(r"<p class='auction-date'>([^<]+)</p>", card)
+        if not (href and name and dtag):
             continue
-        path = hm.group(1)
-        if path in by_path:
+        path = href.group(1)
+        if path in out:
             continue
 
-        # Clean the date+location text from the <p> tag
-        text = date_raw
-        text = re.sub(r'&#8211;|–|—', '-', text)
-        text = re.sub(r'&#8288;|&nbsp;', ' ', text)
-        text = re.sub(r'&amp;', '&', text)
-        text = re.sub(r'\s+', ' ', text).strip()
+        # The date cell reads "25 July 2026 | Monaco". Entities and
+        # non-breaking / word-joiner spaces are load-bearing noise here:
+        # &#8211; en-dash, &#8288; word-joiner, \xa0 nbsp.
+        text = dtag.group(1)
+        text = text.replace("&#8211;", "-").replace("&#8212;", "-")
+        text = text.replace("&#8288;", " ").replace("&nbsp;", " ")
+        text = text.replace("\u2013", "-").replace("\u2014", "-")
+        text = text.replace("\xa0", " ").replace("&amp;", "&")
+        text = re.sub(r"\s+", " ", text).strip()
 
-        # The auction-date <p> reads like "25 - 26 April 2026 | Monaco" or
-        # "4 June 2026 | Lugano". Parse date-then-location.
-        m = re.match(
-            r'(\d+\s*(?:-\s*\d+\s*)?[A-Z][a-z]+\s+202[4-7])'
-            r'\s*\|\s*'
-            r'([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)',
-            text,
-        )
-        if not m:
-            continue
-        date_label = m.group(1).strip()
-        location   = m.group(2).strip()
+        if "|" in text:
+            date_label, location = [p.strip() for p in text.split("|", 1)]
+        else:
+            date_label, location = text, ""
+
         date_start, date_end = parse_date_range(date_label)
         if not date_start:
             continue
 
-        # Title: pull auction number from slug, e.g. exclusive-timepieces-41 → 41.
-        slug = path.split('/', 1)[-1]
-        title = slug.replace('-', ' ').strip().title()
-
-        # Derive live vs upcoming from the actual dates rather than
-        # Monaco Legend's section header — their "Bidding Open" grid
-        # includes sales whose auction day is still weeks away (pre-bid
-        # phase). For our UI, "live" should mean "the auction day is
-        # today", so timers and catalog chips are accurate.
-        today_iso = today.isoformat()
+        # Titles carry entities ("Exclusive Timepieces &amp; Jewels").
+        title = html_mod.unescape(name.group(1)).strip()
         is_live = date_start <= today_iso <= (date_end or date_start)
-        status = 'live' if is_live else 'upcoming'
-        has_catalog = 'True' if is_live else 'False'
+        status = "live" if is_live else (
+            "upcoming" if date_start > today_iso else "past")
 
-        by_path[path] = {
-            'house':       'Monaco Legend',
-            'title':       title,
-            'location':    location,
-            'date_start':  date_start,
-            'date_end':    date_end or date_start,
-            'date_label':  date_label,
-            'url':         f"{BASE}/{path}",
-            'has_catalog': has_catalog,
-            'source':      'Monaco Legend',
-            'status_hint': status,
+        out[path] = {
+            "house":       "Monaco Legend",
+            "title":       title,
+            "location":    location,
+            "date_start":  date_start,
+            "date_end":    date_end or date_start,
+            "date_label":  date_label,
+            "url":         f"{BASE}{path}",
+            "has_catalog": "True" if status in ("live", "past") else "False",
+            "source":      "Monaco Legend",
+            "status_hint": status,
         }
 
-    return list(by_path.values())
+    return list(out.values())
 
 
 def main():
     print("Scraping Monaco Legend Auctions calendar...")
     auctions = scrape()
     if not auctions:
-        print("No auctions parsed — site template may have changed.")
+        print("No auctions parsed from the /auction index.")
         # Exit non-zero: parsing nothing is a broken selector, not a
         # quiet season (these scrapers return past sales too). Exiting 0
         # here reported success while the calendar silently rotted for

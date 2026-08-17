@@ -5,15 +5,36 @@ Run: python3 phillips_auctions_scraper.py
 Requires: pip install requests
 Output: phillips_auctions_listings.csv
 
-Phillips' site is Next.js, but the /watches department landing page
-server-renders its upcoming-auction cards. Each card carries
-<span class="atc_date_start"> / <span class="atc_date_end"> with
-ISO-8601 datetimes, plus title, location, and a link to a sale at
-/auction/{CODE}. We parse that directly — no Playwright needed.
+Parses the server-rendered sale cards on the /watches department page.
 
-Only upcoming/live sales are emitted. Past sales are ignored; the
-app's merge.py derives "past" from dateEnd vs today anyway.
+Phillips replatformed onto a React/Remix front end ("seldon" design
+system) in 2026. The old markup this scraper keyed on — paired
+<span class="atc_date_start"> / <span class="atc_date_end"> tags with
+ISO datetimes — is gone entirely (zero occurrences), so the scraper
+emitted nothing from ~2026-06-30 onward and Phillips silently dropped
+out of the calendar. That also cost the lots: the enumerator only
+visits sales present in auctions.json.
+
+The new cards are <li class="pah-auction-item"> blocks, each with a
+/auction/{CODE}/overview link and a text run of
+    {Live|Online} Auction | {title} | [CTA] | {location} | {date label}
+The optional CTA ("Accepting Consignments", "View results") is why
+location is taken as the field immediately BEFORE the date rather than
+by position.
+
+Do NOT switch to /calendar/upcoming — it looks like the natural target
+but renders its list client-side and server-returns zero sale links.
+
+Dates come as display text in two shapes:
+    "7 – 8 November 2026"                      (live sales)
+    "4 September 12pm - 11 September 2pm CEST 2026"   (online sessions)
+Both are parsed to ISO; the year is always the trailing token.
+
+Emits past sales as well as upcoming ones, so an empty CSV
+unambiguously means "broken" rather than "quiet season" — the
+distinction auction_calendar_health.py gates on.
 """
+import html as html_mod
 import requests
 import csv
 import re
@@ -38,99 +59,125 @@ def strip_html(t):
     return t.strip()
 
 
-def parse_dt(s):
-    """'2026-05-09 14:00:00' → '2026-05-09' (just the date portion)."""
-    s = (s or "").strip()
-    m = re.match(r'(\d{4})-(\d{2})-(\d{2})', s)
-    return f"{m.group(1)}-{m.group(2)}-{m.group(3)}" if m else ""
+MONTHS = {
+    "january": 1, "february": 2, "march": 3, "april": 4, "may": 5,
+    "june": 6, "july": 7, "august": 8, "september": 9, "october": 10,
+    "november": 11, "december": 12,
+}
+
+
+def parse_date_label(label):
+    """Display date text -> (start_iso, end_iso). ('', '') if unparseable.
+
+    Handles the two shapes Phillips renders:
+      "7 – 8 November 2026"                            day range, one month
+      "4 September 12pm - 11 September 2pm CEST 2026"  full dates + times
+    The year is the trailing 4-digit token in both.
+    """
+    t = html_mod.unescape(label or "")
+    t = t.replace("\u2013", "-").replace("\u2014", "-").replace("\xa0", " ")
+    t = re.sub(r"\s+", " ", t).strip()
+
+    ym = re.search(r"\b(20\d{2})\b", t)
+    if not ym:
+        return "", ""
+    year = int(ym.group(1))
+
+    months_present = [w for w in re.findall(r"[A-Za-z]+", t)
+                      if w.lower() in MONTHS]
+
+    # "D - D Month YYYY" — one month, shared by both days. Must be tried
+    # FIRST: the leading day carries no month of its own, so the generic
+    # day+month scan below sees only "8 November" and would collapse
+    # "7 - 8 November" to a single-day sale.
+    if len(months_present) == 1:
+        m = re.search(r"\b(\d{1,2})\s*-\s*(\d{1,2})\s+([A-Za-z]+)", t)
+        if m and m.group(3).lower() in MONTHS:
+            mi = MONTHS[m.group(3).lower()]
+            try:
+                return (date(year, mi, int(m.group(1))).isoformat(),
+                        date(year, mi, int(m.group(2))).isoformat())
+            except ValueError:
+                return "", ""
+
+    # "D Month ... - D Month ..." — each side carries its own month.
+    pairs = re.findall(r"\b(\d{1,2})\s+([A-Za-z]+)", t)
+    pairs = [(int(d), MONTHS[m.lower()]) for d, m in pairs if m.lower() in MONTHS]
+    if pairs:
+        try:
+            return (date(year, pairs[0][1], pairs[0][0]).isoformat(),
+                    date(year, pairs[-1][1], pairs[-1][0]).isoformat())
+        except ValueError:
+            return "", ""
+    return "", ""
+
+
+def _card_fields(card_html):
+    """Visible text runs of a sale card, in document order."""
+    txt = re.sub(r"<[^>]+>", "|", card_html)
+    txt = re.sub(r"\|+", "|", txt)
+    return [html_mod.unescape(f).strip() for f in txt.split("|")
+            if f.strip() and "grid-item" not in f]
 
 
 def scrape():
     print(f"Fetching {URL} ...")
     r = requests.get(URL, headers=HEADERS, timeout=30)
     r.raise_for_status()
-    html = r.text
+    page = r.text
 
-    # The Department Info + Upcoming Auctions section is followed by grid
-    # cards. Each card is anchored by a <span class="atc_date_start"> tag;
-    # the start & end datetimes sit back-to-back, followed by the sale
-    # title, location, and later the Phillips contact line.
+    cards = page.split('<li class="pah-auction-item')[1:]
+    if not cards:
+        return []
+
     today = date.today().isoformat()
-    results = []
+    out = {}
 
-    # Find every atc_date_start occurrence and the matching atc_date_end right after it.
-    for sm in re.finditer(r'atc_date_start"[^>]*>([^<]+)', html):
-        idx = sm.start()
-        start_raw = sm.group(1).strip()
-        date_start = parse_dt(start_raw)
-        if not date_start:
+    for card in cards:
+        card = card[:card.find("</li>")] if "</li>" in card else card[:4000]
+        hm = re.search(r'href="(/auction/([A-Z0-9]+)/overview)"', card)
+        if not hm:
+            continue
+        path, code = hm.group(1), hm.group(2)
+        if code in out:
             continue
 
-        # Look for atc_date_end just after the start span.
-        em = re.search(r'atc_date_end"[^>]*>([^<]+)', html[idx:idx + 500])
-        date_end = parse_dt(em.group(1)) if em else date_start
-
-        # Skip past sales.
-        if date_end < today:
+        fields = _card_fields(card)
+        # Locate the date field, then read location from just before it.
+        di = next((i for i, f in enumerate(fields)
+                   if re.search(r"\b(20\d{2})\b", f)
+                   and re.search(r"[A-Za-z]{3,}", f)
+                   and parse_date_label(f)[0]), None)
+        if di is None:
+            continue
+        date_start, date_end = parse_date_label(fields[di])
+        location = fields[di - 1] if di >= 1 else ""
+        # Guard against the CTA sitting where a location should be.
+        if location in ("Accepting Consignments", "View results"):
+            location = ""
+        title = fields[1] if len(fields) > 1 else ""
+        if not title or not date_start:
             continue
 
-        # Grab the 2-4KB window after the dates for title + location + href.
-        window = html[idx: idx + 3500]
-        text = strip_html(window)
-        # Each card's structure post-date: "{timezone} {Sale Title} {Location} Phillips info@phillips.com"
-        # Capture title + location before " Phillips " anchor.
-        tm = re.search(r'(?:Europe/Paris|Asia/Hong_Kong|America/New_York|America/Los_Angeles|Asia/Tokyo|Europe/London|UTC|GMT)\s+(.+?)\s+Phillips\s+info@phillips', text)
-        if not tm:
-            continue
-        body = tm.group(1).strip()
-        # Body looks like "The Geneva Watch Auction: XXIII Geneva" — title +
-        # trailing location word(s). Strip trailing city to find the title.
-        loc_m = re.search(r'\s+(Geneva|Hong Kong|New York|London|Paris|Milan|Tokyo|Dubai|Los Angeles|Online)$', body)
-        if loc_m:
-            location = loc_m.group(1)
-            title = body[: loc_m.start()].strip()
-        else:
-            location = ''
-            title = body
+        status = ("past" if date_end < today
+                  else "live" if date_start <= today <= date_end
+                  else "upcoming")
 
-        # Auction code URL ("/auction/CH080226") — Phillips puts each card's
-        # href at the TOP of the card, BEFORE the atc_date block. Walk
-        # backward from the date marker to the nearest auction link that
-        # belongs to THIS card (i.e. not one we already used).
-        url = ""
-        back = html[max(0, idx - 3500):idx]
-        hrefs_back = list(re.finditer(r'href="(https://www\.phillips\.com/auction/[A-Z0-9]+)"', back))
-        if hrefs_back:
-            url = hrefs_back[-1].group(1)   # nearest preceding href = this card's
+        out[code] = {
+            "house":       "Phillips",
+            "title":       title,
+            "location":    location,
+            "date_start":  date_start,
+            "date_end":    date_end,
+            "date_label":  (f"{date_start} – {date_end}"
+                            if date_end != date_start else date_start),
+            "url":         f"{BASE}{path}",
+            "has_catalog": "True",
+            "source":      "Phillips",
+            "status_hint": status,
+        }
 
-        # has_catalog: Phillips publishes catalogs alongside the auction URL
-        # once the sale is announced. The sale page itself exists for every
-        # announced sale, so we mark has_catalog True whenever we have a URL.
-        has_catalog = bool(url)
-
-        results.append({
-            'house':      'Phillips',
-            'title':      title,
-            'location':   location,
-            'date_start': date_start,
-            'date_end':   date_end,
-            'date_label': (f"{date_start} – {date_end}" if date_end != date_start else date_start),
-            'url':        url,
-            'has_catalog': 'True' if has_catalog else 'False',
-            'source':     'Phillips',
-        })
-
-    # Dedup by url or (house, date_start, title) — the landing page
-    # sometimes repeats a sale in nav/teaser blocks.
-    seen = set()
-    unique = []
-    for r in results:
-        key = r['url'] or f"{r['date_start']}|{r['title']}"
-        if key in seen:
-            continue
-        seen.add(key)
-        unique.append(r)
-    return unique
+    return list(out.values())
 
 
 def main():
@@ -151,7 +198,7 @@ def main():
 
     output = 'phillips_auctions_listings.csv'
     with open(output, 'w', newline='', encoding='utf-8') as f:
-        writer = csv.DictWriter(f, fieldnames=['house','title','location','date_start','date_end','date_label','url','has_catalog','source'])
+        writer = csv.DictWriter(f, fieldnames=['house','title','location','date_start','date_end','date_label','url','has_catalog','source','status_hint'])
         writer.writeheader()
         writer.writerows(auctions)
     print(f"\nSaved {len(auctions)} auctions to {output}")
