@@ -1,0 +1,63 @@
+name: Calendar canary
+
+# Fetches every auction house's calendar for real and fails if any of
+# them returns zero sales.
+#
+# This is the EARLY-WARNING half of calendar health. The other half,
+# auction_calendar_health.py, inspects the committed CSVs and is
+# debounced three consecutive runs before it pages — correct for its job
+# (it must not page on a transient block) but it means a site redesign
+# takes three days to surface, and only after it has already emptied the
+# data.
+#
+#   auction_calendar_health.py   artifact-based, debounced, inside the
+#                                scrape workflow, decides whether to PAGE
+#   calendar_canary.py           network-based, no debounce, own
+#                                schedule, decides whether the parsers
+#                                still UNDERSTAND the sites
+#
+# Monaco Legend and Phillips were each silently broken for six weeks by
+# site rebuilds. This is the check that turns "we noticed eventually"
+# into "we noticed the day it shipped".
+#
+# Twice weekly rather than daily: it makes ~7 real requests to auction
+# houses and the thing it detects (a redesign) is rare and permanent, not
+# transient. The daily scrape plus the debounced gate already cover the
+# fast-moving failures.
+#
+# Read-only — fetches, counts, writes nothing, commits nothing. Failures
+# open an issue via notify-scrape-failure.yml, which lists this workflow
+# by name (tests/test_alert_coverage.py enforces that for every cron).
+
+on:
+  schedule:
+    - cron: '30 13 * * 1,4'   # Mon + Thu, 6:30am PT / 7:30am PDT
+  workflow_dispatch:
+
+concurrency:
+  group: calendar-canary
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  canary:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        # curl_cffi comes from the auctions file — several house scrapers
+        # need Chrome-TLS impersonation to get past Cloudflare.
+        run: pip install -r requirements.txt -r requirements-auctions.txt
+
+      - name: Fetch every house and count sales
+        run: python3 calendar_canary.py
