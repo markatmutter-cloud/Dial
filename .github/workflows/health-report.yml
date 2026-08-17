@@ -1,0 +1,82 @@
+name: Health report
+
+# The scheduled read-only health sweep.
+#
+# health.py has existed for months and was never wired to a cron, so it
+# only ever ran when someone thought to run it. When it was finally run
+# during the 2026-08 sweep it immediately surfaced a Chronoholic count
+# flapping 4 <-> 83 that nothing else had noticed. A diagnostic nobody
+# runs is not a diagnostic.
+#
+# This job owns the checks that are about SLOW rot rather than a single
+# failed run, which is why they don't belong in the scrape workflows:
+#
+#   source_freshness.py --check   the one generic rule — "when did this
+#                                 source last produce data?" — across
+#                                 dealers, calendar, editorial and merged
+#                                 outputs. Needs no theory about how a
+#                                 source breaks, so it covers failure
+#                                 modes nobody has diagnosed yet.
+#   health.py                     workflow failure rates, verify_sources
+#                                 alerts, flapping counts.
+#
+# Deliberately separate from the scrapes: a source going stale must not
+# red a scrape run that did its job correctly, and this needs full git
+# history (fetch-depth 0) that the scrape workflows don't check out.
+#
+# Failures here open an issue via notify-scrape-failure.yml, which lists
+# this workflow by name (tests/test_alert_coverage.py enforces that every
+# cron'd workflow is listed there).
+
+on:
+  schedule:
+    - cron: '0 15 * * *'   # 8am PT / 7am PDT, after the 14:00 UTC listings run
+  workflow_dispatch:
+
+concurrency:
+  group: health-report
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v5
+        with:
+          # health.py reads `git log` for data-staleness; the default
+          # shallow checkout would make every file look brand new.
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Freshness table
+        # Printed before the gate so the run log always carries the full
+        # picture, including the sources that are still fine.
+        continue-on-error: true
+        run: python3 source_freshness.py --report
+
+      - name: Health check (workflows, alerts, flapping)
+        # Informational: never fails the job. It reports on OTHER
+        # workflows' failures, which already alert on their own — failing
+        # here too would just double-page for one incident.
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 health.py
+
+      - name: Freshness gate
+        # The one step that can fail this workflow. Runs last so the
+        # report above is always in the log, even when this trips.
+        run: python3 source_freshness.py --check

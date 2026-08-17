@@ -168,6 +168,16 @@ jobs:
         continue-on-error: true
         run: python verify_auction_lots.py || true
 
+      - name: Record source freshness
+        # Additive: only updates the sources whose artifacts exist in this
+        # checkout, so each workflow contributes its own slice of the
+        # ledger. Runs BEFORE the commit so `git add data/` persists it.
+        # Always exits 0 — the freshness GATE runs in health-report.yml,
+        # not here, so a stale source can't red a scrape that worked.
+        if: always()
+        continue-on-error: true
+        run: python3 source_freshness.py --record
+
       - name: Record calendar health
         # Bumps each house's consecutive-miss count BEFORE the commit, so
         # data/auction_calendar_health_state.json is picked up by
