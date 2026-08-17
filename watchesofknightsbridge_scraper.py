@@ -7,11 +7,21 @@ Output: watchesofknightsbridge_listings.csv
 
 Same pattern as Menta and Grey & Patina. Prices in GBP with
 currency_minor_unit=0 (whole pounds, not pence).
+
+Fetched via curl_cffi Chrome impersonation, NOT plain requests. The
+site went behind Cloudflare's TLS-fingerprint check in 2026-08 and
+started serving the "Just a moment..." interstitial (HTTP 403) to
+`requests` from GitHub Actions — every run from 08-02 onward produced
+no CSV. This is a JA3/TLS check, not an IP block: a probe from CI
+confirmed plain requests 403s while `impersonate="chrome"` returns 200
+with full data from the same runner. Use the floating "chrome" alias,
+not a pinned one — "chrome124" was 403 in the same probe.
 """
-import requests
 import csv
 import re
 import time
+
+from curl_cffi import requests as cf_requests
 
 BASE = "https://watchesofknightsbridge.com"
 API = f"{BASE}/wp-json/wc/store/v1/products"
@@ -48,11 +58,11 @@ def get_all_listings():
     per_page = 100
     while True:
         print(f"Fetching page {page}...")
-        r = requests.get(API, headers=HEADERS, params={
+        r = cf_requests.get(API, headers=HEADERS, params={
             'per_page': per_page,
             'page': page,
             'status': 'publish',
-        }, timeout=60)
+        }, timeout=60, impersonate="chrome")
         r.raise_for_status()
         items = r.json()
         if not items:
