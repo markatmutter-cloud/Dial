@@ -1,21 +1,31 @@
 #!/usr/bin/env python3
 """
-MVV Watches scraper - Squarespace Commerce items[] API.
+Sierra Time Co scraper (formerly MVV Watches) - Shopify products.json.
 Run: python3 mvvwatches_scraper.py
 Requires: pip install requests
 Output: mvvwatches_listings.csv
 
-MVV's entire inventory lives on the root path, with Squarespace pagination
-via ?offset=N. Same items[] + structuredContent.variants[] shape as Watch
-Brothers London; prices are USD here.
+The dealer rebranded from MVV Watches to Sierra Time Co and moved off
+Squarespace onto Shopify. mvvwatches.com now 301s to sierratimeco.com,
+and the redirect swallows the path — so the old Squarespace `?format=json`
+call landed on the new homepage and got HTML back, which is what broke
+this scraper (JSONDecodeError on every run from 2026-08-03).
+
+Filenames and the `mvvwatches` source key are deliberately unchanged: the
+health-gate state and the scrape-listings move step key off them, and a
+rename buys nothing. The user-facing name in merge.py SOURCES IS updated
+to "Sierra Time Co" — that's the name on the storefront now.
+
+Storefront currency is USD (confirmed from sierratimeco.com, not the TLD).
 """
 import requests
 import csv
 import re
 import time
 
-BASE = "https://www.mvvwatches.com"
-PATH = "/"
+from scraper_lib import fetch_json_with_retry
+
+BASE = "https://sierratimeco.com"
 HEADERS = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"}
 
 BRANDS = [
@@ -27,6 +37,10 @@ BRANDS = [
 
 
 def detect_brand(name):
+    # Shopify `vendor` is deliberately ignored: this store stamps every
+    # product with its own name ("Sierra Time Co" / "Sierra Time Co.",
+    # both spellings in use), never the watch brand. Title-only, same as
+    # the Squarespace version of this scraper.
     for b in BRANDS:
         if b.lower() in name.lower():
             return b
@@ -44,98 +58,70 @@ def strip_html(text):
     return re.sub(r'\s+', ' ', text).strip()
 
 
-def get_all_items():
-    all_items = []
-    offset = 0
+def get_all_products():
+    all_products = []
+    page = 1
+    limit = 250
     while True:
-        params = {'format': 'json'}
-        if offset:
-            params['offset'] = offset
-        r = requests.get(f"{BASE}{PATH}", headers=HEADERS, params=params, timeout=30)
-        r.raise_for_status()
-        data = r.json()
-        items = data.get('items', [])
-        if not items:
+        print(f"Fetching page {page}...")
+        data = fetch_json_with_retry(f"{BASE}/products.json",
+                                     headers=HEADERS, params={'limit': limit, 'page': page})
+        products = data.get('products', [])
+        if not products:
             break
-        all_items.extend(items)
-        print(f"  offset {offset}: got {len(items)} (total: {len(all_items)})")
-        pag = data.get('pagination', {})
-        if not pag.get('nextPage'):
+        all_products.extend(products)
+        print(f"  Got {len(products)} (total: {len(all_products)})")
+        if len(products) < limit:
             break
-        offset = pag.get('nextPageOffset')
-        if not offset:
-            break
-        time.sleep(0.5)
-    return all_items
+        page += 1
+        time.sleep(0.3)
+    return all_products
 
 
-def parse_item(i):
-    title = i.get('title', '')
-    url_id = i.get('urlId', '')
-    full_url = i.get('fullUrl') or f"/{url_id}"
-    url = BASE + full_url if full_url.startswith('/') else full_url
+def parse_product(p):
+    title = p.get('title', '')
+    body = strip_html(p.get('body_html', ''))[:400]
+    published_at = (p.get('published_at') or '')[:10]
+    handle = p.get('handle', '')
+    url = f"{BASE}/products/{handle}"
 
-    # For newer Squarespace product items, the top-level `assetUrl` is a
-    # truncated directory path that only returns a 2KB placeholder. The real
-    # product photos live in the nested `items[]` media records, each of which
-    # has a proper `assetUrl` ending in .jpg. Fall back to the top-level one
-    # for older items that stored their image directly.
-    asset = ''
-    nested = i.get('items') or []
-    for m in nested:
-        if m.get('recordTypeLabel') == 'image' and m.get('assetUrl'):
-            asset = m['assetUrl']
-            break
-    if not asset:
-        asset = i.get('assetUrl') or ''
-
-    sc = i.get('structuredContent', {})
-    variants = sc.get('variants', [])
-
+    variants = p.get('variants', [])
     price = 0
     available = False
     if variants:
         v = variants[0]
-        pm = v.get('priceMoney', {}) or {}
         try:
-            price = int(float(pm.get('value') or '0'))
+            price = int(float(v.get('price', '0')))
         except (ValueError, TypeError):
             price = 0
-        if not price:
-            raw = v.get('price', 0)
-            try:
-                price = int(raw) // 100
-            except (ValueError, TypeError):
-                price = 0
-        unlimited = v.get('unlimited', False)
-        qty = v.get('qtyInStock', 0) or 0
-        available = unlimited or qty > 0
+        available = v.get('available', False)
 
-    desc = strip_html(i.get('excerpt', '') or i.get('body', ''))[:400]
+    images = p.get('images', [])
+    img = images[0]['src'] if images else ''
 
     return {
         'title': title,
         'brand': detect_brand(title),
         'price': price,
         'url': url,
-        'img': asset,
-        'description': desc,
-        'source': 'MVV Watches',
-        'date': '',
+        'img': img,
+        'description': body,
+        'source': 'Sierra Time Co',
+        'date': published_at,
         'sold': not available,
     }
 
 
 def main():
-    print("Fetching MVV Watches inventory (Squarespace)...")
-    items = get_all_items()
-    print(f"\nTotal items: {len(items)}")
+    print("Fetching Sierra Time Co inventory (Shopify)...")
+    products = get_all_products()
+    print(f"\nTotal products: {len(products)}")
 
     results = []
     skipped_sold = 0
     skipped_no_price = 0
-    for i in items:
-        parsed = parse_item(i)
+    for p in products:
+        parsed = parse_product(p)
         if parsed['price'] == 0:
             skipped_no_price += 1
             continue
