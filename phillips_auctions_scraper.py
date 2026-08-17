@@ -138,7 +138,12 @@ def main():
     auctions = scrape()
     if not auctions:
         print("No auctions parsed — site template may have changed.")
-        sys.exit(0)
+        # Exit non-zero: parsing nothing is a broken selector, not a
+        # quiet season (these scrapers return past sales too). Exiting 0
+        # here reported success while the calendar silently rotted for
+        # six weeks. The step is continue-on-error, so the batch still
+        # completes; auction_calendar_health.py decides whether to page.
+        sys.exit(1)
 
     print(f"\nFound {len(auctions)} auction(s):")
     for a in auctions:

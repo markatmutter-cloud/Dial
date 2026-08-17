@@ -295,7 +295,12 @@ def main():
         idx = text.find('Timepieces')
         if idx >= 0:
             print(f"  Context around 'Timepieces': {text[max(0,idx-150):idx+50]!r}")
-        sys.exit(0)
+        # Exit non-zero: parsing nothing is a broken selector, not a
+        # quiet season (this scraper returns past sales too). Exiting 0
+        # here reported success while the calendar silently rotted.
+        # The step is continue-on-error, so the batch still completes;
+        # auction_calendar_health.py decides whether to page.
+        sys.exit(1)
 
     print(f"\nFound {len(auctions)} upcoming auction(s):")
     for a in auctions:
