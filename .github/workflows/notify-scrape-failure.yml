@@ -22,12 +22,24 @@ name: Notify on scrape failure
 
 on:
   workflow_run:
+    # THE RULE: every workflow with a `cron:` gets listed here. A
+    # scheduled job nobody is watching fails silently by construction —
+    # there's no human at the keyboard when it runs.
+    #
+    # This list was missing both editorial workflows, and it cost a
+    # month: "Scrape editorial corpus" failed on all 10 runs from
+    # 2026-07-15 to 08-16 (push race, fixed in #920) and never opened an
+    # issue, so the corpus sat frozen at the 07-12 refresh while the
+    # dealer-side alerts kept arriving daily and looked like the only
+    # problem. Adding a cron without adding it here re-opens that hole.
     workflows:
       - "Scrape listings"
       - "Scrape auctions"
       - "Scrape auction lots (frequent)"
       - "Scrape eBay"
       - "Rollup listing events"
+      - "Scrape editorial corpus"
+      - "Index editorial corpus topics"
     types:
       - completed
 
