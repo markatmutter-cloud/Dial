@@ -29,6 +29,7 @@ sale scheduled as of 2026-08-17. The upcoming panel renders a
 is a quiet season, NOT a parse failure, and is reported as such.
 """
 import html as html_mod
+import json
 import requests
 import csv
 import re
@@ -52,6 +53,63 @@ def parse_date_range(text):
     return parse_auction_date_range(text)
 
 
+# --- structured data ------------------------------------------------------
+# Monaco Legend publishes an schema.org EventSeries whose subEvent[] lists
+# every sale with REAL ISO datetimes. Prefer it over scraping the rendered
+# cards: JSON-LD is emitted for search engines and survives visual
+# redesigns, which is exactly the class of change that silently killed
+# this scraper for six weeks. The HTML card path is kept as a fallback for
+# when the block is absent or incomplete — belt and braces, since a
+# structured source that quietly disappears would otherwise take the whole
+# house down again.
+
+LD_RE = re.compile(
+    r'<script[^>]+type=["\']application/ld\+json["\'][^>]*>(.*?)</script>',
+    re.S,
+)
+
+
+def _ld_blocks(page):
+    for raw in LD_RE.findall(page):
+        try:
+            yield json.loads(raw.strip())
+        except (json.JSONDecodeError, ValueError):
+            continue
+
+
+def _sale_events(page):
+    """Every subEvent from any EventSeries in the page's JSON-LD."""
+    out = []
+    for doc in _ld_blocks(page):
+        nodes = doc.get("@graph", [doc]) if isinstance(doc, dict) else doc
+        for node in (nodes if isinstance(nodes, list) else [nodes]):
+            if not isinstance(node, dict) or node.get("@type") != "EventSeries":
+                continue
+            for sub in node.get("subEvent") or []:
+                if isinstance(sub, dict) and sub.get("url"):
+                    out.append(sub)
+    return out
+
+
+def _event_city(sub):
+    """addressLocality of the sale's Place, if it carries one.
+
+    The location array holds a VirtualLocation (the sale page) alongside
+    a Place (the room). It IS per-sale, not the head office — two of the
+    19 sales correctly report Lugano — but one sale omits the Place
+    entirely, which is why the caller falls back to the card text.
+    """
+    loc = sub.get("location")
+    for item in (loc if isinstance(loc, list) else [loc] if loc else []):
+        if isinstance(item, dict) and item.get("@type") == "Place":
+            addr = item.get("address")
+            if isinstance(addr, dict):
+                return (addr.get("addressLocality") or "").strip()
+            if isinstance(addr, str):
+                return addr.strip()
+    return ""
+
+
 def scrape():
     url = f"{BASE}/auction"
     print(f"Fetching {url} ...")
@@ -62,7 +120,56 @@ def scrape():
     # Sale cards carry a stable data-auction-id. Splitting on it is more
     # robust than anchoring on section headings, which is what broke last
     # time — headings are copy, ids are structure.
+    # Card text keyed by sale path, used both as the fallback parser and
+    # to fill a location the structured data happens to omit.
     cards = re.split(r"<article data-auction-id=", html)[1:]
+
+    card_city = {}
+    for card in cards:
+        href = re.search(r"href='(/auction/[^']+)'", card)
+        dtag = re.search(r"<p class='auction-date'>([^<]+)</p>", card)
+        if href and dtag and "|" in dtag.group(1):
+            city = dtag.group(1).split("|", 1)[1]
+            card_city[href.group(1)] = re.sub(
+                r"\s+", " ", city.replace("\xa0", " ").replace("&#8288;", " ")
+            ).strip()
+
+    # Preferred path: schema.org EventSeries -> subEvent[] with ISO dates.
+    events = _sale_events(html)
+    if events:
+        out = {}
+        today_iso = date.today().isoformat()
+        for sub in events:
+            url = sub.get("url") or ""
+            path = url.replace(BASE, "") or url
+            if path in out:
+                continue
+            start = (sub.get("startDate") or "")[:10]
+            end = (sub.get("endDate") or "")[:10] or start
+            if not start:
+                continue
+            title = html_mod.unescape(sub.get("name") or "").strip()
+            location = _event_city(sub) or card_city.get(path, "")
+            status = ("live" if start <= today_iso <= end
+                      else "upcoming" if start > today_iso else "past")
+            out[path] = {
+                "house":       "Monaco Legend",
+                "title":       title,
+                "location":    location,
+                "date_start":  start,
+                "date_end":    end,
+                "date_label":  (f"{start} - {end}" if end != start else start),
+                "url":         url if url.startswith("http") else f"{BASE}{path}",
+                "has_catalog": "True" if status in ("live", "past") else "False",
+                "source":      "Monaco Legend",
+                "status_hint": status,
+            }
+        if out:
+            print(f"  parsed {len(out)} sale(s) from schema.org EventSeries")
+            return list(out.values())
+        print("  EventSeries present but yielded no usable sales; "
+              "falling back to card markup")
+
     if not cards:
         # No cards at all. Distinguish "site says nothing is scheduled"
         # (fine) from "we no longer understand this page" (broken).
