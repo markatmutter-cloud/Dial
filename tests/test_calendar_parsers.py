@@ -127,3 +127,64 @@ def test_monaco_no_longer_depends_on_the_homepage_bidding_section():
     src = inspect.getsource(ml.scrape)
     assert "Bidding Open" not in src
     assert "/auction" in src
+
+
+# --- Monaco Legend: structured data preferred over rendered markup --------
+# JSON-LD is emitted for search engines and survives visual redesigns —
+# the exact class of change that killed this scraper for six weeks. The
+# card parser stays as a fallback, so BOTH paths need pinning.
+
+import json
+
+LD_PAGE = """
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[{"@type":"EventSeries",
+"subEvent":[
+ {"@type":"SaleEvent","name":"Exclusive Timepieces &amp; Jewels",
+  "url":"https://www.monacolegendauctions.com/auction/exclusive-timepieces-41",
+  "startDate":"2026-06-04T10:30:00+02:00","endDate":"2026-06-04T16:00:00+02:00",
+  "location":[{"@type":"VirtualLocation","url":"x"},
+              {"@type":"Place","address":{"addressLocality":"Lugano"}}]},
+ {"@type":"SaleEvent","name":"No Place Sale",
+  "url":"https://www.monacolegendauctions.com/auction/no-place-99",
+  "startDate":"2026-04-25T14:30:00+02:00","endDate":"2026-04-26T16:00:00+02:00",
+  "location":[{"@type":"VirtualLocation","url":"x"}]}
+]}]}
+</script>
+<article data-auction-id="99"><h2 class='auction-name'>
+<a href='/auction/no-place-99'>No Place Sale</a></h2>
+<p class='auction-date'>25 &#8211;&#8288;&#160;26&#160;April 2026 | Monaco</p></article>
+"""
+
+
+def test_sale_events_extracted_from_eventseries():
+    subs = ml._sale_events(LD_PAGE)
+    assert len(subs) == 2
+    assert subs[0]["name"] == "Exclusive Timepieces &amp; Jewels"
+
+
+def test_event_city_reads_the_place_not_the_virtual_location():
+    subs = ml._sale_events(LD_PAGE)
+    assert ml._event_city(subs[0]) == "Lugano"
+
+
+def test_event_city_empty_when_no_place_so_caller_can_fall_back():
+    """One real sale omits Place entirely; the card text supplies it."""
+    subs = ml._sale_events(LD_PAGE)
+    assert ml._event_city(subs[1]) == ""
+
+
+def test_malformed_ld_block_does_not_crash():
+    assert ml._sale_events(
+        '<script type="application/ld+json">{not json</script>') == []
+
+
+def test_no_ld_block_returns_nothing_so_fallback_engages():
+    assert ml._sale_events("<html><body>no structured data</body></html>") == []
+
+
+def test_non_eventseries_ld_is_ignored():
+    page = ('<script type="application/ld+json">'
+            '{"@context":"https://schema.org","@type":"LocalBusiness",'
+            '"name":"Antiquorum"}</script>')
+    assert ml._sale_events(page) == []
