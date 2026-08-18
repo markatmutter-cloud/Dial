@@ -276,8 +276,8 @@
     "rows": 3
   },
   "calendar:monacolegend": {
-    "fingerprint": "4f31b2cc71fb1477",
-    "lastChanged": "2026-08-17",
+    "fingerprint": "02bcf3d3a110422e",
+    "lastChanged": "2026-08-18",
     "lastSeen": "2026-08-18",
     "rows": 19
   },
@@ -293,9 +293,15 @@
     "lastSeen": "2026-08-18",
     "rows": 8
   },
+  "calendar:watchesofknightsbridge": {
+    "fingerprint": "eb28c4d9a128c4ea",
+    "lastChanged": "2026-08-18",
+    "lastSeen": "2026-08-18",
+    "rows": 2
+  },
   "eBay": {
-    "fingerprint": "ecc07981e1a77356",
-    "lastChanged": "2026-08-17",
+    "fingerprint": "fa80893db3d8f1ac",
+    "lastChanged": "2026-08-18",
     "lastSeen": "2026-08-18",
     "rows": 30
   },
@@ -390,14 +396,14 @@
     "rows": 299
   },
   "merged:auction_lots": {
-    "fingerprint": "508b6a16770aa311",
-    "lastChanged": "2026-08-17",
+    "fingerprint": "ed33d1b742201b58",
+    "lastChanged": "2026-08-18",
     "lastSeen": "2026-08-18",
     "rows": 3360
   },
   "merged:auctions": {
-    "fingerprint": "163a34997419e450",
-    "lastChanged": "2026-08-17",
+    "fingerprint": "4f7d3e6a7037898d",
+    "lastChanged": "2026-08-18",
     "lastSeen": "2026-08-18",
     "rows": 89
   },
