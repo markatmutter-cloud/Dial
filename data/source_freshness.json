@@ -288,8 +288,8 @@
     "rows": 9
   },
   "calendar:sothebys": {
-    "fingerprint": "2425e8fe75782dac",
-    "lastChanged": "2026-08-17",
+    "fingerprint": "6605acbc2cf32ae5",
+    "lastChanged": "2026-08-19",
     "lastSeen": "2026-08-19",
     "rows": 8
   },
@@ -300,8 +300,8 @@
     "rows": 2
   },
   "eBay": {
-    "fingerprint": "24c762450cf04eca",
-    "lastChanged": "2026-08-18",
+    "fingerprint": "8071d07838352f42",
+    "lastChanged": "2026-08-19",
     "lastSeen": "2026-08-19",
     "rows": 30
   },
@@ -396,16 +396,16 @@
     "rows": 299
   },
   "merged:auction_lots": {
-    "fingerprint": "aef3b96114c9d57d",
-    "lastChanged": "2026-08-18",
+    "fingerprint": "d32541d692e35605",
+    "lastChanged": "2026-08-19",
     "lastSeen": "2026-08-19",
     "rows": 3360
   },
   "merged:auctions": {
-    "fingerprint": "4f7d3e6a7037898d",
-    "lastChanged": "2026-08-18",
+    "fingerprint": "906af3b1d580b928",
+    "lastChanged": "2026-08-19",
     "lastSeen": "2026-08-19",
-    "rows": 89
+    "rows": 90
   },
   "merged:listings": {
     "fingerprint": "bb398168e20f48c9",
