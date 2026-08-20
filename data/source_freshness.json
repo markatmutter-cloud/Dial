@@ -18,14 +18,14 @@
     "rows": 51
   },
   "Bulang & Sons": {
-    "fingerprint": "38bf5ca2f4bcafd5",
-    "lastChanged": "2026-08-19",
+    "fingerprint": "f0775387dd168880",
+    "lastChanged": "2026-08-20",
     "lastSeen": "2026-08-20",
     "rows": 171
   },
   "Central Watch": {
-    "fingerprint": "e2db398386f48f1b",
-    "lastChanged": "2026-08-18",
+    "fingerprint": "16eeec66e67a1692",
+    "lastChanged": "2026-08-20",
     "lastSeen": "2026-08-20",
     "rows": 178
   },
@@ -66,10 +66,10 @@
     "rows": 18
   },
   "Falco Watches": {
-    "fingerprint": "158a3ffce942cef4",
-    "lastChanged": "2026-08-19",
+    "fingerprint": "4489be3fe63eaa46",
+    "lastChanged": "2026-08-20",
     "lastSeen": "2026-08-20",
-    "rows": 53
+    "rows": 52
   },
   "Grey & Patina": {
     "fingerprint": "9dc18e7adbce9d73",
@@ -78,10 +78,10 @@
     "rows": 49
   },
   "Hairspring": {
-    "fingerprint": "fa5a4c01e18724bb",
-    "lastChanged": "2026-08-19",
+    "fingerprint": "7dfd9a5b81566134",
+    "lastChanged": "2026-08-20",
     "lastSeen": "2026-08-20",
-    "rows": 39
+    "rows": 38
   },
   "Heuertime": {
     "fingerprint": "51152f43f7db0ded",
@@ -90,10 +90,10 @@
     "rows": 31
   },
   "Huntington Company": {
-    "fingerprint": "6aa8c5c1942d3296",
-    "lastChanged": "2026-08-19",
+    "fingerprint": "039239dcdfd06709",
+    "lastChanged": "2026-08-20",
     "lastSeen": "2026-08-20",
-    "rows": 97
+    "rows": 95
   },
   "Luna Royster": {
     "fingerprint": "eff4288f2969547a",
@@ -126,10 +126,10 @@
     "rows": 121
   },
   "Pascal Karp": {
-    "fingerprint": "9fb71a685a3b0ddd",
-    "lastChanged": "2026-08-19",
+    "fingerprint": "bbf6f50d375039ac",
+    "lastChanged": "2026-08-20",
     "lastSeen": "2026-08-20",
-    "rows": 87
+    "rows": 89
   },
   "Romain R\u00e9a": {
     "fingerprint": "543cdf15448083cc",
@@ -144,10 +144,10 @@
     "rows": 23
   },
   "Shuck the Oyster": {
-    "fingerprint": "cb5eb400bf299b86",
+    "fingerprint": "8ffbc971ed22330c",
     "lastChanged": "2026-08-20",
     "lastSeen": "2026-08-20",
-    "rows": 124
+    "rows": 125
   },
   "Sierra Time Co": {
     "fingerprint": "5475b3ae3a675e96",
@@ -156,10 +156,10 @@
     "rows": 30
   },
   "Somlo": {
-    "fingerprint": "3b3d29cffa5bc70b",
-    "lastChanged": "2026-08-18",
+    "fingerprint": "1bf8860f36ea41d9",
+    "lastChanged": "2026-08-20",
     "lastSeen": "2026-08-20",
-    "rows": 182
+    "rows": 181
   },
   "Swiss Hours": {
     "fingerprint": "420fa48185f2377c",
@@ -174,10 +174,10 @@
     "rows": 29
   },
   "Tokant": {
-    "fingerprint": "cff1bfa8b76de5db",
-    "lastChanged": "2026-08-18",
+    "fingerprint": "8cb64921e828ec35",
+    "lastChanged": "2026-08-20",
     "lastSeen": "2026-08-20",
-    "rows": 36
+    "rows": 35
   },
   "Tropical Watch": {
     "fingerprint": "03ade765fd05cf14",
@@ -186,16 +186,16 @@
     "rows": 128
   },
   "Vintage Watch Collective": {
-    "fingerprint": "4e29b28cd8d10b5e",
+    "fingerprint": "f8c00f1e6fe19960",
     "lastChanged": "2026-08-20",
     "lastSeen": "2026-08-20",
-    "rows": 35
+    "rows": 36
   },
   "Vintage Watch Fam": {
-    "fingerprint": "a909208e2a013ea0",
+    "fingerprint": "6e8874846829e8b3",
     "lastChanged": "2026-08-20",
     "lastSeen": "2026-08-20",
-    "rows": 535
+    "rows": 536
   },
   "Vintage Watch Shop": {
     "fingerprint": "94f85b92ddc35e21",
@@ -222,10 +222,10 @@
     "rows": 429
   },
   "Watch Club": {
-    "fingerprint": "3ea73afb102f42c6",
-    "lastChanged": "2026-08-19",
+    "fingerprint": "bb6c8c9965305dac",
+    "lastChanged": "2026-08-20",
     "lastSeen": "2026-08-20",
-    "rows": 54
+    "rows": 53
   },
   "Watches of Knightsbridge": {
     "fingerprint": "dfd77767b0f2ce7b",
@@ -252,7 +252,7 @@
     "rows": 5
   },
   "Wind Vintage": {
-    "fingerprint": "6bb9da640cca9891",
+    "fingerprint": "574c9bb3d88fbc09",
     "lastChanged": "2026-08-20",
     "lastSeen": "2026-08-20",
     "rows": 222
@@ -408,9 +408,9 @@
     "rows": 90
   },
   "merged:listings": {
-    "fingerprint": "7afac734ba7ee132",
+    "fingerprint": "3449fa351edeadf0",
     "lastChanged": "2026-08-20",
     "lastSeen": "2026-08-20",
-    "rows": 9449
+    "rows": 9453
   }
 }
