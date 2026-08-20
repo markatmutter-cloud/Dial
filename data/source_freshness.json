@@ -1,9 +1,9 @@
 {
   "Analog Shift": {
-    "fingerprint": "40146e95ee2e5100",
-    "lastChanged": "2026-08-19",
+    "fingerprint": "da5af114455aa719",
+    "lastChanged": "2026-08-20",
     "lastSeen": "2026-08-20",
-    "rows": 749
+    "rows": 750
   },
   "Belmont Watches": {
     "fingerprint": "fae7cf6ed926883e",
@@ -42,14 +42,14 @@
     "rows": 117
   },
   "Collectors Corner NY": {
-    "fingerprint": "9283e0800ed3a595",
-    "lastChanged": "2026-08-19",
+    "fingerprint": "17f0702d3c37e400",
+    "lastChanged": "2026-08-20",
     "lastSeen": "2026-08-20",
-    "rows": 86
+    "rows": 85
   },
   "Craft & Tailored": {
-    "fingerprint": "704ac36c41fa0d9c",
-    "lastChanged": "2026-08-19",
+    "fingerprint": "9a758ecea222c507",
+    "lastChanged": "2026-08-20",
     "lastSeen": "2026-08-20",
     "rows": 105
   },
@@ -72,10 +72,10 @@
     "rows": 53
   },
   "Grey & Patina": {
-    "fingerprint": "a566bb8e8aa14b11",
-    "lastChanged": "2026-08-19",
+    "fingerprint": "9dc18e7adbce9d73",
+    "lastChanged": "2026-08-20",
     "lastSeen": "2026-08-20",
-    "rows": 50
+    "rows": 49
   },
   "Hairspring": {
     "fingerprint": "fa5a4c01e18724bb",
@@ -96,10 +96,10 @@
     "rows": 97
   },
   "Luna Royster": {
-    "fingerprint": "a21fd3d3398b55e0",
-    "lastChanged": "2026-08-18",
+    "fingerprint": "eff4288f2969547a",
+    "lastChanged": "2026-08-20",
     "lastSeen": "2026-08-20",
-    "rows": 32
+    "rows": 34
   },
   "Maunder Watches": {
     "fingerprint": "977bec8c6c16c8e0",
@@ -144,14 +144,14 @@
     "rows": 23
   },
   "Shuck the Oyster": {
-    "fingerprint": "60af3b6c0d09d607",
-    "lastChanged": "2026-08-17",
+    "fingerprint": "cb5eb400bf299b86",
+    "lastChanged": "2026-08-20",
     "lastSeen": "2026-08-20",
-    "rows": 125
+    "rows": 124
   },
   "Sierra Time Co": {
-    "fingerprint": "13c4cf1896ba4d63",
-    "lastChanged": "2026-08-19",
+    "fingerprint": "5475b3ae3a675e96",
+    "lastChanged": "2026-08-20",
     "lastSeen": "2026-08-20",
     "rows": 30
   },
@@ -180,22 +180,22 @@
     "rows": 36
   },
   "Tropical Watch": {
-    "fingerprint": "5ac1cfd7b5200444",
-    "lastChanged": "2026-08-19",
+    "fingerprint": "03ade765fd05cf14",
+    "lastChanged": "2026-08-20",
     "lastSeen": "2026-08-20",
-    "rows": 127
+    "rows": 128
   },
   "Vintage Watch Collective": {
-    "fingerprint": "90d80693d3a62de0",
-    "lastChanged": "2026-08-19",
+    "fingerprint": "4e29b28cd8d10b5e",
+    "lastChanged": "2026-08-20",
     "lastSeen": "2026-08-20",
     "rows": 35
   },
   "Vintage Watch Fam": {
-    "fingerprint": "24bb3e7cbeb01053",
-    "lastChanged": "2026-08-19",
+    "fingerprint": "a909208e2a013ea0",
+    "lastChanged": "2026-08-20",
     "lastSeen": "2026-08-20",
-    "rows": 538
+    "rows": 535
   },
   "Vintage Watch Shop": {
     "fingerprint": "94f85b92ddc35e21",
@@ -240,8 +240,8 @@
     "rows": 55
   },
   "Watchfid": {
-    "fingerprint": "974e061a6a694ed4",
-    "lastChanged": "2026-08-19",
+    "fingerprint": "ab7bb1d6c0d578ca",
+    "lastChanged": "2026-08-20",
     "lastSeen": "2026-08-20",
     "rows": 65
   },
@@ -252,10 +252,10 @@
     "rows": 5
   },
   "Wind Vintage": {
-    "fingerprint": "1fabc555a91be39f",
-    "lastChanged": "2026-08-19",
+    "fingerprint": "6bb9da640cca9891",
+    "lastChanged": "2026-08-20",
     "lastSeen": "2026-08-20",
-    "rows": 221
+    "rows": 222
   },
   "calendar:antiquorum": {
     "fingerprint": "c5d0ff73d32d020a",
@@ -300,8 +300,8 @@
     "rows": 2
   },
   "eBay": {
-    "fingerprint": "a9f238447f1a3249",
-    "lastChanged": "2026-08-20",
+    "fingerprint": "2a6514a2ceb021ea",
+    "lastChanged": "2026-08-19",
     "lastSeen": "2026-08-20",
     "rows": 30
   },
@@ -408,9 +408,9 @@
     "rows": 90
   },
   "merged:listings": {
-    "fingerprint": "8adcac51c48ef350",
+    "fingerprint": "e66b4e5f9c0e6413",
     "lastChanged": "2026-08-20",
     "lastSeen": "2026-08-20",
-    "rows": 9441
+    "rows": 9449
   }
 }
