@@ -1,9 +1,9 @@
 {
   "Analog Shift": {
-    "fingerprint": "cb980055d0caee0c",
-    "lastChanged": "2026-08-21",
+    "fingerprint": "e3bef9b9a2b7ab87",
+    "lastChanged": "2026-08-22",
     "lastSeen": "2026-08-22",
-    "rows": 749
+    "rows": 748
   },
   "Belmont Watches": {
     "fingerprint": "c949e495065c5d90",
@@ -48,7 +48,7 @@
     "rows": 85
   },
   "Craft & Tailored": {
-    "fingerprint": "a4bdfb8c24ff8c4f",
+    "fingerprint": "e484965c9be0e12f",
     "lastChanged": "2026-08-22",
     "lastSeen": "2026-08-22",
     "rows": 105
@@ -84,10 +84,10 @@
     "rows": 37
   },
   "Heuertime": {
-    "fingerprint": "51152f43f7db0ded",
-    "lastChanged": "2026-08-17",
+    "fingerprint": "d2dd4554ced6c495",
+    "lastChanged": "2026-08-22",
     "lastSeen": "2026-08-22",
-    "rows": 31
+    "rows": 32
   },
   "Huntington Company": {
     "fingerprint": "9ee634aea3d6e1ca",
@@ -174,16 +174,16 @@
     "rows": 27
   },
   "Tokant": {
-    "fingerprint": "8cb64921e828ec35",
-    "lastChanged": "2026-08-20",
-    "lastSeen": "2026-08-22",
-    "rows": 35
-  },
-  "Tropical Watch": {
-    "fingerprint": "a212c2179477f59c",
+    "fingerprint": "bc8d43f738d2c717",
     "lastChanged": "2026-08-22",
     "lastSeen": "2026-08-22",
-    "rows": 123
+    "rows": 34
+  },
+  "Tropical Watch": {
+    "fingerprint": "746faa8b40f61adc",
+    "lastChanged": "2026-08-22",
+    "lastSeen": "2026-08-22",
+    "rows": 120
   },
   "Vintage Watch Collective": {
     "fingerprint": "54e4d23658294448",
@@ -204,10 +204,10 @@
     "rows": 29
   },
   "Vision Vintage Watches": {
-    "fingerprint": "d615e0715bdf9b26",
+    "fingerprint": "3d526f9942c09e03",
     "lastChanged": "2026-08-22",
     "lastSeen": "2026-08-22",
-    "rows": 63
+    "rows": 86
   },
   "Watch Brothers London": {
     "fingerprint": "21e378fb13572e50",
@@ -252,10 +252,10 @@
     "rows": 5
   },
   "Wind Vintage": {
-    "fingerprint": "597a704a3b480be1",
+    "fingerprint": "6445e63bd8b12100",
     "lastChanged": "2026-08-22",
     "lastSeen": "2026-08-22",
-    "rows": 228
+    "rows": 214
   },
   "calendar:antiquorum": {
     "fingerprint": "c5d0ff73d32d020a",
@@ -408,9 +408,9 @@
     "rows": 90
   },
   "merged:listings": {
-    "fingerprint": "a3d85ef92b58fbde",
+    "fingerprint": "ba51595219c24d62",
     "lastChanged": "2026-08-22",
     "lastSeen": "2026-08-22",
-    "rows": 9531
+    "rows": 9536
   }
 }

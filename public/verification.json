@@ -1,14 +1,14 @@
 {
   "date": "2026-08-22",
-  "updated_at": "2026-08-22T14:53:45+00:00",
+  "updated_at": "2026-08-22T20:52:58+00:00",
   "alerts": [],
   "counts": {
-    "Wind Vintage": 104,
+    "Wind Vintage": 117,
     "Tropical Watch": 123,
     "Menta Watches": 48,
     "Collectors Corner NY": 77,
     "Falco Watches": 50,
-    "Pascal Karp": 87,
+    "Pascal Karp": 85,
     "Tokant": 35,
     "Romain R\u00e9a": 235,
     "Grey & Patina": 52,
@@ -22,7 +22,7 @@
     "Analog Shift": 730,
     "Watches of Knightsbridge": 75,
     "Belmont Watches": 24,
-    "Bob's Watches": 49,
+    "Bob's Watches": 48,
     "Watchfid": 65,
     "Bulang & Sons": 170,
     "Moonphase": 15,
@@ -40,7 +40,7 @@
     "Watch Club": 56,
     "Vintage Watch Shop": 29,
     "Watches of Lancashire": 54,
-    "Heuertime": 30,
+    "Heuertime": 33,
     "ClassicHeuer": 37,
     "Luna Royster": 40,
     "S.Song Watches": 23,
@@ -48,6 +48,6 @@
     "Watch Center": 261,
     "eBay": 29
   },
-  "total_listings": 4172,
+  "total_listings": 4185,
   "sources_tracked": 44
 }
