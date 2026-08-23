@@ -1,10 +1,10 @@
 {
   "date": "2026-08-23",
-  "updated_at": "2026-08-23T03:37:20+00:00",
+  "updated_at": "2026-08-23T15:02:01+00:00",
   "alerts": [],
   "counts": {
     "Wind Vintage": 101,
-    "Tropical Watch": 120,
+    "Tropical Watch": 119,
     "Menta Watches": 48,
     "Collectors Corner NY": 77,
     "Falco Watches": 50,
@@ -17,7 +17,7 @@
     "Watch Brothers London": 7,
     "Sierra Time Co": 29,
     "DB1983": 23,
-    "Hairspring": 25,
+    "Hairspring": 26,
     "Somlo": 182,
     "Analog Shift": 729,
     "Watches of Knightsbridge": 75,
@@ -34,7 +34,7 @@
     "Central Watch": 173,
     "European Watch": 17,
     "Vintage Watch Collective": 29,
-    "Vision Vintage Watches": 75,
+    "Vision Vintage Watches": 74,
     "Watchurbia": 5,
     "Maunder Watches": 75,
     "Watch Club": 56,
@@ -48,6 +48,6 @@
     "Watch Center": 261,
     "eBay": 29
   },
-  "total_listings": 4163,
+  "total_listings": 4162,
   "sources_tracked": 44
 }
