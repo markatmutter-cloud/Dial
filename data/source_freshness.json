@@ -84,14 +84,14 @@
     "rows": 37
   },
   "Heuertime": {
-    "fingerprint": "d2dd4554ced6c495",
-    "lastChanged": "2026-08-22",
+    "fingerprint": "4bb7fbd4013d5c56",
+    "lastChanged": "2026-08-23",
     "lastSeen": "2026-08-23",
-    "rows": 32
+    "rows": 33
   },
   "Huntington Company": {
-    "fingerprint": "9ee634aea3d6e1ca",
-    "lastChanged": "2026-08-20",
+    "fingerprint": "f80f30b77a6a3d81",
+    "lastChanged": "2026-08-23",
     "lastSeen": "2026-08-23",
     "rows": 94
   },
@@ -180,10 +180,10 @@
     "rows": 34
   },
   "Tropical Watch": {
-    "fingerprint": "746faa8b40f61adc",
-    "lastChanged": "2026-08-22",
+    "fingerprint": "c384e470e68d86a0",
+    "lastChanged": "2026-08-23",
     "lastSeen": "2026-08-23",
-    "rows": 120
+    "rows": 119
   },
   "Vintage Watch Collective": {
     "fingerprint": "54e4d23658294448",
@@ -240,8 +240,8 @@
     "rows": 55
   },
   "Watchfid": {
-    "fingerprint": "fb53777b3358a8d8",
-    "lastChanged": "2026-08-22",
+    "fingerprint": "f1a8fc078a9a0c29",
+    "lastChanged": "2026-08-23",
     "lastSeen": "2026-08-23",
     "rows": 65
   },
@@ -252,8 +252,8 @@
     "rows": 5
   },
   "Wind Vintage": {
-    "fingerprint": "6445e63bd8b12100",
-    "lastChanged": "2026-08-22",
+    "fingerprint": "afd2d72873069baf",
+    "lastChanged": "2026-08-23",
     "lastSeen": "2026-08-23",
     "rows": 214
   },
@@ -300,8 +300,8 @@
     "rows": 2
   },
   "eBay": {
-    "fingerprint": "c4350f233ebd864c",
-    "lastChanged": "2026-08-23",
+    "fingerprint": "5ad397e0ae5bd9c5",
+    "lastChanged": "2026-08-22",
     "lastSeen": "2026-08-23",
     "rows": 29
   },
@@ -408,7 +408,7 @@
     "rows": 90
   },
   "merged:listings": {
-    "fingerprint": "34210d6fb773b3c6",
+    "fingerprint": "425c51b31ce49f72",
     "lastChanged": "2026-08-23",
     "lastSeen": "2026-08-23",
     "rows": 9536
