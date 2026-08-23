@@ -2494,6 +2494,10 @@
     "source": "hairspring_finds",
     "source_type": "editorial_finds",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history"
+    ],
     "title": "1530 Rolex Oyster Perpetual Date",
     "updated_at": "2026-05-23",
     "url": "https://hairspring.com/blogs/finds/1530-rolex-oyster-perpetual-date-1",
@@ -4899,6 +4903,11 @@
     "source": "hairspring_finds",
     "source_type": "editorial_finds",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "design",
+      "brand_history"
+    ],
     "title": "2488 Cartier Tank Asymétrique",
     "updated_at": "2026-08-17",
     "url": "https://hairspring.com/blogs/finds/2488-cartier-tank-asymetrique",
@@ -5476,6 +5485,11 @@
     "source": "hairspring_finds",
     "source_type": "editorial_finds",
     "sub_model": "Perpetual Calendar early variants",
+    "themes": [
+      "reference_profile",
+      "complications",
+      "brand_history"
+    ],
     "title": "25657OR Audemars Piguet Perpetual Calendar",
     "updated_at": "2026-04-15",
     "url": "https://hairspring.com/blogs/finds/25657or-audemars-piguet-perpetual-calendar",
@@ -8891,6 +8905,11 @@
     "source": "hairspring_finds",
     "source_type": "editorial_finds",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "complications",
+      "brand_history"
+    ],
     "title": "43031 Vacheron Constantin Perpetual Calendar",
     "updated_at": "2026-07-21",
     "url": "https://hairspring.com/blogs/finds/43031-vacheron-constantin-perpetual-calendar-1",
@@ -32233,6 +32252,10 @@
     "source": "hairspring_finds",
     "source_type": "editorial_finds",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history"
+    ],
     "title": "Prototype 2523 Patek Philippe World Time",
     "updated_at": "2026-05-19",
     "url": "https://hairspring.com/blogs/finds/prototype-2523-patek-philippe-world-time",
@@ -34099,6 +34122,10 @@
     "source": "hairspring_finds",
     "source_type": "editorial_finds",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "vintage_care"
+    ],
     "title": "Salmon Dial 25661BC Audemars Piguet Perpetual Calendar",
     "updated_at": "2026-08-21",
     "url": "https://hairspring.com/blogs/finds/salmon-dial-25661bc-audemars-piguet-perpetual-calendar",
@@ -36248,6 +36275,10 @@
     "source": "hairspring_finds",
     "source_type": "editorial_finds",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history"
+    ],
     "title": "'Stealth' 111.025 A. Lange & Söhne Little Lange 1",
     "updated_at": "2026-07-17",
     "url": "https://hairspring.com/blogs/finds/stealth-111-025-a-lange-sohne-little-lange-1",
