@@ -1,9 +1,9 @@
 {
   "Analog Shift": {
-    "fingerprint": "e3bef9b9a2b7ab87",
-    "lastChanged": "2026-08-22",
+    "fingerprint": "6ab9063b3d46b684",
+    "lastChanged": "2026-08-23",
     "lastSeen": "2026-08-23",
-    "rows": 748
+    "rows": 745
   },
   "Belmont Watches": {
     "fingerprint": "c949e495065c5d90",
@@ -48,10 +48,10 @@
     "rows": 85
   },
   "Craft & Tailored": {
-    "fingerprint": "e484965c9be0e12f",
-    "lastChanged": "2026-08-22",
+    "fingerprint": "372c611274f8c816",
+    "lastChanged": "2026-08-23",
     "lastSeen": "2026-08-23",
-    "rows": 105
+    "rows": 102
   },
   "DB1983": {
     "fingerprint": "e99239ce20c919c1",
@@ -84,10 +84,10 @@
     "rows": 38
   },
   "Heuertime": {
-    "fingerprint": "206e95111907ed32",
+    "fingerprint": "743ffa656bd725d4",
     "lastChanged": "2026-08-23",
     "lastSeen": "2026-08-23",
-    "rows": 31
+    "rows": 33
   },
   "Huntington Company": {
     "fingerprint": "2c39e7f490f12b7d",
@@ -96,10 +96,10 @@
     "rows": 93
   },
   "Luna Royster": {
-    "fingerprint": "3f1211db1330449d",
-    "lastChanged": "2026-08-21",
+    "fingerprint": "0bad56dd68850598",
+    "lastChanged": "2026-08-23",
     "lastSeen": "2026-08-23",
-    "rows": 40
+    "rows": 37
   },
   "Maunder Watches": {
     "fingerprint": "937e87814588e0ff",
@@ -120,10 +120,10 @@
     "rows": 15
   },
   "Oliver & Clarke": {
-    "fingerprint": "e61695707ca35736",
-    "lastChanged": "2026-08-22",
+    "fingerprint": "e9629e4c770fbe14",
+    "lastChanged": "2026-08-23",
     "lastSeen": "2026-08-23",
-    "rows": 128
+    "rows": 127
   },
   "Pascal Karp": {
     "fingerprint": "ce5d1cdf5c9718b1",
@@ -150,10 +150,10 @@
     "rows": 122
   },
   "Sierra Time Co": {
-    "fingerprint": "5800e2e76a686011",
-    "lastChanged": "2026-08-22",
+    "fingerprint": "e095a12b6f6cf1a4",
+    "lastChanged": "2026-08-23",
     "lastSeen": "2026-08-23",
-    "rows": 29
+    "rows": 30
   },
   "Somlo": {
     "fingerprint": "6013126227414da4",
@@ -186,7 +186,7 @@
     "rows": 119
   },
   "Vintage Watch Collective": {
-    "fingerprint": "9cf95a9583f80412",
+    "fingerprint": "c46b5338ac539e01",
     "lastChanged": "2026-08-23",
     "lastSeen": "2026-08-23",
     "rows": 35
@@ -228,10 +228,10 @@
     "rows": 56
   },
   "Watches of Knightsbridge": {
-    "fingerprint": "c68d4c98e4bd33aa",
+    "fingerprint": "2d1e4f4b213cfd68",
     "lastChanged": "2026-08-23",
     "lastSeen": "2026-08-23",
-    "rows": 80
+    "rows": 79
   },
   "Watches of Lancashire": {
     "fingerprint": "6ec968295a507e1a",
@@ -408,9 +408,9 @@
     "rows": 90
   },
   "merged:listings": {
-    "fingerprint": "e28591a4b0384942",
+    "fingerprint": "a69d1a8b1d737a9d",
     "lastChanged": "2026-08-23",
     "lastSeen": "2026-08-23",
-    "rows": 9537
+    "rows": 9538
   }
 }
