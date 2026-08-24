@@ -1,9 +1,9 @@
 {
   "Analog Shift": {
-    "fingerprint": "6ab9063b3d46b684",
-    "lastChanged": "2026-08-23",
+    "fingerprint": "bc0c11280dbcc7b6",
+    "lastChanged": "2026-08-24",
     "lastSeen": "2026-08-24",
-    "rows": 745
+    "rows": 751
   },
   "Belmont Watches": {
     "fingerprint": "c949e495065c5d90",
@@ -72,8 +72,8 @@
     "rows": 51
   },
   "Grey & Patina": {
-    "fingerprint": "29b4da82eae44adf",
-    "lastChanged": "2026-08-22",
+    "fingerprint": "e14c6840e8725abf",
+    "lastChanged": "2026-08-24",
     "lastSeen": "2026-08-24",
     "rows": 52
   },
@@ -180,14 +180,14 @@
     "rows": 34
   },
   "Tropical Watch": {
-    "fingerprint": "c384e470e68d86a0",
-    "lastChanged": "2026-08-23",
+    "fingerprint": "bb4ed192a40fe22b",
+    "lastChanged": "2026-08-24",
     "lastSeen": "2026-08-24",
     "rows": 119
   },
   "Vintage Watch Collective": {
-    "fingerprint": "c46b5338ac539e01",
-    "lastChanged": "2026-08-23",
+    "fingerprint": "9cf95a9583f80412",
+    "lastChanged": "2026-08-24",
     "lastSeen": "2026-08-24",
     "rows": 35
   },
@@ -240,20 +240,20 @@
     "rows": 55
   },
   "Watchfid": {
-    "fingerprint": "f1a8fc078a9a0c29",
-    "lastChanged": "2026-08-23",
+    "fingerprint": "10044d627f267501",
+    "lastChanged": "2026-08-24",
     "lastSeen": "2026-08-24",
     "rows": 65
   },
   "Watchurbia": {
-    "fingerprint": "e25e32d034b8f555",
-    "lastChanged": "2026-08-18",
+    "fingerprint": "2b376232b185a5cf",
+    "lastChanged": "2026-08-24",
     "lastSeen": "2026-08-24",
     "rows": 5
   },
   "Wind Vintage": {
-    "fingerprint": "afd2d72873069baf",
-    "lastChanged": "2026-08-23",
+    "fingerprint": "49a6fe26f74b76b0",
+    "lastChanged": "2026-08-24",
     "lastSeen": "2026-08-24",
     "rows": 214
   },
@@ -300,8 +300,8 @@
     "rows": 2
   },
   "eBay": {
-    "fingerprint": "92c6037b5f879b46",
-    "lastChanged": "2026-08-24",
+    "fingerprint": "cc1115140d40d943",
+    "lastChanged": "2026-08-23",
     "lastSeen": "2026-08-24",
     "rows": 29
   },
@@ -408,9 +408,9 @@
     "rows": 90
   },
   "merged:listings": {
-    "fingerprint": "2a8adf2ccae7f39f",
+    "fingerprint": "f30a61564054029a",
     "lastChanged": "2026-08-24",
     "lastSeen": "2026-08-24",
-    "rows": 9538
+    "rows": 9544
   }
 }
