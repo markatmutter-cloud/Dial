@@ -15201,20 +15201,16 @@
     "model_line": "Perpetual Calendar",
     "published_at": "2026-05-25",
     "reference_no": "3940",
-    "scraped_at": "2026-07-26T05:32:01Z",
+    "scraped_at": "2026-08-25T14:52:42Z",
     "slug": "beyer-dial-3940j-patek-philippe-perpetual-calendar",
     "sold_price_usd": 600000,
     "source": "hairspring_finds",
     "source_type": "editorial_finds",
     "sub_model": null,
-    "themes": [
-      "reference_profile",
-      "auction_results"
-    ],
     "title": "Beyer Dial 3940J Patek Philippe Perpetual Calendar",
     "updated_at": "2026-05-26",
     "url": "https://hairspring.com/blogs/finds/beyer-dial-3940j-patek-philippe-perpetual-calendar",
-    "word_count": 394
+    "word_count": 399
   },
   "https://hairspring.com/blogs/finds/beyer-dial-dato-45-heuer-3147s-carrera": {
     "author": "Erik Gustafson",
@@ -19822,6 +19818,28 @@
     "updated_at": "2023-12-23",
     "url": "https://hairspring.com/blogs/finds/dubai-edition-79360n-tudor-black-bay-chronograph-for-seddiqi",
     "word_count": 576
+  },
+  "https://hairspring.com/blogs/finds/dubail-110-049-a-lange-sohne-lange-1": {
+    "author": "Erik Gustafson",
+    "brand": "A. Lange & Söhne",
+    "case_size": "39mm",
+    "currency": "USD",
+    "excerpt": "A ref. 110.049—better known as the Dubail—is about to head to auction for the first time in awhile, and that’s a big deal for the Lange 1. It belongs to the Soirée family, introduced in 2001, which gave the Lange 1 a mother-of-pearl dial",
+    "image": "https://hairspring.com/cdn/shop/articles/Lange-1-Dubail-110.049-18.jpg",
+    "model": null,
+    "model_line": null,
+    "published_at": "2026-08-24",
+    "reference_no": null,
+    "scraped_at": "2026-08-25T14:52:41Z",
+    "slug": "dubail-110-049-a-lange-sohne-lange-1",
+    "sold_price_usd": 400000,
+    "source": "hairspring_finds",
+    "source_type": "editorial_finds",
+    "sub_model": null,
+    "title": "Dubail 110.049 A. Lange & Söhne Lange 1",
+    "updated_at": "2026-08-25",
+    "url": "https://hairspring.com/blogs/finds/dubail-110-049-a-lange-sohne-lange-1",
+    "word_count": 413
   },
   "https://hairspring.com/blogs/finds/dufourgraph-403-031-a-lange-sohne-datograph": {
     "author": "Erik Gustafson",
