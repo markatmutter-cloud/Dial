@@ -1,9 +1,9 @@
 {
   "Analog Shift": {
-    "fingerprint": "e65e7051a82172ef",
+    "fingerprint": "3e946b636d5e8f23",
     "lastChanged": "2026-08-28",
     "lastSeen": "2026-08-28",
-    "rows": 750
+    "rows": 749
   },
   "Belmont Watches": {
     "fingerprint": "58b95bdf7d01fac8",
@@ -18,10 +18,10 @@
     "rows": 49
   },
   "Bulang & Sons": {
-    "fingerprint": "16346113b16012af",
-    "lastChanged": "2026-08-27",
+    "fingerprint": "a38f1e5f8ffba57c",
+    "lastChanged": "2026-08-28",
     "lastSeen": "2026-08-28",
-    "rows": 163
+    "rows": 164
   },
   "Central Watch": {
     "fingerprint": "32f40e68cfc768be",
@@ -42,7 +42,7 @@
     "rows": 117
   },
   "Collectors Corner NY": {
-    "fingerprint": "b20b09fb8c2938df",
+    "fingerprint": "5c60f70cccd28450",
     "lastChanged": "2026-08-28",
     "lastSeen": "2026-08-28",
     "rows": 98
@@ -66,10 +66,10 @@
     "rows": 17
   },
   "Falco Watches": {
-    "fingerprint": "730555a976d257fb",
+    "fingerprint": "c02c8eabbd69480f",
     "lastChanged": "2026-08-28",
     "lastSeen": "2026-08-28",
-    "rows": 45
+    "rows": 46
   },
   "Grey & Patina": {
     "fingerprint": "0d27054586268519",
@@ -84,16 +84,16 @@
     "rows": 36
   },
   "Heuertime": {
-    "fingerprint": "743ffa656bd725d4",
-    "lastChanged": "2026-08-23",
-    "lastSeen": "2026-08-28",
-    "rows": 33
-  },
-  "Huntington Company": {
-    "fingerprint": "34a6bb78226d27b0",
+    "fingerprint": "053bc0f75baae3d7",
     "lastChanged": "2026-08-28",
     "lastSeen": "2026-08-28",
-    "rows": 103
+    "rows": 32
+  },
+  "Huntington Company": {
+    "fingerprint": "3e3abf3fda85eba4",
+    "lastChanged": "2026-08-28",
+    "lastSeen": "2026-08-28",
+    "rows": 102
   },
   "Luna Royster": {
     "fingerprint": "0e037e8208ac069c",
@@ -126,10 +126,10 @@
     "rows": 127
   },
   "Pascal Karp": {
-    "fingerprint": "085e3f4a21a8840c",
+    "fingerprint": "d85f702d02590a83",
     "lastChanged": "2026-08-28",
     "lastSeen": "2026-08-28",
-    "rows": 91
+    "rows": 92
   },
   "Romain R\u00e9a": {
     "fingerprint": "6718da6b821d8663",
@@ -144,16 +144,16 @@
     "rows": 23
   },
   "Shuck the Oyster": {
-    "fingerprint": "a5a043667da68931",
-    "lastChanged": "2026-08-27",
+    "fingerprint": "956e423a828d964e",
+    "lastChanged": "2026-08-28",
     "lastSeen": "2026-08-28",
     "rows": 115
   },
   "Sierra Time Co": {
-    "fingerprint": "7d92a72f1d8c4a1e",
-    "lastChanged": "2026-08-26",
+    "fingerprint": "494a2d32b3aa0ad9",
+    "lastChanged": "2026-08-28",
     "lastSeen": "2026-08-28",
-    "rows": 24
+    "rows": 23
   },
   "Somlo": {
     "fingerprint": "14e0be579401b5a5",
@@ -186,7 +186,7 @@
     "rows": 113
   },
   "Vintage Watch Collective": {
-    "fingerprint": "c46b5338ac539e01",
+    "fingerprint": "5fbbe156d36ca8ff",
     "lastChanged": "2026-08-28",
     "lastSeen": "2026-08-28",
     "rows": 35
@@ -210,10 +210,10 @@
     "rows": 86
   },
   "Watch Brothers London": {
-    "fingerprint": "c17224d0f24ea5bf",
+    "fingerprint": "27bc9aab532bcaec",
     "lastChanged": "2026-08-28",
     "lastSeen": "2026-08-28",
-    "rows": 11
+    "rows": 10
   },
   "Watch Center": {
     "fingerprint": "3707b75fa5d6d83d",
@@ -222,10 +222,10 @@
     "rows": 429
   },
   "Watch Club": {
-    "fingerprint": "db7cb095378a8a72",
-    "lastChanged": "2026-08-27",
+    "fingerprint": "5c74974fdf2f083d",
+    "lastChanged": "2026-08-28",
     "lastSeen": "2026-08-28",
-    "rows": 58
+    "rows": 62
   },
   "Watches of Knightsbridge": {
     "fingerprint": "ce84fe8e4069ae29",
@@ -252,7 +252,7 @@
     "rows": 5
   },
   "Wind Vintage": {
-    "fingerprint": "7ef2f44bdcd338a6",
+    "fingerprint": "62c7784759fd5d14",
     "lastChanged": "2026-08-28",
     "lastSeen": "2026-08-28",
     "rows": 205
@@ -408,9 +408,9 @@
     "rows": 92
   },
   "merged:listings": {
-    "fingerprint": "3a8d043694bc8151",
+    "fingerprint": "7d63b5daa9c147b6",
     "lastChanged": "2026-08-28",
     "lastSeen": "2026-08-28",
-    "rows": 9757
+    "rows": 9768
   }
 }
