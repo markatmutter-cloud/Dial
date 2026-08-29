@@ -1,9 +1,9 @@
 {
   "Analog Shift": {
-    "fingerprint": "732e9f57b691f750",
+    "fingerprint": "218b9990b8f89925",
     "lastChanged": "2026-08-29",
     "lastSeen": "2026-08-29",
-    "rows": 753
+    "rows": 755
   },
   "Belmont Watches": {
     "fingerprint": "3ff933c99811cdbd",
@@ -42,7 +42,7 @@
     "rows": 117
   },
   "Collectors Corner NY": {
-    "fingerprint": "23c28ab7b07fcd76",
+    "fingerprint": "64570ec4c95e9f34",
     "lastChanged": "2026-08-29",
     "lastSeen": "2026-08-29",
     "rows": 101
@@ -66,10 +66,10 @@
     "rows": 17
   },
   "Falco Watches": {
-    "fingerprint": "c02c8eabbd69480f",
-    "lastChanged": "2026-08-28",
+    "fingerprint": "485c08cd437656df",
+    "lastChanged": "2026-08-29",
     "lastSeen": "2026-08-29",
-    "rows": 46
+    "rows": 45
   },
   "Grey & Patina": {
     "fingerprint": "8fd771de7116a6da",
@@ -78,10 +78,10 @@
     "rows": 53
   },
   "Hairspring": {
-    "fingerprint": "0e725b55cd5b2d22",
-    "lastChanged": "2026-08-26",
+    "fingerprint": "b715ee49c3b5ba11",
+    "lastChanged": "2026-08-29",
     "lastSeen": "2026-08-29",
-    "rows": 36
+    "rows": 37
   },
   "Heuertime": {
     "fingerprint": "743ffa656bd725d4",
@@ -126,16 +126,16 @@
     "rows": 124
   },
   "Pascal Karp": {
-    "fingerprint": "d85f702d02590a83",
-    "lastChanged": "2026-08-28",
+    "fingerprint": "2e6f171230b7976f",
+    "lastChanged": "2026-08-29",
     "lastSeen": "2026-08-29",
     "rows": 92
   },
   "Romain R\u00e9a": {
-    "fingerprint": "d2c225ef7c378313",
+    "fingerprint": "f9a1b580de1c12fd",
     "lastChanged": "2026-08-29",
     "lastSeen": "2026-08-29",
-    "rows": 235
+    "rows": 238
   },
   "S.Song Watches": {
     "fingerprint": "eea8f4a81e2ca8d6",
@@ -156,8 +156,8 @@
     "rows": 23
   },
   "Somlo": {
-    "fingerprint": "14e0be579401b5a5",
-    "lastChanged": "2026-08-28",
+    "fingerprint": "86de65ce9a651286",
+    "lastChanged": "2026-08-29",
     "lastSeen": "2026-08-29",
     "rows": 183
   },
@@ -180,10 +180,10 @@
     "rows": 32
   },
   "Tropical Watch": {
-    "fingerprint": "99e5d1ca264a0258",
+    "fingerprint": "abf83d158bd4a935",
     "lastChanged": "2026-08-29",
     "lastSeen": "2026-08-29",
-    "rows": 107
+    "rows": 106
   },
   "Vintage Watch Collective": {
     "fingerprint": "5fbbe156d36ca8ff",
@@ -222,7 +222,7 @@
     "rows": 429
   },
   "Watch Club": {
-    "fingerprint": "272b31605a3e1c50",
+    "fingerprint": "7f027b2c8e4e2f0a",
     "lastChanged": "2026-08-29",
     "lastSeen": "2026-08-29",
     "rows": 61
@@ -408,9 +408,9 @@
     "rows": 92
   },
   "merged:listings": {
-    "fingerprint": "cb51d9417ba20a8d",
+    "fingerprint": "9dec41dceb0c1462",
     "lastChanged": "2026-08-29",
     "lastSeen": "2026-08-29",
-    "rows": 9784
+    "rows": 9793
   }
 }
