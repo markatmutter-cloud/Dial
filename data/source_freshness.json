@@ -1,9 +1,9 @@
 {
   "Analog Shift": {
-    "fingerprint": "eef6641252debdb3",
+    "fingerprint": "732e9f57b691f750",
     "lastChanged": "2026-08-29",
     "lastSeen": "2026-08-29",
-    "rows": 755
+    "rows": 753
   },
   "Belmont Watches": {
     "fingerprint": "3ff933c99811cdbd",
@@ -12,7 +12,7 @@
     "rows": 22
   },
   "Bob's Watches": {
-    "fingerprint": "7fd3c74d27ea7985",
+    "fingerprint": "5ef3464152cd0049",
     "lastChanged": "2026-08-29",
     "lastSeen": "2026-08-29",
     "rows": 48
@@ -42,10 +42,10 @@
     "rows": 117
   },
   "Collectors Corner NY": {
-    "fingerprint": "5f83a090ea62933b",
+    "fingerprint": "23c28ab7b07fcd76",
     "lastChanged": "2026-08-29",
     "lastSeen": "2026-08-29",
-    "rows": 100
+    "rows": 101
   },
   "Craft & Tailored": {
     "fingerprint": "202e8bcc19119c5b",
@@ -60,8 +60,8 @@
     "rows": 23
   },
   "European Watch": {
-    "fingerprint": "a5788b62bf3b0d22",
-    "lastChanged": "2026-08-28",
+    "fingerprint": "4803d6ca862fa582",
+    "lastChanged": "2026-08-29",
     "lastSeen": "2026-08-29",
     "rows": 17
   },
@@ -180,7 +180,7 @@
     "rows": 32
   },
   "Tropical Watch": {
-    "fingerprint": "d21572bf1f2220aa",
+    "fingerprint": "99e5d1ca264a0258",
     "lastChanged": "2026-08-29",
     "lastSeen": "2026-08-29",
     "rows": 107
@@ -240,8 +240,8 @@
     "rows": 54
   },
   "Watchfid": {
-    "fingerprint": "e0dbfa7ba7a88952",
-    "lastChanged": "2026-08-28",
+    "fingerprint": "bb6ce4fc2c333a54",
+    "lastChanged": "2026-08-29",
     "lastSeen": "2026-08-29",
     "rows": 65
   },
@@ -252,10 +252,10 @@
     "rows": 5
   },
   "Wind Vintage": {
-    "fingerprint": "18c76d3446573e80",
+    "fingerprint": "5c1df8f74f5d48eb",
     "lastChanged": "2026-08-29",
     "lastSeen": "2026-08-29",
-    "rows": 84
+    "rows": 207
   },
   "calendar:antiquorum": {
     "fingerprint": "c5d0ff73d32d020a",
@@ -408,9 +408,9 @@
     "rows": 92
   },
   "merged:listings": {
-    "fingerprint": "f75ae61419ed5a8c",
+    "fingerprint": "d1e700ffc11936a7",
     "lastChanged": "2026-08-29",
     "lastSeen": "2026-08-29",
-    "rows": 9780
+    "rows": 9784
   }
 }
