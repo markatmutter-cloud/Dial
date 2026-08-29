@@ -1,6 +1,6 @@
 {
   "date": "2026-08-29",
-  "updated_at": "2026-08-29T03:34:15+00:00",
+  "updated_at": "2026-08-29T09:05:04+00:00",
   "alerts": [],
   "counts": {
     "Wind Vintage": 103,
@@ -19,10 +19,10 @@
     "DB1983": 23,
     "Hairspring": 24,
     "Somlo": 183,
-    "Analog Shift": 735,
+    "Analog Shift": 733,
     "Watches of Knightsbridge": 54,
     "Belmont Watches": 22,
-    "Bob's Watches": 49,
+    "Bob's Watches": 48,
     "Watchfid": 65,
     "Bulang & Sons": 164,
     "Moonphase": 14,
@@ -30,7 +30,7 @@
     "The Vintage Watch": 26,
     "Chronoholic": 4,
     "Vintage Watch Fam": 526,
-    "Shuck the Oyster": 108,
+    "Shuck the Oyster": 109,
     "Central Watch": 178,
     "European Watch": 17,
     "Vintage Watch Collective": 28,
@@ -48,6 +48,6 @@
     "Watch Center": 261,
     "eBay": 32
   },
-  "total_listings": 4140,
+  "total_listings": 4138,
   "sources_tracked": 44
 }
