@@ -1,9 +1,9 @@
 {
   "Analog Shift": {
-    "fingerprint": "218b9990b8f89925",
+    "fingerprint": "41c680456aabf6b5",
     "lastChanged": "2026-08-29",
     "lastSeen": "2026-08-29",
-    "rows": 755
+    "rows": 754
   },
   "Belmont Watches": {
     "fingerprint": "3ff933c99811cdbd",
@@ -42,16 +42,16 @@
     "rows": 117
   },
   "Collectors Corner NY": {
-    "fingerprint": "64570ec4c95e9f34",
+    "fingerprint": "70847b49130f2ed6",
     "lastChanged": "2026-08-29",
     "lastSeen": "2026-08-29",
     "rows": 101
   },
   "Craft & Tailored": {
-    "fingerprint": "9e4aed5d3355f031",
+    "fingerprint": "ad6fced07408bf20",
     "lastChanged": "2026-08-29",
     "lastSeen": "2026-08-29",
-    "rows": 103
+    "rows": 104
   },
   "DB1983": {
     "fingerprint": "e99239ce20c919c1",
@@ -90,10 +90,10 @@
     "rows": 33
   },
   "Huntington Company": {
-    "fingerprint": "3e3abf3fda85eba4",
-    "lastChanged": "2026-08-28",
+    "fingerprint": "ad5346561968fdc8",
+    "lastChanged": "2026-08-29",
     "lastSeen": "2026-08-29",
-    "rows": 102
+    "rows": 101
   },
   "Luna Royster": {
     "fingerprint": "0e037e8208ac069c",
@@ -156,10 +156,10 @@
     "rows": 23
   },
   "Somlo": {
-    "fingerprint": "86de65ce9a651286",
+    "fingerprint": "85aead21f6c5b8e6",
     "lastChanged": "2026-08-29",
     "lastSeen": "2026-08-29",
-    "rows": 183
+    "rows": 181
   },
   "Swiss Hours": {
     "fingerprint": "052f0251c56a2b53",
@@ -210,10 +210,10 @@
     "rows": 86
   },
   "Watch Brothers London": {
-    "fingerprint": "27bc9aab532bcaec",
-    "lastChanged": "2026-08-28",
+    "fingerprint": "06af73f873359620",
+    "lastChanged": "2026-08-29",
     "lastSeen": "2026-08-29",
-    "rows": 10
+    "rows": 9
   },
   "Watch Center": {
     "fingerprint": "3707b75fa5d6d83d",
@@ -252,7 +252,7 @@
     "rows": 5
   },
   "Wind Vintage": {
-    "fingerprint": "5c1df8f74f5d48eb",
+    "fingerprint": "e97ace214912736e",
     "lastChanged": "2026-08-29",
     "lastSeen": "2026-08-29",
     "rows": 207
@@ -408,9 +408,9 @@
     "rows": 92
   },
   "merged:listings": {
-    "fingerprint": "7fc14ea954683b63",
+    "fingerprint": "fbfbc2e2dc858527",
     "lastChanged": "2026-08-29",
     "lastSeen": "2026-08-29",
-    "rows": 9793
+    "rows": 9794
   }
 }
