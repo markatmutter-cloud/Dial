@@ -1,6 +1,6 @@
 {
-  "date": "2026-08-29",
-  "updated_at": "2026-08-29T22:42:28+00:00",
+  "date": "2026-08-30",
+  "updated_at": "2026-08-30T08:19:32+00:00",
   "alerts": [],
   "counts": {
     "Wind Vintage": 102,
@@ -14,19 +14,19 @@
     "Grey & Patina": 53,
     "Oliver & Clarke": 110,
     "Craft & Tailored": 76,
-    "Watch Brothers London": 9,
+    "Watch Brothers London": 8,
     "Sierra Time Co": 23,
     "DB1983": 23,
     "Hairspring": 25,
-    "Somlo": 183,
-    "Analog Shift": 735,
+    "Somlo": 181,
+    "Analog Shift": 742,
     "Watches of Knightsbridge": 54,
     "Belmont Watches": 22,
     "Bob's Watches": 48,
     "Watchfid": 65,
     "Bulang & Sons": 164,
     "Moonphase": 14,
-    "Huntington Company": 102,
+    "Huntington Company": 101,
     "The Vintage Watch": 26,
     "Chronoholic": 4,
     "Vintage Watch Fam": 526,
@@ -48,6 +48,6 @@
     "Watch Center": 261,
     "eBay": 31
   },
-  "total_listings": 4139,
+  "total_listings": 4142,
   "sources_tracked": 44
 }
