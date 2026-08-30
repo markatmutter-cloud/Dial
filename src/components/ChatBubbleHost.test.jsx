@@ -1,7 +1,8 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, act } from "@testing-library/react";
 import { ChatBubbleHost, renderInline } from "./ChatBubbleHost";
 import { resolveItemByUrl } from "./ActionBus";
+import { askLumeAbout } from "./LumeBus";
 
 // Render-without-crash smoke tests for the concierge bubble (Epic 9).
 // The launcher shows for everyone now (B-43) — signed-out taps prompt sign-in.
@@ -39,6 +40,24 @@ describe("ChatBubbleHost", () => {
     const expand = screen.getByLabelText("Expand");
     fireEvent.click(expand);
     expect(screen.getByLabelText("Collapse")).toBeInTheDocument();
+  });
+
+  // The bubble renders through a portal to document.body, so assert on that.
+  test("a plain open still shows the standard intro", () => {
+    mockUser = { id: "user-123" };
+    render(<ChatBubbleHost />);
+    fireEvent.click(screen.getByLabelText("Open Lumé"));
+    expect(document.body.textContent).toMatch(/what's your watch problem/i);
+  });
+
+  test("Share with Lumé opens seeded on the watch, without the standard intro", async () => {
+    mockUser = { id: "user-123" };
+    render(<ChatBubbleHost />);
+    await act(async () => {
+      askLumeAbout({ brand: "Rolex", model: "Submariner", reference_id: "5513", url: "https://dealer.com/5513" });
+    });
+    expect(document.body.textContent).not.toMatch(/what's your watch problem/i);
+    expect(document.body.textContent).toMatch(/Submariner/); // seeded on the shared watch
   });
 });
 
