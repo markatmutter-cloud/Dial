@@ -221,3 +221,19 @@ jobs:
         # may have changed" and exited 0, so nothing anywhere noticed.
         if: always()
         run: python3 auction_calendar_health.py --check
+
+      - name: Calendar coverage gate
+        # Third link in the chain: did every sale the scrapers found
+        # actually survive merge.py into auctions.json?
+        #
+        #   site    -> scraper   calendar_canary.py
+        #   scraper -> CSV       auction_calendar_health.py (step above)
+        #   CSV     -> JSON      THIS STEP
+        #   JSON    -> lots      auction_health.py (lots workflow)
+        #
+        # The lot enumerator only visits sales present in auctions.json,
+        # so a sale dropped here takes its lots with it and neither fact
+        # surfaces on its own. Runs after the commit, like the gate above,
+        # and re-reads no network — both sides are artifacts of this run.
+        if: always()
+        run: python3 calendar_coverage.py
