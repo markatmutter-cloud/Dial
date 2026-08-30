@@ -15207,6 +15207,10 @@
     "source": "hairspring_finds",
     "source_type": "editorial_finds",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "auction_results"
+    ],
     "title": "Beyer Dial 3940J Patek Philippe Perpetual Calendar",
     "updated_at": "2026-05-26",
     "url": "https://hairspring.com/blogs/finds/beyer-dial-3940j-patek-philippe-perpetual-calendar",
@@ -15680,6 +15684,10 @@
     "source": "hairspring_finds",
     "source_type": "editorial_finds",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "vintage_care"
+    ],
     "title": "Black Dial 5004R Patek Philippe Perpetual Calendar Split Seconds Chronograph",
     "updated_at": "2026-06-29",
     "url": "https://hairspring.com/blogs/finds/black-dial-5004r-patek-philippe-perpetual-calendar-split-seconds-chronograph",
@@ -19121,6 +19129,11 @@
     "source": "hairspring_finds",
     "source_type": "editorial_finds",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history",
+      "design"
+    ],
     "title": "'Darth' 101.035 A. Lange & Söhne Lange 1",
     "updated_at": "2026-05-31",
     "url": "https://hairspring.com/blogs/finds/darth-101-035-a-lange-sohne-lange-1",
@@ -19826,6 +19839,11 @@
     "source": "hairspring_finds",
     "source_type": "editorial_finds",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "auction_results",
+      "brand_history"
+    ],
     "title": "Dubail 110.049 A. Lange & Söhne Lange 1",
     "updated_at": "2026-08-25",
     "url": "https://hairspring.com/blogs/finds/dubail-110-049-a-lange-sohne-lange-1",
@@ -22801,6 +22819,10 @@
     "source": "hairspring_finds",
     "source_type": "editorial_finds",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "complications"
+    ],
     "title": "FP Journe TN Tourbillon Souverain",
     "updated_at": "2026-08-28",
     "url": "https://hairspring.com/blogs/finds/fp-journe-tn-tourbillon-souverain",
@@ -33126,6 +33148,11 @@
     "source": "hairspring_finds",
     "source_type": "editorial_finds",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history",
+      "design"
+    ],
     "title": "Roger Dubuis Hommage H37 Monopusher",
     "updated_at": "2026-07-29",
     "url": "https://hairspring.com/blogs/finds/roger-dubuis-hommage-h37-monopusher",
@@ -41053,6 +41080,10 @@
     "source": "hairspring_finds",
     "source_type": "editorial_finds",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "design"
+    ],
     "title": "Vacheron Constantin Cornes de Vache for Hodinkee",
     "updated_at": "2026-08-08",
     "url": "https://hairspring.com/blogs/finds/vacheron-constantin-cornes-de-vache-for-hodinkee",

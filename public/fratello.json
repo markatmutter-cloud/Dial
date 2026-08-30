@@ -10313,6 +10313,10 @@
     "source": "fratello",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "review",
+      "news"
+    ],
     "title": "Choosin’ Texas With The New Jack Mason Canton Day-Date",
     "updated_at": "2026-08-26",
     "url": "https://www.fratellowatches.com/choosin-texas-with-the-new-jack-mason-canton-day-date/",
@@ -22518,6 +22522,11 @@
     "source": "fratello",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "news",
+      "review",
+      "reference_profile"
+    ],
     "title": "Finally A New Speedmaster Reduced? Hands-On With The Redesigned Omega Speedmaster 38",
     "updated_at": "2026-08-26",
     "url": "https://www.fratellowatches.com/hands-on-new-redesigned-speedmaster-reduced-hands-on-omega-speedmaster-38/",
@@ -34332,6 +34341,10 @@
     "source": "fratello",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "news",
+      "review"
+    ],
     "title": "Longines Impressively Expands The Master Collection",
     "updated_at": "2026-08-25",
     "url": "https://www.fratellowatches.com/longines-impressively-expands-the-master-collection/",
@@ -71874,6 +71887,10 @@
     "source": "fratello",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "design",
+      "collecting_philosophy"
+    ],
     "title": "The Case For Keeping Your Rolex On The Bracelet",
     "updated_at": "2026-08-26",
     "url": "https://www.fratellowatches.com/the-case-for-keeping-your-rolex-on-the-bracelet/",
@@ -83642,6 +83659,10 @@
     "source": "fratello",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "collector_mindset"
+    ],
     "title": "Why I Bought The Rolex GMT-Master II Ref. 16710",
     "updated_at": "2026-08-23",
     "url": "https://www.fratellowatches.com/why-i-bought-the-rolex-gmt-master-ii-ref-16710/",
