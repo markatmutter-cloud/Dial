@@ -1,6 +1,6 @@
 {
   "date": "2026-08-30",
-  "updated_at": "2026-08-30T18:34:14+00:00",
+  "updated_at": "2026-08-30T22:47:25+00:00",
   "alerts": [],
   "counts": {
     "Wind Vintage": 101,
@@ -19,7 +19,7 @@
     "DB1983": 23,
     "Hairspring": 25,
     "Somlo": 181,
-    "Analog Shift": 741,
+    "Analog Shift": 742,
     "Watches of Knightsbridge": 54,
     "Belmont Watches": 22,
     "Bob's Watches": 48,
@@ -48,6 +48,6 @@
     "Watch Center": 261,
     "eBay": 31
   },
-  "total_listings": 4147,
+  "total_listings": 4148,
   "sources_tracked": 44
 }
