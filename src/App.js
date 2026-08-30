@@ -157,6 +157,7 @@ const EDITORIAL_SOURCE_URLS = [
   "/woe_dispatch.json",
   "/screwdowncrown.json",
   "/fratello.json",
+  "/watchfid_editorial.json",
 ];
 // Body-text companion URLs (each meta JSON has a sibling *_bodies.json
 // per editorial_corpus_io.py's split). Lazy-loaded on first

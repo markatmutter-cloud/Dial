@@ -232,6 +232,17 @@ jobs:
         continue-on-error: true
         run: python hodinkee_picks_scraper.py
 
+      - name: Run Watchfid editorial scraper
+        # The blog half of watchfid.com. The dealer scraper
+        # (watchfid_scraper.py, in the listings cron) reads the custom
+        # /watch/<slug>/ inventory post type; this reads /wp-json/wp/v2/posts,
+        # which is editorial-only precisely because inventory is a separate
+        # post type. WordPress + Elementor — see the scraper's docstring for
+        # the Elementor thin-body failure mode. Incremental with a 30-day
+        # rolling refresh; WATCHFID_FULL_REFRESH=1 forces a full walk.
+        continue-on-error: true
+        run: python watchfid_editorial_scraper.py
+
       - name: Record source freshness
         # Additive: only updates the sources whose artifacts exist in this
         # checkout, so each workflow contributes its own slice of the

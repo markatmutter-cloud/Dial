@@ -217,6 +217,20 @@ const SOURCES = [
     subscribe_url: "https://www.screwdowncrown.com/subscribe",
   },
   {
+    key: "watchfid_editorial",
+    label: "Watchfid",
+    publication: "Watchfid",
+    column: null,
+    url: "/watchfid_editorial.json",
+    bodies_url: "/watchfid_editorial_bodies.json",
+    // The blog half of watchfid.com. Watchfid is ALSO a dealer we scrape
+    // for inventory (watchfid_scraper.py → the Listings feed); the two
+    // never collide because inventory is a WordPress custom post type at
+    // /watch/<slug>/ while articles are ordinary posts at root-level
+    // slugs, so /wp-json/wp/v2/posts returns editorial only.
+    publication_url: "https://www.watchfid.com/",
+  },
+  {
     key: "fratello",
     label: "Fratello Watches",
     publication: "Fratello",

@@ -96,6 +96,7 @@ SOURCE_META_PATHS = [
     "public/woe_dispatch.json",
     "public/christies_stories.json",
     "public/fratello.json",
+    "public/watchfid_editorial.json",
 ]
 
 
