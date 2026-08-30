@@ -231,3 +231,19 @@ personal/
 
 # Ephemeral scrape-health-gate log (B-60); never committed
 scrape_move.log
+
+# --- JavaScript / React (create-react-app) ---
+# The frontend is CRA, but this file was seeded from a Python-only template,
+# so nothing here covered the artefacts `npm install` and `npm test` drop in
+# the repo root. Without these lines a stray `git add -A` after any install
+# commits the entire dependency tree. (CRA's `build/` output is already
+# covered by the Python "Distribution / packaging" entry above.)
+node_modules/
+.eslintcache
+/coverage
+
+# DELIBERATELY NOT ignored: package-lock.json. This repo ships no JS lockfile
+# today, which is exactly what BUGS.md B-16 tracks — and the fix for B-16 is
+# to COMMIT one. Ignoring it here would entrench the problem that entry
+# exists to solve, so it stays visible in `git status` and adding it remains
+# a deliberate act.
