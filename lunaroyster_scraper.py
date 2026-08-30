@@ -15,7 +15,9 @@ Output: lunaroyster_listings.csv
 """
 import requests
 import csv
+import os
 import re
+import sys
 import time
 
 BASE = "https://lunaroyster.com"
@@ -30,6 +32,22 @@ HEADERS = {
 }
 SESSION = requests.Session()
 SESSION.headers.update(HEADERS)
+
+PRIOR_CSV_PATH = "data/lunaroyster.csv"
+# Partial-walk guard (B-79). LR's catalog runs ~19 pages at per_page=100
+# and the host intermittently 502s a single deep page under that load;
+# on 2026-08-28 page 19 failed three times and the RuntimeError threw
+# away the 18 pages already in hand, so no CSV was written at all and
+# the source paged the scrape-health gate three runs running.
+#
+# A dropped page is a truncation, not a failure — so treat it like every
+# other truncation in this repo (watchclub B-59, CLAUDE.md "Resilience"):
+# keep what we fetched, and only skip the CSV write when the result is
+# BOTH below half the prior run's count AND under the absolute floor.
+# Below that bar merge.py keeps prior state rather than false-flagging
+# the missing items as sold.
+MIN_HEALTHY_RATIO = 0.5
+ABSOLUTE_FLOOR = 25
 
 # Brand detection. LR's catalog is heavy on independent + neo-vintage
 # (F.P. Journe, MB&F, etc.) so the list runs longer than a typical
@@ -84,7 +102,8 @@ def fetch_page(page, per_page):
         except requests.RequestException as e:
             last_err = str(e)
             time.sleep(2 ** attempt)
-    raise RuntimeError(f"page {page} failed after 3 attempts: {last_err}")
+    print(f"  ! page {page} failed after 3 attempts: {last_err}")
+    return None
 
 
 def get_all_listings():
@@ -99,6 +118,12 @@ def get_all_listings():
     while True:
         print(f"Fetching page {page}...")
         items = fetch_page(page, per_page)
+        if items is None:
+            # Transient upstream error mid-walk. Stop here and keep the
+            # pages already fetched — main()'s truncation guard decides
+            # whether the partial snapshot is healthy enough to write.
+            print(f"  stopping walk at page {page}; keeping {len(all_items)} items already fetched")
+            break
         if not items:
             break
         all_items.extend(items)
@@ -151,6 +176,17 @@ def parse_item(item):
     }
 
 
+def prior_count():
+    """Count rows in the previous-run CSV; 0 if unreadable / missing."""
+    if not os.path.exists(PRIOR_CSV_PATH):
+        return 0
+    try:
+        with open(PRIOR_CSV_PATH, encoding="utf-8") as f:
+            return sum(1 for _ in csv.DictReader(f))
+    except (OSError, csv.Error):
+        return 0
+
+
 def main():
     print("Fetching Luna Royster inventory (WooCommerce Store API)...")
     raw = get_all_listings()
@@ -171,6 +207,17 @@ def main():
         print(f"  + {parsed['brand']} — {parsed['title'][:55]} — ${parsed['price']:,}")
 
     print(f"\nSkipped: {skipped_sold} sold, {skipped_placeholder} placeholder/POR")
+
+    prev = prior_count()
+    if prev and len(results) < ABSOLUTE_FLOOR and len(results) < prev * MIN_HEALTHY_RATIO:
+        print(
+            f"\n⚠ Aborting write: {len(results)} active items is below "
+            f"{int(MIN_HEALTHY_RATIO * 100)}% of prior {prev} and under the "
+            f"{ABSOLUTE_FLOOR}-item floor. Snapshot likely truncated by a "
+            f"dropped page — keeping previous {PRIOR_CSV_PATH} so merge.py "
+            f"doesn't false-flag the missing items as sold."
+        )
+        sys.exit(0)
 
     output = 'lunaroyster_listings.csv'
     with open(output, 'w', newline='', encoding='utf-8') as f:
