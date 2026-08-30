@@ -1,13 +1,35 @@
 # Residential scrape host setup (B-25)
 
-Bonhams' auction **lot** pages 403 GitHub's datacenter IPs (Cloudflare), so the
-lots can't be scraped from CI. This sets up a residential host — Mark's laptop,
-via a `launchd` LaunchAgent — to scrape Bonhams lots a few times a day and push
-`public/bonhams_lots.json`, which the app folds into the Auctions projection.
-(As of 2026-06-13 (B-72) this host runs **both** the Bonhams calendar
-[`bonhams_auctions_scraper.py` → `data/bonhams_auctions.csv`] and the lots —
-Bonhams' department page now 403s CI too. CI's `merge.py` re-emits the
-calendar from that committed CSV.)
+Some sources 403 GitHub's datacenter IPs outright, so they cannot run in CI at
+all. This sets up a residential host — Mark's laptop, via a `launchd`
+LaunchAgent — to scrape them a few times a day and push the results, which CI's
+`merge.py` then folds in exactly as if they had been scraped centrally.
+
+**What the host currently scrapes (3 sources):**
+
+| Source | Writes | Why it's here |
+|---|---|---|
+| Bonhams lots | `public/bonhams_lots.json` | Lot pages 403 CI (Cloudflare) — B-25 |
+| Bonhams calendar | `data/bonhams_auctions.csv` | Department page 403s CI too — B-72 |
+| Watches of Lancashire | `data/watchesoflancashire.csv` | Whole domain 403s CI — B-81 |
+
+Watches of Lancashire moved here on 2026-08-30. Its `/wp-json/` endpoint had
+been 403ing for a fortnight and the working theory was a missing clearance
+cookie — but a source-probe run showed the **homepage** 403s from CI as well,
+so there is no page to warm a cookie from and curl_cffi Chrome impersonation no
+longer gets through from a datacenter IP either. Same class of block as
+Bonhams, so the same answer.
+
+**Adding another blocked source later:** add a non-fatal scrape block to
+`scripts/bonhams_residential_scrape.sh` (copy the Lancashire one), add its
+output path to the `git add` line, and add a row above. No plist change is
+needed — the LaunchAgent just runs that script — so an existing host only needs
+a `git pull` in its clone.
+
+> **Naming:** the script and plist still say "bonhams" because that is where
+> this started and the installed LaunchAgent points at that path. Renaming both
+> to something like `residential_scrape` is a tidy-up for whenever the agent is
+> next reinstalled from scratch — not worth doing underneath a running host.
 
 Code unchanged, this same setup later moves to an always-on box (Raspberry Pi /
 Mac mini) — only the host changes.
@@ -69,8 +91,16 @@ launchctl print gui/$(id -u)/com.thewatchlist.bonhams-scrape | head -20
 ## What it does each tick
 
 Hourly (while the laptop's awake; a missed tick runs on next wake), the wrapper:
-`git pull --rebase` → `python3 bonhams_lots_scraper.py --throttle` → commit +
-race-resilient push **only if `bonhams_lots.json` changed**.
+`git pull --rebase` → Bonhams calendar → Watches of Lancashire →
+`python3 bonhams_lots_scraper.py --throttle` → commit + race-resilient push
+**only if something actually changed**.
+
+The calendar and Lancashire steps are non-fatal: a transient block on either
+just leaves the previous CSV in place and the tick carries on. A Bonhams *lots*
+failure is likewise no longer allowed to discard them — it used to `exit 1`
+before the commit, throwing away good data already fetched in the same tick
+(the B-79 failure shape); now the tick commits whatever succeeded and returns
+the lots status at the end, so a real block still shows up as a failed run.
 
 The `--throttle` flag means most ticks are cheap no-ops: the scraper scrapes
 roughly every 6h normally, **every hour when a sale ends today or ended in the

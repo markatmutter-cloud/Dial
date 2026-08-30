@@ -225,11 +225,15 @@ jobs:
         continue-on-error: true
         run: python vintagewatchshop_scraper.py
 
-      - name: Run Watches of Lancashire scraper (WooCommerce Store API)
-        # UK dealer. Store API at category=watches; same short-UA
-        # quirk as Maunder.
-        continue-on-error: true
-        run: python watchesoflancashire_scraper.py
+      # Watches of Lancashire is NOT scraped here any more (B-81, 2026-08-30).
+      # The whole domain now 403s GitHub's datacenter IPs — not just the
+      # /wp-json/ endpoint but the homepage too, verified via source-probe, so
+      # there is no page left to warm a clearance cookie from and curl_cffi
+      # Chrome impersonation no longer gets through either. Same class of block
+      # as Bonhams (B-25/B-72), so it moved to the residential laptop agent:
+      # scripts/bonhams_residential_scrape.sh scrapes it and commits
+      # data/watchesoflancashire.csv, which merge.py reads exactly as before.
+      # Leaving a dead step here would fail every run and page Mark forever.
 
       - name: Run Heuertime scraper (Wix Pages detail walker)
         # Small Dutch vintage Heuer specialist. Wix Pages site (no Wix
@@ -321,8 +325,7 @@ jobs:
           [ -f watchcenter_listings.csv ]         && mv watchcenter_listings.csv         data/watchcenter.csv         || echo "watchcenter missing"
           [ -f watchclub_listings.csv ]           && mv watchclub_listings.csv           data/watchclub.csv           || echo "watchclub missing"
           [ -f vintagewatchshop_listings.csv ]    && mv vintagewatchshop_listings.csv    data/vintagewatchshop.csv    || echo "vintagewatchshop missing"
-          [ -f watchesoflancashire_listings.csv ] && mv watchesoflancashire_listings.csv data/watchesoflancashire.csv || echo "watchesoflancashire missing"
-          [ -f heuertime_listings.csv ]           && mv heuertime_listings.csv           data/heuertime.csv           || echo "heuertime missing"
+                    [ -f heuertime_listings.csv ]           && mv heuertime_listings.csv           data/heuertime.csv           || echo "heuertime missing"
           [ -f classicheuer_listings.csv ]        && mv classicheuer_listings.csv        data/classicheuer.csv        || echo "classicheuer missing"
           [ -f lunaroyster_listings.csv ]         && mv lunaroyster_listings.csv         data/lunaroyster.csv         || echo "lunaroyster missing"
           [ -f ssongwatches_listings.csv ]        && mv ssongwatches_listings.csv        data/ssongwatches.csv        || echo "ssongwatches missing"
