@@ -104,7 +104,7 @@ EDITORIAL = [
     "romainrea_editorial", "hodinkee_shop", "hodinkee_reference_points",
     "acollectedman_journal", "woe_dispatch", "screwdowncrown", "fratello",
     "le_monde_edmond", "strictlyvintagewatches", "christies_stories",
-    "hodinkee_picks",
+    "hodinkee_picks", "watchfid_editorial",
 ]
 
 # Merged outputs — the end of each pipeline.
