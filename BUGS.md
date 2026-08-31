@@ -249,6 +249,11 @@ install/decision tails remaining.*
 - **Reported:** 2026-05-27 · **Severity:** 3 (visual) · **Surface:** `SearchResultsView` Auctions strip (`Strip`→`CardStrip`/`Card`) · **Status:** Mark reported DONE 2026-05-29 (verbal) — its siblings B-32/B-33 are confirmed shipped (#670-era), so this is almost certainly folded into the same CardStrip work, but the specific auction-card alignment isn't independently verified. **The one open item left here is a visual spot-check** (no PR to cite); confirm in-app next time the Home search-all is open, then close.
 - **Detail:** In the Home "search all" results, the **Auctions** strip cards don't line up with the Listings strip above (Mark screenshot 2026-05-27). Likely the auction item renders at a different card height/aspect in the shared `CardStrip` (countdown badge / image aspect / price line). Compare auction-vs-listing `Card` rendering and align the card dimensions within the strip.
 
+
+### B-85 — Home strips rendered a grey "scroll bar" rail under every row except Articles
+- **Reported:** 2026-08-30 (Mark, landing-page review) · **Type:** Visual defect / cross-surface inconsistency · **Severity:** 3 · **Surface:** `HomeTab.js` `SectionStrip` → `CardStrip` · **Status:** Fixed (PR pending) — branch `home-strip-rail`.
+- **Detail:** Recently added / Recently sold / Ending next each drew a thin grey horizontal bar under the row that read as a dead scrollbar. Articles didn't. Not a real scrollbar (native ones are hidden in `CardStrip`): `SectionStrip` passed `background="var(--border)"` into `CardStrip`, and the strip's `padding: 0 0 4px` let that border-coloured container background show as a 4px rail beneath the tiles. The Articles strip is mounted directly in `HomeTab` without a `background` prop, so it defaulted to `transparent`.
+- **Fix:** `SectionStrip` now passes `transparent` for the non-inverted variant, matching every other `CardStrip` on the site (`SearchResultsView`, `ReferencePage`, `LumeModule`, `LumeResultGrid`). Tiles still separate because `gap: 1` shows the page background through. The inverted-band variant keeps `var(--surface-on-dark)` (currently unmounted on Home).
 ---
 
 ### B-85 — Phillips lot enumerator broken by the same replatform that broke its calendar
