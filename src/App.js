@@ -3605,6 +3605,30 @@ export default function Watchlist() {
     const soldKey = (i) => i.soldAt || i.auction_end || i.lastSeen || "";
     return merged.sort((a, b) => (soldKey(b) || "").localeCompare(soldKey(a) || "")).slice(0, 20);
   }, [items, auctionLotItems, hidden, adminHidden, homeHidden]);
+  // Pool counts behind each Home row, for the section headers (Epic 9 step 1).
+  // These are the SIZE OF THE POOL, not the 20 tiles a row renders, which is
+  // the point: the count is what tells a visitor the row is a slice of
+  // something large. Derived at render from the same sets the rows come from,
+  // so nothing here can rot the way the hardcoded LiveCounts house number did.
+  // Cheap: four length reads over arrays already in memory.
+  const homeSectionCounts = useMemo(() => {
+    const visible = (i) => i && !hidden[i.id] && !adminHidden.has(i.id) && !homeHidden.has(i.id);
+    const isSold = (i) => i.sold || i.status === "ended" || i.sold_price;
+    const now = Date.now();
+    return {
+      live: items.filter((i) => visible(i) && !isSold(i)).length,
+      sold: [...items, ...auctionLotItems].filter((i) => visible(i) && isSold(i)).length,
+      endingNext: auctionLotItems.filter((i) => {
+        if (!visible(i) || i.sold) return false;
+        const end = i.auction_end ? Date.parse(i.auction_end) : NaN;
+        return !Number.isNaN(end) && end > now;
+      }).length,
+      // No `articles` here on purpose: `homeArticles` is already an
+      // idle-loaded slice, not the corpus, so its length is the only honest
+      // number available and HomeTab falls back to it. A real corpus count
+      // needs the editorial index, which Home doesn't load.
+    };
+  }, [items, auctionLotItems, hidden, adminHidden, homeHidden]);
 
   // ⚠️ DO NOT add hooks (useState/useMemo/useEffect/useCallback) below this line. Hooks after an early return → React #310 ("rendered more hooks than previous render"); white-screened prod 3×. New hooks go ABOVE all early returns, or in a child component mounted unconditionally. Also: a useEffect deps array must not reference state declared later (TDZ).
   if (loading) return <div style={{ ...baseStyle, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, color: "var(--text2)" }}>Pulling the latest listings…</div>;
@@ -4363,6 +4387,7 @@ export default function Watchlist() {
       goToEndingNext={() => { setTab("listings"); setListingsSubTab("auctions"); setPage(1); }}
       // Admin-removed articles drop from the Home strip (Mark 2026-06-06)
       homeRecentArticles={adminHidden.size ? homeArticles.filter(a => !adminHidden.has(shortHash(a.url))) : homeArticles}
+      homeSectionCounts={homeSectionCounts}
       goToArticles={() => { setTab("references"); setReferencesSubTab("editorial"); setPage(1); }}
       homeSearchSubmit={(query, target) => {
         // Commit the typed query to App.js's existing `search` state

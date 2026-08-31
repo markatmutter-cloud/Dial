@@ -24,7 +24,7 @@ function baseProps(overrides = {}) {
     onShare: noop, onView: noop, onClickListing: noop,
     openCollectionPicker: noop, isAdmin: false,
     user: null, compact: false,
-    feedScreenerItemsCount: 0, openFeedScreener: noop,
+    homeSectionCounts: { live: 1234, sold: 567, endingNext: 89 },
     dark: false,
     homeMastheadTabs: [
       { key: "listings", label: "Watches", mobileLabel: "Watches", icon: "listings", active: false, onSelect: noop },

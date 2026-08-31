@@ -3,6 +3,8 @@ import { createPortal } from "react-dom";
 import { Card } from "./Card";
 import CardStrip from "./CardStrip";
 import CardShell from "./CardShell";
+import SectionHeader from "./SectionHeader";
+import { HOME_SECTIONS } from "../homeSections";
 import { articleAsListing } from "./EditorialView";
 import { askLumeAbout } from "./LumeBus";
 import { SearchIcon, TabIcon } from "./icons";
@@ -629,7 +631,7 @@ function DeferUntilVisible({ children, minHeight = 320, rootMargin = "600px" }) 
   return <div ref={ref} aria-hidden style={{ minHeight }} />;
 }
 
-function SectionStrip({ heading, descriptor, items, onViewAll, onScreen, screenCount, isMobile, watchlist, hidden, handleWish, toggleHide, primaryCurrency, onShare, onView, onClickListing, openCollectionPicker, isAdmin, user, compact, inverted, shellPad, priorityFirst }) {
+function SectionStrip({ heading, eyebrow, descriptor, count, items, onViewAll, isMobile, watchlist, hidden, handleWish, toggleHide, primaryCurrency, onShare, onView, onClickListing, openCollectionPicker, isAdmin, user, compact, inverted, shellPad, priorityFirst }) {
   if (!items || items.length === 0) return null;
   const slice = items.slice(0, isMobile ? CARDS_PER_SECTION_MOBILE : CARDS_PER_SECTION_DESKTOP);
   // Inverted bleed (phase 4c, 2026-05-11): one section gets a dark
@@ -646,74 +648,18 @@ function SectionStrip({ heading, descriptor, items, onViewAll, onScreen, screenC
     padding: `${isMobile ? 26 : 34}px ${shellPad}px ${isMobile ? 30 : 38}px`,
     marginBottom: isMobile ? 30 : 36,
   } : { marginBottom: 28 };
-  const headingColor = inverted ? "var(--bg)" : "var(--text1)";
-  const descriptorColor = inverted ? "var(--text-on-dark-2)" : "var(--text2)";
-  const viewAllColor = inverted ? "var(--text-on-dark-1)" : "var(--text2)";
   return (
     <section style={wrapperStyle}>
-      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", padding: inverted ? 0 : "0 16px", marginBottom: 12, gap: 12 }}>
-        <div style={{ minWidth: 0 }}>
-          {/* Mobile stays at 16 (Mark feedback 2026-05-15 — 18 read as
-              three giant blocks at phone widths). Desktop bumps to 22
-              (Mark 2026-05-15 desktop audit: "Home strip headings on
-              desktop can get bigger") — at 1280+ viewports the 16px
-              heading didn't carry against 210px-wide tiles, the eye
-              skipped past the section labels entirely. */}
-          <h2 style={{
-            margin: 0,
-            // PR 2026-05-22: drop the serif on Home strip headings —
-            // it diverged from every other tab's sans treatment and
-            // Mark flagged the inconsistency. Strip headings now use
-            // the inherited system stack, same as Listings / Watchlist
-            // / Editorial section labels.
-            fontFamily: "inherit",
-            fontSize: isMobile ? 16 : 18,
-            fontWeight: 600,
-            color: headingColor,
-            letterSpacing: "0.01em",
-          }}>
-            {heading}
-          </h2>
-          {descriptor && (
-            <div style={{ fontSize: 13, color: descriptorColor, marginTop: 4, maxWidth: 480 }}>
-              {descriptor}
-            </div>
-          )}
-        </div>
-        {/* "View all" lifted from a muted text link to a bordered
-            pill button (Mark feedback 2026-05-11: needs to read as
-            "this is a real destination" rather than incidental
-            metadata). Keeps a low-key affordance — outline pill,
-            not a CTA fill — but the border + slightly bolder weight
-            communicates clickability.
-            "Screen N new" pill (2026-05-15) sits to the left when
-            there's a fresh-listings diff to review. Filled brand
-            because it's the primary action when present; the prior
-            grey-bar banner above the page got retired in favour of
-            this in-context affordance (Mark spec: "I want it to not
-            have a grey bar at the top"). */}
-        <div style={{ flexShrink: 0, display: "inline-flex", alignItems: "center", gap: 8 }}>
-          {/* Screen pill retired from Home 2026-05-22 (Mark spec).
-              Screener still reachable via auction catalogs + the
-              feed-screening entry remains wired (openFeedScreener
-              prop still flows through for the per-strip button if
-              re-enabled in future). Home strips now lead with View
-              all only — cleaner header, matches the editorial-
-              section pattern the rest of the site uses. */}
-          <button onClick={onViewAll}
-            style={{
-              cursor: "pointer", fontFamily: "inherit",
-              fontSize: 12, fontWeight: 600, letterSpacing: "0.04em",
-              padding: "8px 14px", borderRadius: 999,
-              border: `0.5px solid ${inverted ? "var(--text-on-dark-3)" : "var(--text2)"}`,
-              background: "transparent",
-              color: viewAllColor,
-              display: "inline-flex", alignItems: "center", gap: 6,
-            }}>
-            View all <span aria-hidden style={{ fontSize: 13 }}>→</span>
-          </button>
-        </div>
-      </div>
+      <SectionHeader
+        eyebrow={eyebrow}
+        heading={heading}
+        count={count}
+        descriptor={descriptor}
+        onViewAll={onViewAll}
+        isMobile={isMobile}
+        inverted={inverted}
+        padding={inverted ? 0 : undefined}
+      />
       {/* Unified horizontal-slider strip (Mark spec 2026-05-12):
           desktop now scrolls horizontally like mobile rather than
           rendering everything in a 7-col grid. Tile widths differ by
@@ -809,6 +755,10 @@ export function HomeTab(props) {
   const {
     homeRecentAdded, homeRecentSold, homeEndingNext,
     homeRecentArticles, goToArticles,
+    // Pool counts for the section headers (B-93 / Epic 9 step 1). Derived at
+    // render in App.js from the same filtered sets the rows come from, never
+    // constants: the retired LiveCounts strip died of a hardcoded number.
+    homeSectionCounts,
     homeDealerSources, homeJumpToDealer,
     goToRecentAdded, goToRecentSold, goToEndingNext,
     homeSearchSubmit,
@@ -817,7 +767,10 @@ export function HomeTab(props) {
     watchlist, hidden, handleWish, toggleHide, primaryCurrency,
     onShare, onView, onClickListing, openCollectionPicker, isAdmin,
     user, compact,
-    feedScreenerItemsCount, openFeedScreener,
+    // feedScreenerItemsCount / openFeedScreener retired from Home here
+    // (B-94): the "Screen N new" pill was pulled from the section header
+    // 2026-05-22 and these had been threaded through to nothing ever since.
+    // App.js still passes them; the props are simply not read.
     dark,
     // Masthead-nav props — top-bar chrome suppressed on Home, these
     // render the equivalent block inside the olive-bleed band below
@@ -843,6 +796,10 @@ export function HomeTab(props) {
   // past that padding to reach the viewport edges — pass shellPad
   // through so the negative-margin escape uses the right value.
   const shellPad = isMobile ? 16 : 20;
+  // Section-header pool counts. `{}` when App.js hasn't supplied them (older
+  // callers, tests) so every `counts.x` reads undefined and SectionHeader
+  // simply omits the count rather than rendering a zero.
+  const counts = homeSectionCounts || {};
 
   return (
     <div style={{
@@ -952,12 +909,13 @@ export function HomeTab(props) {
         )}
       </div>
       <SectionStrip
-        heading="Recently added"
+        heading={HOME_SECTIONS.recentAdded.heading}
+        eyebrow={HOME_SECTIONS.recentAdded.eyebrow}
+        descriptor={HOME_SECTIONS.recentAdded.descriptor}
+        count={counts.live}
         items={homeRecentAdded}
         priorityFirst
         onViewAll={goToRecentAdded}
-        onScreen={openFeedScreener}
-        screenCount={feedScreenerItemsCount}
         isMobile={isMobile} shellPad={shellPad}
         watchlist={watchlist} hidden={hidden} handleWish={handleWish}
         toggleHide={toggleHide} primaryCurrency={primaryCurrency}
@@ -969,16 +927,17 @@ export function HomeTab(props) {
           via CardShell article tiles (not SectionStrip, which is listing-shaped). */}
       {homeRecentArticles && homeRecentArticles.length > 0 && (
         <section style={{ padding: isMobile ? "16px 0" : "20px 0" }}>
-          <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", padding: isMobile ? "0 16px 10px" : "0 20px 12px" }}>
-            <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
-              <h2 style={{ margin: 0, fontSize: isMobile ? 16 : 18, fontWeight: 600, color: "var(--text1)", fontFamily: "inherit" }}>Articles</h2>
-              <span style={{ fontSize: 12, color: "var(--text3)" }}>{homeRecentArticles.length}</span>
-            </div>
-            {goToArticles && (
-              <button onClick={goToArticles} style={{ background: "transparent", border: "0.5px solid var(--border)", borderRadius: 18, padding: "6px 14px", fontFamily: "inherit", fontSize: 13, fontWeight: 500, color: "var(--text1)", cursor: "pointer" }}>View all →</button>
-            )}
-          </div>
-          <CardStrip items={homeRecentArticles} isMobile={isMobile} renderCard={a => {
+          <SectionHeader
+            eyebrow={HOME_SECTIONS.articles.eyebrow}
+            heading={HOME_SECTIONS.articles.heading}
+            count={counts.articles != null ? counts.articles : homeRecentArticles.length}
+            descriptor={HOME_SECTIONS.articles.descriptor}
+            onViewAll={goToArticles}
+            isMobile={isMobile}
+          />
+          <CardStrip items={homeRecentArticles} isMobile={isMobile}
+            max={isMobile ? CARDS_PER_SECTION_MOBILE : CARDS_PER_SECTION_DESKTOP}
+            renderCard={a => {
             // B-37: give Home article tiles the same heart + ⋯ actions as listing
             // cards (project the article to a listing so the watchlist/collection
             // wiring works), incl. "Share with Lumé". CardShell's action buttons
@@ -1004,7 +963,10 @@ export function HomeTab(props) {
       {homeRecentSold?.length > 0 && (
         <DeferUntilVisible>
           <SectionStrip
-            heading="Recently sold"
+            heading={HOME_SECTIONS.recentSold.heading}
+            eyebrow={HOME_SECTIONS.recentSold.eyebrow}
+            descriptor={HOME_SECTIONS.recentSold.descriptor}
+            count={counts.sold}
             items={homeRecentSold}
             onViewAll={goToRecentSold}
             isMobile={isMobile} shellPad={shellPad}
@@ -1025,7 +987,10 @@ export function HomeTab(props) {
       {homeEndingNext?.length > 0 && (
         <DeferUntilVisible>
           <SectionStrip
-            heading="Ending next at auction"
+            heading={HOME_SECTIONS.endingNext.heading}
+            eyebrow={HOME_SECTIONS.endingNext.eyebrow}
+            descriptor={HOME_SECTIONS.endingNext.descriptor}
+            count={counts.endingNext}
             items={homeEndingNext}
             onViewAll={goToEndingNext}
             isMobile={isMobile} shellPad={shellPad}
