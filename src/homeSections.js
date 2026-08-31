@@ -31,6 +31,11 @@ export const HOME_SECTIONS = {
     eyebrow: "Sold archive",
     descriptor: "What things actually went for, from dealer sales and the auction rooms.",
   },
+  guides: {
+    heading: "Know the references",
+    eyebrow: "Reference guides",
+    descriptor: "Deep guides to single references: what to look for, what to avoid, why they matter.",
+  },
   endingNext: {
     heading: "Ending next at auction",
     eyebrow: "Auction houses",
