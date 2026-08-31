@@ -67,24 +67,34 @@ function EditorialHero({ isMobile, dark }) {
       // Desktop top padding 4 → 24 (Mark 2026-05-28): with the top bar now an
       // overlay the moon sat flush to the very top; this drops it so its top
       // lands ~halfway down the About/M bar. Mobile unchanged.
-      padding: isMobile ? "4px 16px 6px" : "24px 16px 10px",
+      // Fold subtraction (Epic 9 step 4, 2026-08-30). Before this, 325px of
+      // a 720px desktop fold was masthead + nav + search: 45% of the first
+      // screen spent before a single piece of content. The masthead was also
+      // carrying no information, just the name. Trimmed here and in the moon /
+      // wordmark sizes below so a full card row clears the fold.
+      padding: isMobile ? "2px 16px 4px" : "12px 16px 8px",
       textAlign: "center",
     }}>
       <div style={{
         display: "flex", justifyContent: "center",
-        marginBottom: isMobile ? 8 : 14,
+        marginBottom: isMobile ? 6 : 8,
       }}>
-        <MoonPhaseIndicator size={isMobile ? 120 : 200} dark={dark} />
+        <MoonPhaseIndicator size={isMobile ? 96 : 110} dark={dark} />
       </div>
       <h1 style={{
-        margin: isMobile ? "0 0 8px" : "0 0 14px",
+        margin: isMobile ? "0 0 6px" : "0 0 10px",
         fontFamily: "inherit",
-        fontSize: isMobile ? 40 : 56,
+        fontSize: isMobile ? 34 : 42,
         fontWeight: 500,
         letterSpacing: isMobile ? "0.14em" : "0.16em",
         // PR_δ2 2026-05-22: wordmark in brand olive — threads the brand
         // color into the neutral Home chrome without flooding the page.
-        color: "var(--brand-olive-text)",
+        // 2026-08-30: --brand-olive-text is a fixed #3b4a36 in BOTH themes,
+        // which on the dark page measured about 2.2:1, under the 3:1 floor
+        // for large text (B-91). --brand-olive-ink is the theme-aware pair
+        // (#3b4a36 light / #a8b3a0 dark), so the wordmark keeps the same
+        // colour in light mode and becomes legible in dark.
+        color: "var(--brand-olive-ink)",
         textTransform: "uppercase",
         textAlign: "center",
         paddingLeft: isMobile ? "0.14em" : "0.16em",
@@ -95,8 +105,8 @@ function EditorialHero({ isMobile, dark }) {
           beneath it so it reads as a continuation, not a separator. */}
       <div style={{
         height: 2,
-        width: isMobile ? 72 : 96,
-        background: "var(--brand-olive-text)",
+        width: isMobile ? 64 : 84,
+        background: "var(--brand-olive-ink)",
         margin: "0 auto",
       }} />
     </section>

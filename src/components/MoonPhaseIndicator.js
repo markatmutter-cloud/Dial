@@ -19,11 +19,20 @@ export function MoonPhaseIndicator({ size = 56, dark = false }) {
     return () => clearInterval(id);
   }, []);
 
-  // Hide in dark mode (interim 2026-05-22): the source PNGs ship
-  // with opaque white backgrounds that read as a hard white block
-  // against the dark page bg (Mark report 2026-05-22). Re-enable
-  // once the PNGs are re-exported with transparent alpha.
-  if (dark) return null;
+  // Dark mode used to `return null` here (interim 2026-05-22): the frames
+  // carried an opaque pure-white plate around the arc, which read as a hard
+  // white block on the dark page. That was real, and it left the landing page
+  // with no brand image at all in dark mode for three months (B-91).
+  //
+  // Fixed at the source 2026-08-30 rather than in CSS: the 30 frames already
+  // had an alpha channel, just with #ffffff filled in behind the artwork, so
+  // the plate was flood-filled out from the border at a strict 248 threshold
+  // (the plate is pure #ffffff; the moon's lit limb is textured grey well
+  // below that, so the fill cannot leak into the art). Composited over white
+  // the frames are unchanged to within 7/255 on a single anti-aliased edge,
+  // so light mode is untouched. The moon now renders in both themes; `dark`
+  // only lifts the art a touch so the navy arc separates from a near-black
+  // page instead of sinking into it.
 
   const phaseUrl = moonPhaseImageUrl(now);
   const phaseLabel = moonPhaseName(now);
@@ -61,6 +70,9 @@ export function MoonPhaseIndicator({ size = 56, dark = false }) {
           height: size,
           display: "block",
           marginTop: -topClip,
+          // The arc is a deep navy. On a near-black page it reads as a hole
+          // rather than a shape, so lift it slightly. Light mode untouched.
+          filter: dark ? "brightness(1.12)" : "none",
         }}
       />
     </span>
