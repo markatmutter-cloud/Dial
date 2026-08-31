@@ -142,8 +142,8 @@ function LotRow({ item, isMobile, primaryCurrency, onClickListing }) {
         width: 48, height: 48, flexShrink: 0, borderRadius: 3, overflow: "hidden",
         background: "var(--surface)",
       }}>
-        {item.image && (
-          <img src={imgSrc(item.image, 96)} alt="" loading="lazy"
+        {(item.img || item.image) && (
+          <img src={imgSrc(item.img || item.image, 96)} alt="" loading="lazy"
             style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
         )}
       </div>
@@ -156,7 +156,7 @@ function LotRow({ item, isMobile, primaryCurrency, onClickListing }) {
         <div style={{
           fontSize: isMobile ? 13 : 14, color: "var(--text1)", lineHeight: 1.25,
           display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden",
-        }}>{item.title}</div>
+        }}>{item.ref || item.title}</div>
       </div>
       <div style={{
         flexShrink: 0, textAlign: "right", fontVariantNumeric: "tabular-nums",
@@ -196,14 +196,36 @@ export default function HomeAuctionModule({
   // module honest without anyone maintaining it.
   if (closing.length === 0) return null;
 
-  const upcoming = sales
+  // Sale selection has three rules, and all three exist because the first
+  // version broke on real data:
+  //
+  // 1. A parseable FUTURE end date is required. Letting undated entries
+  //    through (`Number.isNaN(end) || ...`) put two long-past Bonhams sales
+  //    on the page dated "15 June, 18:00 CEST", which is B-78's un-pruned
+  //    calendar rot rendered at full size on the landing page.
+  // 2. Soonest-ending first. Sorting on dateStart surfaced whatever opened
+  //    earliest, which for rolling weekly sales is the stalest row.
+  // 3. One row per house, until we run out of houses. The entire point of
+  //    this block is that a visitor reads several names they trust; four
+  //    Bonhams rows, which is exactly what the un-deduped version rendered,
+  //    says the opposite of what the block is for.
+  const dated = sales
     .filter((s) => s.status === "live" || s.status === "upcoming")
-    .filter((s) => {
-      const end = s.dateEnd ? Date.parse(s.dateEnd) : NaN;
-      return Number.isNaN(end) || end >= now;
-    })
-    .sort((a, b) => String(a.dateStart || a.dateEnd || "").localeCompare(String(b.dateStart || b.dateEnd || "")))
-    .slice(0, MAX_SALES);
+    .map((s) => ({ sale: s, ends: Date.parse(s.dateEnd || s.dateStart || "") }))
+    .filter((x) => !Number.isNaN(x.ends) && x.ends >= now)
+    .sort((a, b) => a.ends - b.ends);
+  const seenHouses = new Set();
+  const upcoming = [];
+  for (const { sale } of dated) {
+    if (upcoming.length >= MAX_SALES) break;
+    if (seenHouses.has(sale.house)) continue;
+    seenHouses.add(sale.house);
+    upcoming.push(sale);
+  }
+  for (const { sale } of dated) {
+    if (upcoming.length >= MAX_SALES) break;
+    if (!upcoming.includes(sale)) upcoming.push(sale);
+  }
 
   return (
     <section style={{ marginBottom: 28 }}>
