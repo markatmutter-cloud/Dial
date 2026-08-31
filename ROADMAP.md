@@ -595,7 +595,13 @@ is repeatable (`walk.py`) for a before/after once it ships.
 - **Phase 3** — two-door planning + journey coach. The **RAG Q&A bot** and the
   **missed-it / discovery bot** are each their own dedicated session.
 
-**Home editorial pass (2026-08-30, Mark) — SEQUENCE AGREED, from the `/ui-review` panel.**
+**Home editorial pass (2026-08-30, Mark) — ✅ ALL SIX STEPS SHIPPED 2026-08-31
+(#944 · #945 · #946/#947 · #948 · #949 · #950/#951).** Sequence and rationale
+below, kept because it is the record of WHY the page looks like this. What
+shipped matched the plan; the only deviations are noted inline (rows were not
+capped in step 2, and step 4 fixed the moon frames at the source instead of
+redrawing the asset as an SVG). Re-run `/ui-review home` for a before/after.
+Original framing follows.
 Mark's complaint: the landing page is "just a series of scrollable lines", "boring
 but functional", and "it's not clear what's going on", while refusing any
 description paragraph at the top. Six expert lenses reviewed it against a measured
