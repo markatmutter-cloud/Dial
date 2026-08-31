@@ -166,7 +166,7 @@ function LotRow({ item, isMobile, primaryCurrency, onClickListing }) {
           {price || "No bids"}
         </div>
         {left && (
-          <div style={{ fontSize: 12, color: "var(--text2)", marginTop: 2 }}>{left} left</div>
+          <div style={{ fontSize: 12, color: "var(--text2)", marginTop: 2 }}>{`${left} left`}</div>
         )}
       </div>
     </a>
