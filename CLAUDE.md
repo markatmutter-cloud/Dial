@@ -142,7 +142,11 @@ diagram, data model, and folder layout.
   if a catalog returns a suspiciously truncated count (<50% of prior AND <25
   absolute), skip the CSV write so `merge.py` keeps prior state. Scrape
   failures auto-open a GitHub Issue via `notify-scrape-failure.yml` — fix the
-  flap, don't silence the alert. `python3 health.py` is the read-only status check.
+  flap, don't silence the alert — the ONE sanctioned mute is a dated, reasoned
+  entry in `data/scrape_health_snooze.json`, for a source whose fix isn't ours
+  (B-80). It still prints every run and re-pages itself on expiry; a malformed
+  or undated entry mutes nothing. `python3 health.py` is the read-only status
+  check.
 - **CI ≠ residential — verify the CI-committed output, not a laptop run.**
   Auction houses gate datacenter (GitHub Actions) IPs differently from
   residential: a scraper that returns full data on your machine can still 403,
