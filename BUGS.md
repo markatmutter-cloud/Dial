@@ -261,13 +261,19 @@ Nine defects surfaced by the six-lens `/ui-review` panel on Home (see ROADMAP
 Epic 9 "Home editorial pass" for the design sequence; only genuine defects are
 here). Every one was verified in the source before logging.
 
+**Status 2026-08-31:** six fixed with the Epic 9 build (#944-#951). Still open:
+**B-90** (card ⋯ menu opens off-screen), **B-96** (36pt action buttons in the
+swipe corner) and the remaining half of **B-94**. All three are `CardShell`
+work rather than Home work, so they were left out of the Home pass deliberately
+and want their own PR.
+
 ### B-88 — Card strips are unreachable with a mouse wheel: 13 of 20 tiles per row do not exist
-- **Reported:** 2026-08-30 (ui-review panel, interaction lens) · **Type:** Interaction defect · **Severity:** 2 · **Surface:** `CardStrip.js` (site-wide: Home, SearchResultsView, ReferencePage, LumeModule, LumeResultGrid) · **Status:** Open.
+- **Reported:** 2026-08-30 (ui-review panel, interaction lens) · **Type:** Interaction defect · **Severity:** 2 · **Surface:** `CardStrip.js` (site-wide: Home, SearchResultsView, ReferencePage, LumeModule, LumeResultGrid) · **Status:** ✅ Fixed #945 — hover- and focus-revealed prev/next arrows paging by one viewport less a tile, plus a mirrored left fade. Rows deliberately NOT capped: the tail was only dead travel while it was unreachable. Follow-up #951 fixed the left fade drawing over card 1 at rest (resting scrollLeft equals the container padding, not 0).
 - **Detail:** `CardStrip` hides the native scrollbar (`scrollbarWidth: none` + the `::-webkit-scrollbar` rule), sets `overflowY: hidden` so a vertical wheel scrolls the page straight past the row, and registers no arrow buttons and no pointer-drag handler. A trackpad two-finger swipe works; a plain wheel mouse has no gesture at all. Measured on Home: each strip is 4259px wide inside a 1240px viewport, so **~79% of the content in every row is behind a gesture a wheel mouse cannot make**. The right-edge fade advertises that more exists and then offers no way to reach it.
 - **Fix:** hover- and focus-revealed prev/next buttons on desktop paging by one viewport width less one tile; mirror the fade on the left once scrolled. Belongs in `CardStrip` so every strip on the site inherits it.
 
 ### B-89 — Rail overscroll chains into browser / PWA back-navigation
-- **Reported:** 2026-08-30 (ui-review panel) · **Type:** Interaction defect (iOS PWA) · **Severity:** 2 · **Surface:** `CardStrip.js` `.wl-hscroll` · **Status:** Open.
+- **Reported:** 2026-08-30 (ui-review panel) · **Type:** Interaction defect (iOS PWA) · **Severity:** 2 · **Surface:** `CardStrip.js` `.wl-hscroll` · **Status:** ✅ Fixed #945 — `overscroll-behavior-x: contain` on the injected rule, mobile inset 16 → 24 to clear the iOS edge-swipe zone.
 - **Detail:** the `.wl-hscroll` rule sets no `overscroll-behavior-x: contain`, so a rightward swipe at the start of a rail chains to the browser's back gesture. The mobile inset is 16px, which puts the first tile's grab surface inside the iOS edge-swipe zone, making it easy to hit by accident on the primary personal surface.
 - **Fix:** add `overscroll-behavior-x: contain` to the injected rule; consider 16 → 24 mobile inset.
 
@@ -282,16 +288,16 @@ here). Every one was verified in the source before logging.
 - **Fix:** redraw the moon as a two-token inline SVG from the maths already in `src/utils/moonPhase.js` (stroked disc + terminator ellipse). Deletes the dark-mode `return null`, removes an off-palette navy that exists nowhere in the token set, and drops a PNG fetch from the top of the fold. Move Home's wordmark to `--brand-olive-ink`.
 
 ### B-92 — Home Articles strip renders the entire array (no `max`)
-- **Reported:** 2026-08-30 (ui-review panel) · **Type:** Perf / consistency · **Severity:** 3 · **Surface:** `HomeTab.js` (the Articles `CardStrip`) · **Status:** Open.
+- **Reported:** 2026-08-30 (ui-review panel) · **Type:** Perf / consistency · **Severity:** 3 · **Surface:** `HomeTab.js` (the Articles `CardStrip`) · **Status:** ✅ Fixed #944.
 - **Detail:** every other Home row caps at `CARDS_PER_SECTION_DESKTOP` (20) / `_MOBILE` (14) via `SectionStrip`. The Articles strip is mounted directly on `CardStrip` with no `max`, so it renders whatever the corpus returns.
 
 ### B-93 — Articles section header is a hand-rolled duplicate of `SectionStrip`'s, 40 lines away in the same file
-- **Reported:** 2026-08-30 (ui-review panel) · **Type:** Chrome drift / tech debt · **Severity:** 3 · **Surface:** `HomeTab.js` · **Status:** Open.
+- **Reported:** 2026-08-30 (ui-review panel) · **Type:** Chrome drift / tech debt · **Severity:** 3 · **Surface:** `HomeTab.js` · **Status:** ✅ Fixed #944 — one shared `SectionHeader`. It turned out to be FOUR copies, not two: `SearchResultsView` carried two more with the older pill. "View all" now appears in exactly one file.
 - **Detail:** the Articles header re-implements the section header inline with a **different** "View all" pill (`borderRadius: 18` / 13px / `var(--border)`) than `SectionStrip`'s (`borderRadius: 999` / 12px / `var(--text2)`). Same component, same file, two treatments. This is the same class of divergence as B-87 (the grey rail) and is why Home reads as inconsistent.
 - **Fix:** one shared `SectionHeader` (eyebrow · title · count · descriptor · View all), consumed by both. Pairs with the ROADMAP Epic 9 Home editorial pass step 1; a `chrome-guard` assertion that "View all" appears in exactly one file would stop the re-drift.
 
 ### B-94 — `SectionStrip` early-returns before any hooks run (React #310 landmine)
-- **Reported:** 2026-08-30 (ui-review panel) · **Type:** Tech debt / latent crash · **Severity:** 3 · **Surface:** `HomeTab.js` `SectionStrip` · **Status:** Open.
+- **Reported:** 2026-08-30 (ui-review panel) · **Type:** Tech debt / latent crash · **Severity:** 3 · **Surface:** `HomeTab.js` `SectionStrip` · **Status:** Open (partial). The dead `onScreen` / `screenCount` props went out in #944. **Still open:** hoisting the `if (!items || items.length === 0) return null` guard to the call sites, and deleting the dead `inverted` branch.
 - **Detail:** `if (!items || items.length === 0) return null;` is the component's first statement. It is safe today only because `SectionStrip` happens to use no hooks. The next person to add a `useState`/`useMemo` there gets React #310, the documented white screen. Three of the five call sites already guard on length outside the component, so the guard is largely redundant.
 - **Fix:** hoist the guard to the remaining call sites. Same pass: delete the dead `inverted` branch (the bottom bleed band was removed 2026-06-07 and is on the never-reintroduce list) and the `onScreen` / `screenCount` props, still threaded through to a button retired 2026-05-22.
 
