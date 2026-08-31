@@ -639,6 +639,11 @@ within each section roughly last.
 
 ## Epic 10 — Lumé (AI spine)
 
+- **2026-08-31 — Seeded Lumé opens skip the standard intro (#936).** "Share with Lumé" (card ⋯) and
+  the share-receive "Ask Lumé" callout now open the chat with no greeting and no starter chips, so the
+  answer about that watch leads instead of the "what's your watch problem?" boilerplate; a plain
+  launcher open is unchanged. `ChatBubbleHost` tracks the seeded open; sticks for the life of the thread.
+
 - **2026-06-18 — Lumé canvas: prompt-driven → guided editorial session (#894–#901).** Built the Lumé
   tab from a static page into a morphing canvas: prompt-driven view router + unified in-canvas search
   over listings/sold/auctions (#894/#895), warm designed landing with greeting + hero + live counts
