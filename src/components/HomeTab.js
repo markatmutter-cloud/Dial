@@ -683,6 +683,7 @@ function SectionStrip({ heading, eyebrow, descriptor, count, items, onViewAll, i
           Tiles still separate: `gap: 1` shows the page background through. */}
       <CardStrip
         items={slice}
+        label={heading}
         isMobile={isMobile}
         background={inverted ? "var(--surface-on-dark)" : "transparent"}
         inset={!inverted}
@@ -936,6 +937,7 @@ export function HomeTab(props) {
             isMobile={isMobile}
           />
           <CardStrip items={homeRecentArticles} isMobile={isMobile}
+            label={HOME_SECTIONS.articles.heading}
             max={isMobile ? CARDS_PER_SECTION_MOBILE : CARDS_PER_SECTION_DESKTOP}
             renderCard={a => {
             // B-37: give Home article tiles the same heart + ⋯ actions as listing
