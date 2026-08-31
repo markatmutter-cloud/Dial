@@ -1,14 +1,6 @@
 {
   "watchcenter": {
-    "misses": 40,
-    "reason": "no CSV produced this run"
-  },
-  "watchesoflancashire": {
-    "misses": 14,
-    "reason": "no CSV produced this run"
-  },
-  "watchfid": {
-    "misses": 1,
+    "misses": 41,
     "reason": "no CSV produced this run"
   }
 }
