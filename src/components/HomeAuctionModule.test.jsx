@@ -7,10 +7,12 @@ import HomeAuctionModule from "./HomeAuctionModule";
 
 const inHours = (h) => new Date(Date.now() + h * 3600 * 1000).toISOString();
 
+// Projected auction lots carry `ref` (title) and `img`, not title/image, the
+// same fields Card.js reads. Getting this wrong shipped a list of blank rows.
 const lots = [
-  { id: "l1", title: "Jaeger-LeCoultre AMVOX1 R-Alarm", source: "Bonhams", url: "https://x/1",
+  { id: "l1", ref: "Jaeger-LeCoultre AMVOX1 R-Alarm", source: "Bonhams", url: "https://x/1",
     auction_end: inHours(17), current_bid: 3400, currency: "USD", current_bid_usd: 3400 },
-  { id: "l2", title: "Franck Muller Liberty", source: "Bonhams", url: "https://x/2",
+  { id: "l2", ref: "Franck Muller Liberty", source: "Bonhams", url: "https://x/2",
     auction_end: inHours(20), current_bid: 3780, currency: "USD", current_bid_usd: 3780 },
 ];
 
@@ -46,15 +48,30 @@ describe("HomeAuctionModule", () => {
 
   it("drops lots that have already ended and ones beyond the horizon", () => {
     const stale = [
-      { id: "old", title: "Ended lot", source: "Phillips", url: "https://x/3", auction_end: inHours(-4) },
-      { id: "far", title: "Far future lot", source: "Phillips", url: "https://x/4", auction_end: inHours(24 * 60) },
+      { id: "old", ref: "Ended lot", source: "Phillips", url: "https://x/3", auction_end: inHours(-4) },
+      { id: "far", ref: "Far future lot", source: "Phillips", url: "https://x/4", auction_end: inHours(24 * 60) },
     ];
     const { container } = render(<HomeAuctionModule sales={sales} lots={stale} isMobile={false} />);
     expect(container.firstChild).toBeNull();
   });
 
+  it("shows one sale per house, soonest first, and drops undated ones (B-78 rot)", () => {
+    const messy = [
+      { id: "b1", house: "Bonhams", title: "Weekly A", url: "https://b/1", status: "live", dateEnd: "2099-01-05" },
+      { id: "b2", house: "Bonhams", title: "Weekly B", url: "https://b/2", status: "live", dateEnd: "2099-01-06" },
+      { id: "b3", house: "Bonhams", title: "Undated stale", url: "https://b/3", status: "upcoming", dateLabel: "15 June, 18:00 CEST" },
+      { id: "p1", house: "Phillips", title: "Geneva XXIV", url: "https://p/1", status: "upcoming", dateEnd: "2099-02-01" },
+    ];
+    render(<HomeAuctionModule sales={messy} lots={lots} isMobile={false} />);
+    expect(screen.getByText("Weekly A")).toBeInTheDocument();
+    expect(screen.getByText("Geneva XXIV")).toBeInTheDocument();
+    // Undated entries never render: that is B-78's calendar rot, and it put
+    // two long-past sales on the landing page in the first cut.
+    expect(screen.queryByText("Undated stale")).toBeNull();
+  });
+
   it("says 'No bids' rather than an empty cell on a lot with no bid yet", () => {
-    const nobid = [{ id: "n1", title: "Fresh lot", source: "Sotheby's", url: "https://x/5", auction_end: inHours(6) }];
+    const nobid = [{ id: "n1", ref: "Fresh lot", source: "Sotheby's", url: "https://x/5", auction_end: inHours(6) }];
     render(<HomeAuctionModule sales={[]} lots={nobid} isMobile={false} />);
     expect(screen.getByText("No bids")).toBeInTheDocument();
   });
