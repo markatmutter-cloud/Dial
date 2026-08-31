@@ -60,12 +60,19 @@ export default function CardStrip({
   const [atEnd, setAtEnd] = useState(false);
   const [atStart, setAtStart] = useState(true);
   const [hovered, setHovered] = useState(false);
+  // Resting scrollLeft is NOT 0. The container carries 16-20px of left padding
+  // and the tiles are scroll-snap-align: start, so the browser settles the
+  // first tile at scrollLeft === paddingLeft. Comparing against 0 made
+  // `atStart` false on a freshly loaded row, which showed the left fade over
+  // the first card and washed it out. Cached in measure() rather than read per
+  // scroll event.
+  const startPadRef = useRef(0);
 
   const readEdges = useCallback(() => {
     const el = scrollRef.current;
     if (!el) return;
     const ended = el.scrollLeft + el.clientWidth >= el.scrollWidth - 4;
-    const started = el.scrollLeft <= 4;
+    const started = el.scrollLeft <= startPadRef.current + 4;
     setAtEnd((prev) => (prev === ended ? prev : ended));
     setAtStart((prev) => (prev === started ? prev : started));
   }, []);
@@ -75,6 +82,7 @@ export default function CardStrip({
     const el = scrollRef.current;
     if (!el) return;
     setOverflowing(el.scrollWidth > el.clientWidth + 2);
+    startPadRef.current = parseFloat(getComputedStyle(el).paddingLeft) || 0;
     readEdges();
   }, [readEdges]);
 
