@@ -251,9 +251,58 @@ install/decision tails remaining.*
 
 
 ### B-87 — Home strips rendered a grey "scroll bar" rail under every row except Articles
-- **Reported:** 2026-08-30 (Mark, landing-page review) · **Type:** Visual defect / cross-surface inconsistency · **Severity:** 3 · **Surface:** `HomeTab.js` `SectionStrip` → `CardStrip` · **Status:** Fixed (PR pending) — branch `home-strip-rail`.
+- **Reported:** 2026-08-30 (Mark, landing-page review) · **Type:** Visual defect / cross-surface inconsistency · **Severity:** 3 · **Surface:** `HomeTab.js` `SectionStrip` → `CardStrip` · **Status:** ✅ Fixed #940.
 - **Detail:** Recently added / Recently sold / Ending next each drew a thin grey horizontal bar under the row that read as a dead scrollbar. Articles didn't. Not a real scrollbar (native ones are hidden in `CardStrip`): `SectionStrip` passed `background="var(--border)"` into `CardStrip`, and the strip's `padding: 0 0 4px` let that border-coloured container background show as a 4px rail beneath the tiles. The Articles strip is mounted directly in `HomeTab` without a `background` prop, so it defaulted to `transparent`.
 - **Fix:** `SectionStrip` now passes `transparent` for the non-inverted variant, matching every other `CardStrip` on the site (`SearchResultsView`, `ReferencePage`, `LumeModule`, `LumeResultGrid`). Tiles still separate because `gap: 1` shows the page background through. The inverted-band variant keeps `var(--surface-on-dark)` (currently unmounted on Home).
+
+## Landing-page review panel — 2026-08-30
+
+Nine defects surfaced by the six-lens `/ui-review` panel on Home (see ROADMAP
+Epic 9 "Home editorial pass" for the design sequence; only genuine defects are
+here). Every one was verified in the source before logging.
+
+### B-88 — Card strips are unreachable with a mouse wheel: 13 of 20 tiles per row do not exist
+- **Reported:** 2026-08-30 (ui-review panel, interaction lens) · **Type:** Interaction defect · **Severity:** 2 · **Surface:** `CardStrip.js` (site-wide: Home, SearchResultsView, ReferencePage, LumeModule, LumeResultGrid) · **Status:** Open.
+- **Detail:** `CardStrip` hides the native scrollbar (`scrollbarWidth: none` + the `::-webkit-scrollbar` rule), sets `overflowY: hidden` so a vertical wheel scrolls the page straight past the row, and registers no arrow buttons and no pointer-drag handler. A trackpad two-finger swipe works; a plain wheel mouse has no gesture at all. Measured on Home: each strip is 4259px wide inside a 1240px viewport, so **~79% of the content in every row is behind a gesture a wheel mouse cannot make**. The right-edge fade advertises that more exists and then offers no way to reach it.
+- **Fix:** hover- and focus-revealed prev/next buttons on desktop paging by one viewport width less one tile; mirror the fade on the left once scrolled. Belongs in `CardStrip` so every strip on the site inherits it.
+
+### B-89 — Rail overscroll chains into browser / PWA back-navigation
+- **Reported:** 2026-08-30 (ui-review panel) · **Type:** Interaction defect (iOS PWA) · **Severity:** 2 · **Surface:** `CardStrip.js` `.wl-hscroll` · **Status:** Open.
+- **Detail:** the `.wl-hscroll` rule sets no `overscroll-behavior-x: contain`, so a rightward swipe at the start of a rail chains to the browser's back gesture. The mobile inset is 16px, which puts the first tile's grab surface inside the iOS edge-swipe zone, making it easy to hit by accident on the primary personal surface.
+- **Fix:** add `overscroll-behavior-x: contain` to the injected rule; consider 16 → 24 mobile inset.
+
+### B-90 — Card ⋯ menu opens off-screen near the bottom of the page and cannot be scrolled back
+- **Reported:** 2026-08-30 (ui-review panel, verified in source) · **Type:** Defect · **Severity:** 2 · **Surface:** `CardShell.js` (menu trigger, `setMenuPos`) · **Status:** Open.
+- **Detail:** the trigger computes `setMenuPos({ top: r.bottom + 4, right: … })` with no `window.innerHeight` check, no flip-above fallback and no `maxHeight`. The menu renders through `createPortal` at `position: fixed`, so once it opens past the viewport bottom **scrolling cannot bring it back** and the ⋯ reads as a dead button. Reproducible on the last strip of Home and anywhere a card sits low in the viewport.
+- **Fix:** flip above the trigger when `r.bottom + estimatedHeight > innerHeight`, clamp with `maxHeight` + internal scroll. Needs a **direct render test** (`CardShell.test.jsx` pattern) since shell tests render mock grids and never execute CardShell.
+
+### B-91 — No brand image at all in dark mode; wordmark contrast ~2.2:1
+- **Reported:** 2026-08-30 (ui-review panel, measured live) · **Type:** Visual / accessibility · **Severity:** 2 · **Surface:** `MoonPhaseIndicator.js` (`if (dark) return null`), `HomeTab.js` `EditorialHero` · **Status:** Open — the "interim" call is from 2026-05-22 and is still in place.
+- **Detail:** `MoonPhaseIndicator` returns null in dark mode because the source PNGs ship a light halo. The landing page therefore opens in dark mode with **no image at all**, and the olive wordmark (`--brand-olive-text` `#3b4a36`) on near-black measures roughly **2.2:1**, below the 3:1 floor for large text. The brand's most distinctive asset is absent exactly where the page most needs one.
+- **Fix:** redraw the moon as a two-token inline SVG from the maths already in `src/utils/moonPhase.js` (stroked disc + terminator ellipse). Deletes the dark-mode `return null`, removes an off-palette navy that exists nowhere in the token set, and drops a PNG fetch from the top of the fold. Move Home's wordmark to `--brand-olive-ink`.
+
+### B-92 — Home Articles strip renders the entire array (no `max`)
+- **Reported:** 2026-08-30 (ui-review panel) · **Type:** Perf / consistency · **Severity:** 3 · **Surface:** `HomeTab.js` (the Articles `CardStrip`) · **Status:** Open.
+- **Detail:** every other Home row caps at `CARDS_PER_SECTION_DESKTOP` (20) / `_MOBILE` (14) via `SectionStrip`. The Articles strip is mounted directly on `CardStrip` with no `max`, so it renders whatever the corpus returns.
+
+### B-93 — Articles section header is a hand-rolled duplicate of `SectionStrip`'s, 40 lines away in the same file
+- **Reported:** 2026-08-30 (ui-review panel) · **Type:** Chrome drift / tech debt · **Severity:** 3 · **Surface:** `HomeTab.js` · **Status:** Open.
+- **Detail:** the Articles header re-implements the section header inline with a **different** "View all" pill (`borderRadius: 18` / 13px / `var(--border)`) than `SectionStrip`'s (`borderRadius: 999` / 12px / `var(--text2)`). Same component, same file, two treatments. This is the same class of divergence as B-87 (the grey rail) and is why Home reads as inconsistent.
+- **Fix:** one shared `SectionHeader` (eyebrow · title · count · descriptor · View all), consumed by both. Pairs with the ROADMAP Epic 9 Home editorial pass step 1; a `chrome-guard` assertion that "View all" appears in exactly one file would stop the re-drift.
+
+### B-94 — `SectionStrip` early-returns before any hooks run (React #310 landmine)
+- **Reported:** 2026-08-30 (ui-review panel) · **Type:** Tech debt / latent crash · **Severity:** 3 · **Surface:** `HomeTab.js` `SectionStrip` · **Status:** Open.
+- **Detail:** `if (!items || items.length === 0) return null;` is the component's first statement. It is safe today only because `SectionStrip` happens to use no hooks. The next person to add a `useState`/`useMemo` there gets React #310, the documented white screen. Three of the five call sites already guard on length outside the component, so the guard is largely redundant.
+- **Fix:** hoist the guard to the remaining call sites. Same pass: delete the dead `inverted` branch (the bottom bleed band was removed 2026-06-07 and is on the never-reintroduce list) and the `onScreen` / `screenCount` props, still threaded through to a button retired 2026-05-22.
+
+### B-95 — `DeferUntilVisible` reserves a flat 320px for rows that measure 337-363px
+- **Reported:** 2026-08-30 (ui-review panel, measured live) · **Type:** Visual defect · **Severity:** 3 · **Surface:** `HomeTab.js` `DeferUntilVisible` · **Status:** Open.
+- **Detail:** the placeholder is `minHeight = 320` for every deferred section, but measured section heights on desktop are 337 (Recently added) to 363 (Articles). Each row therefore jumps 17-43px as it mounts mid-scroll, worst on iOS PWA where scroll anchoring is weakest.
+- **Fix:** make `minHeight` a required prop and source it per section type.
+
+### B-96 — Card action buttons are 36pt, under the 44pt iOS minimum, and sit in the swipe-start corner
+- **Reported:** 2026-08-30 (ui-review panel) · **Type:** Mobile usability · **Severity:** 3 · **Surface:** `CardShell.js` action buttons · **Status:** Open.
+- **Detail:** heart and ⋯ render at 36pt, stacked 6px apart, in the top-right of the tile: below Apple's 44pt minimum target, close enough together to mis-hit, and positioned exactly where a right-handed thumb begins a leftward swipe on a horizontal rail. On a mobile tile they also cover roughly two thirds of the image height.
 ---
 
 ### B-85 — Phillips lot enumerator broken by the same replatform that broke its calendar
