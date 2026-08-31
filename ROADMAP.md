@@ -595,6 +595,72 @@ is repeatable (`walk.py`) for a before/after once it ships.
 - **Phase 3** — two-door planning + journey coach. The **RAG Q&A bot** and the
   **missed-it / discovery bot** are each their own dedicated session.
 
+**Home editorial pass (2026-08-30, Mark) — SEQUENCE AGREED, from the `/ui-review` panel.**
+Mark's complaint: the landing page is "just a series of scrollable lines", "boring
+but functional", and "it's not clear what's going on", while refusing any
+description paragraph at the top. Six expert lenses reviewed it against a measured
+evidence pack; the synthesis is below. Defects went to BUGS (B-88…B-96).
+
+*Diagnosis:* the page is **under-differentiated and under-stocked**, not badly
+designed. Four rows, ~74 tiles, all 210×289, all under an identical 18px heading,
+all separated by an identical 28px gap: nothing tells the eye that one row matters
+more, or that a row is a different *kind* of thing. And the page shows **one
+capability four times** (three of the four rows land in the same tab) while the
+things that actually distinguish the site — reference guides, the auction
+calendar, the sold archive as research — are not on the page at all. That is the
+real cause of "not clear what's going on", and it is an inventory problem, not a
+typography problem.
+
+*Highest-leverage change:* turn **"Ending next at auction" into a dated, ruled
+auction module** — next sales by house and date, then the lots closing soonest as
+text rows with bid and countdown in a right-hand column, closing with "Full
+auction calendar". It breaks the four-identical-rows monotony with a genuinely
+different texture (hairlines and numbers, not photographs), puts eight house names
+a visitor already trusts on screen with dates, makes the two load-bearing values
+legible instead of 10px badges over photos, costs nothing above the fold, and
+**cannot rot** because it is ordered by a clock. This converges with the standing
+"pull auctions closing soon out of a strip" thread in the Saved-tab restructure
+below — build it once, here.
+
+*Build sequence* (each step one PR, nothing blocks on the step after it):
+1. **One `SectionHeader`** (eyebrow · title · count · descriptor · View all) +
+   a `homeSections.js` model shaped like `topTabs.js`. Fills in the `descriptor`
+   prop that has been built and passed by nobody since it shipped, with one clause
+   per row naming the mechanism *and* the destination. Kills the hand-rolled
+   Articles header (B-93). *Shared component.*
+2. **Make the strips reachable** — arrows, mirrored fade, `overscroll-behavior-x`,
+   row caps (B-88, B-89, B-92). *Shared component, whole site benefits.*
+3. **The auction module** above. *Home-only mount, existing primitives.*
+4. **Subtract the fold, give dark mode a brand back** — moon 200→120, wordmark
+   56→44, and redraw the moon as inline SVG from `utils/moonPhase.js` (B-91).
+5. **Open a door the page hides** — a text-only reference-guides row (model names
+   as links + "N references across M brands") in the slot "Recently hearted"
+   vacated. Seeds the model-line browsing this epic is built on.
+6. **Rhythm** — a 0.5px hairline above each section header, varied section spacing
+   (48/32/32/24) instead of a uniform 28, eyebrows and counts in olive so the
+   brand colour appears down the page instead of once as a slab at the top.
+
+*Explicitly NOT doing* (the panel's skeptic won these):
+- **No lead / hero / oversized first item.** A magazine leads because a desk picks
+  one of five items a day. This page ingests hundreds of scraped listings with no
+  editorial pass, so the "lead" is whatever landed first on a slow morning, blown
+  up to 640px, on the page Mark opens daily — and it becomes the LCP image by
+  definition, from an arbitrary dealer CDN. Variety comes from row **shape**, not
+  row scale.
+- **No description paragraph, tagline, or scope band at the top.** Mark's
+  constraint, and the last one (LiveCounts) rotted. Counts live **per section**,
+  derived at render, where each explains the row it sits on.
+- **No serif on Home** (settled May 2026), no new typefaces, no eyebrow that
+  restates its heading (exactly why eyebrows were pulled in May).
+- **No strip → vertical grid conversion.** Costs height on the daily surface.
+- **No re-mounting the inverted dark bleed band** (never-reintroduce list) — delete
+  the dead branch instead (B-94).
+- **No rows for saved searches, lists, size-compare or Lumé.** Per-user/utility
+  surfaces that would rebuild the sprawl this is curing. Lumé owns its orb.
+- **Nothing hand-curated.** No hand-picked slot survives contact with a busy week.
+
+Panel is re-runnable: `/ui-review home` after the sequence ships, for a before/after.
+
 **Auction catalogue = full-page surface (2026-06-12, Mark) — SHIPPED #879.** When you open an
 auction catalogue (e.g. Phillips "New York Watch Auction: XIV"), promote it to a
 **full-page view matching the auction calendar's** — a green bar pinned at the top
