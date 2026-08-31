@@ -26,7 +26,9 @@ describe("HomeAuctionModule", () => {
     // fmtLotPrice renders native-currency amounts as "USD 3,400", the same
     // string Card.js puts under "CURRENT BID". Kept identical on purpose.
     expect(screen.getByText("USD 3,400")).toBeInTheDocument();
-    expect(screen.getByText("17h left")).toBeInTheDocument();
+    // Regex, not "17h left": fmtCountdown floors the remainder, and the few
+    // ms between building the fixture and rendering it drop 17h to 16h.
+    expect(screen.getByText(/^1[67]h left$/)).toBeInTheDocument();
   });
 
   it("renders the upcoming sale with its date", () => {
