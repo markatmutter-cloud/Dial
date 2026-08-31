@@ -53,6 +53,12 @@ export function ChatBubbleHost({
   // up to a near-full-screen takeover for a real conversation. Mobile is already
   // full-screen, so expand is desktop-only and resets on minimise.
   const [expanded, setExpanded] = useState(false);
+  // A SEEDED open (share-with-Lumé from a card's ⋯ menu, or the share-receive
+  // surface's "Ask Lumé") starts the thread with a real question about a real
+  // watch — the standard "So, what's your watch problem?" intro on top of it
+  // reads as boilerplate and buries the answer (Mark). Seeded → no greeting;
+  // sticks for the life of the thread so minimise/reopen doesn't bring it back.
+  const [seeded, setSeeded] = useState(false);
   const [hasOpened, setHasOpened] = useState(() => {
     try { return typeof localStorage !== "undefined" && localStorage.getItem(OPENED_KEY) === "1"; }
     catch { return false; }
@@ -113,6 +119,7 @@ export function ChatBubbleHost({
   useEffect(() => {
     return registerLumeOpener((item) => {
       openChat();
+      if (item) setSeeded(true);
       if (user && item) send(describeItem(item));
     });
   }, [user, send, openChat]);
@@ -225,6 +232,7 @@ export function ChatBubbleHost({
     // re-sent the same seed question — one full model turn per round-trip.
     const openSeeded = () => {
       openChat();
+      if (seedItem) setSeeded(true);
       if (seedItem && user && messages.length === 0 && !loading) send(describeItem(seedItem));
     };
     const showCallout = !!seedItem || !hasOpened;
@@ -294,8 +302,8 @@ export function ChatBubbleHost({
             onOpenItem={openItemInApp}
             onActionResult={(a, res) => { if (res && res.ok) setOpen(false); }}
             isMobile={isMobile}
-            greeting={GREETING}
-            suggestions={SUGGESTIONS}
+            greeting={seeded ? "" : GREETING}
+            suggestions={seeded ? [] : SUGGESTIONS}
           />
         )}
       </div>
