@@ -4,6 +4,7 @@ import { Card } from "./Card";
 import CardStrip from "./CardStrip";
 import CardShell from "./CardShell";
 import SectionHeader from "./SectionHeader";
+import HomeAuctionModule from "./HomeAuctionModule";
 import { HOME_SECTIONS } from "../homeSections";
 import { articleAsListing } from "./EditorialView";
 import { askLumeAbout } from "./LumeBus";
@@ -760,6 +761,9 @@ export function HomeTab(props) {
     // render in App.js from the same filtered sets the rows come from, never
     // constants: the retired LiveCounts strip died of a hardcoded number.
     homeSectionCounts,
+    // Auction module (Epic 9 step 3): the calendar's own sale feed, plus the
+    // two routes out of the block.
+    homeAuctionSales, homeOpenSale, homeOpenCalendar,
     homeDealerSources, homeJumpToDealer,
     goToRecentAdded, goToRecentSold, goToEndingNext,
     homeSearchSubmit,
@@ -986,21 +990,21 @@ export function HomeTab(props) {
           ♡ Saved does the job properly. If a personal moment returns to Home
           it should be one line ("3 of your saved watches moved this week"),
           not another 20-tile rail. App.js kept nothing for it. */}
+      {/* The auction section is a dated ruled list, not a fifth photo rail
+          (Epic 9 step 3, 2026-08-30). Rationale lives in HomeAuctionModule;
+          the short version is that variety on this page has to come from row
+          SHAPE, and this is the block that also explains what the site is. */}
       {homeEndingNext?.length > 0 && (
-        <DeferUntilVisible>
-          <SectionStrip
-            heading={HOME_SECTIONS.endingNext.heading}
-            eyebrow={HOME_SECTIONS.endingNext.eyebrow}
-            descriptor={HOME_SECTIONS.endingNext.descriptor}
+        <DeferUntilVisible minHeight={420}>
+          <HomeAuctionModule
+            sales={homeAuctionSales}
+            lots={homeEndingNext}
             count={counts.endingNext}
-            items={homeEndingNext}
-            onViewAll={goToEndingNext}
-            isMobile={isMobile} shellPad={shellPad}
-            watchlist={watchlist} hidden={hidden} handleWish={handleWish}
-            toggleHide={toggleHide} primaryCurrency={primaryCurrency}
-            onShare={onShare} onView={onView} onClickListing={onClickListing}
-            openCollectionPicker={openCollectionPicker} isAdmin={isAdmin}
-            user={user} compact={compact}
+            isMobile={isMobile}
+            primaryCurrency={primaryCurrency}
+            onClickListing={onClickListing}
+            onOpenSale={homeOpenSale}
+            onOpenCalendar={homeOpenCalendar || goToEndingNext}
           />
         </DeferUntilVisible>
       )}

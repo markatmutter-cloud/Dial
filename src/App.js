@@ -4388,6 +4388,12 @@ export default function Watchlist() {
       // Admin-removed articles drop from the Home strip (Mark 2026-06-06)
       homeRecentArticles={adminHidden.size ? homeArticles.filter(a => !adminHidden.has(shortHash(a.url))) : homeArticles}
       homeSectionCounts={homeSectionCounts}
+      // Auction module on Home (Epic 9 step 3): the same sale feed the
+      // calendar reads, and the same two routes out of it, so the block on
+      // Home and the calendar itself can't drift apart.
+      homeAuctionSales={auctions || []}
+      homeOpenSale={handleOpenSale}
+      homeOpenCalendar={() => setCalendarModalOpen(true)}
       goToArticles={() => { setTab("references"); setReferencesSubTab("editorial"); setPage(1); }}
       homeSearchSubmit={(query, target) => {
         // Commit the typed query to App.js's existing `search` state
