@@ -13,7 +13,6 @@ const noop = () => {};
 function baseProps(overrides = {}) {
   return {
     homeRecentAdded: [], homeRecentSold: [], homeEndingNext: [],
-    homeRecentlyHearted: [], goToSavedHearts: noop,
     homeRecentArticles: [], goToArticles: noop,
     homeDealerSources: [], homeJumpToDealer: noop,
     goToRecentAdded: noop, goToRecentSold: noop, goToEndingNext: noop,

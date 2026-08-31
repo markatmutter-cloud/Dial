@@ -808,7 +808,6 @@ function FooterBand({ openAbout, signInWithGoogle, user }) {
 export function HomeTab(props) {
   const {
     homeRecentAdded, homeRecentSold, homeEndingNext,
-    homeRecentlyHearted, goToSavedHearts,
     homeRecentArticles, goToArticles,
     homeDealerSources, homeJumpToDealer,
     goToRecentAdded, goToRecentSold, goToEndingNext,
@@ -1017,25 +1016,12 @@ export function HomeTab(props) {
           />
         </DeferUntilVisible>
       )}
-      {/* Signed-in user's most-recently hearted strip (moved below Sold per
-          Mark's Home order 2026-05-27: added · articles · sold · hearted ·
-          ending). SectionStrip returns null on empty so signed-out users get
-          no row. */}
-      {homeRecentlyHearted?.length > 0 && (
-        <DeferUntilVisible>
-          <SectionStrip
-            heading="Recently hearted"
-            items={homeRecentlyHearted}
-            onViewAll={goToSavedHearts}
-            isMobile={isMobile} shellPad={shellPad}
-            watchlist={watchlist} hidden={hidden} handleWish={handleWish}
-            toggleHide={toggleHide} primaryCurrency={primaryCurrency}
-            onShare={onShare} onView={onView} onClickListing={onClickListing}
-            openCollectionPicker={openCollectionPicker} isAdmin={isAdmin}
-            user={user} compact={compact}
-          />
-        </DeferUntilVisible>
-      )}
+      {/* "Recently hearted" strip removed 2026-08-30 (Mark, landing-page
+          review): it was the only personal row on a page otherwise about
+          discovery, it was empty for every signed-out visitor, and Watches >
+          ♡ Saved does the job properly. If a personal moment returns to Home
+          it should be one line ("3 of your saved watches moved this week"),
+          not another 20-tile rail. App.js kept nothing for it. */}
       {homeEndingNext?.length > 0 && (
         <DeferUntilVisible>
           <SectionStrip
