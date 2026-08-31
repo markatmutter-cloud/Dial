@@ -12,6 +12,8 @@ const renderCard = (it) => <div>{it.title}</div>;
 // jsdom reports every element as 0x0, so overflow never registers on its own.
 // Force the geometry the way a real 1240px viewport would.
 function withOverflow(scrollWidth, clientWidth, scrollLeft = 0) {
+  // jsdom returns the inline padding shorthand, which CardStrip parses for the
+  // resting-position offset, so no extra stubbing is needed for paddingLeft.
   const proto = window.HTMLElement.prototype;
   const defs = {
     scrollWidth: { configurable: true, get: () => scrollWidth },
@@ -68,6 +70,21 @@ describe("CardStrip", () => {
     try {
       render(<CardStrip items={items} renderCard={renderCard} isMobile label="Recently added" />);
       expect(screen.queryByLabelText("Scroll Recently added right")).toBeNull();
+    } finally {
+      restore();
+    }
+  });
+
+  it("treats a padding-offset resting position as the start (no fade over card 1)", () => {
+    // scroll-snap settles the first tile at scrollLeft === paddingLeft, not 0.
+    const restore = withOverflow(2520, 1240, 20);
+    try {
+      const { container } = render(<CardStrip items={items} renderCard={renderCard} isMobile={false} label="Recently added" />);
+      const fades = [...container.querySelectorAll('div[aria-hidden="true"]')];
+      // The left fade is the one anchored to left: 0.
+      const leftFade = fades.find((f) => f.style.left === "0px" && f.style.right === "");
+      expect(leftFade).toBeTruthy();
+      expect(leftFade.style.opacity).toBe("0");
     } finally {
       restore();
     }
