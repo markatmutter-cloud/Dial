@@ -2,6 +2,7 @@ import React, { useMemo, useState, useRef, useEffect } from "react";
 import { Card } from "./Card";
 import CardShell from "./CardShell";
 import CardStrip from "./CardStrip";
+import SectionHeader from "./SectionHeader";
 import { REFERENCE_NODES } from "../data/referencePages";
 import { articleAsListing } from "./EditorialView";
 import { pillBase } from "../styles";
@@ -88,33 +89,16 @@ function Strip({ heading, count, items, onViewAll, isMobile, watchlist, handleWi
   const visible = items.slice(0, STRIP_MAX);
   return (
     <section style={{ padding: isMobile ? "16px 0" : "20px 0" }}>
-      {/* Header row — heading + count on left, View all on right.
-          Matches Home's SectionStrip header so the surface reads as
-          a Home-style slider rather than a tab content grid. */}
-      <div style={{
-        display: "flex", alignItems: "baseline", justifyContent: "space-between",
-        padding: isMobile ? "0 16px 10px" : "0 20px 12px",
-      }}>
-        <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
-          <h2 style={{
-            margin: 0, fontSize: isMobile ? 16 : 18, fontWeight: 600,
-            color: "var(--text1)", fontFamily: "inherit",
-          }}>{heading}</h2>
-          <span style={{ fontSize: 12, color: "var(--text3)" }}>{count.toLocaleString()}</span>
-        </div>
-        {count > STRIP_MAX && (
-          <button onClick={onViewAll}
-            style={{
-              background: "transparent", border: "0.5px solid var(--border)",
-              borderRadius: 18, padding: "6px 14px",
-              fontFamily: "inherit", fontSize: 13, fontWeight: 500,
-              color: "var(--text1)", cursor: "pointer",
-              display: "flex", alignItems: "center", gap: 6,
-            }}>
-            View all <span aria-hidden style={{ fontSize: 13 }}>→</span>
-          </button>
-        )}
-      </div>
+      {/* One shared SectionHeader (2026-08-30). This used to be a third
+          hand-rolled copy of the Home header, with the OLD pill (radius 18 /
+          13px / --border) that Home itself had already moved off. Same
+          divergence class as B-93: the fix is the shared component. */}
+      <SectionHeader
+        heading={heading}
+        count={count}
+        onViewAll={count > STRIP_MAX ? onViewAll : undefined}
+        isMobile={isMobile}
+      />
       {isEmpty ? (
         <div style={{
           padding: isMobile ? "0 16px 8px" : "0 20px 8px",
@@ -556,30 +540,12 @@ function ArticleStrip({ heading, count, items, onViewAll, isMobile, watchlist = 
   const visible = items.slice(0, STRIP_MAX);
   return (
     <section style={{ padding: isMobile ? "16px 0" : "20px 0" }}>
-      <div style={{
-        display: "flex", alignItems: "baseline", justifyContent: "space-between",
-        padding: isMobile ? "0 16px 10px" : "0 20px 12px",
-      }}>
-        <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
-          <h2 style={{
-            margin: 0, fontSize: isMobile ? 16 : 18, fontWeight: 600,
-            color: "var(--text1)", fontFamily: "inherit",
-          }}>{heading}</h2>
-          <span style={{ fontSize: 12, color: "var(--text3)" }}>{count.toLocaleString()}</span>
-        </div>
-        {count > STRIP_MAX && onViewAll && (
-          <button onClick={onViewAll}
-            style={{
-              background: "transparent", border: "0.5px solid var(--border)",
-              borderRadius: 18, padding: "6px 14px",
-              fontFamily: "inherit", fontSize: 13, fontWeight: 500,
-              color: "var(--text1)", cursor: "pointer",
-              display: "flex", alignItems: "center", gap: 6,
-            }}>
-            View all <span aria-hidden style={{ fontSize: 13 }}>→</span>
-          </button>
-        )}
-      </div>
+      <SectionHeader
+        heading={heading}
+        count={count}
+        onViewAll={count > STRIP_MAX && onViewAll ? onViewAll : undefined}
+        isMobile={isMobile}
+      />
       {/* Card system S1+S3: article tiles render through the shared CardShell
           (square image, L2 source kicker, L1 title) inside the shared
           CardStrip — same look as before (B-12/B-13). */}
