@@ -725,11 +725,20 @@ function SectionStrip({ heading, descriptor, items, onViewAll, onScreen, screenC
           the fade but didn't seem to come through"). Without it, the
           right-cut card is the only signal there's more to scroll;
           the gradient makes the affordance explicit. pointerEvents
-          none so it doesn't swallow taps/swipes through the overlay. */}
+          none so it doesn't swallow taps/swipes through the overlay.
+
+          Strip background (B-87, 2026-08-30, Mark): the non-inverted variant
+          used to pass "var(--border)". CardStrip has 4px of bottom padding, so
+          that container background showed as a grey rail under every Home row
+          and read as a dead scrollbar, while the Articles strip (mounted
+          directly in HomeTab with no background prop) had none. Transparent is
+          what every other CardStrip on the site already uses
+          (SearchResultsView / ReferencePage / Lume), so Home was the outlier.
+          Tiles still separate: `gap: 1` shows the page background through. */}
       <CardStrip
         items={slice}
         isMobile={isMobile}
-        background={inverted ? "var(--surface-on-dark)" : "var(--border)"}
+        background={inverted ? "var(--surface-on-dark)" : "transparent"}
         inset={!inverted}
         fadeColor={inverted ? "var(--text1)" : "var(--bg)"}
         renderCard={(item, i) => (
