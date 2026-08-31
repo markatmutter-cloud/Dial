@@ -3578,30 +3578,6 @@ export default function Watchlist() {
     const sortKey = (i) => i.firstSeen || i.scrapedAt || "";
     return [...live].sort((a, b) => (sortKey(b) || "").localeCompare(sortKey(a) || "")).slice(0, 20);
   }, [items, hidden, adminHidden, homeHidden]);
-  // User's most-recently hearted items — second row on Home for
-  // signed-in users only. Mark spec 2026-05-11. Pulls from
-  // `watchlist` (the raw heart map keyed by id, values have savedAt
-  // + listing snapshot) directly rather than `watchItems` so the
-  // hook stays above the loading early returns (watchItems lives
-  // farther down). Hidden + admin-hidden + home-hidden subtractions
-  // apply.
-  const homeRecentlyHearted = useMemo(() => {
-    if (!user) return [];
-    const arr = Object.values(watchlist || {}).filter(it => {
-      if (!it || !it.id) return false;
-      // Articles (kind='article') flow into watchlist_items via the
-      // heart-article primitive (PR #403) but aren't dealer listings —
-      // they have price=null and break Card render. Saved articles are
-      // discoverable via the "Saved articles" virtual row in
-      // Watchlists > Lists; keep them out of the Home strip. (Crash
-      // surfaced in production 2026-05-21.)
-      if (it.kind === "article") return false;
-      if (hidden[it.id] || adminHidden.has(it.id) || homeHidden.has(it.id)) return false;
-      return true;
-    });
-    const k = (it) => it.savedAt || "";
-    return arr.sort((a, b) => (k(b) || "").localeCompare(k(a) || "")).slice(0, 20);
-  }, [user, watchlist, hidden, adminHidden, homeHidden]);
   const homeEndingNext = useMemo(() => {
     // auctionLotItems is the PROJECTED shape — `sold` is the
     // derived isEnded flag (data.status === "ended" || sold_price set),
@@ -4419,11 +4395,6 @@ export default function Watchlist() {
       openAbout={() => setAboutModalOpen(true)}
       signInWithGoogle={triggerSignInPrompt}
       // Admin × overlay on Home cards writes here (Home-only hide).
-      // Signed-in user's most-recently hearted strip + View-all route.
-      homeRecentlyHearted={homeRecentlyHearted}
-      // Saved watches live on Watches > ♡ Saved (2026-07-30 IA move), so
-      // Home's saved-hearts link lands there rather than on the Saved tab.
-      goToSavedHearts={() => { setTab("listings"); setListingsSubTab("saved"); setPage(1); }}
       // Dealer typeahead — popover under the search bar suggests
       // matching dealer names when the user starts typing. Clicking
       // a dealer routes to Listings filtered by that source.
