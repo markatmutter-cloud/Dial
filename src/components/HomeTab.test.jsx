@@ -26,6 +26,7 @@ function baseProps(overrides = {}) {
     user: null, compact: false,
     homeSectionCounts: { live: 1234, sold: 567, endingNext: 89 },
     homeAuctionSales: [], homeOpenSale: noop, homeOpenCalendar: noop,
+    homeOpenGuide: noop,
     dark: false,
     homeMastheadTabs: [
       { key: "listings", label: "Watches", mobileLabel: "Watches", icon: "listings", active: false, onSelect: noop },

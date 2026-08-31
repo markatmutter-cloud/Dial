@@ -5,6 +5,7 @@ import CardStrip from "./CardStrip";
 import CardShell from "./CardShell";
 import SectionHeader from "./SectionHeader";
 import HomeAuctionModule from "./HomeAuctionModule";
+import HomeGuidesRow from "./HomeGuidesRow";
 import { HOME_SECTIONS } from "../homeSections";
 import { articleAsListing } from "./EditorialView";
 import { askLumeAbout } from "./LumeBus";
@@ -774,6 +775,8 @@ export function HomeTab(props) {
     // Auction module (Epic 9 step 3): the calendar's own sale feed, plus the
     // two routes out of the block.
     homeAuctionSales, homeOpenSale, homeOpenCalendar,
+    // Reference-guides row (Epic 9 step 5): opens one guide, or the browse index.
+    homeOpenGuide,
     homeDealerSources, homeJumpToDealer,
     goToRecentAdded, goToRecentSold, goToEndingNext,
     homeSearchSubmit,
@@ -1000,6 +1003,18 @@ export function HomeTab(props) {
           ♡ Saved does the job properly. If a personal moment returns to Home
           it should be one line ("3 of your saved watches moved this week"),
           not another 20-tile rail. App.js kept nothing for it. */}
+      {/* Reference guides (Epic 9 step 5, 2026-08-30), in the slot "Recently
+          hearted" vacated. Text only, ~64px: the page surfaced a quarter of
+          the product and never mentioned guides below the nav pill, and a
+          fifth row of photo tiles would undo the variety the auction module
+          exists to create. */}
+      <DeferUntilVisible minHeight={120}>
+        <HomeGuidesRow
+          isMobile={isMobile}
+          onOpenGuide={homeOpenGuide}
+          onViewAll={homeOpenGuide ? () => homeOpenGuide(null) : undefined}
+        />
+      </DeferUntilVisible>
       {/* The auction section is a dated ruled list, not a fifth photo rail
           (Epic 9 step 3, 2026-08-30). Rationale lives in HomeAuctionModule;
           the short version is that variety on this page has to come from row

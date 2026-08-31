@@ -4394,6 +4394,22 @@ export default function Watchlist() {
       homeAuctionSales={auctions || []}
       homeOpenSale={handleOpenSale}
       homeOpenCalendar={() => setCalendarModalOpen(true)}
+      // Reference-guides row on Home (Epic 9 step 5). ReferenceBrowse reads
+      // `?ref=` from the URL on mount, so the param has to be pushed BEFORE
+      // the tab switch mounts it. The nav-sync effect below preserves unknown
+      // params, so `ref` survives the tab/sub rewrite that follows.
+      homeOpenGuide={(nodeId) => {
+        try {
+          const p = new URLSearchParams(window.location.search);
+          if (nodeId) p.set("ref", nodeId); else p.delete("ref");
+          p.set("tab", "learn");
+          p.set("sub", "references");
+          window.history.pushState({}, "", `?${p.toString()}`);
+        } catch {}
+        setReferencesSubTab("references");
+        setTab("references");
+        setPage(1);
+      }}
       goToArticles={() => { setTab("references"); setReferencesSubTab("editorial"); setPage(1); }}
       homeSearchSubmit={(query, target) => {
         // Commit the typed query to App.js's existing `search` state
