@@ -8,6 +8,9 @@
 //         <Eyebrow tone="brand" as="h2">At auction</Eyebrow>
 //
 // tone: "muted" (default, --text3) · "secondary" (--text2) · "brand" (olive)
+//       · "ink" (theme-aware olive — the pair that stays legible on a dark
+//         page; "brand" is a fixed #3b4a36 in BOTH themes and sits at about
+//         2.2:1 on near-black, so prefer "ink" for anything on page bg)
 
 import React from "react";
 
@@ -15,6 +18,7 @@ const TONE = {
   muted: "var(--text3)",
   secondary: "var(--text2)",
   brand: "var(--brand-olive-text)",
+  ink: "var(--brand-olive-ink)",
 };
 
 export default function Eyebrow({ children, tone = "muted", as = "div", style, ...rest }) {

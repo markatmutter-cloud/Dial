@@ -37,6 +37,17 @@ describe("SectionHeader", () => {
     expect(screen.queryByText("0")).toBeNull();
   });
 
+  it("draws a hairline above the header only when asked", () => {
+    // Asserting on the element, not its inline style: jsdom drops CSS
+    // shorthands containing var(), so [style*="border-top"] never matches even
+    // though the browser renders the rule fine.
+    const { container, rerender } = render(<SectionHeader heading="Sold" isMobile={false} />);
+    expect(container.childNodes.length).toBe(1);
+    rerender(<SectionHeader heading="Sold" isMobile={false} rule />);
+    expect(container.childNodes.length).toBe(2);
+    expect(container.firstChild.getAttribute("aria-hidden")).toBe("true");
+  });
+
   it("fires onViewAll", () => {
     let fired = 0;
     render(<SectionHeader heading="Recently sold" onViewAll={() => { fired += 1; }} isMobile={false} />);

@@ -182,6 +182,7 @@ export default function HomeAuctionModule({
   onOpenSale,
   onOpenCalendar,
   count,
+  spacing,
 }) {
   const now = Date.now();
   const closing = lots
@@ -228,8 +229,9 @@ export default function HomeAuctionModule({
   }
 
   return (
-    <section style={{ marginBottom: 28 }}>
+    <section style={{ marginBottom: spacing != null ? spacing : (isMobile ? 20 : 24) }}>
       <SectionHeader
+        rule
         eyebrow={HOME_SECTIONS.endingNext.eyebrow}
         heading={HOME_SECTIONS.endingNext.heading}
         count={count}

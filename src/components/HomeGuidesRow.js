@@ -33,7 +33,7 @@ function nodeLabel(node) {
   return [node.brand, line, ref].filter(Boolean).join(" ");
 }
 
-export default function HomeGuidesRow({ isMobile, onOpenGuide, onViewAll }) {
+export default function HomeGuidesRow({ isMobile, onOpenGuide, onViewAll, spacing }) {
   const live = REFERENCE_NODES.filter(isLiveNode);
   const soon = REFERENCE_NODES.filter((n) => !isLiveNode(n));
   if (live.length === 0) return null;
@@ -43,8 +43,9 @@ export default function HomeGuidesRow({ isMobile, onOpenGuide, onViewAll }) {
   const ordered = [...live, ...soon];
 
   return (
-    <section style={{ marginBottom: 28 }}>
+    <section style={{ marginBottom: spacing != null ? spacing : (isMobile ? 24 : 32) }}>
       <SectionHeader
+        rule
         eyebrow={HOME_SECTIONS.guides.eyebrow}
         heading={HOME_SECTIONS.guides.heading}
         count={live.length}
