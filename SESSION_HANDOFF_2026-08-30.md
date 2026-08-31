@@ -3,13 +3,12 @@
 **One-line:** Ran down the scrape-failure emails and the missing Screw Down
 Crown articles. One real repo bug found and fixed; the rest were upstream
 blocks, now routed or muted. Added Watchfid as an editorial source.
-**Five draft PRs open, none merged — nothing has shipped.**
+**All five PRs merged.**
 
-## ⚠️ Read first: nothing landed
-Every change from this session is in an **unmerged draft PR**. `main` has none
-of it. SHIPPED.md, BUGS.md and CLAUDE.md on `main` are therefore *behind* what
-the PRs describe — that's deliberate, not drift (see "Docs deliberately not
-touched" below).
+## Status: all landed
+Mark merged all five (plus #936, another session's) after the first close pass,
+so a second pass followed: SHIPPED gained the five entries, B-80/B-81 were
+corrected in BUGS, and B-83 was opened. Nothing is left in flight.
 
 | PR | Branch | What |
 |---|---|---|
@@ -19,8 +18,8 @@ touched" below).
 | **#937** | `claude/lancashire-residential` | Move Watches of Lancashire to the residential host (B-81) |
 | **#938** | `claude/gate-source-snooze` | Dated per-source snooze for the health gate; Watch Center muted to 2026-09-13 (B-80) |
 
-All five were CI-green (Vercel · jest · pytest) and `mergeable_state: clean` at
-close. #936 (Lumé share intro) is another session's — not touched.
+All five merged 2026-08-30 (PT), CI-green on every head. #936 (Lumé share
+intro) is another session's — merged by Mark, logged by them, not by this close.
 
 ## The emails: one workflow, three unrelated causes
 Only `Scrape listings` fails. Every other workflow on `main` is green. The
@@ -38,12 +37,11 @@ completed its walk in both of 08-30's runs on unpatched code). #933 is still
 worth landing — it's the guard against the next drop, not a live firefight.
 
 ## Corrections made during the session — don't re-derive
-- **B-81's hypothesis in #933 is wrong.** It says Lancashire's 403 is the
+- **B-81's original hypothesis was wrong** — it said Lancashire's 403 was the
   `/wp-json/` endpoint wanting a clearance cookie, warmable from the homepage.
-  I probed the homepage from CI: `403, challenge markers present`. The whole
-  domain blocks datacenter IPs. #937 is the real answer. **That entry still
-  carries the wrong text** — Mark was asked whether to push the correction into
-  #933 or wait for the merge, and has not answered. Don't push it unasked.
+  A CI probe of the homepage returned `403, challenge markers present`: the
+  whole domain blocks datacenter IPs. #937 is the real answer. **Corrected in
+  BUGS.md after the merge** and marked DISPROVEN — do not retry the warm-up.
 - **The scrape crons are not stalled.** GitHub schedule delivery on this repo
   runs chronically hours late (`scrape-auctions` at `0 6 * * *` fired 11:48 and
   17:44 UTC). A late run is lag. Don't raise an alarm for it.
@@ -66,10 +64,9 @@ miss with an HTTP 202 interstitial. It clears and re-flaps. Watch the streak in
 residential host (its Cloudflare TLS/JA3 fix from 2026-08 was
 `impersonate="chrome"` on the floating alias — `chrome124` was 403).
 
-**Latent, unlogged:** `watchesofknightsbridge_scraper.py` has the *same
+**Now logged as B-83:** `watchesofknightsbridge_scraper.py` has the *same
 all-or-nothing pagination as B-79* — `raise_for_status()` inside the page loop,
-no partial-walk keep, no truncation guard. Log it in BUGS.md **after #933
-merges** (it edits that file; a second branch would conflict).
+no partial-walk keep, no truncation guard. Fix is to port the B-79 shape.
 
 ## Consequence of the two upstream blocks
 A missed scrape goes **stale**, it doesn't disappear. 427 Watch Center listings

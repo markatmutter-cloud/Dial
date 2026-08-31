@@ -131,6 +131,12 @@ within each section roughly last.
   produced no CSV this run or `verify_sources` logged an ERROR, so the existing
   notifier opens an issue. Closes the silent-rot gap that hid Watch Center (B-58).
 
+- **2026-08-30 — .gitignore covers the JS frontend (#935).** The file was seeded
+  from a Python-only template, so `npm install` left `node_modules/` untracked in
+  the repo root, one `git add -A` from being committed; adds `node_modules/`,
+  `.eslintcache`, `/coverage`. `package-lock.json` deliberately NOT ignored —
+  B-16's fix is to commit one.
+
 ## Epic 1 — Sources
 
 - **2026-06-09 — Watch Club liveness fix (#860, B-59).** Keyed "sold" on the
@@ -202,6 +208,27 @@ within each section roughly last.
 - **2026-06-12 — Scrape-health gate debounced + maunder hardened + Node-20 bump (#876, B-66/67/68).**
   The gate now pages only after a source misses THRESHOLD=3 consecutive runs (`data/scrape_health_state.json`),
   not on one transient flap; maunderwatches → curl_cffi; checkout@v5 / setup-python@v6 / setup-node@v5.
+
+- **2026-08-30 — Luna Royster keeps the pages it already fetched (#933, B-79).**
+  A single 502 on page 19 of a 19-page walk raised and discarded pages 1–18, so no
+  CSV was written and three runs of that crossed the gate; `fetch_page` now returns
+  None, the walk stops and keeps what it has, and the watchclub/B-59 truncation
+  guard (<50% of prior AND <25 absolute) gates the write.
+- **2026-08-30 — Watchfid editorial source (#934).** WordPress REST
+  `/wp-json/wp/v2/posts`; the existing `watchfid_scraper.py` reads inventory from a
+  separate custom post type, so the two can't collide. Elementor installs can
+  return bare shortcodes, so shortcodes are stripped, the parse falls back to
+  `excerpt.rendered` under a 200-char floor, and the floor is pinned by a test.
+- **2026-08-30 — Watches of Lancashire moved to the residential host (#937, B-81).**
+  The whole domain 403s datacenter IPs — the homepage too, so there is no page to
+  warm a cookie from and curl_cffi no longer helps. Scraper step and its move-step
+  line come out of `scrape-listings.yml` (removing the move line is what stops the
+  paging); added to the existing Bonhams LaunchAgent, no reinstall needed.
+- **2026-08-30 — Scrape-health gate: dated per-source snooze (#938, B-80).**
+  Debouncing answers "is this a flap?" but not "we know, and the fix isn't ours";
+  `data/scrape_health_snooze.json` mutes a source until a date. It still prints
+  every run, expires itself, applies only at/over threshold, flags a stale entry
+  once the source recovers, and a malformed or undated entry mutes nothing.
 
 ## Epic 2 — Auction houses
 
