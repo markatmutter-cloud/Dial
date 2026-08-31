@@ -137,6 +137,21 @@ within each section roughly last.
   `.eslintcache`, `/coverage`. `package-lock.json` deliberately NOT ignored —
   B-16's fix is to commit one.
 
+- **2026-08-30 — Alert on every scheduled workflow (#923).** `notify-scrape-failure.yml`
+  watched 5 of 7 crons; both editorial workflows were missing, which is why the corpus
+  froze for a month in silence. `test_alert_coverage.py` now fails the build on any
+  unwatched cron (and on stale entries — workflow_run matches on display name).
+- **2026-08-30 — Push-retry loops can no longer bin a run's work (#920, #924).** The
+  editorial commit step staged a hand-listed file set, so a stray unstaged file made
+  `git pull --rebase` refuse and all 3 retries discard a 40-min scrape — every run
+  2026-07-15→08-16. Broad `git add <dir>/` + `--autostash` across all 9 pushing
+  workflows, guarded by `test_push_retry_safety.py`.
+- **2026-08-30 — Unified source-freshness ledger + scheduled health sweep (#926).**
+  `source_freshness.py` asks one question — "when did this source last produce data?" —
+  across 69 sources on all four surfaces, building its registry by importing
+  `merge.LISTING_SOURCES` rather than copying it. `health-report.yml` runs it daily
+  alongside `health.py`, which had existed for months with no cron.
+
 ## Epic 1 — Sources
 
 - **2026-06-09 — Watch Club liveness fix (#860, B-59).** Keyed "sold" on the
@@ -229,6 +244,13 @@ within each section roughly last.
   `data/scrape_health_snooze.json` mutes a source until a date. It still prints
   every run, expires itself, applies only at/over threshold, flags a stale entry
   once the source recovers, and a malformed or undated entry mutes nothing.
+
+- **2026-08-30 — MVV Watches → Sierra Time Co (#921).** The dealer rebranded and
+  replatformed; `mvvwatches.com` now redirects to a Shopify store. Rewrote onto
+  `/products.json` (USD confirmed from the storefront, not the TLD).
+- **2026-08-30 — Knightsbridge + Lancashire: curl_cffi Chrome impersonation (#922).**
+  Both began 403ing CI on a TLS/JA3 check. Knightsbridge holds; **Lancashire relapsed
+  within two weeks and is not fixed — see B-81.**
 
 ## Epic 2 — Auction houses
 
@@ -339,6 +361,28 @@ within each section roughly last.
   `emit_auction_status()`; the date-sanity override now demotes both stale 'live' AND
   'upcoming' hints to 'past' once the end date passes (recycled weekly-sale ids kept
   closed Weeklys flagged 'upcoming' forever). Shared, all houses. +5 pytest cases.
+
+- **2026-08-30 — Auction-calendar health gate + no more fake success (#925).** Four
+  calendar scrapers printed "site template may have changed" then `sys.exit(0)`; Monaco
+  Legend and Phillips were dead six weeks with a green workflow. They now exit non-zero,
+  and `auction_calendar_health.py` gates on the committed CSV (absent *or* header-only)
+  with the same debounce as its two siblings.
+- **2026-08-30 — Calendar canary (#929).** `calendar_canary.py` fetches all 7 houses for
+  real twice weekly and fails on zero, with no debounce — turns "we noticed eventually"
+  into "we noticed the day it shipped". Complements the artifact-based gate.
+- **2026-08-30 — One auction date grammar instead of five (#928).** Five scrapers each
+  carried their own `MONTHS` dict and `parse_date_range`; Phillips' copy parsed
+  "7 – 8 November" as a one-day sale while Bonhams' handled it. Now
+  `scraper_lib.parse_auction_date_range`; all four migrated scrapers byte-identical
+  against live baselines. Sotheby's deliberately left (its parser also returns match
+  position).
+- **2026-08-30 — Monaco Legend reads structured data (#930).** Parses its schema.org
+  `EventSeries` (real ISO dates) with the card parser kept as fallback. Probed all 7
+  houses: only this one publishes usable event data, so regex stays elsewhere.
+- **2026-08-30 — Calendar coverage gate (#939).** Closes the CSV→`auctions.json` link, so
+  a sale lost in the merge can't silently take its lots with it. Keys on
+  `merge.auction_id`, not URL — Antiquorum points 5 upcoming sales at one placeholder
+  page, and URL keying collapsed 89 sales into 70 lookups.
 
 ## Epic 3 — Watchlist
 

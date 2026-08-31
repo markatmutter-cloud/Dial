@@ -220,10 +220,16 @@ install/decision tails remaining.*
 - **Next (on expiry):** if it is back, delete the snooze entry — the gate flags a stale one every run. If it is still 503ing, the REST API is likely gone for good and the source needs a different ingestion path or retiring. Note that 427 stale Watch Center listings stay live on the site throughout.
 
 ### B-81 — Watches of Lancashire: 403 even with curl_cffi Chrome impersonation (11 consecutive misses)
-- **Reported:** 2026-08-30 (Mark — email alerts) · **Type:** Scrape defect (upstream anti-bot) · **Severity:** 2 · **Surface:** `watchesoflancashire_scraper.py` · **Status:** ✅ Resolved 2026-08-30 via #937 — moved to the residential host.
+- **Reported:** 2026-08-30 (Mark — email alerts) · **Type:** Scrape defect (upstream anti-bot) · **Severity:** 2 · **Surface:** `watchesoflancashire_scraper.py` · **Status:** ⚠ **Open — NOT resolved.** #937 moved it off CI to the residential host on a diagnosis that turned out to be wrong (see the correction below); it 403s there too. Parked, needs a retire-or-ask-the-dealer decision.
 - **Detail:** `RuntimeError: page 1 failed after 3 attempts: HTTP 403`, 11 consecutive misses (≈4 days); 54 stale listings held by `merge.py`. The scraper already runs `cf_requests.Session(impersonate="chrome")` with a `Referer` — the impersonation that used to work (docstring: "confirmed plain requests 403s while `impersonate="chrome"` returns 200") no longer does. `source-probe.yml` 2026-08-30 on plain curl: **403, 5,795-byte body, challenge markers present** — so the site is serving an anti-bot challenge page, and it is now catching the impersonated client too.
 - **Hypothesis (DISPROVEN — do not retry):** that the scraper was hitting `/wp-json/` cold and a warm-up GET on the HTML page would earn a Wordfence/Cloudflare clearance cookie, the way Luna Royster does. A CI probe of the site **root** on 2026-08-30 returned **403 with challenge markers present** — the homepage 403s too, so there is no page to warm a cookie from. This is a whole-domain block on GitHub's IP ranges, not an endpoint quirk.
 - **Fix (#937):** same class as Bonhams (B-25/B-72), same answer — the scraper step and its `scrape_move.log` move-step line come out of `scrape-listings.yml` (**removing the move line is what stops the paging**; the B-60 gate counts misses by grepping that log for `" missing"`, so a dead step would fail every run forever), and the source joins the existing residential LaunchAgent. `merge.py` is untouched — `data/watchesoflancashire.csv` just arrives by a different route. `source_freshness.py` still tracks the CSV, which is the right remaining alarm: it catches "the laptop stopped producing" without re-reporting a known block 3×/day.
+- **⚠ CORRECTED 2026-08-30 — every earlier hypothesis was wrong. Do not re-derive.**
+  - *Not* a cold-endpoint / missing-clearance-cookie problem: the site **root** 403s too, so there is no page to warm a cookie from.
+  - *Not* a datacenter-IP block either, which is what #937 assumed when it moved the scraper to the laptop. Probed from Mark's home broadband (Cox, residential California): **`http=403`, `cf-mitigated: challenge`, `server: cloudflare`, body carrying `_cf_chl_opt` / "Just a moment" / "Enable JavaScript and cookies".** `cf-mitigated: challenge` is Cloudflare stating outright that this is a **challenge**, not a reputation block.
+  - **What it actually is:** a Cloudflare JS challenge served to *every* client. curl_cffi fixes TLS/JA3 fingerprinting, which is why it worked until ~2026-08-16 and then stopped; it cannot execute JavaScript. A residential IP changes nothing. **Moving hosts cannot fix this, and #937 did not fix it** — it relocated the failure somewhere quieter.
+  - **Monitoring cost of that move:** the stale CSV still exists and is non-empty, so `source_freshness.py`'s `lastSeen` keeps advancing and the 3-day budget never fires; only the **21-day** `lastChanged` budget catches it. Detection went from ~1 day to ~21 days.
+  - **Real options (needs a Mark decision):** ask the dealer for a feed / API access or an allowlist (we send them traffic), or retire the source. Solving the challenge programmatically is out of scope — it is bot-detection bypass, and the challenge is the dealer's explicit signal about automated access.
 
 ### B-82 — `scrape-single.yml` can't run any curl_cffi scraper (installs only `requirements.txt`)
 - **Reported:** 2026-08-30 (found while trying to re-run B-80/B-81 manually) · **Type:** CI / tooling · **Severity:** 3 · **Surface:** `.github/workflows/scrape-single.yml` "Install dependencies" · **Status:** Open.
@@ -244,6 +250,19 @@ install/decision tails remaining.*
 - **Detail:** In the Home "search all" results, the **Auctions** strip cards don't line up with the Listings strip above (Mark screenshot 2026-05-27). Likely the auction item renders at a different card height/aspect in the shared `CardStrip` (countdown badge / image aspect / price line). Compare auction-vs-listing `Card` rendering and align the card dimensions within the strip.
 
 ---
+
+### B-85 — Phillips lot enumerator broken by the same replatform that broke its calendar
+- **Reported:** 2026-08-30 (found while verifying the calendar repair) · **Type:** Scrape defect · **Severity:** 2 · **Surface:** `auction_lots_scraper.py` `_phillips_extract_lots` · **Status:** Open.
+- **Detail:** the Phillips **calendar** is fixed and its 6 upcoming sales are back in `auctions.json` (incl. The Geneva Watch Auction XXIV, 2026-11-07). The **lot** side is not. A real run reports `[Phillips] no lots found in auction-page payload` → `0 lots kept after filter`. `_phillips_extract_lots` parses the old Turbo-Stream payload; the site is now React/Remix, so the payload it looks for is gone.
+- **Why it matters:** Phillips is the third-largest lot source in the archive (623 of 3,360 lots). Sales will show catalogue badges in the calendar while yielding zero lots — a shape users can see.
+- **Not urgent this week:** all current Phillips catalogues are Sept+; nothing is live to miss until 2026-09-04. Fix before then.
+- **Constraint:** don't fetch Phillips lot detail pages from CI (WAF 403s after ~7 requests) — the fix has to come from whatever the auction page now embeds, same constraint as the old Turbo-Stream approach.
+
+### B-86 — Chronoholic: sold-detection flap flips the whole archive live (4 ↔ 83)
+- **Reported:** 2026-08-30 (surfaced by `health.py`'s flapping check, which had never been run on a schedule) · **Type:** Scrape defect · **Severity:** 3 · **Surface:** `chronoholic_scraper.py` · **Status:** Open.
+- **Detail:** counts over six runs read `[4, 4, 4, 4, 83, 4]` — spread 1975% of median. **4 is correct**: the dealer genuinely has 4 in stock and 115 sold-archive items (`price=0 → archive`). On the 83 run the price-0 → sold detection failed, so the archive flipped into the live feed and polluted it.
+- **Why the existing gates miss it:** the scraper produces a healthy non-empty CSV either way, so neither `scrape_health_gate.py` nor `source_freshness.py` sees anything wrong. Only `health.py`'s variance check catches it — now that it runs daily via `health-report.yml`, it will report each recurrence.
+- **Next step:** capture the raw payload on a recurrence to see whether the price field goes missing or changes shape; it is intermittent, so a fix without a captured bad payload would be guesswork.
 
 ## Resolved
 

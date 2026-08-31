@@ -79,3 +79,82 @@ This session ran in the remote sandbox, whose egress proxy blocks
 at the proxy, not at the sites). Direct probes are impossible here — use
 `source-probe.yml` from CI instead, remembering it uses **plain curl**, so it
 cannot tell you anything about a curl_cffi path.
+
+---
+
+# Addendum — session 2 (same day)
+
+**One-line:** The "nothing landed" warning above is now **stale — everything landed.**
+All six draft PRs merged, plus ten more from this session covering the diagnostics
+gap and the auction-calendar repair. `main` is green at **217 pytest**, zero open PRs.
+
+## ⚠️ Supersedes "Read first: nothing landed"
+That section described the state at the end of session 1. All five PRs it lists
+(#933/#934/#935/#937/#938) plus #936 are merged. SHIPPED.md, BUGS.md and CLAUDE.md
+on `main` are now current.
+
+## What shipped this session
+
+**Diagnostics (the "how do we catch unknown-unknowns" thread)**
+| PR | What |
+|---|---|
+| #920, #924 | Push-retry loops can't bin a run's work — broad `git add` + `--autostash` across all 9 pushing workflows, guarded by `test_push_retry_safety.py` |
+| #923 | Every cron is now watched by the notifier; `test_alert_coverage.py` fails the build otherwise |
+| #926 | `source_freshness.py` (69 sources, all four surfaces) + `health-report.yml` daily sweep |
+
+**Auction calendar**
+| PR | What |
+|---|---|
+| #925 | Calendar health gate; four scrapers stop exiting 0 on an empty parse |
+| #928 | One shared date grammar (`scraper_lib.parse_auction_date_range`) replacing five copies |
+| #929 | `calendar_canary.py` — live fetch of all 7 houses, twice weekly, no debounce |
+| #930 | Monaco Legend reads its schema.org `EventSeries`, card parser kept as fallback |
+| #939 | `calendar_coverage.py` — CSV→`auctions.json` reconciliation, keyed on `merge.auction_id` |
+
+**Sources:** #921 MVV → Sierra Time Co (rebrand + Shopify replatform); #922 Knightsbridge
++ Lancashire curl_cffi.
+
+## Results worth not re-deriving
+- **Editorial corpus is unfrozen.** 11,632 articles across 15 sources; the 08-17 run hit
+  the push race again and the retry absorbed it (`! [rejected]` → `79b7830d..62f446cc`).
+  `hodinkee_picks.json` committed for the first time ever — its omission from the
+  hand-listed `git add` was the original bug.
+- **Calendar 67 → 89 sales**, upcoming 33 → 37. Monaco Legend 4 → 22, Phillips 6 → 9,
+  including The Geneva Watch Auction XXIV (2026-11-07).
+- **Lots: 4,391 total, none currently open.** Genuinely seasonal — next catalogue is
+  Phillips Geneva, 2026-09-04.
+- **URL is NOT a unique key for auction sales.** Antiquorum points 5 upcoming sales at one
+  placeholder page; Sotheby's reuses slugs. URL keying collapsed 89 sales into 70 lookups.
+  Use `merge.auction_id(house, date_start, title)`.
+- **Only Monaco Legend publishes usable schema.org event data.** Antiquorum has
+  `LocalBusiness`, Phillips `Organization`, the other four nothing. Don't re-probe.
+- **`merge.py`'s dealer table is now module-level `LISTING_SOURCES`** (44 entries) so
+  tools can import it instead of keeping a parallel copy.
+
+## Open, needing a Mark decision
+- **B-81 Lancashire — corrected, still broken.** #937 moved it to the laptop on the
+  premise of a datacenter-IP block. That premise is wrong: probing from Mark's home
+  broadband returns `403` + `cf-mitigated: challenge` + `_cf_chl_opt`. It is a Cloudflare
+  **JS challenge** served to every client; curl_cffi fixes TLS, not JavaScript, and moving
+  hosts cannot fix it. Detection also slowed to ~21 days (stale CSV keeps `lastSeen`
+  advancing; only `lastChanged` catches it). Real options: ask the dealer for a feed /
+  allowlist, or retire the source.
+- **B-85 Phillips lot enumerator** — calendar fixed, lots not. `_phillips_extract_lots`
+  parses the old Turbo-Stream payload; the site is React/Remix now. 623 of 3,360 archive
+  lots. Nothing live to miss until 2026-09-04 — fix before then.
+- **B-86 Chronoholic** — sold-detection flap flips 115 archive items live (4 ↔ 83).
+  Invisible to the CSV-shaped gates; `health.py` now reports it daily. Needs a captured
+  bad payload.
+- **B-80 Watch Center** — dealer-side outage, muted to 2026-09-13, re-pages itself.
+
+## Concurrent-close collision (worth knowing)
+A second session closed at the same time and landed its own docs first. Two
+consequences, both resolved here rather than clobbered: my new bugs were renumbered
+**B-85 / B-86** because B-83 (WoK pagination) and B-84 (Lumé replies) had just been
+taken; and #937's close had marked **B-81 as ✅ Resolved**, which it is not — the status
+is corrected to Open above. If you take one thing from this: two sessions closing into
+the same doc set will silently collide on ID allocation.
+
+## State
+`main` clean and pushed, 0 open PRs, 217 pytest green. Untracked `.agents/` + `AGENTS.md`
+predate this session and were left alone.

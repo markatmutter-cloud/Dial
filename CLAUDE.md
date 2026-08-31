@@ -155,8 +155,20 @@ diagram, data model, and folder layout.
   but a source is empty, check the actual run log + the committed JSON before
   declaring it fixed. Playbook for a CI block: curl_cffi Chrome-impersonation
   first (TLS/JA3), residential laptop agent if the IP itself is blocked.
-  `auction_health.py` (B-75) pages when a house has a published catalog but 0
-  lots — the per-house safety net.
+  **Prove it IS an IP block before moving hosts** — probe from residential
+  first. A Cloudflare JS challenge (`cf-mitigated: challenge`, `_cf_chl_opt`,
+  "Just a moment") 403s *every* client, so relocating only hides it somewhere
+  quieter; curl_cffi fixes TLS fingerprints, never JavaScript (B-81).
+- **A scrape that parsed nothing must exit non-zero.** Exiting 0 on an empty
+  result reports success and rots silently (Monaco Legend + Phillips, 6 weeks).
+  Steps stay `continue-on-error`, so the batch survives and a gate decides.
+  Health checks sit at each pipeline link and read the committed artifact, not
+  the scraper's own exit code: `calendar_canary.py` (site→scraper),
+  `scrape_health_gate.py` / `auction_calendar_health.py` (scraper→CSV),
+  `calendar_coverage.py` (CSV→JSON), `auction_health.py` (JSON→lots, B-75),
+  `source_freshness.py` (any source gone stale). Add a check at the link that
+  lacks one; don't duplicate a sibling's job. Every cron must appear in
+  `notify-scrape-failure.yml` — `test_alert_coverage.py` enforces it.
 - **Verify display currency from the storefront, not the TLD** (`.com` ≠ USD;
   HK shops serve `.com`/HKD). Grep the storefront for `data-currency` before
   setting `merge.py` SOURCES. A wrong mapping goes silently 8× off.
