@@ -13,16 +13,33 @@
 // buttons on the card are absolute and don't shrink with the tile, which is
 // why mobile didn't go narrower than 38%.
 //
-// Scroll affordance (B-33, 2026-05-27; reworked 2026-05-28): the row scrolls
-// sideways, signalled by a right-edge fade gradient + the peeking next tile.
-// Native scrollbars stay hidden. We deliberately do NOT render a custom thumb:
-// the prior version drove a thumb off `onScroll` -> setState every frame with a
-// `transition: left 0.06s` ease, so the indicator visibly trailed the scroll
-// ("scroll, stop, then the bar catches up"). The fade is the affordance now; the
-// only scroll state we track is a guarded `atEnd` boolean (re-renders only when
-// it flips) so the fade can hide once you reach the end.
+// Scroll affordance (B-33, 2026-05-27; reworked 2026-05-28; arrows added
+// 2026-08-30 for B-88):
+//
+//   The row scrolls sideways. Native scrollbars stay hidden, and we still do
+//   NOT render a custom thumb: the 2026-05 version drove a thumb off
+//   `onScroll` -> setState every frame with a `transition: left 0.06s`, so the
+//   indicator visibly trailed the scroll ("scroll, stop, then the bar catches
+//   up"). Fades signal that more exists.
+//
+//   But a fade is not a control. B-88: with the native scrollbar hidden,
+//   `overflowY: hidden` sending the wheel to the page, and no arrows or drag
+//   handler, a plain wheel mouse had NO gesture at all — measured on Home,
+//   4259px of strip inside a 1240px viewport, so ~79% of every row was
+//   unreachable. Trackpads were always fine, which is why this survived so
+//   long. Desktop now gets prev/next buttons; they appear on hover and on
+//   keyboard focus, and page by one viewport width less one tile so the tile
+//   you were looking at stays on screen as an anchor.
+//
+//   `overscroll-behavior-x: contain` (B-89) stops a swipe at either end of the
+//   rail chaining into browser / PWA back-navigation.
 
 import React, { useRef, useState, useEffect, useCallback } from "react";
+
+// Arrows page by (viewport - one tile) so the tile at the edge carries over
+// and the reader never loses their place. Matches how Netflix and Apple TV
+// page their rows.
+const TILE_DESKTOP = 210;
 
 export default function CardStrip({
   items,
@@ -32,29 +49,34 @@ export default function CardStrip({
   background = "transparent",
   inset = true,          // false = bleed to edges (Home inverted band)
   fadeColor = "var(--bg)", // right-edge fade target; pass var(--text1) on inverted bands
+  label,                 // accessible name for the arrows ("Recently added")
 }) {
   const slice = max != null ? items.slice(0, max) : items;
   const scrollRef = useRef(null);
-  // Two cheap booleans, not per-frame geometry: does the strip overflow, and is
-  // it scrolled to the end. The fade shows only when overflowing && !atEnd.
+  // Three cheap booleans, not per-frame geometry: does the strip overflow, is
+  // it scrolled to the end, is it scrolled off the start. Fades and arrows
+  // both read them; each setState is guarded so dragging doesn't churn React.
   const [overflowing, setOverflowing] = useState(false);
   const [atEnd, setAtEnd] = useState(false);
+  const [atStart, setAtStart] = useState(true);
+  const [hovered, setHovered] = useState(false);
+
+  const readEdges = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const ended = el.scrollLeft + el.clientWidth >= el.scrollWidth - 4;
+    const started = el.scrollLeft <= 4;
+    setAtEnd((prev) => (prev === ended ? prev : ended));
+    setAtStart((prev) => (prev === started ? prev : started));
+  }, []);
 
   // Measure overflow on mount / resize / content change — NOT on scroll.
   const measure = useCallback(() => {
     const el = scrollRef.current;
     if (!el) return;
     setOverflowing(el.scrollWidth > el.clientWidth + 2);
-  }, []);
-
-  // Scroll handler is a guarded boolean flip: setState bails out (no re-render)
-  // unless `atEnd` actually changes, so dragging doesn't churn React.
-  const onScroll = useCallback(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const ended = el.scrollLeft + el.clientWidth >= el.scrollWidth - 4;
-    setAtEnd((prev) => (prev === ended ? prev : ended));
-  }, []);
+    readEdges();
+  }, [readEdges]);
 
   useEffect(() => {
     measure();
@@ -62,22 +84,64 @@ export default function CardStrip({
     return () => window.removeEventListener("resize", measure);
   }, [measure, slice.length, isMobile]);
 
+  const page = useCallback((dir) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const step = Math.max(TILE_DESKTOP, el.clientWidth - TILE_DESKTOP);
+    el.scrollBy({ left: dir * step, behavior: "smooth" });
+  }, []);
+
+  // Arrows are desktop-only: touch already has the gesture, and on a phone
+  // they would sit on top of the tiles they are meant to reveal.
+  const showArrows = !isMobile && overflowing;
+  const arrowStyle = (side, disabled) => ({
+    position: "absolute",
+    top: "50%",
+    [side]: 6,
+    transform: "translateY(-50%)",
+    // Sized off the 44pt touch floor even though this is a pointer control:
+    // it doubles as the keyboard target.
+    width: 44, height: 44, borderRadius: "50%",
+    border: "0.5px solid var(--border)",
+    background: "var(--card-bg)",
+    boxShadow: "0 1px 6px rgba(0,0,0,0.14)",
+    color: "var(--text1)",
+    fontFamily: "inherit", fontSize: 18, lineHeight: 1,
+    display: "flex", alignItems: "center", justifyContent: "center",
+    cursor: "pointer",
+    padding: 0,
+    zIndex: 2,
+    // Hidden until hover or keyboard focus so a resting page stays quiet.
+    // `visibility` rather than unmounting so focus can still land on them
+    // when tabbing through, which is what reveals them for keyboard users.
+    opacity: disabled ? 0 : hovered ? 1 : 0,
+    visibility: disabled ? "hidden" : "visible",
+    transition: "opacity 0.15s ease",
+  });
+
   return (
     <div>
-      {/* position:relative wrapper hosts the right-edge fade overlay so it
-          overlays the scroll area. Fade is part of CardStrip itself now
-          (2026-05-28) — every strip that uses CardStrip gets the same
-          affordance, instead of each caller adding its own (only SectionStrip
-          had one, so the Articles strip read differently). */}
-      <div style={{ position: "relative" }}>
+      <div
+        style={{ position: "relative" }}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        onFocus={() => setHovered(true)}
+      >
         {/* scrollbarWidth:none is Firefox-only — WebKit (Safari/Chrome with
             "always show scroll bars" on macOS) needs the ::-webkit-scrollbar
             rule, which inline styles can't express. Without it some strips
-            drew a grey track bar and others didn't (Mark 2026-06-03). */}
-        <style>{`.wl-hscroll::-webkit-scrollbar{display:none}`}</style>
-        <div ref={scrollRef} onScroll={onScroll} className="wl-hscroll" style={{
+            drew a grey track bar and others didn't (Mark 2026-06-03).
+            overscroll-behavior-x is here for the same reason: inline styles
+            can express it, but keeping both scroll rules in one place means
+            the next person changing scroll behaviour sees them together. */}
+        <style>{`.wl-hscroll::-webkit-scrollbar{display:none}
+.wl-hscroll{overscroll-behavior-x:contain}`}</style>
+        <div ref={scrollRef} onScroll={readEdges} className="wl-hscroll" style={{
           display: "flex", gap: 1, overflowX: "auto", overflowY: "hidden",
-          padding: inset ? (isMobile ? "0 16px 4px" : "0 20px 4px") : "0 0 4px",
+          // Mobile inset 16 -> 24 (B-89): at 16 the first tile's grab surface
+          // sat inside the iOS edge-swipe zone, so a swipe meant for the rail
+          // triggered back-navigation instead.
+          padding: inset ? (isMobile ? "0 24px 4px" : "0 20px 4px") : "0 0 4px",
           // proximity (not mandatory) so the drag stays free / un-sticky and
           // only gently lands on a tile when you let go near one.
           scrollSnapType: "x proximity",
@@ -93,10 +157,17 @@ export default function CardStrip({
             </div>
           ))}
         </div>
-        {/* Right-edge fade — the scroll affordance. Shows only when the strip
-            overflows AND you're not at the end, and fades in/out smoothly via
-            opacity (cheap; no layout, no per-frame state). pointerEvents none so
-            it never swallows taps/swipes. */}
+        {/* Edge fades — the passive affordance. Each shows only when the strip
+            overflows AND there is content that way, and fades in/out via
+            opacity (cheap; no layout, no per-frame state). pointerEvents none
+            so neither ever swallows taps/swipes. */}
+        <div aria-hidden style={{
+          position: "absolute", top: 0, left: 0, bottom: 0,
+          width: isMobile ? 36 : 72, pointerEvents: "none",
+          background: `linear-gradient(to left, transparent 0%, ${fadeColor} 75%)`,
+          opacity: overflowing && !atStart ? 1 : 0,
+          transition: "opacity 0.15s ease",
+        }} />
         <div aria-hidden style={{
           position: "absolute", top: 0, right: 0, bottom: 0,
           width: isMobile ? 36 : 72, pointerEvents: "none",
@@ -104,6 +175,22 @@ export default function CardStrip({
           opacity: overflowing && !atEnd ? 1 : 0,
           transition: "opacity 0.15s ease",
         }} />
+        {showArrows && (
+          <>
+            <button type="button" onClick={() => page(-1)}
+              aria-label={label ? `Scroll ${label} left` : "Scroll left"}
+              tabIndex={atStart ? -1 : 0}
+              style={arrowStyle("left", atStart)}>
+              <span aria-hidden>‹</span>
+            </button>
+            <button type="button" onClick={() => page(1)}
+              aria-label={label ? `Scroll ${label} right` : "Scroll right"}
+              tabIndex={atEnd ? -1 : 0}
+              style={arrowStyle("right", atEnd)}>
+              <span aria-hidden>›</span>
+            </button>
+          </>
+        )}
       </div>
     </div>
   );

@@ -107,7 +107,7 @@ function Strip({ heading, count, items, onViewAll, isMobile, watchlist, handleWi
           No matches.
         </div>
       ) : (
-      <CardStrip items={visible} isMobile={isMobile} renderCard={item => (
+      <CardStrip items={visible} isMobile={isMobile} label={heading} renderCard={item => (
         <Card
           item={item}
           wished={!!watchlist[item.id]}
@@ -549,7 +549,7 @@ function ArticleStrip({ heading, count, items, onViewAll, isMobile, watchlist = 
       {/* Card system S1+S3: article tiles render through the shared CardShell
           (square image, L2 source kicker, L1 title) inside the shared
           CardStrip — same look as before (B-12/B-13). */}
-      <CardStrip items={visible} isMobile={isMobile} renderCard={a => {
+      <CardStrip items={visible} isMobile={isMobile} label={heading} renderCard={a => {
         // Standard card interface (Mark 2026-06-01): the search Articles row
         // was missing heart + ⋯ — wire them like the saved-articles grid so
         // you can save/share straight from results (B-37 consistency).
@@ -597,7 +597,7 @@ function ReferenceStrip({ heading, count, items, isMobile }) {
         }}>{heading}</h2>
         <span style={{ fontSize: 12, color: "var(--text3)" }}>{count.toLocaleString()}</span>
       </div>
-      <CardStrip items={visible} isMobile={isMobile} renderCard={n => (
+      <CardStrip items={visible} isMobile={isMobile} label={heading} renderCard={n => (
         <CardShell
           href={`/?tab=learn&sub=references&ref=${encodeURIComponent(n.id)}`}
           aspect="square"
