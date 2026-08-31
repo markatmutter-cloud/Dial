@@ -727,7 +727,7 @@ function SectionStrip({ heading, descriptor, items, onViewAll, onScreen, screenC
           the gradient makes the affordance explicit. pointerEvents
           none so it doesn't swallow taps/swipes through the overlay.
 
-          Strip background (B-85, 2026-08-30, Mark): the non-inverted variant
+          Strip background (B-87, 2026-08-30, Mark): the non-inverted variant
           used to pass "var(--border)". CardStrip has 4px of bottom padding, so
           that container background showed as a grey rail under every Home row
           and read as a dead scrollbar, while the Articles strip (mounted
