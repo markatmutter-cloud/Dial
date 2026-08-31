@@ -37,6 +37,14 @@ describe("SectionHeader", () => {
     expect(screen.queryByText("0")).toBeNull();
   });
 
+  it("draws a hairline above the header only when asked", () => {
+    const { container, rerender } = render(<SectionHeader heading="Sold" isMobile={false} />);
+    const hasRule = (el) => !!el.querySelector('div[aria-hidden="true"][style*="border-top"]');
+    expect(hasRule(container)).toBe(false);
+    rerender(<SectionHeader heading="Sold" isMobile={false} rule />);
+    expect(hasRule(container)).toBe(true);
+  });
+
   it("fires onViewAll", () => {
     let fired = 0;
     render(<SectionHeader heading="Recently sold" onViewAll={() => { fired += 1; }} isMobile={false} />);

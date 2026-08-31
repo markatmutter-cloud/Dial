@@ -37,11 +37,12 @@ export default function SectionHeader({
   isMobile,
   inverted = false,
   padding,
+  rule = false,          // hairline above the header (Home rhythm, step 6)
 }) {
   const headingColor = inverted ? "var(--bg)" : "var(--text1)";
   const descriptorColor = inverted ? "var(--text-on-dark-2)" : "var(--text2)";
   const viewAllColor = inverted ? "var(--text-on-dark-1)" : "var(--text2)";
-  return (
+  const header = (
     <div style={{
       display: "flex", alignItems: "baseline", justifyContent: "space-between",
       padding: padding != null ? padding : (isMobile ? "0 16px" : "0 20px"),
@@ -50,7 +51,10 @@ export default function SectionHeader({
       <div style={{ minWidth: 0 }}>
         {eyebrow && (
           <Eyebrow
-            tone={inverted ? "secondary" : "muted"}
+            // Olive, not grey: this is the one place the brand colour can
+            // repeat down the page instead of living only in the 50px slab at
+            // the top. "ink" is the theme-aware pair, so it survives dark mode.
+            tone={inverted ? "secondary" : "ink"}
             style={{ fontSize: 10, letterSpacing: "0.16em", marginBottom: 5 }}
           >
             {eyebrow}
@@ -68,7 +72,7 @@ export default function SectionHeader({
             {heading}
           </h2>
           {count != null && (
-            <span style={{ fontSize: 12, color: inverted ? "var(--text-on-dark-2)" : "var(--text3)", fontVariantNumeric: "tabular-nums" }}>
+            <span style={{ fontSize: 12, color: inverted ? "var(--text-on-dark-2)" : "var(--brand-olive-ink)", fontVariantNumeric: "tabular-nums" }}>
               {typeof count === "number" ? count.toLocaleString() : count}
             </span>
           )}
@@ -96,5 +100,19 @@ export default function SectionHeader({
         </div>
       )}
     </div>
+  );
+  if (!rule) return header;
+  // The rule sits ABOVE the header at full content width. Editorially it is
+  // what closes the previous section: without it, four sections separated by
+  // equal whitespace read as one continuous stream.
+  return (
+    <>
+      <div aria-hidden style={{
+        height: 0,
+        borderTop: "0.5px solid var(--border)",
+        margin: padding != null ? 0 : (isMobile ? "0 16px 16px" : "0 20px 18px"),
+      }} />
+      {header}
+    </>
   );
 }

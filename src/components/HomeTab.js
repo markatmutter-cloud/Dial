@@ -623,7 +623,11 @@ function HomeSearchBar({ onSubmit, onLiveQuery, isMobile, dealerSources, onJumpT
 // just before they scroll into view (rootMargin pre-warms them so it feels
 // instant). The parent's memos stay eager — only the JSX render is deferred,
 // so this can't trip React #310. No-IntersectionObserver / SSR → render now.
-function DeferUntilVisible({ children, minHeight = 320, rootMargin = "600px" }) {
+// B-95: `minHeight` used to default to a flat 320 while real sections measure
+// 337-363, so every deferred row jumped 17-43px as it mounted mid-scroll,
+// worst on iOS PWA where scroll anchoring is weakest. Callers now pass the
+// height of the section they are deferring; 360 is the strip default.
+function DeferUntilVisible({ children, minHeight = 360, rootMargin = "600px" }) {
   const [visible, setVisible] = useState(
     typeof IntersectionObserver === "undefined"
   );
@@ -643,7 +647,7 @@ function DeferUntilVisible({ children, minHeight = 320, rootMargin = "600px" }) 
   return <div ref={ref} aria-hidden style={{ minHeight }} />;
 }
 
-function SectionStrip({ heading, eyebrow, descriptor, count, items, onViewAll, isMobile, watchlist, hidden, handleWish, toggleHide, primaryCurrency, onShare, onView, onClickListing, openCollectionPicker, isAdmin, user, compact, inverted, shellPad, priorityFirst }) {
+function SectionStrip({ heading, eyebrow, descriptor, count, items, onViewAll, isMobile, spacing = 32, rule = true, watchlist, hidden, handleWish, toggleHide, primaryCurrency, onShare, onView, onClickListing, openCollectionPicker, isAdmin, user, compact, inverted, shellPad, priorityFirst }) {
   if (!items || items.length === 0) return null;
   const slice = items.slice(0, isMobile ? CARDS_PER_SECTION_MOBILE : CARDS_PER_SECTION_DESKTOP);
   // Inverted bleed (phase 4c, 2026-05-11): one section gets a dark
@@ -659,7 +663,7 @@ function SectionStrip({ heading, eyebrow, descriptor, count, items, onViewAll, i
     marginRight: -shellPad,
     padding: `${isMobile ? 26 : 34}px ${shellPad}px ${isMobile ? 30 : 38}px`,
     marginBottom: isMobile ? 30 : 36,
-  } : { marginBottom: 28 };
+  } : { marginBottom: spacing };
   return (
     <section style={wrapperStyle}>
       <SectionHeader
@@ -671,6 +675,7 @@ function SectionStrip({ heading, eyebrow, descriptor, count, items, onViewAll, i
         isMobile={isMobile}
         inverted={inverted}
         padding={inverted ? 0 : undefined}
+        rule={rule && !inverted}
       />
       {/* Unified horizontal-slider strip (Mark spec 2026-05-12):
           desktop now scrolls horizontally like mobile rather than
@@ -931,6 +936,8 @@ export function HomeTab(props) {
         eyebrow={HOME_SECTIONS.recentAdded.eyebrow}
         descriptor={HOME_SECTIONS.recentAdded.descriptor}
         count={counts.live}
+        spacing={isMobile ? 34 : 48}
+        rule={false}
         items={homeRecentAdded}
         priorityFirst
         onViewAll={goToRecentAdded}
@@ -944,8 +951,9 @@ export function HomeTab(props) {
       {/* Recent editorial articles (B-32, 2026-05-27) — idle-loaded; renders
           via CardShell article tiles (not SectionStrip, which is listing-shaped). */}
       {homeRecentArticles && homeRecentArticles.length > 0 && (
-        <section style={{ padding: isMobile ? "16px 0" : "20px 0" }}>
+        <section style={{ paddingBottom: isMobile ? 24 : 32 }}>
           <SectionHeader
+            rule
             eyebrow={HOME_SECTIONS.articles.eyebrow}
             heading={HOME_SECTIONS.articles.heading}
             count={counts.articles != null ? counts.articles : homeRecentArticles.length}
@@ -986,6 +994,7 @@ export function HomeTab(props) {
             eyebrow={HOME_SECTIONS.recentSold.eyebrow}
             descriptor={HOME_SECTIONS.recentSold.descriptor}
             count={counts.sold}
+            spacing={isMobile ? 24 : 32}
             items={homeRecentSold}
             onViewAll={goToRecentSold}
             isMobile={isMobile} shellPad={shellPad}
@@ -1008,7 +1017,7 @@ export function HomeTab(props) {
           the product and never mentioned guides below the nav pill, and a
           fifth row of photo tiles would undo the variety the auction module
           exists to create. */}
-      <DeferUntilVisible minHeight={120}>
+      <DeferUntilVisible minHeight={140}>
         <HomeGuidesRow
           isMobile={isMobile}
           onOpenGuide={homeOpenGuide}

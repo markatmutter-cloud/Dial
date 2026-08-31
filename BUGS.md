@@ -296,9 +296,9 @@ here). Every one was verified in the source before logging.
 - **Fix:** hoist the guard to the remaining call sites. Same pass: delete the dead `inverted` branch (the bottom bleed band was removed 2026-06-07 and is on the never-reintroduce list) and the `onScreen` / `screenCount` props, still threaded through to a button retired 2026-05-22.
 
 ### B-95 — `DeferUntilVisible` reserves a flat 320px for rows that measure 337-363px
-- **Reported:** 2026-08-30 (ui-review panel, measured live) · **Type:** Visual defect · **Severity:** 3 · **Surface:** `HomeTab.js` `DeferUntilVisible` · **Status:** Open.
+- **Reported:** 2026-08-30 (ui-review panel, measured live) · **Type:** Visual defect · **Severity:** 3 · **Surface:** `HomeTab.js` `DeferUntilVisible` · **Status:** ✅ Fixed (Epic 9 step 6).
 - **Detail:** the placeholder is `minHeight = 320` for every deferred section, but measured section heights on desktop are 337 (Recently added) to 363 (Articles). Each row therefore jumps 17-43px as it mounts mid-scroll, worst on iOS PWA where scroll anchoring is weakest.
-- **Fix:** make `minHeight` a required prop and source it per section type.
+- **Fix:** ✅ Fixed (Epic 9 step 6). Default raised to 360 (the strip height) and every call site now passes the height of the section it defers: 360 strips, 420 the auction module, 140 the guides row.
 
 ### B-96 — Card action buttons are 36pt, under the 44pt iOS minimum, and sit in the swipe-start corner
 - **Reported:** 2026-08-30 (ui-review panel) · **Type:** Mobile usability · **Severity:** 3 · **Surface:** `CardShell.js` action buttons · **Status:** Open.
