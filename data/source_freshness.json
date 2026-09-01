@@ -1,9 +1,9 @@
 {
   "Analog Shift": {
-    "fingerprint": "2d4f4e0a998a3dc5",
+    "fingerprint": "8d436f40636cc8a3",
     "lastChanged": "2026-09-01",
     "lastSeen": "2026-09-01",
-    "rows": 765
+    "rows": 764
   },
   "Belmont Watches": {
     "fingerprint": "3ff933c99811cdbd",
@@ -12,10 +12,10 @@
     "rows": 22
   },
   "Bob's Watches": {
-    "fingerprint": "225b7ac82ce6fa3b",
+    "fingerprint": "32bca6db606d1d66",
     "lastChanged": "2026-09-01",
     "lastSeen": "2026-09-01",
-    "rows": 43
+    "rows": 42
   },
   "Bulang & Sons": {
     "fingerprint": "dd63ec8a22d0c2ac",
@@ -48,10 +48,10 @@
     "rows": 93
   },
   "Craft & Tailored": {
-    "fingerprint": "1a12919a011b25d8",
+    "fingerprint": "9f3f7cf7b448b2f0",
     "lastChanged": "2026-09-01",
     "lastSeen": "2026-09-01",
-    "rows": 105
+    "rows": 108
   },
   "DB1983": {
     "fingerprint": "d31290606e9fa1f9",
@@ -66,10 +66,10 @@
     "rows": 19
   },
   "Falco Watches": {
-    "fingerprint": "9db5b87218941459",
-    "lastChanged": "2026-08-31",
+    "fingerprint": "3470c4b005f90ca6",
+    "lastChanged": "2026-09-01",
     "lastSeen": "2026-09-01",
-    "rows": 44
+    "rows": 43
   },
   "Grey & Patina": {
     "fingerprint": "ab6736b42dc07750",
@@ -84,10 +84,10 @@
     "rows": 37
   },
   "Heuertime": {
-    "fingerprint": "743ffa656bd725d4",
-    "lastChanged": "2026-08-29",
+    "fingerprint": "3715d50a4da63e32",
+    "lastChanged": "2026-09-01",
     "lastSeen": "2026-09-01",
-    "rows": 33
+    "rows": 32
   },
   "Huntington Company": {
     "fingerprint": "ad5346561968fdc8",
@@ -180,7 +180,7 @@
     "rows": 30
   },
   "Tropical Watch": {
-    "fingerprint": "6a191299287f548a",
+    "fingerprint": "015c6733f3e37a00",
     "lastChanged": "2026-09-01",
     "lastSeen": "2026-09-01",
     "rows": 101
@@ -228,10 +228,10 @@
     "rows": 61
   },
   "Watches of Knightsbridge": {
-    "fingerprint": "983cda0b7924cb37",
-    "lastChanged": "2026-08-31",
+    "fingerprint": "0f5b59fdea873a43",
+    "lastChanged": "2026-09-01",
     "lastSeen": "2026-09-01",
-    "rows": 84
+    "rows": 83
   },
   "Watches of Lancashire": {
     "fingerprint": "d014028683c527f9",
@@ -240,8 +240,8 @@
     "rows": 54
   },
   "Watchfid": {
-    "fingerprint": "0a1baab334e1af45",
-    "lastChanged": "2026-08-31",
+    "fingerprint": "bf3abf256fe6106a",
+    "lastChanged": "2026-09-01",
     "lastSeen": "2026-09-01",
     "rows": 66
   },
@@ -252,7 +252,7 @@
     "rows": 5
   },
   "Wind Vintage": {
-    "fingerprint": "a7ce6864fe033ad1",
+    "fingerprint": "35ef23fcd37fecd1",
     "lastChanged": "2026-09-01",
     "lastSeen": "2026-09-01",
     "rows": 202
@@ -408,9 +408,9 @@
     "rows": 92
   },
   "merged:listings": {
-    "fingerprint": "1680b0d57624d119",
+    "fingerprint": "73ecf06d8c14561a",
     "lastChanged": "2026-09-01",
     "lastSeen": "2026-09-01",
-    "rows": 9861
+    "rows": 9863
   }
 }
