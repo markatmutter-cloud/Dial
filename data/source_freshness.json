@@ -276,10 +276,10 @@
     "rows": 3
   },
   "calendar:monacolegend": {
-    "fingerprint": "02bcf3d3a110422e",
-    "lastChanged": "2026-08-18",
+    "fingerprint": "1c926f3f5744655f",
+    "lastChanged": "2026-09-01",
     "lastSeen": "2026-09-01",
-    "rows": 19
+    "rows": 20
   },
   "calendar:phillips": {
     "fingerprint": "829eab7c5b1f46e0",
@@ -288,8 +288,8 @@
     "rows": 9
   },
   "calendar:sothebys": {
-    "fingerprint": "6605acbc2cf32ae5",
-    "lastChanged": "2026-08-19",
+    "fingerprint": "810300027cef5d8e",
+    "lastChanged": "2026-09-01",
     "lastSeen": "2026-09-01",
     "rows": 8
   },
@@ -396,16 +396,16 @@
     "rows": 299
   },
   "merged:auction_lots": {
-    "fingerprint": "3b497ab75686e965",
-    "lastChanged": "2026-08-31",
+    "fingerprint": "9ad338ccd35ac90e",
+    "lastChanged": "2026-09-01",
     "lastSeen": "2026-09-01",
     "rows": 3560
   },
   "merged:auctions": {
-    "fingerprint": "c70143ed69df6c67",
-    "lastChanged": "2026-08-28",
+    "fingerprint": "df5b79b25dfc5747",
+    "lastChanged": "2026-09-01",
     "lastSeen": "2026-09-01",
-    "rows": 92
+    "rows": 93
   },
   "merged:listings": {
     "fingerprint": "7a0fbab52e4cc85c",
