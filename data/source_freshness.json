@@ -306,8 +306,8 @@
     "rows": 31
   },
   "editorial:acollectedman_journal": {
-    "fingerprint": "44aab6a4e2df5c4c",
-    "lastChanged": "2026-08-30",
+    "fingerprint": "8b74e1f8b927b57a",
+    "lastChanged": "2026-09-02",
     "lastSeen": "2026-09-02",
     "rows": 162
   },
@@ -318,8 +318,8 @@
     "rows": 256
   },
   "editorial:bulang_watch_talks": {
-    "fingerprint": "bf6c2b91d5ec9f9d",
-    "lastChanged": "2026-08-30",
+    "fingerprint": "58f2c6347051b061",
+    "lastChanged": "2026-09-02",
     "lastSeen": "2026-09-02",
     "rows": 161
   },
@@ -330,10 +330,10 @@
     "rows": 25
   },
   "editorial:fratello": {
-    "fingerprint": "b24985316bf60d4f",
-    "lastChanged": "2026-08-30",
+    "fingerprint": "f095f79f0b3defcc",
+    "lastChanged": "2026-09-02",
     "lastSeen": "2026-09-02",
-    "rows": 3795
+    "rows": 3798
   },
   "editorial:hodinkee_picks": {
     "fingerprint": "7b7f0d36e4bdb6eb",
@@ -360,16 +360,16 @@
     "rows": 278
   },
   "editorial:onthedash": {
-    "fingerprint": "3f5f9a36843c0176",
-    "lastChanged": "2026-08-30",
+    "fingerprint": "900022c773242bc8",
+    "lastChanged": "2026-09-02",
     "lastSeen": "2026-09-02",
-    "rows": 205
+    "rows": 206
   },
   "editorial:rolex_magazine": {
-    "fingerprint": "86302a9dc95852ae",
-    "lastChanged": "2026-08-30",
+    "fingerprint": "a66ad59207d8b683",
+    "lastChanged": "2026-09-02",
     "lastSeen": "2026-09-02",
-    "rows": 3752
+    "rows": 3753
   },
   "editorial:romainrea_editorial": {
     "fingerprint": "2e41fa366119e371",
@@ -378,10 +378,10 @@
     "rows": 16
   },
   "editorial:screwdowncrown": {
-    "fingerprint": "4831e964e795e21e",
-    "lastChanged": "2026-08-30",
+    "fingerprint": "759a18cada5e0596",
+    "lastChanged": "2026-09-02",
     "lastSeen": "2026-09-02",
-    "rows": 284
+    "rows": 285
   },
   "editorial:strictlyvintagewatches": {
     "fingerprint": "604405d56901e0fc",
@@ -389,9 +389,15 @@
     "lastSeen": "2026-09-02",
     "rows": 55
   },
+  "editorial:watchfid_editorial": {
+    "fingerprint": "b1259bafb503c8a5",
+    "lastChanged": "2026-09-02",
+    "lastSeen": "2026-09-02",
+    "rows": 285
+  },
   "editorial:woe_dispatch": {
-    "fingerprint": "a819b5b1bd6ce4fe",
-    "lastChanged": "2026-08-30",
+    "fingerprint": "9f9ed495934f414e",
+    "lastChanged": "2026-09-02",
     "lastSeen": "2026-09-02",
     "rows": 299
   },
