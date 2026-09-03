@@ -8226,20 +8226,16 @@
     "model_line": null,
     "published_at": "2026-07-04",
     "reference_no": null,
-    "scraped_at": "2026-08-04T16:20:15Z",
+    "scraped_at": "2026-09-03T17:38:37Z",
     "slug": "3939hp-patek-philippe-minute-repeater-tourbillon",
     "sold_price_usd": 600000,
     "source": "hairspring_finds",
     "source_type": "editorial_finds",
     "sub_model": null,
-    "themes": [
-      "reference_profile",
-      "complications"
-    ],
     "title": "3939HP Patek Philippe Minute Repeater Tourbillon",
     "updated_at": "2026-07-19",
     "url": "https://hairspring.com/blogs/finds/3939hp-patek-philippe-minute-repeater-tourbillon",
-    "word_count": 401
+    "word_count": 402
   },
   "https://hairspring.com/blogs/finds/3940g-patek-philippe-perpetual-calendar": {
     "author": "Erik Gustafson",
