@@ -61,7 +61,10 @@ jobs:
             echo "── response headers ──────────────────────────────"
             cat headers.txt
             echo "── detail links, in page order (first 30) ────────"
-            grep -o 'https://[a-z0-9.-]*/portfolio/[^"/]*/' body.html | awk '!seen[$0]++' | head -30
+            # `|| true` because pipefail is on and grep exits 1 when a
+            # response has no detail links at all (a 404 JSON body, say) —
+            # that's a finding to print, not a reason to fail the probe.
+            { grep -o 'https://[a-z0-9.-]*/portfolio/[^"/]*/' body.html || true; } | awk '!seen[$0]++' | head -30
             echo "── body head (3000 chars) ────────────────────────"
             head -c 3000 body.html
             echo
