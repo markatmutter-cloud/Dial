@@ -1,11 +1,11 @@
 {
-  "date": "2026-09-03",
-  "updated_at": "2026-09-03T22:45:15+00:00",
+  "date": "2026-09-04",
+  "updated_at": "2026-09-04T07:23:10+00:00",
   "alerts": [],
   "counts": {
-    "Wind Vintage": 109,
-    "Tropical Watch": 121,
-    "Menta Watches": 52,
+    "Wind Vintage": 111,
+    "Tropical Watch": 125,
+    "Menta Watches": 51,
     "Collectors Corner NY": 82,
     "Falco Watches": 40,
     "Pascal Karp": 89,
@@ -22,14 +22,14 @@
     "Analog Shift": 763,
     "Watches of Knightsbridge": 64,
     "Belmont Watches": 20,
-    "Bob's Watches": 46,
+    "Bob's Watches": 48,
     "Watchfid": 67,
     "Bulang & Sons": 159,
     "Moonphase": 21,
     "Huntington Company": 108,
     "The Vintage Watch": 22,
     "Chronoholic": 4,
-    "Vintage Watch Fam": 524,
+    "Vintage Watch Fam": 521,
     "Shuck the Oyster": 104,
     "Central Watch": 181,
     "European Watch": 20,
@@ -48,6 +48,6 @@
     "Watch Center": 261,
     "eBay": 30
   },
-  "total_listings": 4161,
+  "total_listings": 4165,
   "sources_tracked": 44
 }
