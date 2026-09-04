@@ -42,15 +42,28 @@ on:
       - "Index editorial corpus topics"
       - "Health report"
       - "Calendar canary"
+      # Not a cron — but a red `main` is the failure Mark actually sees
+      # most often, and GitHub's built-in email for it says only "Tests:
+      # All jobs have failed". A date-rotted fixture in
+      # HomeAuctionModule.test.jsx failed every push for two days that
+      # way (2026-09-02 to 09-04): ~24 identical emails, none of which
+      # said which test or why. The job-level `if` below keeps this to
+      # main, so a red PR does not open an issue.
+      - "Tests"
     types:
       - completed
 
 permissions:
   issues: write
   contents: read
+  actions: read   # gh run view --log-failed, for the "why" below
 
 jobs:
   notify:
+    # Default branch only. A failing PR is already in front of the person
+    # who opened it; an issue per red PR would bury the scheduled-run
+    # alerts this workflow exists for.
+    if: github.event.workflow_run.head_branch == 'main'
     runs-on: ubuntu-latest
     steps:
       - name: Open / update / close the failure issue via gh CLI
@@ -77,8 +90,31 @@ jobs:
             --jq "[.[] | select(.title | startswith(\"$prefix\"))][0].number // empty")
 
           if [ "$CONCLUSION" = "failure" ]; then
-            body=$(printf '%s\n\n%s\n\n%s\n%s\n\n%s' \
+            # ── WHY did it fail? ────────────────────────────────────────
+            # The alert used to carry only a workflow name and a link, so
+            # answering "do I need to do anything?" meant opening the run
+            # and scrolling a few thousand lines. scrape_failure_reason.py
+            # reads the failed steps' log and names the likely cause.
+            #
+            # Every command here is allowed to fail without taking the
+            # alert with it: an alert missing its diagnosis is degraded,
+            # an alert that never opens is the silent failure this whole
+            # workflow exists to prevent. Note this adds no action
+            # download (see the B-23 note above) — `gh` is on the runner
+            # already and the script comes through the same API call the
+            # rest of the step depends on anyway.
+            why="_No diagnosis available for this run — open the run link below._"
+            if gh run view "$RUN_ID" --repo "$GH_REPO" --log-failed > failed.log 2>/dev/null \
+               && [ -s failed.log ] \
+               && gh api "repos/$GH_REPO/contents/scrape_failure_reason.py" \
+                    -H "Accept: application/vnd.github.raw" > reason.py 2>/dev/null \
+               && [ -s reason.py ]; then
+              why=$(python3 reason.py failed.log 2>/dev/null || printf '%s' "$why")
+            fi
+
+            body=$(printf '%s\n\n%s\n\n%s\n\n%s\n%s\n\n%s' \
               "Workflow **${WF_NAME}** failed on \`${sha}\` at ${UPDATED_AT}." \
+              "${why}" \
               "Run: ${RUN_URL}" \
               "Triggered: ${EVENT}" \
               "Run ID: ${RUN_ID}" \
