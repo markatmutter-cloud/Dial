@@ -1,14 +1,6 @@
 {
-  "maunderwatches": {
-    "misses": 3,
-    "reason": "no CSV produced this run"
-  },
-  "visionvintagewatches": {
-    "misses": 1,
-    "reason": "no CSV produced this run"
-  },
   "watchcenter": {
-    "misses": 56,
+    "misses": 57,
     "reason": "no CSV produced this run"
   }
 }

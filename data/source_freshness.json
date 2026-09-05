@@ -1,9 +1,9 @@
 {
   "Analog Shift": {
-    "fingerprint": "0c267554877ac232",
-    "lastChanged": "2026-09-04",
+    "fingerprint": "c87e9e2c56c5648d",
+    "lastChanged": "2026-09-05",
     "lastSeen": "2026-09-05",
-    "rows": 778
+    "rows": 776
   },
   "Belmont Watches": {
     "fingerprint": "13edb03505654588",
@@ -18,10 +18,10 @@
     "rows": 45
   },
   "Bulang & Sons": {
-    "fingerprint": "c36bce6514738932",
-    "lastChanged": "2026-09-04",
+    "fingerprint": "f52a5cefaf721a42",
+    "lastChanged": "2026-09-05",
     "lastSeen": "2026-09-05",
-    "rows": 160
+    "rows": 158
   },
   "Central Watch": {
     "fingerprint": "e7c6ec2d61716d6f",
@@ -42,8 +42,8 @@
     "rows": 117
   },
   "Collectors Corner NY": {
-    "fingerprint": "e6f9a86c78e31e6c",
-    "lastChanged": "2026-09-03",
+    "fingerprint": "b8394c7fabd0a92c",
+    "lastChanged": "2026-09-05",
     "lastSeen": "2026-09-05",
     "rows": 90
   },
@@ -78,8 +78,8 @@
     "rows": 54
   },
   "Hairspring": {
-    "fingerprint": "abe265418d73b461",
-    "lastChanged": "2026-09-04",
+    "fingerprint": "1d2fc20169d32c89",
+    "lastChanged": "2026-09-05",
     "lastSeen": "2026-09-05",
     "rows": 37
   },
@@ -102,10 +102,10 @@
     "rows": 29
   },
   "Maunder Watches": {
-    "fingerprint": "df48682dd98384ed",
-    "lastChanged": "2026-09-03",
+    "fingerprint": "728b09054e3a91c1",
+    "lastChanged": "2026-09-05",
     "lastSeen": "2026-09-05",
-    "rows": 67
+    "rows": 72
   },
   "Menta Watches": {
     "fingerprint": "a0499f29c7d604d1",
@@ -114,10 +114,10 @@
     "rows": 52
   },
   "Moonphase": {
-    "fingerprint": "12152f03d8ab12ad",
-    "lastChanged": "2026-09-02",
+    "fingerprint": "d9ff32f487308302",
+    "lastChanged": "2026-09-05",
     "lastSeen": "2026-09-05",
-    "rows": 21
+    "rows": 20
   },
   "Oliver & Clarke": {
     "fingerprint": "5cdafc1ec6bda5de",
@@ -126,10 +126,10 @@
     "rows": 126
   },
   "Pascal Karp": {
-    "fingerprint": "cef85377db74ac9b",
-    "lastChanged": "2026-09-04",
+    "fingerprint": "f607730be886c311",
+    "lastChanged": "2026-09-05",
     "lastSeen": "2026-09-05",
-    "rows": 88
+    "rows": 86
   },
   "Romain R\u00e9a": {
     "fingerprint": "b221ee1c30ec5728",
@@ -144,10 +144,10 @@
     "rows": 19
   },
   "Shuck the Oyster": {
-    "fingerprint": "48e3f5d32cefabab",
+    "fingerprint": "9d25e8fc7d712009",
     "lastChanged": "2026-09-05",
     "lastSeen": "2026-09-05",
-    "rows": 148
+    "rows": 147
   },
   "Sierra Time Co": {
     "fingerprint": "1a3cb064a978114e",
@@ -186,7 +186,7 @@
     "rows": 119
   },
   "Vintage Watch Collective": {
-    "fingerprint": "95a11a269c6cdaa6",
+    "fingerprint": "f6267a5c5832f4ca",
     "lastChanged": "2026-09-05",
     "lastSeen": "2026-09-05",
     "rows": 37
@@ -204,10 +204,10 @@
     "rows": 27
   },
   "Vision Vintage Watches": {
-    "fingerprint": "2259038bb69401f4",
-    "lastChanged": "2026-09-04",
+    "fingerprint": "5d8ddfa340b957ef",
+    "lastChanged": "2026-09-05",
     "lastSeen": "2026-09-05",
-    "rows": 9
+    "rows": 87
   },
   "Watch Brothers London": {
     "fingerprint": "bacdf5c21b1311ba",
@@ -222,10 +222,10 @@
     "rows": 429
   },
   "Watch Club": {
-    "fingerprint": "66c5fe6f98ca4e1f",
+    "fingerprint": "703728a9de19692d",
     "lastChanged": "2026-09-05",
     "lastSeen": "2026-09-05",
-    "rows": 64
+    "rows": 65
   },
   "Watches of Knightsbridge": {
     "fingerprint": "4fdf9c8145cff225",
@@ -414,9 +414,9 @@
     "rows": 95
   },
   "merged:listings": {
-    "fingerprint": "59f16b8f9940e52a",
+    "fingerprint": "8666689075be72e7",
     "lastChanged": "2026-09-05",
     "lastSeen": "2026-09-05",
-    "rows": 10102
+    "rows": 10115
   }
 }
