@@ -1,6 +1,6 @@
 {
   "Analog Shift": {
-    "fingerprint": "c87e9e2c56c5648d",
+    "fingerprint": "d56f5f47821f7b33",
     "lastChanged": "2026-09-05",
     "lastSeen": "2026-09-05",
     "rows": 776
@@ -12,10 +12,10 @@
     "rows": 19
   },
   "Bob's Watches": {
-    "fingerprint": "f7bfbe2f68d06548",
+    "fingerprint": "bcfb0e111bc894bf",
     "lastChanged": "2026-09-05",
     "lastSeen": "2026-09-05",
-    "rows": 45
+    "rows": 46
   },
   "Bulang & Sons": {
     "fingerprint": "f52a5cefaf721a42",
@@ -90,10 +90,10 @@
     "rows": 33
   },
   "Huntington Company": {
-    "fingerprint": "0fefd26bab893caa",
-    "lastChanged": "2026-09-04",
+    "fingerprint": "802edc7aded10569",
+    "lastChanged": "2026-09-05",
     "lastSeen": "2026-09-05",
-    "rows": 109
+    "rows": 108
   },
   "Luna Royster": {
     "fingerprint": "80bd835d419ce6b9",
@@ -120,10 +120,10 @@
     "rows": 20
   },
   "Oliver & Clarke": {
-    "fingerprint": "5cdafc1ec6bda5de",
-    "lastChanged": "2026-09-04",
+    "fingerprint": "9809750c6a0001a4",
+    "lastChanged": "2026-09-05",
     "lastSeen": "2026-09-05",
-    "rows": 126
+    "rows": 125
   },
   "Pascal Karp": {
     "fingerprint": "f607730be886c311",
@@ -156,10 +156,10 @@
     "rows": 23
   },
   "Somlo": {
-    "fingerprint": "47d6788982c8c813",
-    "lastChanged": "2026-09-03",
+    "fingerprint": "c144877ef0a62956",
+    "lastChanged": "2026-09-05",
     "lastSeen": "2026-09-05",
-    "rows": 181
+    "rows": 180
   },
   "Swiss Hours": {
     "fingerprint": "c9c7418f5d76323d",
@@ -222,10 +222,10 @@
     "rows": 429
   },
   "Watch Club": {
-    "fingerprint": "703728a9de19692d",
+    "fingerprint": "473b536217c43ffe",
     "lastChanged": "2026-09-05",
     "lastSeen": "2026-09-05",
-    "rows": 65
+    "rows": 67
   },
   "Watches of Knightsbridge": {
     "fingerprint": "4fdf9c8145cff225",
@@ -252,8 +252,8 @@
     "rows": 5
   },
   "Wind Vintage": {
-    "fingerprint": "921d71ae9b3098c3",
-    "lastChanged": "2026-09-04",
+    "fingerprint": "5a9d40faf7cf7b46",
+    "lastChanged": "2026-09-05",
     "lastSeen": "2026-09-05",
     "rows": 220
   },
@@ -414,9 +414,9 @@
     "rows": 95
   },
   "merged:listings": {
-    "fingerprint": "d831a12c0369ac03",
+    "fingerprint": "4196ef5fe2d0b6d5",
     "lastChanged": "2026-09-05",
     "lastSeen": "2026-09-05",
-    "rows": 10115
+    "rows": 10118
   }
 }
