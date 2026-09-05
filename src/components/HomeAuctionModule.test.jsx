@@ -6,6 +6,11 @@ import HomeAuctionModule from "./HomeAuctionModule";
 // grids, so this never executes there.
 
 const inHours = (h) => new Date(Date.now() + h * 3600 * 1000).toISOString();
+// Sale dates must be RELATIVE too. HomeAuctionModule drops any sale whose
+// end date is already past (`ends >= now`), so a hardcoded date is a test
+// with an expiry stamped on it: `dateEnd: "2026-09-02"` passed until that
+// morning and then failed every run on main for days.
+const inDays = (d) => new Date(Date.now() + d * 86400 * 1000).toISOString().slice(0, 10);
 
 // Projected auction lots carry `ref` (title) and `img`, not title/image, the
 // same fields Card.js reads. Getting this wrong shipped a list of blank rows.
@@ -18,7 +23,7 @@ const lots = [
 
 const sales = [
   { id: "s1", house: "Christie's", title: "Rare Watches", location: "Geneva", url: "https://c/1",
-    dateStart: "2026-09-02", dateEnd: "2026-09-02", status: "upcoming", hasCatalog: true },
+    dateStart: inDays(3), dateEnd: inDays(3), status: "upcoming", hasCatalog: true },
 ];
 
 describe("HomeAuctionModule", () => {

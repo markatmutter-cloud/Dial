@@ -12,6 +12,16 @@ on:
         description: "URL to probe from the CI runner"
         required: true
         type: string
+      show_body:
+        # Reachability alone can't tell a live page from a stale cached
+        # one. With this on, the probe also dumps the response headers,
+        # any /portfolio/-style detail links it can see, and the head of
+        # the body — enough to compare what CI is served against what a
+        # browser shows (B-97).
+        description: "Also print response headers + a body excerpt"
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -23,9 +33,10 @@ jobs:
       - name: Fetch and classify
         env:
           URL: ${{ inputs.url }}
+          SHOW_BODY: ${{ inputs.show_body }}
         run: |
           set -uo pipefail
-          code=$(curl -sS -o body.html -w '%{http_code}' \
+          code=$(curl -sS -o body.html -D headers.txt -w '%{http_code}' \
             -A "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36" \
             -H "Accept: text/html,application/xhtml+xml" \
             -H "Accept-Language: en-US,en;q=0.9" \
@@ -44,4 +55,17 @@ jobs:
             echo "RESULT: BLOCKED from CI (challenge / 403)"
           else
             echo "RESULT: INCONCLUSIVE (code=$code, size=$size) — inspect manually"
+          fi
+          if [ "$SHOW_BODY" = "true" ]; then
+            echo
+            echo "── response headers ──────────────────────────────"
+            cat headers.txt
+            echo "── detail links, in page order (first 30) ────────"
+            # `|| true` because pipefail is on and grep exits 1 when a
+            # response has no detail links at all (a 404 JSON body, say) —
+            # that's a finding to print, not a reason to fail the probe.
+            { grep -o 'https://[a-z0-9.-]*/portfolio/[^"/]*/' body.html || true; } | awk '!seen[$0]++' | head -30
+            echo "── body head (3000 chars) ────────────────────────"
+            head -c 3000 body.html
+            echo
           fi
