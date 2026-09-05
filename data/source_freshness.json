@@ -12,10 +12,10 @@
     "rows": 19
   },
   "Bob's Watches": {
-    "fingerprint": "88e41a8d2da15342",
-    "lastChanged": "2026-09-04",
+    "fingerprint": "f7bfbe2f68d06548",
+    "lastChanged": "2026-09-05",
     "lastSeen": "2026-09-05",
-    "rows": 46
+    "rows": 45
   },
   "Bulang & Sons": {
     "fingerprint": "c36bce6514738932",
@@ -72,10 +72,10 @@
     "rows": 41
   },
   "Grey & Patina": {
-    "fingerprint": "6c180e9fe310cda7",
-    "lastChanged": "2026-09-04",
+    "fingerprint": "706a0a15550fcf40",
+    "lastChanged": "2026-09-05",
     "lastSeen": "2026-09-05",
-    "rows": 51
+    "rows": 54
   },
   "Hairspring": {
     "fingerprint": "abe265418d73b461",
@@ -144,8 +144,8 @@
     "rows": 19
   },
   "Shuck the Oyster": {
-    "fingerprint": "727e59ab0e26e410",
-    "lastChanged": "2026-09-04",
+    "fingerprint": "48e3f5d32cefabab",
+    "lastChanged": "2026-09-05",
     "lastSeen": "2026-09-05",
     "rows": 148
   },
@@ -180,14 +180,14 @@
     "rows": 31
   },
   "Tropical Watch": {
-    "fingerprint": "e63ff2417afa5ee8",
-    "lastChanged": "2026-09-04",
+    "fingerprint": "8a16fd317cd504d1",
+    "lastChanged": "2026-09-05",
     "lastSeen": "2026-09-05",
     "rows": 119
   },
   "Vintage Watch Collective": {
-    "fingerprint": "93726f444dcc1846",
-    "lastChanged": "2026-09-04",
+    "fingerprint": "95a11a269c6cdaa6",
+    "lastChanged": "2026-09-05",
     "lastSeen": "2026-09-05",
     "rows": 37
   },
@@ -222,16 +222,16 @@
     "rows": 429
   },
   "Watch Club": {
-    "fingerprint": "ef8edb4065f7aa92",
-    "lastChanged": "2026-09-03",
+    "fingerprint": "66c5fe6f98ca4e1f",
+    "lastChanged": "2026-09-05",
     "lastSeen": "2026-09-05",
-    "rows": 62
+    "rows": 64
   },
   "Watches of Knightsbridge": {
-    "fingerprint": "65dcaf64865fa2ae",
-    "lastChanged": "2026-09-02",
+    "fingerprint": "4fdf9c8145cff225",
+    "lastChanged": "2026-09-05",
     "lastSeen": "2026-09-05",
-    "rows": 82
+    "rows": 80
   },
   "Watches of Lancashire": {
     "fingerprint": "d014028683c527f9",
@@ -240,8 +240,8 @@
     "rows": 54
   },
   "Watchfid": {
-    "fingerprint": "c74c42e035f79ab8",
-    "lastChanged": "2026-09-04",
+    "fingerprint": "27fcddc4135e8827",
+    "lastChanged": "2026-09-05",
     "lastSeen": "2026-09-05",
     "rows": 67
   },
@@ -300,8 +300,8 @@
     "rows": 2
   },
   "eBay": {
-    "fingerprint": "a567f9606c153c8a",
-    "lastChanged": "2026-09-05",
+    "fingerprint": "6633836e8f3147a7",
+    "lastChanged": "2026-09-04",
     "lastSeen": "2026-09-05",
     "rows": 32
   },
@@ -414,9 +414,9 @@
     "rows": 93
   },
   "merged:listings": {
-    "fingerprint": "9ceacac1fb52ee41",
+    "fingerprint": "f5fa79aacca902fa",
     "lastChanged": "2026-09-05",
     "lastSeen": "2026-09-05",
-    "rows": 10095
+    "rows": 10101
   }
 }
