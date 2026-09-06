@@ -306,8 +306,8 @@
     "rows": 32
   },
   "editorial:acollectedman_journal": {
-    "fingerprint": "8b74e1f8b927b57a",
-    "lastChanged": "2026-09-02",
+    "fingerprint": "44aab6a4e2df5c4c",
+    "lastChanged": "2026-09-06",
     "lastSeen": "2026-09-06",
     "rows": 162
   },
@@ -318,8 +318,8 @@
     "rows": 256
   },
   "editorial:bulang_watch_talks": {
-    "fingerprint": "58f2c6347051b061",
-    "lastChanged": "2026-09-02",
+    "fingerprint": "bf6c2b91d5ec9f9d",
+    "lastChanged": "2026-09-06",
     "lastSeen": "2026-09-06",
     "rows": 161
   },
@@ -330,7 +330,7 @@
     "rows": 25
   },
   "editorial:fratello": {
-    "fingerprint": "c002558151b67333",
+    "fingerprint": "c752a5c167aa8956",
     "lastChanged": "2026-09-06",
     "lastSeen": "2026-09-06",
     "rows": 3800
@@ -360,13 +360,13 @@
     "rows": 278
   },
   "editorial:onthedash": {
-    "fingerprint": "155df6d9a519fe28",
+    "fingerprint": "b2d64655ec58e5a6",
     "lastChanged": "2026-09-06",
     "lastSeen": "2026-09-06",
     "rows": 206
   },
   "editorial:rolex_magazine": {
-    "fingerprint": "2166a86235e9ef0e",
+    "fingerprint": "b2eb9f44091b3916",
     "lastChanged": "2026-09-06",
     "lastSeen": "2026-09-06",
     "rows": 3753
@@ -378,8 +378,8 @@
     "rows": 16
   },
   "editorial:screwdowncrown": {
-    "fingerprint": "759a18cada5e0596",
-    "lastChanged": "2026-09-02",
+    "fingerprint": "65fa20312704123e",
+    "lastChanged": "2026-09-06",
     "lastSeen": "2026-09-06",
     "rows": 285
   },
@@ -390,19 +390,19 @@
     "rows": 55
   },
   "editorial:watchfid_editorial": {
-    "fingerprint": "b1259bafb503c8a5",
-    "lastChanged": "2026-09-02",
+    "fingerprint": "1baff856b6930e4e",
+    "lastChanged": "2026-09-06",
     "lastSeen": "2026-09-06",
     "rows": 285
   },
   "editorial:woe_dispatch": {
-    "fingerprint": "9f9ed495934f414e",
-    "lastChanged": "2026-09-02",
+    "fingerprint": "a819b5b1bd6ce4fe",
+    "lastChanged": "2026-09-06",
     "lastSeen": "2026-09-06",
     "rows": 299
   },
   "merged:auction_lots": {
-    "fingerprint": "e13c2ad827565545",
+    "fingerprint": "1bfda198752f1ebf",
     "lastChanged": "2026-09-06",
     "lastSeen": "2026-09-06",
     "rows": 3957
