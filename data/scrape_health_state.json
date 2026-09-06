@@ -1,6 +1,14 @@
 {
+  "ssongwatches": {
+    "misses": 1,
+    "reason": "no CSV produced this run"
+  },
+  "swisshours": {
+    "misses": 1,
+    "reason": "no CSV produced this run"
+  },
   "watchcenter": {
-    "misses": 59,
+    "misses": 60,
     "reason": "no CSV produced this run"
   }
 }

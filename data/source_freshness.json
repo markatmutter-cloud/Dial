@@ -90,16 +90,16 @@
     "rows": 33
   },
   "Huntington Company": {
-    "fingerprint": "3d0abb8a223fd5f0",
+    "fingerprint": "699501c70d63d295",
     "lastChanged": "2026-09-06",
     "lastSeen": "2026-09-06",
-    "rows": 107
+    "rows": 108
   },
   "Luna Royster": {
-    "fingerprint": "80bd835d419ce6b9",
-    "lastChanged": "2026-09-02",
+    "fingerprint": "83f4586869a385d9",
+    "lastChanged": "2026-09-06",
     "lastSeen": "2026-09-06",
-    "rows": 29
+    "rows": 27
   },
   "Maunder Watches": {
     "fingerprint": "728b09054e3a91c1",
@@ -120,10 +120,10 @@
     "rows": 20
   },
   "Oliver & Clarke": {
-    "fingerprint": "9809750c6a0001a4",
-    "lastChanged": "2026-09-05",
+    "fingerprint": "cf48bd592d133825",
+    "lastChanged": "2026-09-06",
     "lastSeen": "2026-09-06",
-    "rows": 125
+    "rows": 122
   },
   "Pascal Karp": {
     "fingerprint": "f607730be886c311",
@@ -180,10 +180,10 @@
     "rows": 31
   },
   "Tropical Watch": {
-    "fingerprint": "ca1c0bc217c71c21",
+    "fingerprint": "579466dcf004a591",
     "lastChanged": "2026-09-06",
     "lastSeen": "2026-09-06",
-    "rows": 118
+    "rows": 117
   },
   "Vintage Watch Collective": {
     "fingerprint": "f6267a5c5832f4ca",
@@ -192,10 +192,10 @@
     "rows": 37
   },
   "Vintage Watch Fam": {
-    "fingerprint": "317e5e1f01205030",
+    "fingerprint": "bf2967bf6a2ec883",
     "lastChanged": "2026-09-06",
     "lastSeen": "2026-09-06",
-    "rows": 539
+    "rows": 536
   },
   "Vintage Watch Shop": {
     "fingerprint": "f2261efd15125a7e",
@@ -414,7 +414,7 @@
     "rows": 95
   },
   "merged:listings": {
-    "fingerprint": "a574350aa205240f",
+    "fingerprint": "7ceaa602131bcd53",
     "lastChanged": "2026-09-06",
     "lastSeen": "2026-09-06",
     "rows": 10118
