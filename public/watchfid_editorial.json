@@ -13,6 +13,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "space"
+    ],
     "title": "10 MOONWATCHES  WITH A TWO-TONE DIAL",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/10-two-tone-dials-speedmasters/",
@@ -32,6 +36,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "community_ethics"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> IAN",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-ian/",
@@ -51,6 +59,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "collector_mindset"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> INGO",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-ingo/",
@@ -70,6 +82,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "life_lessons"
+    ],
     "title": "MOUNIA NASSER",
     "updated_at": "2026-07-09",
     "url": "https://www.watchfid.com/12-questions-only-mounia-nasser/",
@@ -89,6 +105,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collector_mindset",
+      "community_ethics"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> ANDREA CASALEGNO",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-andrea-casalegno/",
@@ -108,6 +128,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collector_mindset",
+      "community_ethics"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> ANDREAS",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-andreas/",
@@ -127,6 +151,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "community_ethics"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> ANDY KULAS",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-andy-kulas/",
@@ -146,6 +174,9 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> ANNA HALAREWICZ",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-anna-halarewicz/",
@@ -165,6 +196,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collector_mindset",
+      "community_ethics"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> ANTONIO BORRACHERO",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-antonio-borrachero/",
@@ -184,6 +219,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "community_ethics",
+      "market_commentary"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> AUREL BACS",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-aurel-bacs/",
@@ -203,6 +242,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "community_ethics"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> BALTHASAR DE PURY",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-balthasar-de-pury/",
@@ -222,6 +265,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "community_ethics"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> BERNHARD BULANG",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-bernhard-bulang/",
@@ -241,6 +288,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "community_ethics"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> BRICE GOULARD",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-brice-goulard/",
@@ -260,6 +311,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "community_ethics",
+      "collecting_philosophy"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> CLEMENT MAZARIAN",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-clement-mazarian/",
@@ -279,6 +334,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collector_mindset",
+      "community_ethics"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> DARREN",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-darren/",
@@ -298,6 +357,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "community_ethics",
+      "collector_mindset"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> ROY & SACHA DAVIDOFF",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-davidoff-brothers/",
@@ -317,6 +380,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "celebrity",
+      "collecting_philosophy"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> DAVY SARDOU",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-davy-sardou/",
@@ -336,6 +403,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collector_mindset",
+      "community_ethics"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> DR. STRONG",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-drstrong/",
@@ -355,6 +426,9 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> EDMOND SARAN",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-edmond-saran/",
@@ -374,6 +448,9 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "community_ethics"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> ERIC WIND",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-eric-wind/",
@@ -393,6 +470,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "community_ethics",
+      "collector_mindset"
+    ],
     "title": "12 QUESTIONS ONLY TO…<br>  LAPHROAIG007",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-etienne-malec-2/",
@@ -412,6 +493,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "life_lessons"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> ETIENNE MALEC",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-etienne-malec/",
@@ -431,6 +516,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collector_mindset",
+      "collecting_philosophy"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> FABIO",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-fabio/",
@@ -450,6 +539,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "vintage_care",
+      "community_ethics"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> FABRICE GUEROUX",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-fabrice-gueroux/",
@@ -469,6 +562,9 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "celebrity"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> FILIPPO MAGNINI",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-filippo-magnini/",
@@ -488,6 +584,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collector_mindset",
+      "collecting_philosophy"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> FREDERIC",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-frederic/",
@@ -507,6 +607,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "community_ethics"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> PIANISTE",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-gaetan-lana/",
@@ -526,6 +630,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "space",
+      "collecting_philosophy"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> GARRON DUPREE",
     "updated_at": "2025-09-22",
     "url": "https://www.watchfid.com/12-questions-only-to-garron-dupree/",
@@ -545,6 +653,9 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> GUILLAUME JOLY",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-guillaume-joly/",
@@ -564,6 +675,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "life_lessons"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> HUGO AFONSO",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-hugo-afonso/",
@@ -583,6 +698,9 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "community_ethics"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> ICONEEK",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-iconeek/",
@@ -602,6 +720,9 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "community_ethics"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> ILIAS GIANNOPOULOS",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-ilias-giannopoulos/",
@@ -621,6 +742,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "community_ethics",
+      "collecting_philosophy"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> JATUCKA",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-jatucka/",
@@ -640,6 +765,9 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> JEAN GUILLAUME COUDON",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-jean-guillaume/",
@@ -659,6 +787,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "community_ethics",
+      "collector_mindset"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> JOSHUA GANJEI",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-josh-ganjei/",
@@ -678,6 +810,11 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "celebrity",
+      "collecting_philosophy",
+      "space"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> KAN KANTATHAVORN",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-kan-kantathavorn/",
@@ -697,6 +834,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collector_mindset",
+      "community_ethics"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> KOVPICS",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-kovpics/",
@@ -716,6 +857,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "community_ethics",
+      "collecting_philosophy"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> KRISTIAN HAAGEN",
     "updated_at": "2026-05-01",
     "url": "https://www.watchfid.com/12-questions-only-to-kristian-haagen/",
@@ -735,6 +880,9 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "community_ethics"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> LOUIS WESTPHALEN",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-louis-wetsphalen/",
@@ -754,6 +902,9 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "community_ethics"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> LUCA GARBATI",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-luca-garbati/",
@@ -773,6 +924,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "space"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> THE MASTER OF SPEED",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-masterofspeed/",
@@ -792,6 +947,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collector_mindset",
+      "community_ethics"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> MAURIZIO COZZANI",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-maurizio-cozzani/",
@@ -811,6 +970,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "community_ethics",
+      "collecting_philosophy"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> MONCEF",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-moncef/",
@@ -830,6 +993,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "space",
+      "community_ethics"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> MOONWATCHUNIVERSE",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-moonwatchuniverse/",
@@ -849,6 +1016,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collector_mindset",
+      "community_ethics"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> MSTANGA",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-mstanga/",
@@ -868,6 +1039,9 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collector_mindset"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> NEIL BONZA",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-neil-bonza/",
@@ -887,6 +1061,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "collector_mindset"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> NICOLAS",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-nicolas/",
@@ -906,6 +1084,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collector_mindset",
+      "community_ethics"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> NIKLAS",
     "updated_at": "2024-05-26",
     "url": "https://www.watchfid.com/12-questions-only-to-niklas/",
@@ -925,6 +1107,9 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collector_mindset"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> OLIVIER BARRERA",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-olivier-barrera/",
@@ -944,6 +1129,9 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "community_ethics"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> OLIVIER GILLET",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-olivier-gillet/",
@@ -963,6 +1151,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "community_ethics"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> PATRICK TACQ",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-patrick-tacq/",
@@ -982,6 +1174,9 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "community_ethics"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> ROEL & TOESJA",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-roel-van-den-haak-and-toesja-de-vrie/",
@@ -1001,6 +1196,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "collector_mindset"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> SEAN CHENG",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-sean-chang/",
@@ -1020,6 +1219,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "community_ethics"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> ROBERT-JAN BROER",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-speedytuesday/",
@@ -1039,6 +1242,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "community_ethics"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> STEPHANE KLENTZI",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-stephane-klentzi/",
@@ -1058,6 +1265,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collector_mindset",
+      "community_ethics"
+    ],
     "title": "12 QUESTIONS ONLY TO…  STUMPELRILTZCHEN",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-stumpelriltzchen/",
@@ -1077,6 +1288,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "community_ethics",
+      "collector_mindset"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> LUKE ROTTMAN",
     "updated_at": "2026-03-01",
     "url": "https://www.watchfid.com/12-questions-only-to-the-watch-adviser/",
@@ -1096,6 +1311,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "community_ethics"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> THOMAS DUNKER NIELSEN",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-thomas-dunker-nielsen/",
@@ -1115,6 +1334,9 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "community_ethics"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> THOMAS PERAZZI",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-thomas-perazzi/",
@@ -1134,6 +1356,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "community_ethics"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> TOMMASO BARRACCO",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-tommaso-barracco/",
@@ -1153,6 +1379,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collector_mindset",
+      "community_ethics"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> VINCENT BRASESCO",
     "updated_at": "2026-05-01",
     "url": "https://www.watchfid.com/12-questions-only-to-vincent-brasesco/",
@@ -1172,6 +1402,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collector_mindset",
+      "community_ethics"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> VINTAGEWATCHZILLA",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-vintagewatchzilla/",
@@ -1191,6 +1425,9 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "community_ethics"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> VIRGINIE LIATARD-ROESSLI",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-virginie-liatard/",
@@ -1210,6 +1447,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "life_lessons"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> ZEN",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-only-to-zen/",
@@ -1229,6 +1470,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "community_ethics"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> SERGIO",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-sergio/",
@@ -1248,6 +1493,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "community_ethics"
+    ],
     "title": "12 QUESTIONS ONLY TO… <br> GINOBI",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/12-questions-to-gino-balbi/",
@@ -1267,6 +1516,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "reference_profile"
+    ],
     "title": "1973 – THE LOUIS CARTIER COLLECTION",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/1973-the-louis-cartier-collection/",
@@ -1286,6 +1539,11 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "diving",
+      "vintage_care"
+    ],
     "title": "70 YEARS LATER, BACK UNDERWATER",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/70-years-later-back-underwater/",
@@ -1305,6 +1563,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "space"
+    ],
     "title": "SPEEDMASTER ST 105.012  BRIEF OVERVIEW",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/a-brief-overview-of-the-omega-speedmaster-moonwatch-105012/",
@@ -1324,6 +1586,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "celebrity",
+      "reference_profile"
+    ],
     "title": "A COMPREHENSIVE GUIDE TO SEAMASTER “JAMES BOND” MODELS – Part 1",
     "updated_at": "2026-07-02",
     "url": "https://www.watchfid.com/a-comprehensive-guide-to-seamaster-james-bond-models-part-1/",
@@ -1343,6 +1609,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "celebrity",
+      "reference_profile"
+    ],
     "title": "A COMPREHENSIVE GUIDE TO SEAMASTER “JAMES BOND” MODELS – PART 2",
     "updated_at": "2026-07-02",
     "url": "https://www.watchfid.com/a-comprehensive-guide-to-seamaster-james-bond-models-part-2/",
@@ -1362,6 +1632,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "military",
+      "aviation"
+    ],
     "title": "A COMPREHENSIVE GUIDE TO THE OMEGA “FAP” MODELS",
     "updated_at": "2026-02-02",
     "url": "https://www.watchfid.com/a-comprehensive-guide-to-the-omega-fap-models/",
@@ -1381,6 +1655,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "vintage_care"
+    ],
     "title": "SPEEDMASTER BOOKS <br> by FRATELLOWATCHES",
     "updated_at": "2024-07-18",
     "url": "https://www.watchfid.com/a-moon-watch-story-book-recommendation-by-fratellowatches-2/",
@@ -1400,6 +1678,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "space",
+      "brand_history"
+    ],
     "title": "A MOON WATCH STORY <br> by FRATELLOWATCHES",
     "updated_at": "2024-07-18",
     "url": "https://www.watchfid.com/a-moon-watch-story-book-recommendation-by-fratellowatches/",
@@ -1419,6 +1701,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "space",
+      "brand_history"
+    ],
     "title": "A MOON WATCH STORY <br> by EUROPA STAR",
     "updated_at": "2024-07-18",
     "url": "https://www.watchfid.com/a-moon-watch-story-recommended-reading/",
@@ -1438,6 +1724,9 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history"
+    ],
     "title": "A SELECTION OF MUST-HAVE CARTIER BOOKS",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/a-selection-of-cartier-books/",
@@ -1457,6 +1746,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "space",
+      "reference_profile"
+    ],
     "title": "50 YEARS OF  APOLLO 11 EDITIONS",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/apollo-11-50-years-of-speedmaster-commemorative-editions/",
@@ -1476,6 +1769,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history"
+    ],
     "title": "APOLLO 11 ONLY by MONTRES DE LUXE",
     "updated_at": "2026-08-30",
     "url": "https://www.watchfid.com/apollo-11-only-by-montres-de-luxe/",
@@ -1495,6 +1792,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "space",
+      "collecting_philosophy"
+    ],
     "title": "APOLLO 7 SPEEDMASTER  MISSING FOR 30 YEARS",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/apollo-7-speedmaster-missing-for-30-years/",
@@ -1514,6 +1815,11 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "space",
+      "reference_profile",
+      "brand_history"
+    ],
     "title": "APOLLO XI 1969 – TRIBUTE TO ASTRONAUTS",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/apollo-xi-1969-tribute-to-astronauts/",
@@ -1533,6 +1839,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history"
+    ],
     "title": "APPRENDRE A EVALUER UNE MONTRE AU-DELA DES SIMPLES EXTRAITS D’ARCHIVES by LA REVUE DES MONTRES",
     "updated_at": "2025-07-05",
     "url": "https://www.watchfid.com/apprendre-a-evaluer-une-montre-au-dela-des-simples-extraits-darchives-by-la-revue-des-montres/",
@@ -1552,6 +1862,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "space",
+      "collecting_philosophy"
+    ],
     "title": "ATMOSPHERIC RE-ENTRY  MOONWATCH",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/atmospheric-re-entry-moonwatch/",
@@ -1571,6 +1885,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history"
+    ],
     "title": "BEAUX LIVRES DEDIES AUX MONTRES by L’EXPRESS",
     "updated_at": "2024-12-05",
     "url": "https://www.watchfid.com/beaux-livres-dedies-aux-montres-by-lexpress/",
@@ -1590,6 +1908,7 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [],
     "title": "BERNARD MONTIEL",
     "updated_at": "2026-07-26",
     "url": "https://www.watchfid.com/bernard-montiel/",
@@ -1609,6 +1928,9 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history"
+    ],
     "title": "BEST WATCH BOOKS<BR> by MILLENARY WATCHES",
     "updated_at": "2024-07-18",
     "url": "https://www.watchfid.com/best-watch-books-by-millenary-watches/",
@@ -1628,6 +1950,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history"
+    ],
     "title": "BIBLE DIGITALE POUR CHRONO DE LEGENDE by MONTRES DE LUXE",
     "updated_at": "2026-02-24",
     "url": "https://www.watchfid.com/bible-digitale-pour-chrono-de-legende-by-montres-de-luxe/",
@@ -1647,6 +1973,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "review"
+    ],
     "title": "BLACK MOONPHASES  SPEEDMASTERS",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/black-moonphases/",
@@ -1666,6 +1996,9 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy"
+    ],
     "title": "10 MUST-HAVE BOOKS<BR> by A COLLECTED MAN",
     "updated_at": "2024-07-18",
     "url": "https://www.watchfid.com/blockchain-by-europa-star-2/",
@@ -1685,6 +2018,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "market_commentary",
+      "community_ethics"
+    ],
     "title": "BLOCKCHAIN<BR> by EUROPA STAR",
     "updated_at": "2024-07-18",
     "url": "https://www.watchfid.com/blockchain-by-europa-star/",
@@ -1704,6 +2041,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "community_ethics"
+    ],
     "title": "PORTRAIT OF… <br> A JLC CONNOISSEUR",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/blomman-watch-report/",
@@ -1723,6 +2064,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history"
+    ],
     "title": "BOOK ISSUE by STYLE MAGAZINE",
     "updated_at": "2025-04-14",
     "url": "https://www.watchfid.com/book-issue-by-style-magazine/",
@@ -1742,6 +2087,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "community_ethics"
+    ],
     "title": "PORTRAIT OF… <br> A WATCH BOOKS COLLECTOR",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/books-on-time/",
@@ -1761,6 +2110,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history"
+    ],
     "title": "CARTIER VINTAGE : S’OFFRIR UN MODELE DE LA COLLECTION LOUIS CARTIER 1973 by MONTRES DE LUXE",
     "updated_at": "2025-07-05",
     "url": "https://www.watchfid.com/cartier-vintage-soffrir-un-modele-de-la-collection-louis-cartier-1973/",
@@ -1780,6 +2133,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "celebrity",
+      "brand_history"
+    ],
     "title": "CELEBRITIES  & CARTIER WATCHES – Part 1",
     "updated_at": "2026-01-16",
     "url": "https://www.watchfid.com/celebrities-cartier-watches/",
@@ -1799,6 +2156,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history"
+    ],
     "title": "C’EST UNE PREMIERE by THE GOOD LIFE",
     "updated_at": "2026-04-17",
     "url": "https://www.watchfid.com/cest-une-premiere-by-the-good-life/",
@@ -1818,6 +2179,11 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "space",
+      "market_commentary"
+    ],
     "title": "CETTE SPEEDMASTER EST L’UNE DES PLUS RARES ET DES PLUS CONVOITEES by MASCULIN.COM",
     "updated_at": "2025-03-29",
     "url": "https://www.watchfid.com/cette-speedmaster-est-lune-des-plus-rares-et-des-plus-convoitees-by-masculin-com/",
@@ -1837,6 +2203,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "celebrity",
+      "market_commentary"
+    ],
     "title": "CHARLES LECLERC, JAY-Z… CES STARS QUI INVESTISSENT DANS LES MONTRES DE SECONDE MAIN <BR> by LE FIGARO",
     "updated_at": "2024-07-16",
     "url": "https://www.watchfid.com/charles-leclerc-jay-z-ces-stars-qui-investissent-dans-les-montres-de-seconde-main-by-le-figaro/",
@@ -1856,6 +2226,9 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history"
+    ],
     "title": "BOOKS TIPS <br> by CHRONO24",
     "updated_at": "2024-07-18",
     "url": "https://www.watchfid.com/chrono24-books-tips/",
@@ -1875,6 +2248,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "reference_profile"
+    ],
     "title": "NIVADA CHRONOMASTER:  THE MAGIC TRIO",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/chronomaster-aviator-sea-diver-valjoux-23-the-magic-trio/",
@@ -1894,6 +2271,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "reference_profile"
+    ],
     "title": "CHRONOMASTER ONLY <br> by CHRONOGRAPHES.NET",
     "updated_at": "2024-07-18",
     "url": "https://www.watchfid.com/chronomaster-only-cinquante-nuances-de-casd/",
@@ -1913,6 +2294,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "design"
+    ],
     "title": "CHRONOMASTER ONLY <br> by MOONPHASE",
     "updated_at": "2024-07-18",
     "url": "https://www.watchfid.com/chronomaster-only-interview-by-moonphase/",
@@ -1932,6 +2317,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history"
+    ],
     "title": "CHRONOMASTER ONLY <br> by LES RHABILLEURS",
     "updated_at": "2024-07-18",
     "url": "https://www.watchfid.com/chronomaster-only-le-livre-de-reference/",
@@ -1951,6 +2340,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "vintage_care"
+    ],
     "title": "A LOOK TO THE NEW BIBLE <br> by CHRONOGRAPHES.NET",
     "updated_at": "2024-07-18",
     "url": "https://www.watchfid.com/chronomaster-only-the-new-bible/",
@@ -1970,6 +2363,9 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "celebrity"
+    ],
     "title": "DALIDA ET JACQUES BREL : DEUX IMMENSES STARS EN SPEEDMASTER by MONTRES DE LUXE",
     "updated_at": "2025-12-28",
     "url": "https://www.watchfid.com/dalida-et-jacques-brel-deux-immenses-stars-en-speedmaster-by-montres-ded-luxe/",
@@ -1989,6 +2385,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "celebrity",
+      "brand_history"
+    ],
     "title": "DE FERNAND RAYNAUD A JEAN NOHAIN : UNE PIAGET ET DEUX LEGENDES DE LA TELEVISION FRANCAISE by MONTRES DE LUXE",
     "updated_at": "2026-01-22",
     "url": "https://www.watchfid.com/de-fernand-raynaud-a-jean-nohain-une-piage-et-deux-legendes-de-la-television-francaise-by-montres-de-luxe/",
@@ -2008,6 +2408,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "vintage_care"
+    ],
     "title": "DEUX LIVRES A TELECHARGER GRATUITEMENT by MONTRES DE LUXE",
     "updated_at": "2025-06-23",
     "url": "https://www.watchfid.com/deux-livres-a-telecharger-gratuitement-by-montres-de-luxe/",
@@ -2027,6 +2431,9 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy"
+    ],
     "title": "ELIOT AVIAT",
     "updated_at": "2026-07-15",
     "url": "https://www.watchfid.com/eliot-aviat/",
@@ -2046,6 +2453,11 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "racing",
+      "brand_history"
+    ],
     "title": "ELLES ET L’HEURE by LE NOUVEL OBS",
     "updated_at": "2026-03-20",
     "url": "https://www.watchfid.com/elles-et-lheure-by-le-nouvel-obs/",
@@ -2065,6 +2477,9 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy"
+    ],
     "title": "ELODIE ATTIAS",
     "updated_at": "2026-07-31",
     "url": "https://www.watchfid.com/elodie-attias-2/",
@@ -2084,6 +2499,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "collector_mindset"
+    ],
     "title": "BENJAMIN HEYER",
     "updated_at": "2026-08-07",
     "url": "https://www.watchfid.com/elodie-attias/",
@@ -2103,6 +2522,9 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy"
+    ],
     "title": "EMILIO DOSSO",
     "updated_at": "2026-09-02",
     "url": "https://www.watchfid.com/emilio-dosso/",
@@ -2122,6 +2544,9 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history"
+    ],
     "title": "ET SI VOUS OFFRIEZ UN BEAU LIVRE ROLEX by THE WATCH OBSERVER",
     "updated_at": "2025-03-29",
     "url": "https://www.watchfid.com/et-si-vous-offriez-un-beau-livre-rolex-by-the-watch-observer/",
@@ -2141,6 +2566,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history"
+    ],
     "title": "EVOLUTION OF THE FIRST NIVADA CHRONOMASTERS (VENUS 210)",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/evolution-of-the-first-nivada-chronomasters-venus-210/",
@@ -2160,6 +2589,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "vintage_care"
+    ],
     "title": "OMEGA SPEEDMASTER <br> ST 105.012-66 CB",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/explaining-the-speedmaster-105012-66-cb/",
@@ -2179,6 +2612,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "vintage_care"
+    ],
     "title": "EXTRAITS D’ARCHIVES by MONTRES DE LUXE",
     "updated_at": "2025-04-11",
     "url": "https://www.watchfid.com/extraits-darchives-by-montres-de-luxe/",
@@ -2198,6 +2635,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "community_ethics"
+    ],
     "title": "FIONA BARTHOLOMEUSZ",
     "updated_at": "2026-07-29",
     "url": "https://www.watchfid.com/fiona-bartholomeusz/",
@@ -2217,6 +2658,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "aviation"
+    ],
     "title": "FLIGHTMASTER ONLY <br> by FRATELLOWATCHES",
     "updated_at": "2024-07-18",
     "url": "https://www.watchfid.com/flightmaster-only-review-by-fratellowatches/",
@@ -2236,6 +2681,11 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "aviation",
+      "space"
+    ],
     "title": "FLIGHTMASTER ONLY <br> by HODINKEE",
     "updated_at": "2024-07-18",
     "url": "https://www.watchfid.com/flightmaster-only-review-by-hodinkee/",
@@ -2255,6 +2705,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "space",
+      "brand_history"
+    ],
     "title": "FLIGHTMASTERS  AND APOLLO SOYUZ",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/flightmasters-and-apollo-soyuz/",
@@ -2274,6 +2728,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "vintage_care",
+      "market_commentary"
+    ],
     "title": "FOR YOUR WATCH ONLY",
     "updated_at": "2026-07-25",
     "url": "https://www.watchfid.com/for-your-watch-only/",
@@ -2293,6 +2751,9 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy"
+    ],
     "title": "FRANCOIS DAUBINET",
     "updated_at": "2026-07-27",
     "url": "https://www.watchfid.com/francois-daubinet/",
@@ -2312,6 +2773,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "reference_profile"
+    ],
     "title": "FROM THE SOUSCRIPTION WATCH TO THE CLASSIQUE SOUSCRIPTION 2025",
     "updated_at": "2025-11-30",
     "url": "https://www.watchfid.com/from-the-subscription-watch-to-the-classique-souscription-2025/",
@@ -2331,6 +2796,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "vintage_care"
+    ],
     "title": "GRAY-BLUE SPEEDMASTER DIALS",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/gray-blue-speedmaster-dials/",
@@ -2350,6 +2819,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history"
+    ],
     "title": "HORLOGERIE : LES BRACELETS SE MONTRENT by LE MONDE",
     "updated_at": "2025-07-01",
     "url": "https://www.watchfid.com/horlogeri-les-bracelets-se-montrent-by-le-monde/",
@@ -2369,6 +2842,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "space",
+      "reference_profile"
+    ],
     "title": "THE MOONWATCH CERTIFICATION <br> BY NASA",
     "updated_at": "2026-06-28",
     "url": "https://www.watchfid.com/how-the-speedmaster-became-the-moonwatch/",
@@ -2388,6 +2865,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "celebrity",
+      "collecting_philosophy"
+    ],
     "title": "ICONIC HOURS",
     "updated_at": "2026-06-29",
     "url": "https://www.watchfid.com/iconic-hours/",
@@ -2407,6 +2888,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "market_commentary"
+    ],
     "title": "IN 2014, THE BOOK MOONWATCH ONLY CREATED A BUZZ IN THE WATCHMAKING WORLD by DELUXEPAD",
     "updated_at": "2026-04-14",
     "url": "https://www.watchfid.com/in-2014-the-book-moonwatch-only-created-a-buzz-in-the-watchmaking-world-by-deluxepad/",
@@ -2426,6 +2911,9 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "design"
+    ],
     "title": "JULIE KRAULIS <br> SPECIAL INTERVIEW",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/julie-kraulis-special-interview/",
@@ -2445,6 +2933,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "space",
+      "reference_profile"
+    ],
     "title": "KOMFIT & JB CHAMPION  BRACELETS",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/komfit-forstner-and-jb-champion-bracelets/",
@@ -2464,6 +2956,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "racing"
+    ],
     "title": "LA COLLECTION LOUIS CARTIER DE 1973 by LA REVUE DES MONTRES",
     "updated_at": "2025-11-14",
     "url": "https://www.watchfid.com/la-collection-louis-cartier-de-1973-by-la-revue-des-montres/",
@@ -2483,6 +2979,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history"
+    ],
     "title": "LA MYTHIQUE SEAMASTER MERITAIT BIEN UN OUVRAGE DE REFERENCE by THE GOOD LIFE",
     "updated_at": "2026-04-17",
     "url": "https://www.watchfid.com/la-mythique-seamaster-meritait-bien-un-ouvrage-de-reference-by-the-good-life/",
@@ -2502,6 +3002,11 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history",
+      "market_commentary"
+    ],
     "title": "LA SECONDE MAIN, NOUVELLE MARTINGALE by L’OPINION",
     "updated_at": "2025-10-10",
     "url": "https://www.watchfid.com/la-seconde-main-nouvelle-martingale-by-lopinion/",
@@ -2521,6 +3026,11 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "space",
+      "celebrity",
+      "brand_history"
+    ],
     "title": "LA SPEEDMASTER DE BUZZ ALDRIN, A JAMAIS LA PREMIERE by LE FIGARO",
     "updated_at": "2026-08-20",
     "url": "https://www.watchfid.com/la-speedmaster-de-buzz-aldrin-a-jamais-la-premiere-by-le-figaro/",
@@ -2540,6 +3050,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collector_mindset",
+      "community_ethics"
+    ],
     "title": "LAURENT MATHIEU",
     "updated_at": "2026-08-01",
     "url": "https://www.watchfid.com/laurent-mathieu/",
@@ -2559,6 +3073,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "market_commentary",
+      "reference_profile"
+    ],
     "title": "LE MARCHE DES MONTRES DE SECONDE MAIN SE DEVELOPPE ET SE STRUCTURE. A COTE DES PLATEFORMES DE VENTE, DES ACTEURS IMAGINENT DE NOUVEAUX SERVICES DEDIES AUX COLLECTIONNEURS by HEROES STYLE",
     "updated_at": "2025-07-16",
     "url": "https://www.watchfid.com/le-marche-des-montres-de-seconde-main-se-developpe-et-se-structure-a-cote-des-plateformes-de-vente-des-acteurs-imaginent-de-nouveaux-services-dedies-aux-collectionneurs-by-heroes-style/",
@@ -2578,6 +3096,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "market_commentary"
+    ],
     "title": "LE MYTHE DE LA ROLEX DAYTONA SE RENFORCE AVEC CES 4 MONTRES by MASCULIN.COM",
     "updated_at": "2025-03-29",
     "url": "https://www.watchfid.com/le-mythe-de-la-rolex-daytona-se-renforce-avec-ces-4-montres-by-montres-de-luxe/",
@@ -2597,6 +3119,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "space",
+      "brand_history"
+    ],
     "title": "MISSION ARTEMIS 2 : LA SPEEDMASTER N’A JAMAIS ETE DETRONEE by LE FIGARO",
     "updated_at": "2026-04-10",
     "url": "https://www.watchfid.com/le-temps-de-la-conquete-de-lespace-by-le-figaro-2/",
@@ -2616,6 +3142,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history"
+    ],
     "title": "LE TEMPS DE LA CONQUETE DE L’ESPACE by LE FIGARO",
     "updated_at": "2026-04-10",
     "url": "https://www.watchfid.com/le-temps-de-la-conquete-de-lespace-by-le-figaro/",
@@ -2635,6 +3165,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "reference_profile"
+    ],
     "title": "LES 5 MEILLEURS LIVRES SUR LES MONTRES ROLEX by GQ FRANCE",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/les-5-meiileurs-livres-sur-les-montres-rolex-by-gq-france/",
@@ -2654,6 +3188,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history"
+    ],
     "title": "LES BEAUX LIVRES A OFFRIR by GQ",
     "updated_at": "2025-03-29",
     "url": "https://www.watchfid.com/les-beaux-livres-livres-a-offrir-by-gq/",
@@ -2673,6 +3211,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "celebrity"
+    ],
     "title": "LES MONTRES DE BOND, JAMES BOND by LA REVUE DES MONTRES",
     "updated_at": "2026-07-08",
     "url": "https://www.watchfid.com/les-montres-de-bond-james-bond-by-la-revue-des-montres/",
@@ -2692,6 +3234,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "design"
+    ],
     "title": "LES MONTRES POUR FEMMES A L’HEURE DU CHANGEMENT by LE MONDE",
     "updated_at": "2024-09-17",
     "url": "https://www.watchfid.com/les-montres-pour-femmes-a-lheure-du-changement-by-le-monde/",
@@ -2711,6 +3257,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "reference_profile"
+    ],
     "title": "L’HISTOIRE DE LA SPEEDMASTER MOONWATCH EN 150 CADRANS by LA REVUE DES MONTRES",
     "updated_at": "2026-03-06",
     "url": "https://www.watchfid.com/lhistoire-de-la-speedmaster-moonwatch-en-150-cadrans-by-la-revue-des-montres/",
@@ -2730,6 +3280,11 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history",
+      "racing"
+    ],
     "title": "L’HORLOGERIE SOUS LE SAPIN by LE POINT",
     "updated_at": "2025-12-08",
     "url": "https://www.watchfid.com/lhorlogerie-sous-le-sapin-by-le-point/",
@@ -2749,6 +3304,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "celebrity"
+    ],
     "title": "LIVRE TALISMAN by MONTRES MAGAZINE",
     "updated_at": "2025-12-02",
     "url": "https://www.watchfid.com/livre-talisman/",
@@ -2768,6 +3327,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "reference_profile"
+    ],
     "title": "L’OMEGA SEAMASTER A SON LIVRE DE REFERENCE by LA REVUE DES MONTRES",
     "updated_at": "2025-11-14",
     "url": "https://www.watchfid.com/lomega-seamaster-a-son-livre-de-reference-by-la-revue-des-montres/",
@@ -2787,6 +3350,7 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [],
     "title": "LUCA GARBATI",
     "updated_at": "2026-08-30",
     "url": "https://www.watchfid.com/luca-garbati/",
@@ -2806,6 +3370,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history"
+    ],
     "title": "MOONWATCH DIALS : 150 CADRANS QUI ONT FAIT L’HISTOIRE DE LA SPEEDMASTER CHEZ WATCHFID by MONTRES DE LUXE",
     "updated_at": "2025-12-28",
     "url": "https://www.watchfid.com/moonwatch-dials-150-cadrans-qui-ont-fait-lhistoire-de-la-speedmaster-chez-watchfid-by-montres-de-luxe/",
@@ -2825,6 +3393,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "space",
+      "collector_mindset"
+    ],
     "title": "MOONWATCH DIALS: THE MOST EXPENSIVE BOOK I’VE EVER BOUGHT by FRATELLO WATCHES",
     "updated_at": "2026-06-16",
     "url": "https://www.watchfid.com/moonwatch-dials-the-most-expensive-book-ive-ever-bought-by-fratello-watches/",
@@ -2844,6 +3416,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "design",
+      "collecting_philosophy"
+    ],
     "title": "WHEN THE SPEEDMASTER  INSPIRES THE ARTISTS",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/moonwatch-illustrations/",
@@ -2863,6 +3439,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "space"
+    ],
     "title": "MOONWATCH ONLY <br> by LES RHABILLEURS",
     "updated_at": "2024-07-18",
     "url": "https://www.watchfid.com/moonwatch-les-rhabilleurs/",
@@ -2882,6 +3462,11 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "space",
+      "brand_history",
+      "review"
+    ],
     "title": "MOONWATCH ONLY NEW EDITION <br> by FRATELLOWATCHES",
     "updated_at": "2024-07-18",
     "url": "https://www.watchfid.com/moonwatch-new-edition-speedy-tuesday-review/",
@@ -2901,6 +3486,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "space",
+      "reference_profile"
+    ],
     "title": "MOONWATCH ONLY by THE GOOD LIFE",
     "updated_at": "2025-04-03",
     "url": "https://www.watchfid.com/moonwatch-on-ly-by-the-good-life/",
@@ -2920,6 +3509,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "space"
+    ],
     "title": "MOONWATCH ONLY 3RD EDITION <br> by FRATELLOWATCHES",
     "updated_at": "2024-07-18",
     "url": "https://www.watchfid.com/moonwatch-only-3rd-edition-review-by-fratellowatches/",
@@ -2939,6 +3532,11 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "news",
+      "reference_profile",
+      "space"
+    ],
     "title": "MWO NEW EDITION PREVIEW <br> by FRATELLOWATCHES",
     "updated_at": "2024-07-18",
     "url": "https://www.watchfid.com/moonwatch-only-60-years-of-omega-speedmaster/",
@@ -2958,6 +3556,11 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "space",
+      "reference_profile",
+      "brand_history"
+    ],
     "title": "MOONWATCH ONLY <br> by BESPOKE UNIT",
     "updated_at": "2024-07-18",
     "url": "https://www.watchfid.com/moonwatch-only-book-review-bespoke-unit/",
@@ -2977,6 +3580,7 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [],
     "title": "WIN THE MWO BOOK <br> by WORLDTEMPUS",
     "updated_at": "2024-07-18",
     "url": "https://www.watchfid.com/moonwatch-only-by-worldtempus/",
@@ -2996,6 +3600,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "space"
+    ],
     "title": "MWO ELECTRONIC GUIDE <br> by GEAR PATROL",
     "updated_at": "2024-07-18",
     "url": "https://www.watchfid.com/moonwatch-only-electronic-guide-gear-patrol/",
@@ -3015,6 +3623,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "vintage_care"
+    ],
     "title": "ELECTRONIC MOONWATCH ONLY <br> by HODINKEE",
     "updated_at": "2024-07-18",
     "url": "https://www.watchfid.com/moonwatch-only-electronic-guide-hodinkee/",
@@ -3034,6 +3646,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "space"
+    ],
     "title": "ELECTRONIC MOONWATCH ONLY <br> by MONOCHROME WATCHES",
     "updated_at": "2024-07-18",
     "url": "https://www.watchfid.com/moonwatch-only-electronic-guide-monochrome-review/",
@@ -3053,6 +3669,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "space",
+      "reference_profile"
+    ],
     "title": "E-MOONWATCH ONLY – by PERPETUAL PASSION",
     "updated_at": "2024-07-18",
     "url": "https://www.watchfid.com/moonwatch-only-electronic-guide-perpetual-passion-review/",
@@ -3072,6 +3692,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "space",
+      "reference_profile"
+    ],
     "title": "ELECTRONIC MOONWATCH ONLY <br> by FRATELLOWATCHES",
     "updated_at": "2024-07-18",
     "url": "https://www.watchfid.com/moonwatch-only-electronic-guide-speedy-tuesday-review/",
@@ -3091,6 +3715,11 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "space",
+      "reference_profile",
+      "brand_history"
+    ],
     "title": "MOONWATCH ONLY <br> by FABRICE GUEROUX",
     "updated_at": "2024-07-18",
     "url": "https://www.watchfid.com/moonwatch-only-le-livre-specialise-omega-speedmaster/",
@@ -3110,6 +3739,11 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "space",
+      "reference_profile",
+      "brand_history"
+    ],
     "title": "MOONWATCH ONLY <br> by A BLOG TO WATCH",
     "updated_at": "2024-07-18",
     "url": "https://www.watchfid.com/moonwatch-only-review-by-a-blog-to-watch/",
@@ -3129,6 +3763,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history"
+    ],
     "title": "MOONWATCH ONLY <br> by FRATELLOWATCHES",
     "updated_at": "2024-07-18",
     "url": "https://www.watchfid.com/moonwatch-only-review-by-fratellowatches/",
@@ -3148,6 +3786,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "vintage_care"
+    ],
     "title": "MOONWATCH ONLY <br> by VINTAGE COOL HUNTER",
     "updated_at": "2024-07-18",
     "url": "https://www.watchfid.com/moonwatch-only-review-by-vintage-cool-hunter/",
@@ -3167,6 +3809,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "space"
+    ],
     "title": "MOONWATCH ONLY <br> by WATCHONISTA",
     "updated_at": "2024-07-18",
     "url": "https://www.watchfid.com/moonwatch-only-the-reference-omega-speedmaster/",
@@ -3186,6 +3832,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "space"
+    ],
     "title": "MOONWATCH ONLY <br> by QUILL & PAD",
     "updated_at": "2024-07-18",
     "url": "https://www.watchfid.com/moonwatch-only-the-ultimate-omega-speedmaster-guide/",
@@ -3205,6 +3855,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "space"
+    ],
     "title": "MOONWATCH ONLY <br> by WINED DINED AND TIMED",
     "updated_at": "2024-07-18",
     "url": "https://www.watchfid.com/moonwatch-only-wined-dined-and-timed/",
@@ -3224,6 +3878,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "space"
+    ],
     "title": "MY FIRST STEP <br> TOWARDS VINTAGE SPEEDIES",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/my-first-step-towards-vintage-speedies/",
@@ -3243,6 +3901,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "vintage_care"
+    ],
     "title": "A SLEEPING BEAUTY AWAKES <br> by EUROPA STAR",
     "updated_at": "2024-07-18",
     "url": "https://www.watchfid.com/nivada-a-sleeping-beauty-awakes/",
@@ -3262,6 +3924,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "reference_profile"
+    ],
     "title": "REBIRTH OF A MYTH:  NIVADA GRENCHEN",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/nivada-grenchen-rebirth/",
@@ -3281,6 +3947,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "reference_profile"
+    ],
     "title": "CROTON NIVADA GRENCHEN: THE STORY BEHIND THE NAME",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/nivada-grenchen-sa/",
@@ -3300,6 +3970,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "vintage_care"
+    ],
     "title": "OMEGA EXTRACTS FROM THE ARCHIVES – MYTHS AND REALITIES",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/omega-extracts-of-archives-myths-and-realities/",
@@ -3319,6 +3993,11 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "aviation",
+      "collecting_philosophy"
+    ],
     "title": "OMEGA FLIGHTMASTER “ESSAIS EN VOL 1972”",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/omega-flightmaster-essais-en-vol-1972/",
@@ -3338,6 +4017,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "design"
+    ],
     "title": "OMEGA REINVENTE SA MONTRE DE PLONGEE by LE FIGARO",
     "updated_at": "2025-11-25",
     "url": "https://www.watchfid.com/omega-reinvente-sa-montre-de-plongee-by-le-figaro/",
@@ -3357,6 +4040,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history"
+    ],
     "title": "OMEGA SPEEDMASTER FAP : UNE SPEED MILITAIRE PARMI LES PLUS RARES DU MARCHE by MONTRES DE LUXE",
     "updated_at": "2026-03-06",
     "url": "https://www.watchfid.com/omega-speedmaster-fap-une-speed-militaire-parmi-les-plus-rares-du-marche-by-montres-de-luxe/",
@@ -3376,6 +4063,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "space"
+    ],
     "title": "LA LUNA SULLO SCAFFALE <br> by GIORNALE OROLOGI",
     "updated_at": "2024-07-18",
     "url": "https://www.watchfid.com/omega-speedmaster-giornale-orologi/",
@@ -3395,6 +4086,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "vintage_care"
+    ],
     "title": "OMEGA SPEEDMASTER  ST 376.0822",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/omega-speedmaster-holy-grail/",
@@ -3414,6 +4109,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history"
+    ],
     "title": "THE SPEEDMASTER ULTRAMAN  REVIEW",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/omega-speedmaster-ultraman/",
@@ -3433,6 +4132,11 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history",
+      "vintage_care"
+    ],
     "title": "THE MOONWATCH PRODUCTION  OVERVIEW",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/overview-of-the-speedmaster-moonwatch-production/",
@@ -3452,6 +4156,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history"
+    ],
     "title": "PLONGEUSE by L’EXPRESS",
     "updated_at": "2025-12-08",
     "url": "https://www.watchfid.com/plongeuse-by-lexpress/",
@@ -3471,6 +4179,9 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy"
+    ],
     "title": "PORTRAIT OF… <br> A TALENTED ARTIST",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/portrait-of-a-talented-artist-cecilia-mendoza/",
@@ -3490,6 +4201,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "celebrity"
+    ],
     "title": "POURQUOI LA ROLEX DAYTONA PAUL NEWMAN N’EST DEFINITIVEMENT PAS UN MODELE COMME LES AUTRES by MASCULIN.COM",
     "updated_at": "2025-07-16",
     "url": "https://www.watchfid.com/pourquoi-la-rolex-daytona-paul-newman-nest-definitivement-pas-un-modele-comme-les-autres-by-masculin-com/",
@@ -3509,6 +4224,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "vintage_care"
+    ],
     "title": "Press Release",
     "updated_at": "2025-04-13",
     "url": "https://www.watchfid.com/press-release-04-04-2025/",
@@ -3528,6 +4247,9 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "news"
+    ],
     "title": "Press Release",
     "updated_at": "2025-04-13",
     "url": "https://www.watchfid.com/press-release-08-07-2024/",
@@ -3547,6 +4269,9 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "news"
+    ],
     "title": "Press Release",
     "updated_at": "2025-09-22",
     "url": "https://www.watchfid.com/press-release-2/",
@@ -3566,6 +4291,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "celebrity"
+    ],
     "title": "Press Release",
     "updated_at": "2025-09-22",
     "url": "https://www.watchfid.com/press-release-3/",
@@ -3585,6 +4314,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history"
+    ],
     "title": "Press Release",
     "updated_at": "2025-11-30",
     "url": "https://www.watchfid.com/press-release-5/",
@@ -3604,6 +4337,9 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "news"
+    ],
     "title": "Press Release",
     "updated_at": "2025-09-22",
     "url": "https://www.watchfid.com/press-release/",
@@ -3623,6 +4359,11 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "racing",
+      "vintage_care"
+    ],
     "title": "RACING SPEEDMASTERS  FROM THE 60s",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/racing-speedmasters/",
@@ -3642,6 +4383,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history"
+    ],
     "title": "ROLEX COSMOGRAPH DAYTONA, VOL. 1 ET 2 by EUROPA STAR",
     "updated_at": "2026-05-02",
     "url": "https://www.watchfid.com/rolex-cosmograph-daytona-vol-1-et-2-by-europa-star/",
@@ -3661,6 +4406,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history"
+    ],
     "title": "ROLEX COSMOGRAPH DAYTONA VOL. 1 ET 2 by MONTRES DE LUXE",
     "updated_at": "2024-10-01",
     "url": "https://www.watchfid.com/rolex-cosmograph-daytona-vol-1-et-2-by-montres-de-luxe/",
@@ -3680,6 +4429,11 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "celebrity",
+      "racing"
+    ],
     "title": "A COMPREHENSIVE GUIDE TO THE ROLEX COSMOGRAPH DAYTONA “PAUL NEWMAN” DIALS",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/rolex-daytona-paul-newman-dials/",
@@ -3699,6 +4453,11 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "racing",
+      "celebrity"
+    ],
     "title": "ROLEX DAYTONA REF. 16519 – THE COLORED DIALS COLLECTION",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/rolex-daytona-ref-16519-the-colored-dials-collection/",
@@ -3718,6 +4477,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history"
+    ],
     "title": "ROLEX DAYTONA REF. 16519 :  UNE COLLECTION EXCEPTIONNELLE by LA REVUE DES MONTRES",
     "updated_at": "2025-09-28",
     "url": "https://www.watchfid.com/rolex-daytona-ref-16519-une-collection-exceptionnelle-by-la-revue-des-montres/",
@@ -3737,6 +4500,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "community_ethics"
+    ],
     "title": "ROMAIN DOUVILLE",
     "updated_at": "2026-08-04",
     "url": "https://www.watchfid.com/romain-douville/",
@@ -3756,6 +4523,11 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "racing",
+      "brand_history"
+    ],
     "title": "SEAMASTER ONLY: A PROFOUND STORY by TOP YACHT DESIGN",
     "updated_at": "2025-11-03",
     "url": "https://www.watchfid.com/seamaster-only-a-profound-story-by-top-yacht-design/",
@@ -3775,6 +4547,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "racing"
+    ],
     "title": "SEAMASTER ONLY – EIN BUCH UBER DI KULT-TAUCHERUHR VON OMEGA by INSIGHT LUXURY",
     "updated_at": "2025-12-12",
     "url": "https://www.watchfid.com/seamaster-only-ein-buch-uber-di-kult-taucheruhr-von-omega-by-insight-luxury/",
@@ -3794,6 +4570,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "design"
+    ],
     "title": "SEAMASTER ONLY – IMMERSION CHEZ OMEGA by LE FIGARO MAGAZINE",
     "updated_at": "2025-12-28",
     "url": "https://www.watchfid.com/seamaster-only-immersion-chez-omega-by-le-figaro-magazine-2/",
@@ -3813,6 +4593,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history"
+    ],
     "title": "NOEL 2025 : NOTRE SELECTION DE BEAUX LIVRES A OFFRIR AUX HOMMES QUI AIMENT LES BELLES MONTRES by MASCULIN.COM",
     "updated_at": "2025-12-28",
     "url": "https://www.watchfid.com/seamaster-only-immersion-chez-omega-by-le-figaro-magazine/",
@@ -3832,6 +4616,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "reference_profile"
+    ],
     "title": "SEAMASTER ONLY : INTERVIEW DES AUTEURS DE CETTE NOUVELLE BIBLE HORLOGERE by MONTRES DE LUXE",
     "updated_at": "2025-09-24",
     "url": "https://www.watchfid.com/seamaster-only-interview-des-auteurs-de-cette-nouvlle-bible-horlogere-by-montres-de-luxe/",
@@ -3851,6 +4639,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "reference_profile"
+    ],
     "title": "SEAMASTER ONLY : LA BIBLE ULTIME DE LA PLONGEUSE OMEGA by CHRONO TEMPUS",
     "updated_at": "2025-12-08",
     "url": "https://www.watchfid.com/seamaster-only-la-bible-ultime-de-la-plongeuse-omega-by-chrono-tempus/",
@@ -3870,6 +4662,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "diving"
+    ],
     "title": "SEAMASTER ONLY: LA MONTRE DE PLONGEE OMEGA by MONTRES MAGAZINE",
     "updated_at": "2025-11-04",
     "url": "https://www.watchfid.com/seamaster-only-la-montre-de-plongee-omega-by-montres-magazine/",
@@ -3889,6 +4685,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "reference_profile"
+    ],
     "title": "SEAMASTER ONLY – THE MAKING OF",
     "updated_at": "2025-10-26",
     "url": "https://www.watchfid.com/seamaster-only-the-making-of/",
@@ -3908,6 +4708,11 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "military",
+      "aviation",
+      "reference_profile"
+    ],
     "title": "SOUTH AFRICAN AIR FORCE LEMANIA 1872",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/south-african-air-force-lemania-1872/",
@@ -3927,6 +4732,11 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "military",
+      "aviation",
+      "brand_history"
+    ],
     "title": "SOUTH AFRICAN AIR FORCE <br>LEMANIA 5012",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/south-african-air-force-lemania-5012/",
@@ -3946,6 +4756,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "space"
+    ],
     "title": "SPEEDMASTER 145.022-68 <br> TRANSITIONAL",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/speedmaster-145-022-68-transitional/",
@@ -3965,6 +4779,11 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "racing",
+      "space"
+    ],
     "title": "SPEEDMASTER 60TH: <br> BACK TO THE ORIGIN",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/speedmaster-60th-anniversary-limited-edition-back-to-the-origin/",
@@ -3984,6 +4803,11 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "racing",
+      "brand_history"
+    ],
     "title": "OMEGA SPEEDMASTER  ST 105.012-63 A.C.P.",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/speedmaster-and-automobile-racing-the-acp-model/",
@@ -4003,6 +4827,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "vintage_care"
+    ],
     "title": "SPEEDMASTERS <br> AND CHOCOLATE DIALS",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/speedmaster-chocolate-dials/",
@@ -4022,6 +4850,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "space"
+    ],
     "title": "THE SPEEDMASTER MISSIONS  VALISE",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/speedmaster-missions-valise/",
@@ -4041,6 +4873,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "vintage_care"
+    ],
     "title": "RADIUM, TRITIUM <br> AND LUMINOVA",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/speedmasters-dials/",
@@ -4060,6 +4896,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "design"
+    ],
     "title": "SPEEDMASTERS  WITH WHITE DIALS",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/speedmasters-with-white-dials/",
@@ -4079,6 +4919,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "news"
+    ],
     "title": "CHRISTMAS SHOPPING GUIDE <br> by FRATELLOWATCHES",
     "updated_at": "2024-07-18",
     "url": "https://www.watchfid.com/speedy-tuesday-christmas-shopping-guide-speedmaster-accessories/",
@@ -4098,6 +4942,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "reference_profile"
+    ],
     "title": "STEEL & GOLD  ITALIAN SPEEDMASTERS",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/steel-and-gold-italian-speedmasters/",
@@ -4117,6 +4965,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "vintage_care"
+    ],
     "title": "STEEL SPEEDMASTERS WITH DISPLAY BACK",
     "updated_at": "2026-04-28",
     "url": "https://www.watchfid.com/steel-speedmasters-with-display-back/",
@@ -4136,6 +4988,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "space"
+    ],
     "title": "APOLLO XI 1980  GOLD SPEEDMASTERS",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/the-apollo-xi-1980-gold-models/",
@@ -4155,6 +5011,9 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "celebrity"
+    ],
     "title": "THE BRIAN KELLY  NIVADA CHRONOGRAPH",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/the-brian-kelly-croton-nivada-grenchen-chronograph/",
@@ -4174,6 +5033,11 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": "Co-Pilot",
+    "themes": [
+      "reference_profile",
+      "space",
+      "design"
+    ],
     "title": "EVOLUTION OF THE BREITLING COSMONAUTE 809 DIALS (1962-1973)",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/the-evolution-of-the-breitling-cosmonaute-dials-ref-809-1962-1973/",
@@ -4193,6 +5057,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "space"
+    ],
     "title": "FIRST STEEL SPEEDMASTER  WITH DISPLAY BACK",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/the-first-steel-model-with-display-back/",
@@ -4212,6 +5080,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "space"
+    ],
     "title": "THE FROZEN SPEEDMASTER  STORY",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/the-frozen-speedmaster/",
@@ -4231,6 +5103,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "space",
+      "brand_history"
+    ],
     "title": "THE HISTORY OF THE FIRST SWISS CHRONOGRAPH IN SPACE",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/the-history-of-the-first-swiss-chronograph-in-space/",
@@ -4250,6 +5126,9 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history"
+    ],
     "title": "THE ITALIAN  LIMITED EDITIONS",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/the-italian-limited-editions/",
@@ -4269,6 +5148,11 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "vintage_care",
+      "market_commentary"
+    ],
     "title": "THE JAPANESE  LIMITED EDITIONS",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/the-japanese-limited-editions/",
@@ -4288,6 +5172,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "space",
+      "brand_history"
+    ],
     "title": "THE MERCURY SPEEDMASTERS  STORY",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/the-mercury-speedmasters-story/",
@@ -4307,6 +5195,9 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "military"
+    ],
     "title": "THE OMEGA SPEEDMASTER  RAID",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/the-omega-speedmaster-raid/",
@@ -4326,6 +5217,11 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history",
+      "space"
+    ],
     "title": "PLATINUM  SPEEDMASTERS",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/the-platinum-speedmasters/",
@@ -4345,6 +5241,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "reference_profile"
+    ],
     "title": "THE COMEBACK OF THE CASD <BR>by MONOCHROME",
     "updated_at": "2024-07-18",
     "url": "https://www.watchfid.com/the-return-of-nivada-grenchen-chronomaster/",
@@ -4364,6 +5264,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "news"
+    ],
     "title": "THE RETURN OF NIVADA <br> by WATCH TIME",
     "updated_at": "2024-07-18",
     "url": "https://www.watchfid.com/the-return-of-nivada-grenchen/",
@@ -4383,6 +5287,11 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history",
+      "design"
+    ],
     "title": "THE REVERSO 60TH ANNIVERSARY",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/the-reverso-60th-anniversary/",
@@ -4402,6 +5311,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history"
+    ],
     "title": "THE REVERSO GRANDE TAILLE COLLECTION",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/the-reverso-grande-taille-collection/",
@@ -4421,6 +5334,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "military",
+      "brand_history"
+    ],
     "title": "THE RHODESIAN AIR FORCE  OMEGA WATCHES",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/the-rhodesian-air-force-omega-watches/",
@@ -4440,6 +5357,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "space"
+    ],
     "title": "SKELETONIZED  SPEEDMASTERS",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/the-skeletonized-speedmaster-series/",
@@ -4459,6 +5380,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "space",
+      "brand_history"
+    ],
     "title": "SNOOPY AWARD  LIMITED EDITIONS",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/the-snoopy-award-limited-editions/",
@@ -4478,6 +5403,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "space"
+    ],
     "title": "NASA AND RADIAL DIALS",
     "updated_at": "2026-09-01",
     "url": "https://www.watchfid.com/the-speedmaster-radial-dials/",
@@ -4497,6 +5426,9 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "news"
+    ],
     "title": "THE THIRD EDITION OF THE SPEEDMASTER  GTG NETHERLANDS by FRATELLO",
     "updated_at": "2025-11-18",
     "url": "https://www.watchfid.com/the-third-edition-of-the-speedmaster-gtg-netherlands-by-fratellowatches/",
@@ -4516,6 +5448,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "community_ethics",
+      "collecting_philosophy"
+    ],
     "title": "THE THIRD EDITION OF THE SPEEDMASTER GTG NETHERLANDS",
     "updated_at": "2025-11-19",
     "url": "https://www.watchfid.com/the-third-edition-of-the-speedmaster-gtg-netherlands/",
@@ -4535,6 +5471,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "space"
+    ],
     "title": "THE ULTIMATE SPEEDMASTER GUIDE <br> by WORLDTEMPUS",
     "updated_at": "2024-07-18",
     "url": "https://www.watchfid.com/the-ultimate-omega-speedmaster-guide/",
@@ -4554,6 +5494,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "aviation"
+    ],
     "title": "THE FLIGHTMASTER  CK 2914 FAP",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/the-very-first-flightmaster/",
@@ -4573,6 +5517,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "space",
+      "brand_history"
+    ],
     "title": "TOP 5 WATCH BOOKS RANKING <br> by FRATELLOWATCHES",
     "updated_at": "2024-07-18",
     "url": "https://www.watchfid.com/top-five-watch-books-by-fratellowatches/",
@@ -4592,6 +5540,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history"
+    ],
     "title": "IMPORTANT UPDATES ON  TRANSITIONAL FLIGHTMASTERS",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/transitional-flightmasters/",
@@ -4611,6 +5563,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "space",
+      "brand_history"
+    ],
     "title": "TWO ICONS AND THEIR SPEEDMASTERS",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/two-icons-and-their-speedmasters/",
@@ -4630,6 +5586,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "space"
+    ],
     "title": "UNDERSTANDING THE SPEEDMASTER 145.022-69",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/understanding-the-145022-69-reference/",
@@ -4649,6 +5609,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "vintage_care"
+    ],
     "title": "UNDERSTANDING FLIGHTMASTER “PRE-SERIES”",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/understanding-the-flightmaster-pre-series/",
@@ -4668,6 +5632,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "racing"
+    ],
     "title": "UNE COLLECTION DE MONTRES OMEGA VINTAGE EXCEPTIONNELLE MISE EN VENTE PAR WATCHFID by MONTRES DE LUXE",
     "updated_at": "2026-04-09",
     "url": "https://www.watchfid.com/une-collection-de-montres-omega-vintage-exceptionnelle-mise-en-vente-par-watchfid-by-montres-de-luxe/",
@@ -4687,6 +5655,9 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy"
+    ],
     "title": "UNE COLLECTION, ET APRES ? by MONTRES HEROES",
     "updated_at": "2026-06-01",
     "url": "https://www.watchfid.com/une-collection-et-apres-by-montres-heroes/",
@@ -4706,6 +5677,11 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "space",
+      "brand_history"
+    ],
     "title": "UNE MONTRE SUR LA LUNE <br> by MONTRES DE LUXE",
     "updated_at": "2024-07-18",
     "url": "https://www.watchfid.com/une-montre-sur-la-lune-par-montres-de-luxe/",
@@ -4725,6 +5701,11 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history",
+      "racing"
+    ],
     "title": "UNE MONTRE, UNE AMITIE by LA REVUE DES MONTRES",
     "updated_at": "2026-03-06",
     "url": "https://www.watchfid.com/une-montre-une-amitie-by-la-revue-des-montres/",
@@ -4744,6 +5725,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "auction_results"
+    ],
     "title": "VENTE D’UNE EXCEPTIONNELLE SERIE DE 4 ROLEX DAYTONA 16519 by MONTRES DE LUXE",
     "updated_at": "2025-03-29",
     "url": "https://www.watchfid.com/vente-dune-exceptionnelle-serie-de-4-rolex-daytona-16519-by-montres-de-luxe/",
@@ -4763,6 +5748,7 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [],
     "title": "VICTOR DE BOISSIEU",
     "updated_at": "2026-06-29",
     "url": "https://www.watchfid.com/victor-de-boissieu/",
@@ -4782,6 +5768,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "design"
+    ],
     "title": "UNDER THE CHRISTMAS TREE <br> by WORLDTEMPUS",
     "updated_at": "2024-07-18",
     "url": "https://www.watchfid.com/watch-books-to-go-under-the-christmas-tree/",
@@ -4801,6 +5791,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "design",
+      "space"
+    ],
     "title": "WATCHES AND PENCILS <br> SPECIAL INTERVIEW",
     "updated_at": "2024-05-16",
     "url": "https://www.watchfid.com/watches-and-pencils-special-interview/",
@@ -4820,6 +5814,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history"
+    ],
     "title": "WATCHES AND SPACE by THE WATCH LIBRARY",
     "updated_at": "2026-02-01",
     "url": "https://www.watchfid.com/watches-and-space-by-the-watch-library/",
@@ -4839,6 +5837,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "market_commentary",
+      "community_ethics"
+    ],
     "title": "WATCHFID by MONTRE HEROES",
     "updated_at": "2025-04-05",
     "url": "https://www.watchfid.com/watchfid-by-montre-heroes/",
@@ -4858,6 +5860,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history"
+    ],
     "title": "WATCHFID COLLECTIBLES : UNE NOUVELLE COLLECTION DE LIVRES DEDIES AUX MONTRES DE COLLECTION by MONTRES DE LUXE",
     "updated_at": "2026-08-20",
     "url": "https://www.watchfid.com/watchfid-collectibles-une-nouvelle-collection-de-livres-dedies-aux-montres-de-collection-by-montres-de-luxe/",
@@ -4877,6 +5883,7 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [],
     "title": "WATCHFID COLLECTIBLES",
     "updated_at": "2026-07-28",
     "url": "https://www.watchfid.com/watchfid-collectibles/",
@@ -4896,6 +5903,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "news",
+      "community_ethics"
+    ],
     "title": "WATCHFID : FOR YOUR WATCH ONLY by MONTRES MAGAZINE",
     "updated_at": "2024-09-17",
     "url": "https://www.watchfid.com/watchfid-for-your-watch-only/",
@@ -4915,6 +5926,7 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [],
     "title": "ALESSANDRO SQUARZI",
     "updated_at": "2026-06-17",
     "url": "https://www.watchfid.com/watchfid-interviews-alessandro-squarzi/",
@@ -4934,6 +5946,7 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [],
     "title": "ALIREZA NIROOMAND",
     "updated_at": "2026-06-17",
     "url": "https://www.watchfid.com/watchfid-interviews-alireza-niroomand/",
@@ -4953,6 +5966,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "community_ethics",
+      "auction_results"
+    ],
     "title": "AUREL BACS",
     "updated_at": "2026-06-17",
     "url": "https://www.watchfid.com/watchfid-interviews-aurel-bacs/",
@@ -4972,6 +5989,7 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [],
     "title": "CLAUDIO SANTUCCI",
     "updated_at": "2026-06-17",
     "url": "https://www.watchfid.com/watchfid-interviews-claudio-santucci/",
@@ -4991,6 +6009,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "celebrity",
+      "collecting_philosophy"
+    ],
     "title": "DAVY SARDOU",
     "updated_at": "2026-06-17",
     "url": "https://www.watchfid.com/watchfid-interviews-davy-sardou/",
@@ -5010,6 +6032,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "diving",
+      "celebrity"
+    ],
     "title": "DOMINIQUE ARRIEU",
     "updated_at": "2026-06-17",
     "url": "https://www.watchfid.com/watchfid-interviews-dominique-arrieu/",
@@ -5029,6 +6055,7 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [],
     "title": "ERIC SERRA",
     "updated_at": "2026-06-17",
     "url": "https://www.watchfid.com/watchfid-interviews-eric-serra/",
@@ -5048,6 +6075,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "diving",
+      "community_ethics"
+    ],
     "title": "FRANCK MACHU",
     "updated_at": "2026-06-17",
     "url": "https://www.watchfid.com/watchfid-interviews-franck-machu/",
@@ -5067,6 +6098,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "collecting_philosophy"
+    ],
     "title": "GREGORY BREITLING",
     "updated_at": "2026-06-17",
     "url": "https://www.watchfid.com/watchfid-interviews-gregory-breitling/",
@@ -5086,6 +6121,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "news"
+    ],
     "title": "GREGORY KISSLING",
     "updated_at": "2026-06-17",
     "url": "https://www.watchfid.com/watchfid-interviews-gregory-kissling/",
@@ -5105,6 +6144,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "news"
+    ],
     "title": "GUILLAUME LAIDET",
     "updated_at": "2026-06-17",
     "url": "https://www.watchfid.com/watchfid-interviews-guillaume-laidet/",
@@ -5124,6 +6167,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "brand_history",
+      "design"
+    ],
     "title": "JANEK DELESKIEWICZ",
     "updated_at": "2026-06-17",
     "url": "https://www.watchfid.com/watchfid-interviews-janek-deleskiewicz/",
@@ -5143,6 +6190,9 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "community_ethics"
+    ],
     "title": "JUDIKAEL HIREL",
     "updated_at": "2026-06-17",
     "url": "https://www.watchfid.com/watchfid-interviews-judikael-hirel/",
@@ -5162,6 +6212,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "space",
+      "life_lessons"
+    ],
     "title": "MICHEL TOGNINI",
     "updated_at": "2026-06-17",
     "url": "https://www.watchfid.com/watchfid-interviews-michel-tognini/",
@@ -5181,6 +6235,9 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "community_ethics"
+    ],
     "title": "PASCAL RAVESSOUD",
     "updated_at": "2026-07-31",
     "url": "https://www.watchfid.com/watchfid-interviews-pascal-ravessoud/",
@@ -5200,6 +6257,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collector_mindset",
+      "design"
+    ],
     "title": "RONI MADHVANI",
     "updated_at": "2026-06-17",
     "url": "https://www.watchfid.com/watchfid-interviews-roni-madhvani/",
@@ -5219,6 +6280,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "community_ethics"
+    ],
     "title": "SIMON TRAN",
     "updated_at": "2026-06-17",
     "url": "https://www.watchfid.com/watchfid-interviews-simon-tran/",
@@ -5238,6 +6303,7 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [],
     "title": "TED GUSHUE",
     "updated_at": "2026-06-17",
     "url": "https://www.watchfid.com/watchfid-interviews-ted-gushue/",
@@ -5257,6 +6323,9 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "community_ethics"
+    ],
     "title": "TIFFANY TO",
     "updated_at": "2026-06-17",
     "url": "https://www.watchfid.com/watchfid-interviews-tiffany-to-2/",
@@ -5276,6 +6345,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "community_ethics",
+      "collecting_philosophy"
+    ],
     "title": "TIMOTHEE BONNIN",
     "updated_at": "2026-06-17",
     "url": "https://www.watchfid.com/watchfid-interviews-timothee-bonnin/",
@@ -5295,6 +6368,7 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [],
     "title": "VALENTINE POZZO DI BORGO",
     "updated_at": "2026-06-17",
     "url": "https://www.watchfid.com/watchfid-interviews-valentine-pozzo-di-borgo/",
@@ -5314,6 +6388,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history"
+    ],
     "title": "WATCHFID : UN ACTEUR INCONTOURNABLE SUR LE MARCHE DES MONTRES DE COLLECTION by THE WATCH OBSERVER",
     "updated_at": "2025-05-06",
     "url": "https://www.watchfid.com/watchfid-un-acteur-incontournable-sur-le-marche-des-montres-de-collection-by-the-watch-observer/",
@@ -5333,6 +6411,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "market_commentary",
+      "community_ethics"
+    ],
     "title": "WATCHFID : UN BUREAU DE CONSEIL INNOVANT EN MATIERE DE MONTRES DE COLLECTION <BR> by MONTRES DE LUXE",
     "updated_at": "2024-09-17",
     "url": "https://www.watchfid.com/watchfid-un-bureau-de-conseil-innovant-en-matiere-de-montres-de-collection-by-montres-de-luxe/",
@@ -5352,6 +6434,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "brand_history"
+    ],
     "title": "WATCHFID : UN ECOSYSTEME AXE SUR LE VINTAGE by MONTRES MAGAZINE",
     "updated_at": "2025-06-23",
     "url": "https://www.watchfid.com/watchfid-un-ecosysteme-axe-sur-le-vintage/",
@@ -5371,6 +6457,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "celebrity"
+    ],
     "title": "WATCHFID : UN LIVRE NUMERIQUE SUR LES CADRANS ROLEX DAYTONA “PAUL NEWMAN” by MONTRES DE LUXE",
     "updated_at": "2025-06-23",
     "url": "https://www.watchfid.com/watchfid-un-livre-numerique-ultra-complet-sur-les-cadrans-rolex-daytona-paul-newman/",
@@ -5390,6 +6480,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "reference_profile",
+      "space"
+    ],
     "title": "WHITE GOLD  SPEEDMASTERS",
     "updated_at": "2025-10-24",
     "url": "https://www.watchfid.com/white-gold-speedmasters/",
@@ -5409,6 +6503,10 @@
     "source": "watchfid_editorial",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "collecting_philosophy",
+      "community_ethics"
+    ],
     "title": "XAVIER SILLON",
     "updated_at": "2026-07-27",
     "url": "https://www.watchfid.com/xavier-sillon/",

@@ -705,7 +705,9 @@
     "source": "screwdowncrown",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "collecting_philosophy"
+    ],
     "title": "Ben Clymer, Hodinkee, and The Chairman Who Wasn't There",
     "updated_at": "2025-01-17",
     "url": "https://www.screwdowncrown.com/p/ben-clymer-podcast-hodinkee-analysis",
@@ -6507,6 +6509,10 @@
     "source": "screwdowncrown",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "market_commentary",
+      "collector_mindset"
+    ],
     "title": "Why Watchmakers Can't Stop Flippers",
     "updated_at": "2026-09-01",
     "url": "https://www.screwdowncrown.com/p/why-watchmakers-cant-stop-flippers",

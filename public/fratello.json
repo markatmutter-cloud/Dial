@@ -7325,6 +7325,11 @@
     "source": "fratello",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "celebrity",
+      "design",
+      "news"
+    ],
     "title": "Breitling Reimagines A Jazz Classic With The Navitimer B09 Chronograph 41 Tribute To Miles Davis",
     "updated_at": "2026-09-02",
     "url": "https://www.fratellowatches.com/breitling-navitimer-b09-chronograph-41-tribute-to-miles-davis/",
@@ -12381,6 +12386,10 @@
     "source": "fratello",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "news",
+      "design"
+    ],
     "title": "Downsizing With Two New A. Lange & Söhne 1815 Up/Down Models",
     "updated_at": "2026-09-04",
     "url": "https://www.fratellowatches.com/downsizing-with-two-new-a-lange-sohne-1815-up-down-models/",
@@ -38307,6 +38316,10 @@
     "source": "fratello",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "news",
+      "design"
+    ],
     "title": "A Surprising Series Of Three-Handers: The New Zenith Chronomaster Solo Sport",
     "updated_at": "2026-09-02",
     "url": "https://www.fratellowatches.com/new-zenith-chronomaster-solo-sport/",
@@ -61576,6 +61589,10 @@
     "source": "fratello",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "review",
+      "news"
+    ],
     "title": "Sunday Morning Showdown: Zenith Chronomaster Solo Sport Vs. Breitling Chronomat Automatic B31 40",
     "updated_at": "2026-09-06",
     "url": "https://www.fratellowatches.com/sunday-morning-showdown-zenith-chronomaster-solo-sport-vs-breitling-chronomat-automatic-b31-40/",
@@ -73767,6 +73784,10 @@
     "source": "fratello",
     "source_type": "editorial_blog",
     "sub_model": null,
+    "themes": [
+      "design",
+      "reference_profile"
+    ],
     "title": "The Movement <i>Is</i> The Dial: The Berneron Mirage Miroir In White And Yellow Gold",
     "updated_at": "2026-09-01",
     "url": "https://www.fratellowatches.com/the-movement-is-the-dial-the-berneron-mirage-miroir-in-white-and-yellow-gold/",
@@ -80800,7 +80821,10 @@
     "source": "fratello",
     "source_type": "editorial_blog",
     "sub_model": null,
-    "themes": [],
+    "themes": [
+      "brand_history",
+      "design"
+    ],
     "title": "Vintage watch ads",
     "updated_at": "2019-04-18",
     "url": "https://www.fratellowatches.com/vintage-watch-ads/",
