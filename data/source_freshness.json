@@ -1,9 +1,9 @@
 {
   "Analog Shift": {
-    "fingerprint": "d56f5f47821f7b33",
-    "lastChanged": "2026-09-05",
+    "fingerprint": "4377dc56b45aa061",
+    "lastChanged": "2026-09-06",
     "lastSeen": "2026-09-06",
-    "rows": 776
+    "rows": 774
   },
   "Belmont Watches": {
     "fingerprint": "13edb03505654588",
@@ -66,10 +66,10 @@
     "rows": 21
   },
   "Falco Watches": {
-    "fingerprint": "d6254096c08d9abc",
-    "lastChanged": "2026-09-03",
+    "fingerprint": "1dac3cbf5d55728a",
+    "lastChanged": "2026-09-06",
     "lastSeen": "2026-09-06",
-    "rows": 41
+    "rows": 36
   },
   "Grey & Patina": {
     "fingerprint": "706a0a15550fcf40",
@@ -120,7 +120,7 @@
     "rows": 20
   },
   "Oliver & Clarke": {
-    "fingerprint": "cf48bd592d133825",
+    "fingerprint": "d7b995ce0088d8ac",
     "lastChanged": "2026-09-06",
     "lastSeen": "2026-09-06",
     "rows": 122
@@ -180,10 +180,10 @@
     "rows": 31
   },
   "Tropical Watch": {
-    "fingerprint": "579466dcf004a591",
+    "fingerprint": "b061bbae6186069d",
     "lastChanged": "2026-09-06",
     "lastSeen": "2026-09-06",
-    "rows": 117
+    "rows": 116
   },
   "Vintage Watch Collective": {
     "fingerprint": "f6267a5c5832f4ca",
@@ -192,7 +192,7 @@
     "rows": 37
   },
   "Vintage Watch Fam": {
-    "fingerprint": "bf2967bf6a2ec883",
+    "fingerprint": "6b3a61f5909807a9",
     "lastChanged": "2026-09-06",
     "lastSeen": "2026-09-06",
     "rows": 536
@@ -252,10 +252,10 @@
     "rows": 5
   },
   "Wind Vintage": {
-    "fingerprint": "5a9d40faf7cf7b46",
-    "lastChanged": "2026-09-05",
+    "fingerprint": "7bb601792afcf29f",
+    "lastChanged": "2026-09-06",
     "lastSeen": "2026-09-06",
-    "rows": 220
+    "rows": 221
   },
   "calendar:antiquorum": {
     "fingerprint": "c5d0ff73d32d020a",
@@ -414,9 +414,9 @@
     "rows": 95
   },
   "merged:listings": {
-    "fingerprint": "b9cc801acf9ecb67",
+    "fingerprint": "8e42db61d7676072",
     "lastChanged": "2026-09-06",
     "lastSeen": "2026-09-06",
-    "rows": 10118
+    "rows": 10119
   }
 }

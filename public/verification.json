@@ -1,10 +1,10 @@
 {
   "date": "2026-09-06",
-  "updated_at": "2026-09-06T17:15:33+00:00",
+  "updated_at": "2026-09-06T22:35:10+00:00",
   "alerts": [],
   "counts": {
-    "Wind Vintage": 109,
-    "Tropical Watch": 119,
+    "Wind Vintage": 108,
+    "Tropical Watch": 117,
     "Menta Watches": 50,
     "Collectors Corner NY": 82,
     "Falco Watches": 40,
@@ -12,7 +12,7 @@
     "Tokant": 30,
     "Romain R\u00e9a": 231,
     "Grey & Patina": 54,
-    "Oliver & Clarke": 111,
+    "Oliver & Clarke": 108,
     "Craft & Tailored": 82,
     "Watch Brothers London": 7,
     "Sierra Time Co": 23,
@@ -29,7 +29,7 @@
     "Huntington Company": 108,
     "The Vintage Watch": 22,
     "Chronoholic": 4,
-    "Vintage Watch Fam": 529,
+    "Vintage Watch Fam": 526,
     "Shuck the Oyster": 141,
     "Central Watch": 181,
     "European Watch": 21,
@@ -42,12 +42,12 @@
     "Watches of Lancashire": 53,
     "Heuertime": 32,
     "ClassicHeuer": 37,
-    "Luna Royster": 29,
+    "Luna Royster": 27,
     "S.Song Watches": 19,
     "Swiss Hours": 72,
     "Watch Center": 261,
     "eBay": 32
   },
-  "total_listings": 4192,
+  "total_listings": 4181,
   "sources_tracked": 44
 }
