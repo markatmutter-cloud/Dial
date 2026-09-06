@@ -60,10 +60,10 @@
     "rows": 23
   },
   "European Watch": {
-    "fingerprint": "450864cc7a6dbb1d",
-    "lastChanged": "2026-09-04",
+    "fingerprint": "6b0e4fb35973829b",
+    "lastChanged": "2026-09-06",
     "lastSeen": "2026-09-06",
-    "rows": 22
+    "rows": 21
   },
   "Falco Watches": {
     "fingerprint": "d6254096c08d9abc",
@@ -78,10 +78,10 @@
     "rows": 54
   },
   "Hairspring": {
-    "fingerprint": "1d2fc20169d32c89",
-    "lastChanged": "2026-09-05",
+    "fingerprint": "1d1ca0aa01d3af9c",
+    "lastChanged": "2026-09-06",
     "lastSeen": "2026-09-06",
-    "rows": 37
+    "rows": 36
   },
   "Heuertime": {
     "fingerprint": "743ffa656bd725d4",
@@ -90,10 +90,10 @@
     "rows": 33
   },
   "Huntington Company": {
-    "fingerprint": "802edc7aded10569",
-    "lastChanged": "2026-09-05",
+    "fingerprint": "3d0abb8a223fd5f0",
+    "lastChanged": "2026-09-06",
     "lastSeen": "2026-09-06",
-    "rows": 108
+    "rows": 107
   },
   "Luna Royster": {
     "fingerprint": "80bd835d419ce6b9",
@@ -108,10 +108,10 @@
     "rows": 72
   },
   "Menta Watches": {
-    "fingerprint": "a0499f29c7d604d1",
-    "lastChanged": "2026-09-03",
+    "fingerprint": "f87ae9f6f5b7a5cc",
+    "lastChanged": "2026-09-06",
     "lastSeen": "2026-09-06",
-    "rows": 52
+    "rows": 51
   },
   "Moonphase": {
     "fingerprint": "d9ff32f487308302",
@@ -180,10 +180,10 @@
     "rows": 31
   },
   "Tropical Watch": {
-    "fingerprint": "8a16fd317cd504d1",
-    "lastChanged": "2026-09-05",
+    "fingerprint": "ca1c0bc217c71c21",
+    "lastChanged": "2026-09-06",
     "lastSeen": "2026-09-06",
-    "rows": 119
+    "rows": 118
   },
   "Vintage Watch Collective": {
     "fingerprint": "f6267a5c5832f4ca",
@@ -192,8 +192,8 @@
     "rows": 37
   },
   "Vintage Watch Fam": {
-    "fingerprint": "49d47b55feafe941",
-    "lastChanged": "2026-09-04",
+    "fingerprint": "317e5e1f01205030",
+    "lastChanged": "2026-09-06",
     "lastSeen": "2026-09-06",
     "rows": 539
   },
@@ -228,10 +228,10 @@
     "rows": 67
   },
   "Watches of Knightsbridge": {
-    "fingerprint": "4fdf9c8145cff225",
-    "lastChanged": "2026-09-05",
+    "fingerprint": "a6e2803e172ff488",
+    "lastChanged": "2026-09-06",
     "lastSeen": "2026-09-06",
-    "rows": 80
+    "rows": 79
   },
   "Watches of Lancashire": {
     "fingerprint": "d014028683c527f9",
@@ -240,8 +240,8 @@
     "rows": 54
   },
   "Watchfid": {
-    "fingerprint": "27fcddc4135e8827",
-    "lastChanged": "2026-09-05",
+    "fingerprint": "b5d96c4532ef0e9d",
+    "lastChanged": "2026-09-06",
     "lastSeen": "2026-09-06",
     "rows": 67
   },
@@ -300,8 +300,8 @@
     "rows": 2
   },
   "eBay": {
-    "fingerprint": "aac2e7bf2af735bc",
-    "lastChanged": "2026-09-06",
+    "fingerprint": "c77f43939e626296",
+    "lastChanged": "2026-09-05",
     "lastSeen": "2026-09-06",
     "rows": 32
   },
@@ -414,7 +414,7 @@
     "rows": 95
   },
   "merged:listings": {
-    "fingerprint": "0c9b004079c11a18",
+    "fingerprint": "5b210a3c44613f91",
     "lastChanged": "2026-09-06",
     "lastSeen": "2026-09-06",
     "rows": 10118
