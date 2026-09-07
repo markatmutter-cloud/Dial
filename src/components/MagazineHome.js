@@ -22,7 +22,6 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { imgSrc, fmt, priceIn, CURRENCY_SYM, fmtSaleDateRange } from "../utils";
 import { FooterBand } from "./SiteFooter";
 import { articleAsListing, sourceLabel } from "./EditorialView";
-import { MoonPhaseIndicator } from "./MoonPhaseIndicator";
 
 const FONTS = "https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500&family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap";
 
@@ -530,8 +529,13 @@ export default function MagazineHome(props) {
            pinned, so nothing important is a scroll away. */
         <div className={`mag-mhead${scrolled ? " is-compact" : ""}`}>
           <div className="mag-mhead-top">
+            <span className="mag-crescent" aria-hidden="true">
+              <svg viewBox="0 0 40 40">
+                <circle cx="20" cy="20" r="15.2" fill="none" stroke="currentColor" strokeWidth="1.2" opacity=".55" />
+                <path d="M20 4.8a15.2 15.2 0 0 0 0 30.4 11 15.2 0 0 1 0-30.4z" fill="currentColor" />
+              </svg>
+            </span>
             <h1 className="mag-wordmark">Watchlist</h1>
-            <MoonPhaseIndicator size={64} dark={!!dark} />
             <span className="mag-mhead-sp" />
             {user && goToSavedHearts ? (
               <button type="button" className="mag-icon" aria-label="Saved watches" onClick={goToSavedHearts}>
@@ -560,15 +564,21 @@ export default function MagazineHome(props) {
       ) : (
         <>
           <header className="mag-flag">
+            {/* The photographic moon-phase graphic is retired here (Mark,
+                2026-09-07): at masthead size it cluttered without reading as
+                anything. The drawn crescent from the mockup returns in front
+                of the wordmark, where it works as a mark rather than a
+                picture. MoonPhaseIndicator itself is untouched for any other
+                surface that wants it. */}
             <div className="mag-mark">
+              <span className="mag-crescent" aria-hidden="true">
+                <svg viewBox="0 0 40 40">
+                  <circle cx="20" cy="20" r="15.2" fill="none" stroke="currentColor" strokeWidth="1.2" opacity=".55" />
+                  <path d="M20 4.8a15.2 15.2 0 0 0 0 30.4 11 15.2 0 0 1 0-30.4z" fill="currentColor" />
+                </svg>
+              </span>
               <h1 className="mag-wordmark">Watchlist</h1>
             </div>
-            {/* The moon sits on the page's centre line, directly above the
-                search in the bar below, so the two share a vertical axis. */}
-            <div className="mag-moonslot">
-              <MoonPhaseIndicator size={132} dark={!!dark} />
-            </div>
-            <div />
           </header>
 
           <div className="mag-bar">
@@ -737,10 +747,12 @@ const MAG_CSS = `
 /* Three zones: wordmark left, moon centred over the search below it, nothing
    on the right (the account controls moved into the persistent bar, so this
    row no longer has to leave a lane for them). */
-.mag-flag { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+.mag-flag { display: flex; align-items: center; justify-content: space-between;
             gap: 24px; padding: 22px 0 14px; }
-.mag-mark { display: flex; align-items: center; min-width: 0; }
-.mag-moonslot { display: flex; justify-content: center; }
+.mag-mark { display: flex; align-items: center; gap: clamp(10px,1.3vw,18px); min-width: 0; }
+.mag-crescent { display: inline-flex; flex: 0 0 auto; color: var(--brand-olive-ink); }
+.mag-crescent svg { width: clamp(26px,3.4vw,44px); height: clamp(26px,3.4vw,44px); }
+.mag-mhead .mag-crescent svg { width: 26px; height: 26px; }
 /* Olive wordmark (Mark, 2026-09-07). --brand-olive-ink is theme-aware: deep
    olive on paper, a lifted sage on the dark ground, so it holds contrast in
    both without needing a second colour. */

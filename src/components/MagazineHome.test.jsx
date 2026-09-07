@@ -39,7 +39,7 @@ function props(over = {}) {
     toggleHide: null, isAdmin: false, openAbout: noop, signInWithGoogle: noop,
     watchlist: {}, homeJumpToDealer: noop, homeAuctionSources: [], dark: false, cols: null,
     homeDealerSources: ["Wind Vintage", "Analog Shift"],
-    goToSavedHearts: noop,
+    goToSavedHearts: noop, homeMastheadAuthJSX: <span data-testid="auth" />,
     ...over,
   };
 }
@@ -76,17 +76,19 @@ describe("MagazineHome", () => {
       user: { email: "mark@mutter.co.uk" }, watchlist: { a: {}, b: {} },
     })} />);
     const bar = within(container.querySelector(".mag-bar-util"));
-    expect(bar.getByRole("button", { name: "About" })).toBeInTheDocument();
     expect(bar.getByLabelText("Saved watches")).toBeInTheDocument();
     expect(bar.getByText("2")).toBeInTheDocument();
-    expect(bar.getByText("M")).toBeInTheDocument();
+    // About / Sign in / the account disc come from the app's shared control,
+    // handed in as homeMastheadAuthJSX, so the bar renders what App built
+    // rather than a second copy of its own.
+    expect(bar.getByTestId("auth")).toBeInTheDocument();
   });
 
-  it("offers Sign in instead when signed out", () => {
+  it("shows no saved heart when signed out, and still mounts the shared control", () => {
     const { container } = render(<MagazineHome {...props()} />);
     const bar = within(container.querySelector(".mag-bar-util"));
-    expect(bar.getByRole("button", { name: "Sign in" })).toBeInTheDocument();
     expect(bar.queryByLabelText("Saved watches")).toBeNull();
+    expect(bar.getByTestId("auth")).toBeInTheDocument();
   });
 
   it("renders exactly one search on each breakpoint", () => {
