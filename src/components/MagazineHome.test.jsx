@@ -94,6 +94,17 @@ describe("MagazineHome", () => {
     expect(screen.getAllByLabelText("Search watches").length).toBe(1);
   });
 
+  it("compacts the mobile chrome once the page is scrolled", () => {
+    const { container } = render(<MagazineHome {...props({ isMobile: true })} />);
+    const head = container.querySelector(".mag-mhead");
+    expect(head.className).not.toContain("is-compact");
+    Object.defineProperty(window, "scrollY", { value: 400, configurable: true });
+    // fireEvent, not dispatchEvent: the handler sets state, which needs act().
+    fireEvent.scroll(window);
+    expect(container.querySelector(".mag-mhead").className).toContain("is-compact");
+    Object.defineProperty(window, "scrollY", { value: 0, configurable: true });
+  });
+
   it("gives mobile its own pinned chrome with the short tab labels", () => {
     const { container } = render(<MagazineHome {...props({
       isMobile: true,

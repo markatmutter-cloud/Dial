@@ -114,9 +114,13 @@ function useScrolled(threshold) {
     // The app scrolls an inner pane, not the window, so listen on both and
     // take whichever is actually moving.
     const read = () => {
-      const pane = document.querySelector(".wl-scroll, main, #root > div");
-      const y = Math.max(window.scrollY || 0, pane ? pane.scrollTop || 0 : 0);
-      setPast((prev) => (prev === y > threshold ? prev : y > threshold));
+      const el = document.scrollingElement || document.documentElement;
+      const y = Math.max(window.scrollY || 0, el ? el.scrollTop || 0 : 0);
+      // `prev === y > threshold` parses as `(prev === y) > threshold`, which
+      // is a boolean compared to a number and always false, so the header
+      // never compacted. Compute the boolean first.
+      const next = y > threshold;
+      setPast((prev) => (prev === next ? prev : next));
     };
     read();
     const opts = { passive: true };
