@@ -31,6 +31,7 @@ const FONTS = "https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wg
 const CAL_HORIZON_DAYS = 60;
 const CAL_MAX = 8;
 const ROTATOR_COUNT = 3;
+const DEALER_MAX = 12;
 
 // Fill the row, don't leave a ragged tail. Mark: "I'd still like the width to
 // define the number of articles shown ... then if I hide an article the next
@@ -94,6 +95,35 @@ function refLine(item) {
 // Sale cover if the house publishes one, else the sale's top lot, else a
 // monogram. Never another sale's picture: a borrowed photo next to this
 // sale's date is a small lie.
+// Dealer marks come from the dealer's own favicon, resolved from a URL we
+// already hold for them. No logo files to collect and nothing to maintain: a
+// dealer we scrape is a dealer we can show. Falls back to the name alone.
+function faviconFor(url) {
+  try { return `https://icons.duckduckgo.com/ip3/${new URL(url).hostname.replace(/^www\./, "")}.ico`; }
+  catch { return null; }
+}
+
+// Mark's hot list, computed from his own hearts rather than a static ranking:
+// "are you able to see my most hearted items and which dealers they are from".
+// Signed out there are no hearts, so fall back to who is listing right now,
+// which is at least true rather than a guess at taste.
+function topDealers(watchlist, fallbackItems) {
+  const tally = new Map();
+  const seenUrl = new Map();
+  const add = (source, url) => {
+    if (!source) return;
+    tally.set(source, (tally.get(source) || 0) + 1);
+    if (url && !seenUrl.has(source)) seenUrl.set(source, url);
+  };
+  const hearted = watchlist ? Object.values(watchlist) : [];
+  hearted.forEach((it) => add(it && it.source, it && it.url));
+  if (tally.size < 4) (fallbackItems || []).forEach((i) => add(i && i.source, i && i.url));
+  return [...tally.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, DEALER_MAX)
+    .map(([name, n]) => ({ name, n, icon: faviconFor(seenUrl.get(name)) }));
+}
+
 function saleArt(sale, heroes) {
   if (!sale) return null;
   return sale.image || (heroes && heroes[sale.url]) || null;
@@ -271,7 +301,7 @@ export default function MagazineHome(props) {
     homeAuctionSales, homeSectionCounts,
     goToRecentAdded, goToArticles, homeOpenCalendar, homeOpenSale,
     onClickListing, primaryCurrency, isMobile, user,
-    homeMastheadTabs, homeSearchSubmit,
+    homeMastheadTabs, homeSearchSubmit, watchlist, homeJumpToDealer,
     homeSearchLiveQuery, homeSearchCounts, homeRecentSearches, homeAddRecentSearch,
     homeAuctionHeroes, toggleHide, isAdmin, openAbout, signInWithGoogle,
   } = props;
@@ -304,6 +334,8 @@ export default function MagazineHome(props) {
     dated.forEach(({ sale }) => { if (out.length < CAL_MAX && !out.includes(sale)) out.push(sale); });
     return out;
   }, [homeAuctionSales]);
+
+  const dealers = useMemo(() => topDealers(watchlist, homeRecentAdded), [watchlist, homeRecentAdded]);
 
   const cardsRef = useRef(null);
   const catRef = useRef(null);
@@ -409,6 +441,24 @@ export default function MagazineHome(props) {
         </section>
       )}
 
+      {dealers.length > 0 && homeJumpToDealer && (
+        <section className="mag-sec mag-sec--dealers">
+          <p className="mag-dealers-label">{user ? "Your dealers" : "Dealers we follow"}</p>
+          <div className="mag-dealers">
+            {dealers.map((d) => (
+              <button key={d.name} type="button" className="mag-dealer-chip"
+                      onClick={() => homeJumpToDealer(d.name)} title={`${d.n} saved from ${d.name}`}>
+                {d.icon ? (
+                  <img src={d.icon} alt="" loading="lazy"
+                       onError={(e) => { e.currentTarget.style.display = "none"; }} />
+                ) : null}
+                <span>{d.name}</span>
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
+
       {(feature || grid.length > 0) && (
         <section className="mag-sec">
           <SectionHeadBtn title="New Listings This Week" onClick={goToRecentAdded} cta="All watches" />
@@ -504,7 +554,7 @@ const MAG_CSS = `
 .mag { --mag-tile: 268px; }
 
 .mag-searchwrap { position: relative; flex: 0 0 auto; }
-.mag-searchwrap--big { flex: 1 1 460px; max-width: 560px; }
+.mag-searchwrap--big { flex: 1 1 520px; max-width: 720px; }
 .mag-search { display: flex; align-items: center; gap: 10px; border: .5px solid var(--border);
               border-radius: 999px; padding: 6px 6px 6px 16px; background: var(--card-bg); }
 /* Do NOT use :focus-within here. jsdom resolves it with contains(activeElement)
@@ -515,11 +565,14 @@ const MAG_CSS = `
 .mag-search input { border: none; background: transparent; outline: none; width: 100%;
                     font-family: var(--mag-body); font-size: 14px; color: var(--text1); padding: 6px 0; }
 .mag-search input::placeholder { color: var(--text3); }
-.mag-searchwrap--big .mag-search { padding: 8px 8px 8px 20px; }
-.mag-searchwrap--big .mag-search input { font-size: 16px; padding: 8px 0; }
-.mag-search-go { font-family: var(--mag-data); font-size: 10.5px; letter-spacing: .14em;
+.mag-searchwrap--big .mag-search { padding: 9px 9px 9px 22px; border-width: 1px;
+                                  box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+.mag-searchwrap--big .mag-search.is-focus { box-shadow: 0 2px 10px rgba(0,0,0,.10); }
+.mag-searchwrap--big .mag-search svg { width: 17px; height: 17px; color: var(--text2); }
+.mag-searchwrap--big .mag-search input { font-size: 17px; padding: 10px 0; }
+.mag-search-go { font-family: var(--mag-data); font-size: 11.5px; letter-spacing: .16em;
                  text-transform: uppercase; border: none; border-radius: 999px; cursor: pointer;
-                 background: var(--brand-olive-text); color: var(--bg); padding: 9px 16px; flex: 0 0 auto; }
+                 background: var(--brand-olive-text); color: var(--bg); padding: 12px 22px; flex: 0 0 auto; }
 .mag-searchwrap:not(.mag-searchwrap--big) .mag-search-go { display: none; }
 .mag-drop { position: absolute; z-index: 40; top: calc(100% + 6px); left: 0; right: 0;
             background: var(--card-bg); border: .5px solid var(--border); border-radius: 14px;
@@ -534,7 +587,7 @@ const MAG_CSS = `
 
 /* persistent bar */
 .mag-bar { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; gap: 22px;
-           padding: 10px 0; margin-bottom: 4px; background: var(--bg);
+           padding: 12px 0; margin-bottom: 4px; background: var(--bg);
            border-bottom: .5px solid var(--border); }
 .mag-bar-mark { font-family: var(--mag-display); font-size: 19px; font-weight: 500; letter-spacing: .02em;
                 color: var(--text1); flex: 0 0 auto; }
@@ -550,6 +603,19 @@ const MAG_CSS = `
 /* Width of the app's fixed overlay (About + heart + account) plus breathing
    room, so the sticky bar never slides under it on scroll. */
 .mag-bar-gap { flex: 0 0 228px; }
+
+/* dealer shortcuts */
+.mag-sec--dealers { margin-top: clamp(30px,3.6vw,48px); }
+.mag-dealers-label { font-family: var(--mag-data); font-size: 10.5px; letter-spacing: .16em;
+                     text-transform: uppercase; color: var(--text3); margin: 0 0 12px; }
+.mag-dealers { display: flex; flex-wrap: wrap; gap: 8px; }
+.mag-dealer-chip { display: inline-flex; align-items: center; gap: 9px; cursor: pointer;
+                   border: .5px solid var(--border); border-radius: 999px; background: var(--card-bg);
+                   padding: 7px 15px 7px 9px; font-family: var(--mag-body); font-size: 13.5px;
+                   color: var(--text1); }
+.mag-dealer-chip:hover { border-color: var(--brand-olive-text); color: var(--brand-olive-text); }
+.mag-dealer-chip img { width: 20px; height: 20px; border-radius: 4px; object-fit: contain;
+                       background: var(--bg); flex: 0 0 auto; }
 
 /* admin hide */
 .mag-hide { position: absolute; top: 10px; right: 10px; z-index: 4; width: 26px; height: 26px;
