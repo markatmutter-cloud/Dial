@@ -384,7 +384,6 @@ export default function MagazineHome(props) {
 
       <header className="mag-flag">
         <div className="mag-mark">
-          <div>
             <div className="mag-wordmark-row">
               <h1 className="mag-wordmark">Watchlist</h1>
               {/* The real moon-phase component, not a drawn crescent: it shows
@@ -393,8 +392,6 @@ export default function MagazineHome(props) {
                   the RIGHT of the wordmark at his sizing. */}
               <MoonPhaseIndicator size={isMobile ? 74 : 96} dark={!!dark} />
             </div>
-            <p className="mag-strap">Aggregated watch listings</p>
-          </div>
         </div>
         {/* No search here and no account controls. Search lives once, in the
             persistent bar below, and the app's own Home overlay already
@@ -563,7 +560,6 @@ const MAG_CSS = `
 .mag-flag { display: flex; align-items: flex-end; justify-content: space-between;
             gap: 24px; padding: 22px 0 14px; }
 .mag-mark { display: flex; align-items: center; gap: 14px; min-width: 0; }
-.mag-mark > div { min-width: 0; }
 .mag-wordmark-row { display: flex; align-items: center; gap: clamp(10px,1.4vw,20px); }
 /* Olive wordmark (Mark, 2026-09-07). --brand-olive-ink is theme-aware: deep
    olive on paper, a lifted sage on the dark ground, so it holds contrast in
@@ -653,8 +649,6 @@ const MAG_CSS = `
 .mag-hide:hover { background: rgba(8,10,6,.8); }
 .mag-hide--tile { width: 24px; height: 24px; font-size: 14px; }
 
-.mag-strap { margin: 6px 0 0; font-family: var(--mag-data); font-size: 10.5px; letter-spacing: .12em;
-             text-transform: uppercase; color: var(--text3); }
 
 .mag-sec { margin-top: clamp(40px,5.4vw,76px); }
 .mag-sec--first { margin-top: clamp(30px,4vw,54px); }
