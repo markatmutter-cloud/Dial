@@ -30,7 +30,8 @@ const FONTS = "https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wg
 // A lot closing further out than this isn't "next" in any useful sense.
 const CAL_HORIZON_DAYS = 60;
 const CAL_MAX = 8;
-const ROTATOR_COUNT = 3;
+const ROTATOR_COUNT = 5;
+const DEALER_MAX = 12;
 
 // Fill the row, don't leave a ragged tail. Mark: "I'd still like the width to
 // define the number of articles shown ... then if I hide an article the next
@@ -94,6 +95,35 @@ function refLine(item) {
 // Sale cover if the house publishes one, else the sale's top lot, else a
 // monogram. Never another sale's picture: a borrowed photo next to this
 // sale's date is a small lie.
+// Dealer marks come from the dealer's own favicon, resolved from a URL we
+// already hold for them. No logo files to collect and nothing to maintain: a
+// dealer we scrape is a dealer we can show. Falls back to the name alone.
+function faviconFor(url) {
+  try { return `https://icons.duckduckgo.com/ip3/${new URL(url).hostname.replace(/^www\./, "")}.ico`; }
+  catch { return null; }
+}
+
+// Mark's hot list, computed from his own hearts rather than a static ranking:
+// "are you able to see my most hearted items and which dealers they are from".
+// Signed out there are no hearts, so fall back to who is listing right now,
+// which is at least true rather than a guess at taste.
+function topDealers(watchlist, fallbackItems) {
+  const tally = new Map();
+  const seenUrl = new Map();
+  const add = (source, url) => {
+    if (!source) return;
+    tally.set(source, (tally.get(source) || 0) + 1);
+    if (url && !seenUrl.has(source)) seenUrl.set(source, url);
+  };
+  const hearted = watchlist ? Object.values(watchlist) : [];
+  hearted.forEach((it) => add(it && it.source, it && it.url));
+  if (tally.size < 4) (fallbackItems || []).forEach((i) => add(i && i.source, i && i.url));
+  return [...tally.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, DEALER_MAX)
+    .map(([name, n]) => ({ name, n, icon: faviconFor(seenUrl.get(name)) }));
+}
+
 function saleArt(sale, heroes) {
   if (!sale) return null;
   return sale.image || (heroes && heroes[sale.url]) || null;
@@ -271,7 +301,7 @@ export default function MagazineHome(props) {
     homeAuctionSales, homeSectionCounts,
     goToRecentAdded, goToArticles, homeOpenCalendar, homeOpenSale,
     onClickListing, primaryCurrency, isMobile, user,
-    homeMastheadTabs, homeSearchSubmit,
+    homeMastheadTabs, homeSearchSubmit, watchlist, homeJumpToDealer,
     homeSearchLiveQuery, homeSearchCounts, homeRecentSearches, homeAddRecentSearch,
     homeAuctionHeroes, toggleHide, isAdmin, openAbout, signInWithGoogle,
   } = props;
@@ -304,6 +334,8 @@ export default function MagazineHome(props) {
     dated.forEach(({ sale }) => { if (out.length < CAL_MAX && !out.includes(sale)) out.push(sale); });
     return out;
   }, [homeAuctionSales]);
+
+  const dealers = useMemo(() => topDealers(watchlist, homeRecentAdded), [watchlist, homeRecentAdded]);
 
   const cardsRef = useRef(null);
   const catRef = useRef(null);
@@ -409,6 +441,24 @@ export default function MagazineHome(props) {
         </section>
       )}
 
+      {dealers.length > 0 && homeJumpToDealer && (
+        <section className="mag-sec mag-sec--dealers">
+          <p className="mag-dealers-label">{user ? "Your dealers" : "Dealers we follow"}</p>
+          <div className="mag-dealers">
+            {dealers.map((d) => (
+              <button key={d.name} type="button" className="mag-dealer-chip"
+                      onClick={() => homeJumpToDealer(d.name)} title={`${d.n} saved from ${d.name}`}>
+                {d.icon ? (
+                  <img src={d.icon} alt="" loading="lazy"
+                       onError={(e) => { e.currentTarget.style.display = "none"; }} />
+                ) : null}
+                <span>{d.name}</span>
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
+
       {(feature || grid.length > 0) && (
         <section className="mag-sec">
           <SectionHeadBtn title="New Listings This Week" onClick={goToRecentAdded} cta="All watches" />
@@ -504,7 +554,7 @@ const MAG_CSS = `
 .mag { --mag-tile: 268px; }
 
 .mag-searchwrap { position: relative; flex: 0 0 auto; }
-.mag-searchwrap--big { flex: 1 1 460px; max-width: 560px; }
+.mag-searchwrap--big { flex: 1 1 520px; max-width: 720px; }
 .mag-search { display: flex; align-items: center; gap: 10px; border: .5px solid var(--border);
               border-radius: 999px; padding: 6px 6px 6px 16px; background: var(--card-bg); }
 /* Do NOT use :focus-within here. jsdom resolves it with contains(activeElement)
@@ -515,11 +565,14 @@ const MAG_CSS = `
 .mag-search input { border: none; background: transparent; outline: none; width: 100%;
                     font-family: var(--mag-body); font-size: 14px; color: var(--text1); padding: 6px 0; }
 .mag-search input::placeholder { color: var(--text3); }
-.mag-searchwrap--big .mag-search { padding: 8px 8px 8px 20px; }
-.mag-searchwrap--big .mag-search input { font-size: 16px; padding: 8px 0; }
-.mag-search-go { font-family: var(--mag-data); font-size: 10.5px; letter-spacing: .14em;
+.mag-searchwrap--big .mag-search { padding: 9px 9px 9px 22px; border-width: 1px;
+                                  box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+.mag-searchwrap--big .mag-search.is-focus { box-shadow: 0 2px 10px rgba(0,0,0,.10); }
+.mag-searchwrap--big .mag-search svg { width: 17px; height: 17px; color: var(--text2); }
+.mag-searchwrap--big .mag-search input { font-size: 17px; padding: 10px 0; }
+.mag-search-go { font-family: var(--mag-data); font-size: 11.5px; letter-spacing: .16em;
                  text-transform: uppercase; border: none; border-radius: 999px; cursor: pointer;
-                 background: var(--brand-olive-text); color: var(--bg); padding: 9px 16px; flex: 0 0 auto; }
+                 background: var(--brand-olive-text); color: var(--bg); padding: 12px 22px; flex: 0 0 auto; }
 .mag-searchwrap:not(.mag-searchwrap--big) .mag-search-go { display: none; }
 .mag-drop { position: absolute; z-index: 40; top: calc(100% + 6px); left: 0; right: 0;
             background: var(--card-bg); border: .5px solid var(--border); border-radius: 14px;
@@ -534,7 +587,7 @@ const MAG_CSS = `
 
 /* persistent bar */
 .mag-bar { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; gap: 22px;
-           padding: 10px 0; margin-bottom: 4px; background: var(--bg);
+           padding: 12px 0; margin-bottom: 4px; background: var(--bg);
            border-bottom: .5px solid var(--border); }
 .mag-bar-mark { font-family: var(--mag-display); font-size: 19px; font-weight: 500; letter-spacing: .02em;
                 color: var(--text1); flex: 0 0 auto; }
@@ -550,6 +603,19 @@ const MAG_CSS = `
 /* Width of the app's fixed overlay (About + heart + account) plus breathing
    room, so the sticky bar never slides under it on scroll. */
 .mag-bar-gap { flex: 0 0 228px; }
+
+/* dealer shortcuts */
+.mag-sec--dealers { margin-top: clamp(30px,3.6vw,48px); }
+.mag-dealers-label { font-family: var(--mag-data); font-size: 10.5px; letter-spacing: .16em;
+                     text-transform: uppercase; color: var(--text3); margin: 0 0 12px; }
+.mag-dealers { display: flex; flex-wrap: wrap; gap: 8px; }
+.mag-dealer-chip { display: inline-flex; align-items: center; gap: 9px; cursor: pointer;
+                   border: .5px solid var(--border); border-radius: 999px; background: var(--card-bg);
+                   padding: 7px 15px 7px 9px; font-family: var(--mag-body); font-size: 13.5px;
+                   color: var(--text1); }
+.mag-dealer-chip:hover { border-color: var(--brand-olive-text); color: var(--brand-olive-text); }
+.mag-dealer-chip img { width: 20px; height: 20px; border-radius: 4px; object-fit: contain;
+                       background: var(--bg); flex: 0 0 auto; }
 
 /* admin hide */
 .mag-hide { position: absolute; top: 10px; right: 10px; z-index: 4; width: 26px; height: 26px;
@@ -573,7 +639,12 @@ const MAG_CSS = `
 .mag-viewall:hover { color: var(--brand-olive-text); border-bottom-color: var(--brand-olive-text); }
 .mag-sec-foot { display: flex; justify-content: center; padding-top: clamp(24px,2.8vw,34px); }
 
-.mag-cover { position: relative; aspect-ratio: 16/9; overflow: hidden; background: var(--card-bg); }
+/* Fit the window, don't exceed it. At 1400px a 16:9 cover is 787px tall, so
+   on a laptop the hero ran past the fold and the headline sat below it
+   (Mark, 2026-09-07). The ratio still drives the shape; the cap stops it
+   growing past what you can see, and object-fit crops rather than squashes. */
+.mag-cover { position: relative; aspect-ratio: 16/9; max-height: min(62vh, 620px);
+             overflow: hidden; background: var(--card-bg); }
 .mag-cover::after { content: ""; position: absolute; inset: 0; pointer-events: none;
   background: linear-gradient(180deg, rgba(8,10,6,0) 45%, rgba(8,10,6,.30) 78%, rgba(8,10,6,.55) 100%); }
 .mag-cover-pic { position: absolute; inset: 0; display: block; }
@@ -592,10 +663,17 @@ const MAG_CSS = `
 .mag-stamp { font-family: var(--mag-data); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase;
              color: var(--text3); margin: 0; }
 .mag-cover-lines .mag-stamp { color: #B6B3A2; }
-.mag-dots { position: absolute; z-index: 3; right: clamp(20px,3.4vw,46px); bottom: clamp(22px,3.4vw,46px); display: flex; gap: 9px; }
-.mag-dot { width: 30px; height: 3px; padding: 0; border: none; cursor: pointer;
-           background: rgba(251,250,243,.45); box-shadow: 0 0 6px rgba(8,10,6,.55); }
-.mag-dot[aria-current="true"] { background: #FBFAF3; }
+.mag-dots { position: absolute; z-index: 3; right: clamp(14px,2.6vw,38px); bottom: clamp(12px,2.4vw,34px);
+            display: flex; gap: 2px; }
+/* The bar is 3px tall but the button is 26px, with the bar drawn by a child.
+   A 3px target was almost unclickable (Mark, 2026-09-07). */
+.mag-dot { width: 42px; height: 26px; padding: 0; border: none; cursor: pointer;
+           background: none; display: flex; align-items: center; justify-content: center; }
+.mag-dot::before { content: ""; display: block; width: 32px; height: 3px;
+                   background: rgba(251,250,243,.45); box-shadow: 0 0 6px rgba(8,10,6,.55);
+                   transition: background .2s ease, height .2s ease; }
+.mag-dot:hover::before { background: rgba(251,250,243,.8); }
+.mag-dot[aria-current="true"]::before { background: #FBFAF3; height: 4px; }
 
 .mag-cards { display: grid; gap: clamp(22px,2.6vw,34px) clamp(18px,2vw,26px);
              grid-template-columns: repeat(auto-fill, minmax(var(--mag-tile),1fr)); align-items: start;
@@ -639,25 +717,28 @@ const MAG_CSS = `
 .mag-lot-price { margin: 6px 0 0; font-family: var(--mag-data); font-size: 14px; font-weight: 500;
                  color: var(--brand-olive-text); font-variant-numeric: tabular-nums; }
 
-.mag-cal { border-top: .5px solid var(--border); }
-.mag-cal-row { display: grid; grid-template-columns: 150px 150px minmax(0,1fr) auto; gap: 8px 26px;
-               align-items: center; padding: 18px 0; border-bottom: .5px solid var(--border);
-               text-decoration: none; }
-.mag-cal-art { width: 150px; height: 150px; overflow: hidden; background: var(--card-bg);
-               display: flex; align-items: center; justify-content: center; }
-.mag-cal-mark { font-family: var(--mag-display); font-size: 38px; color: var(--text3); letter-spacing: .03em; }
+/* Auction sales are tiles now, on the same --mag-tile grid as stories and
+   watches, so their pictures are the same size as everything else on the page
+   (Mark, 2026-09-07). The ruled list read as a footnote next to them. */
+.mag-cal { display: grid; gap: clamp(22px,2.4vw,32px) clamp(18px,2vw,26px);
+           grid-template-columns: repeat(auto-fill, minmax(var(--mag-tile),1fr)); align-items: start; }
+.mag-cal-row { display: grid; gap: 5px; align-content: start; text-decoration: none; }
 .mag-cal-row:hover .mag-cal-title { color: var(--brand-olive-text); }
-.mag-cal-house { font-family: var(--mag-data); font-size: 11.5px; letter-spacing: .16em;
-                 text-transform: uppercase; color: var(--brand-olive-text); }
-.mag-cal-title { font-family: var(--mag-display); font-weight: 500; font-size: clamp(20px,2.3vw,27px); line-height: 1.12; display: block; }
-.mag-cal-place { font-size: 14.5px; color: var(--text2); margin-top: 5px; display: block; }
-.mag-cal-when { font-family: var(--mag-data); font-size: 14px; color: var(--text1); text-align: right;
-                white-space: nowrap; font-variant-numeric: tabular-nums; }
-.mag-live { display: inline-block; margin-left: 8px; font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase;
-            color: var(--brand-olive-text); border: .5px solid var(--brand-olive-text); border-radius: 999px; padding: 2px 7px; }
+.mag-cal-art { display: flex; align-items: center; justify-content: center;
+               aspect-ratio: 1; overflow: hidden; background: var(--card-bg); }
+.mag-cal-mark { font-family: var(--mag-display); font-size: 44px; color: var(--text3); letter-spacing: .03em; }
+.mag-cal-house { font-family: var(--mag-data); font-size: 10px; letter-spacing: .17em;
+                 text-transform: uppercase; color: var(--brand-olive-text); margin-top: 11px;
+                 padding-bottom: 6px; border-bottom: .5px solid var(--border); }
+.mag-cal-title { font-family: var(--mag-display); font-weight: 500; font-size: 18px;
+                 line-height: 1.12; display: block; margin-top: 4px; }
+.mag-cal-place { font-size: 13px; color: var(--text2); margin-top: 3px; display: block; }
+.mag-cal-when { font-family: var(--mag-data); font-size: 13px; color: var(--text1);
+                margin-top: 6px; font-variant-numeric: tabular-nums; }
+.mag-live { display: inline-block; margin-left: 8px; font-size: 10px; letter-spacing: .1em;
+            text-transform: uppercase; color: var(--brand-olive-text);
+            border: .5px solid var(--brand-olive-text); border-radius: 999px; padding: 2px 7px; }
 
-
-@media (max-width: 1100px) { .mag-bar-gap { flex-basis: 150px; } }
 @media (max-width: 900px) { .mag-bar .mag-searchwrap { max-width: none; } }
 @media (max-width: 860px) { .mag-pick { grid-template-columns: minmax(0,1fr); } }
 @media (max-width: 700px) {
@@ -670,10 +751,6 @@ const MAG_CSS = `
   .mag-cover-stand { color: var(--text2); max-width: none; }
   .mag-cover-lines .mag-stamp { color: var(--text3); }
   .mag-dots { right: 12px; bottom: 12px; }
-  .mag-cal-row { grid-template-columns: 96px minmax(0,1fr); align-items: start; gap: 4px 16px; padding: 16px 0; }
-  .mag-cal-art { width: 96px; height: 96px; grid-row: span 2; }
-  .mag-cal-house { grid-column: 2; }
-  .mag-cal-when { grid-column: 1 / -1; text-align: left; margin-top: 6px; }
 }
 @media (max-width: 620px) { .mag-bar-mark { display: none; } .mag-bar-gap { display: none; } }
 @media (prefers-reduced-motion: reduce) { .mag * { transition: none !important; } }
