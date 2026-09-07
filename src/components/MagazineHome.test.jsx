@@ -70,9 +70,10 @@ describe("MagazineHome", () => {
     expect(screen.queryByLabelText("Saved watches")).toBeNull();
   });
 
-  it("keeps a search in the persistent bar as well as the masthead", () => {
+  it("renders exactly one search", () => {
+    // Two of them (masthead and bar) was the doubling on the live page.
     render(<MagazineHome {...props()} />);
-    expect(screen.getAllByLabelText("Search watches").length).toBe(2);
+    expect(screen.getAllByLabelText("Search watches").length).toBe(1);
   });
 
   it("renders the tabs once, in the persistent bar", () => {
@@ -88,23 +89,33 @@ describe("MagazineHome", () => {
       homeSearchLiveQuery: (q) => seen.push(q),
       homeSearchCounts: { all: 90, live: 40, auctions: 30, sold: 20 },
     })} />);
-    fireEvent.change(screen.getAllByLabelText("Search watches")[0], { target: { value: "submariner" } });
+    fireEvent.change(screen.getByLabelText("Search watches"), { target: { value: "submariner" } });
     expect(seen).toContain("submariner");
     expect(screen.getByText("For sale")).toBeInTheDocument();
     expect(screen.getByText("40")).toBeInTheDocument();
   });
 
-  it("offers an admin hide on articles, and only to admins", () => {
+  it("offers an admin hide on articles AND listings, and only to admins", () => {
     const { rerender } = render(<MagazineHome {...props()} />);
     expect(screen.queryAllByTitle("Hide from Home").length).toBe(0);
-    rerender(<MagazineHome {...props({ isAdmin: true, toggleHide: () => {} })} />);
-    expect(screen.queryAllByTitle("Hide from Home").length).toBeGreaterThan(0);
+    const hidden = [];
+    rerender(<MagazineHome {...props({ isAdmin: true, toggleHide: (i) => hidden.push(i) })} />);
+    const buttons = screen.queryAllByTitle("Hide from Home");
+    // one per article (hero + tiles) and one per watch (feature + tiles)
+    expect(buttons.length).toBeGreaterThan(2);
+    buttons[buttons.length - 1].click();
+    expect(hidden.length).toBe(1);
+  });
+
+  it("gives article cards a preview, not just a headline", () => {
+    render(<MagazineHome {...props()} />);
+    expect(screen.getAllByText(/A few weeks ago/).length).toBeGreaterThan(0);
   });
 
   it("submits the search through the existing Home handler", () => {
     const calls = [];
     render(<MagazineHome {...props({ homeSearchSubmit: (q, target) => calls.push([q, target]) })} />);
-    const input = screen.getAllByLabelText("Search watches")[0];
+    const input = screen.getByLabelText("Search watches");
     // fireEvent.change, not a raw input event: React tracks the value with its
     // own setter and ignores a value assigned directly.
     fireEvent.change(input, { target: { value: "submariner" } });

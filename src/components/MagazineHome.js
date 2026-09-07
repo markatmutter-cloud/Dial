@@ -321,6 +321,12 @@ export default function MagazineHome(props) {
       <a className="mag-lot-img" href={i.url} target="_blank" rel="noopener noreferrer"
          onClick={() => onClickListing && onClickListing(i)}>
         <img src={imgSrc(i.img, 480)} alt="" loading="lazy" />
+        {isAdmin && toggleHide ? (
+          <button type="button" className="mag-hide mag-hide--tile" title="Hide from Home"
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleHide(i); }}>
+            &times;
+          </button>
+        ) : null}
       </a>
       <div className="mag-lot-body">
         <p className="mag-dealer">{i.source}</p>
@@ -349,12 +355,9 @@ export default function MagazineHome(props) {
             <p className="mag-strap">Aggregated watch listings</p>
           </div>
         </div>
-        {/* No heart or account circle here: the app's own persistent Home
-            overlay already carries both, and rendering a second set was the
-            duplication Mark spotted. Search is the one control this masthead
-            owns, and it gets the width to look like the page's main input. */}
-        <MagSearch big onSubmit={homeSearchSubmit} onLiveQuery={homeSearchLiveQuery}
-                   counts={homeSearchCounts} recent={homeRecentSearches} addRecent={homeAddRecentSearch} />
+        {/* No search here and no account controls. Search lives once, in the
+            persistent bar below, and the app's own Home overlay already
+            carries About, the heart and the account circle. */}
       </header>
 
 
@@ -370,8 +373,12 @@ export default function MagazineHome(props) {
             </button>
           ))}
         </div>
-        <MagSearch onSubmit={homeSearchSubmit} onLiveQuery={homeSearchLiveQuery}
+        <MagSearch big onSubmit={homeSearchSubmit} onLiveQuery={homeSearchLiveQuery}
                    counts={homeSearchCounts} recent={homeRecentSearches} addRecent={homeAddRecentSearch} />
+        {/* Reserved lane for the app's own fixed top-right overlay (About,
+            heart, account). Without it the sticky bar slides under those
+            controls as soon as the page scrolls. */}
+        <span className="mag-bar-gap" aria-hidden="true" />
       </div>
 
       {articles.length > 0 && (
@@ -394,6 +401,7 @@ export default function MagazineHome(props) {
                 <h3 className="mag-card-head">
                   <a href={a.url} target="_blank" rel="noopener noreferrer">{a.title}</a>
                 </h3>
+                {a.excerpt ? <p className="mag-card-stand">{a.excerpt}</p> : null}
                 <p className="mag-stamp">{fmtDate(a.published_at, { day: "numeric", month: "short" })}</p>
               </article>
             ))}
@@ -413,6 +421,12 @@ export default function MagazineHome(props) {
               <a className="mag-pick-img" href={feature.url} target="_blank" rel="noopener noreferrer"
                  onClick={() => onClickListing && onClickListing(feature)}>
                 <img src={imgSrc(feature.img, 900)} alt="" />
+                {isAdmin && toggleHide ? (
+                  <button type="button" className="mag-hide" title="Hide from Home"
+                          onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleHide(feature); }}>
+                    &times;
+                  </button>
+                ) : null}
               </a>
               <div className="mag-pick-body">
                 <p className="mag-dealer mag-dealer--bare">{feature.source}</p>
@@ -487,7 +501,7 @@ const MAG_CSS = `
                 font-size: clamp(28px,6vw,64px); line-height: .88; letter-spacing: .015em; color: var(--text1); }
 /* One tile width for both grids, so a story and a watch are the same object
    on the page (Mark, 2026-09-07). Change it here and both grids move. */
-.mag { --mag-tile: 210px; }
+.mag { --mag-tile: 268px; }
 
 .mag-searchwrap { position: relative; flex: 0 0 auto; }
 .mag-searchwrap--big { flex: 1 1 460px; max-width: 560px; }
@@ -519,17 +533,23 @@ const MAG_CSS = `
 .mag-drop-n { font-family: var(--mag-data); font-size: 12px; color: var(--text3); font-variant-numeric: tabular-nums; }
 
 /* persistent bar */
-.mag-bar { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; gap: 18px;
-           padding: 9px 0; margin-bottom: 4px; background: var(--bg);
+.mag-bar { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; gap: 22px;
+           padding: 10px 0; margin-bottom: 4px; background: var(--bg);
            border-bottom: .5px solid var(--border); }
 .mag-bar-mark { font-family: var(--mag-display); font-size: 19px; font-weight: 500; letter-spacing: .02em;
                 color: var(--text1); flex: 0 0 auto; }
-.mag-bar-tabs { display: flex; flex-wrap: wrap; gap: 4px 18px; flex: 1 1 auto; }
+.mag-bar-tabs { display: flex; flex-wrap: wrap; gap: 4px 18px; flex: 0 0 auto; }
 .mag-bar-tabs button { font-family: var(--mag-data); font-size: 10.5px; letter-spacing: .14em;
                        text-transform: uppercase; color: var(--text2); background: none; border: none;
                        cursor: pointer; padding: 2px 0; border-bottom: 1.5px solid transparent; }
 .mag-bar-tabs button:hover, .mag-bar-tabs button.on { color: var(--brand-olive-text); border-bottom-color: var(--brand-olive-text); }
-.mag-bar .mag-searchwrap { width: 230px; }
+/* The search sits in the space between the tabs and the app's own top-right
+   controls, so it reads as the bar's centre of gravity rather than something
+   tucked in a corner. */
+.mag-bar .mag-searchwrap { flex: 1 1 auto; max-width: 620px; margin: 0 auto; }
+/* Width of the app's fixed overlay (About + heart + account) plus breathing
+   room, so the sticky bar never slides under it on scroll. */
+.mag-bar-gap { flex: 0 0 228px; }
 
 /* admin hide */
 .mag-hide { position: absolute; top: 10px; right: 10px; z-index: 4; width: 26px; height: 26px;
@@ -586,6 +606,8 @@ const MAG_CSS = `
                  font-size: clamp(17px,2vw,23px); line-height: 1.12; }
 .mag-card-head a { text-decoration: none; }
 .mag-card-head a:hover { color: var(--brand-olive-text); }
+.mag-card-stand { margin: 0; font-size: 14.5px; line-height: 1.5; color: var(--text2);
+                  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 
 .mag-pick-band { background: var(--surface, rgba(0,0,0,.035)); padding: clamp(22px,3vw,40px);
                  margin-bottom: clamp(26px,3vw,38px); }
@@ -593,7 +615,7 @@ const MAG_CSS = `
 .mag-pick { display: grid; grid-template-columns: minmax(0,1.05fr) minmax(0,1fr); gap: clamp(20px,3vw,40px);
             align-items: center; padding-bottom: clamp(26px,3vw,38px); margin-bottom: clamp(26px,3vw,38px);
             border-bottom: .5px solid var(--border); }
-.mag-pick-img { display: block; aspect-ratio: 4/3; overflow: hidden; background: var(--card-bg); }
+.mag-pick-img { display: block; position: relative; aspect-ratio: 4/3; overflow: hidden; background: var(--card-bg); }
 .mag-pick-body { display: grid; gap: 8px; align-content: center; }
 .mag-pick-brand { font-family: var(--mag-display); font-weight: 400; margin: 2px 0 0;
                   font-size: clamp(26px,3.2vw,40px); line-height: 1.04; }
@@ -605,7 +627,7 @@ const MAG_CSS = `
 .mag-cat { display: grid; gap: clamp(22px,2.4vw,32px) clamp(18px,2vw,26px);
            grid-template-columns: repeat(auto-fill, minmax(var(--mag-tile),1fr)); align-items: start; }
 .mag-lot { display: grid; align-content: start; }
-.mag-lot-img { display: block; aspect-ratio: 1; overflow: hidden; background: var(--card-bg); }
+.mag-lot-img { display: block; position: relative; aspect-ratio: 1; overflow: hidden; background: var(--card-bg); }
 .mag-lot-body { padding: 11px 0 0; display: grid; gap: 5px; }
 .mag-dealer { font-family: var(--mag-data); font-size: 10px; letter-spacing: .17em; text-transform: uppercase;
               color: var(--brand-olive-text); margin: 0; padding-bottom: 6px; border-bottom: .5px solid var(--border); }
@@ -618,24 +640,25 @@ const MAG_CSS = `
                  color: var(--brand-olive-text); font-variant-numeric: tabular-nums; }
 
 .mag-cal { border-top: .5px solid var(--border); }
-.mag-cal-row { display: grid; grid-template-columns: 104px 128px minmax(0,1fr) auto; gap: 6px 22px;
-               align-items: center; padding: 14px 0; border-bottom: .5px solid var(--border);
+.mag-cal-row { display: grid; grid-template-columns: 150px 150px minmax(0,1fr) auto; gap: 8px 26px;
+               align-items: center; padding: 18px 0; border-bottom: .5px solid var(--border);
                text-decoration: none; }
-.mag-cal-art { width: 104px; height: 104px; overflow: hidden; background: var(--card-bg);
+.mag-cal-art { width: 150px; height: 150px; overflow: hidden; background: var(--card-bg);
                display: flex; align-items: center; justify-content: center; }
-.mag-cal-mark { font-family: var(--mag-display); font-size: 27px; color: var(--text3); letter-spacing: .03em; }
+.mag-cal-mark { font-family: var(--mag-display); font-size: 38px; color: var(--text3); letter-spacing: .03em; }
 .mag-cal-row:hover .mag-cal-title { color: var(--brand-olive-text); }
-.mag-cal-house { font-family: var(--mag-data); font-size: 10.5px; letter-spacing: .15em;
+.mag-cal-house { font-family: var(--mag-data); font-size: 11.5px; letter-spacing: .16em;
                  text-transform: uppercase; color: var(--brand-olive-text); }
-.mag-cal-title { font-family: var(--mag-display); font-size: clamp(17px,1.9vw,21px); line-height: 1.15; display: block; }
-.mag-cal-place { font-size: 13px; color: var(--text3); margin-top: 2px; display: block; }
-.mag-cal-when { font-family: var(--mag-data); font-size: 12px; color: var(--text2); text-align: right;
+.mag-cal-title { font-family: var(--mag-display); font-weight: 500; font-size: clamp(20px,2.3vw,27px); line-height: 1.12; display: block; }
+.mag-cal-place { font-size: 14.5px; color: var(--text2); margin-top: 5px; display: block; }
+.mag-cal-when { font-family: var(--mag-data); font-size: 14px; color: var(--text1); text-align: right;
                 white-space: nowrap; font-variant-numeric: tabular-nums; }
-.mag-live { display: inline-block; margin-left: 8px; font-size: 9.5px; letter-spacing: .1em; text-transform: uppercase;
+.mag-live { display: inline-block; margin-left: 8px; font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase;
             color: var(--brand-olive-text); border: .5px solid var(--brand-olive-text); border-radius: 999px; padding: 2px 7px; }
 
 
-@media (max-width: 900px) { .mag-bar .mag-searchwrap { width: 170px; } }
+@media (max-width: 1100px) { .mag-bar-gap { flex-basis: 150px; } }
+@media (max-width: 900px) { .mag-bar .mag-searchwrap { max-width: none; } }
 @media (max-width: 860px) { .mag-pick { grid-template-columns: minmax(0,1fr); } }
 @media (max-width: 700px) {
   .mag-cover { aspect-ratio: auto; overflow: visible; background: transparent; }
@@ -647,11 +670,11 @@ const MAG_CSS = `
   .mag-cover-stand { color: var(--text2); max-width: none; }
   .mag-cover-lines .mag-stamp { color: var(--text3); }
   .mag-dots { right: 12px; bottom: 12px; }
-  .mag-cal-row { grid-template-columns: 72px minmax(0,1fr); align-items: start; gap: 4px 14px; padding: 14px 0; }
-  .mag-cal-art { width: 72px; height: 72px; grid-row: span 2; }
+  .mag-cal-row { grid-template-columns: 96px minmax(0,1fr); align-items: start; gap: 4px 16px; padding: 16px 0; }
+  .mag-cal-art { width: 96px; height: 96px; grid-row: span 2; }
   .mag-cal-house { grid-column: 2; }
   .mag-cal-when { grid-column: 1 / -1; text-align: left; margin-top: 6px; }
 }
-@media (max-width: 620px) { .mag-bar .mag-searchwrap { display: none; } .mag-bar-mark { display: none; } }
+@media (max-width: 620px) { .mag-bar-mark { display: none; } .mag-bar-gap { display: none; } }
 @media (prefers-reduced-motion: reduce) { .mag * { transition: none !important; } }
 `;
