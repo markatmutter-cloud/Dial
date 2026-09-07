@@ -89,10 +89,24 @@ describe("MagazineHome", () => {
     expect(bar.queryByLabelText("Saved watches")).toBeNull();
   });
 
-  it("renders exactly one search", () => {
-    // Two of them (masthead and bar) was the doubling on the live page.
+  it("renders exactly one search on each breakpoint", () => {
     render(<MagazineHome {...props()} />);
     expect(screen.getAllByLabelText("Search watches").length).toBe(1);
+  });
+
+  it("gives mobile its own pinned chrome with the short tab labels", () => {
+    const { container } = render(<MagazineHome {...props({
+      isMobile: true,
+      homeMastheadTabs: [
+        { key: "listings", label: "Watches", active: true, onSelect: noop },
+        { key: "guides", label: "Reference Guides", mobileLabel: "Guides", active: false, onSelect: noop },
+      ],
+    })} />);
+    expect(container.querySelector(".mag-mhead")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Guides" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Reference Guides" })).toBeNull();
+    // one search, and it lives inside the pinned chrome
+    expect(container.querySelectorAll(".mag-search").length).toBe(1);
   });
 
   it("renders the tabs once, in the persistent bar", () => {
