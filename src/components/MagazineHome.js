@@ -447,6 +447,13 @@ export default function MagazineHome(props) {
               </article>
             ))}
           </div>
+          {/* Mirrors the listings section: a way out at the foot of the grid
+              as well as at the head, so you don't have to scroll back up. */}
+          <div className="mag-sec-foot">
+            <button type="button" className="mag-viewall" onClick={goToArticles}>
+              View all articles <span aria-hidden>&rarr;</span>
+            </button>
+          </div>
         </section>
       )}
 
