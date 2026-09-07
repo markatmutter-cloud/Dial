@@ -30,6 +30,7 @@ import { ActiveFiltersStrip } from "./components/ActiveFiltersStrip";
 import { ReferencesTab } from "./components/ReferencesTab";
 import { CollectionsTab } from "./components/CollectionsTab";
 import { HomeTab } from "./components/HomeTab";
+import MagazineHome from "./components/MagazineHome";
 import { TrackNewItemModal } from "./components/TrackNewItemModal";
 import { FavSearchModal } from "./components/FavSearchModal";
 import { AddSearchModal } from "./components/AddSearchModal";
@@ -3611,6 +3612,15 @@ export default function Watchlist() {
   // something large. Derived at render from the same sets the rows come from,
   // so nothing here can rot the way the hardcoded LiveCounts house number did.
   // Cheap: four length reads over arrays already in memory.
+  // Parallel landing page (Epic 9, 2026-09-07). `?view=magazine` swaps Home
+  // for MagazineHome and nothing else: same data, same shells, same routes.
+  // The live landing page is untouched until Mark says to flip the default,
+  // which is a one-line change here. Read once on mount rather than kept in
+  // sync with history, because this is a build-time switch, not navigation.
+  const magazineView = useMemo(() => {
+    try { return new URLSearchParams(window.location.search).get("view") === "magazine"; }
+    catch { return false; }
+  }, []);
   const homeSectionCounts = useMemo(() => {
     const visible = (i) => i && !hidden[i.id] && !adminHidden.has(i.id) && !homeHidden.has(i.id);
     const isSold = (i) => i.sold || i.status === "ended" || i.sold_price;
@@ -4377,8 +4387,12 @@ export default function Watchlist() {
   // the loading render and the post-load render. Only the JSX const
   // sits here. See the load-bearing comment up there for the full
   // explanation.
+  // Home is built ONCE and handed to whichever shell renders it. The magazine
+  // view swaps only the component, so both shells, every route and every
+  // other tab are untouched by the parallel page.
+  const HomeComponent = magazineView ? MagazineHome : HomeTab;
   const homeTabJSX = (
-    <HomeTab
+    <HomeComponent
       homeRecentAdded={homeRecentAdded}
       homeRecentSold={homeRecentSold}
       homeEndingNext={homeEndingNext}
@@ -4388,6 +4402,9 @@ export default function Watchlist() {
       // Admin-removed articles drop from the Home strip (Mark 2026-06-06)
       homeRecentArticles={adminHidden.size ? homeArticles.filter(a => !adminHidden.has(shortHash(a.url))) : homeArticles}
       homeSectionCounts={homeSectionCounts}
+      // The magazine masthead's saved-watches button routes here. Watches >
+      // (heart) Saved, matching the 2026-07-30 IA move.
+      goToSavedHearts={() => { setTab("listings"); setListingsSubTab("saved"); setPage(1); }}
       // Auction module on Home (Epic 9 step 3): the same sale feed the
       // calendar reads, and the same two routes out of it, so the block on
       // Home and the calendar itself can't drift apart.
