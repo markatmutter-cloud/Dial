@@ -305,7 +305,7 @@ export default function MagazineHome(props) {
     homeRecentAdded, homeRecentArticles, homeEndingNext,
     homeAuctionSales, homeSectionCounts,
     goToRecentAdded, goToArticles, homeOpenCalendar, homeOpenSale,
-    onClickListing, primaryCurrency, isMobile, user, dark,
+    onClickListing, primaryCurrency, isMobile, user, dark, cols,
     homeMastheadTabs, homeSearchSubmit, watchlist, homeJumpToDealer, homeAuctionSources,
     homeSearchLiveQuery, homeSearchCounts, homeRecentSearches, homeAddRecentSearch,
     homeAuctionHeroes, toggleHide, isAdmin, openAbout, signInWithGoogle,
@@ -378,8 +378,15 @@ export default function MagazineHome(props) {
     </article>
   );
 
+  // The app already has a Columns control (Settings: Auto / 3-7, plus the
+  // mobile 1-3). The magazine was ignoring it and sizing off a fixed tile
+  // width instead, which is why it sat at four columns whatever you chose.
+  // One source of truth: use the resolved count, and only fall back to the
+  // fluid tile when a caller hasn't supplied one.
+  const gridCols = Number.isFinite(cols) && cols > 0 ? cols : null;
+
   return (
-    <div className="mag">
+    <div className="mag" style={gridCols ? { "--mag-cols": gridCols } : undefined}>
       <style>{MAG_CSS}</style>
 
       <header className="mag-flag">
@@ -557,8 +564,13 @@ const MAG_CSS = `
 .mag img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .mag a { color: inherit; }
 
-.mag-flag { display: flex; align-items: flex-end; justify-content: space-between;
-            gap: 24px; padding: 22px 0 14px; }
+/* The app's own overlay (About / heart / account) is pinned 6px from the top.
+   A 22px pad here put the wordmark's optical top about 24px below it, which
+   read as two rows at different heights (Mark, 2026-09-07). Bodoni's cap sits
+   roughly 8px into a 0.88 line box, so a 4px pad lands the two within a few
+   pixels of each other. */
+.mag-flag { display: flex; align-items: flex-start; justify-content: space-between;
+            gap: 24px; padding: 4px 0 14px; }
 .mag-mark { display: flex; align-items: center; gap: 14px; min-width: 0; }
 .mag-wordmark-row { display: flex; align-items: center; gap: clamp(10px,1.4vw,20px); }
 /* Olive wordmark (Mark, 2026-09-07). --brand-olive-ink is theme-aware: deep
@@ -701,6 +713,11 @@ const MAG_CSS = `
 .mag-cards { display: grid; gap: clamp(22px,2.6vw,34px) clamp(18px,2vw,26px);
              grid-template-columns: repeat(auto-fill, minmax(var(--mag-tile),1fr)); align-items: start;
              margin-top: clamp(28px,3.2vw,42px); }
+/* When the app resolves a column count (Settings > Columns, Auto included),
+   it wins over the fluid tile so the two grids agree with the rest of the
+   site rather than inventing their own width. */
+.mag[style*="--mag-cols"] .mag-cards,
+.mag[style*="--mag-cols"] .mag-cat { grid-template-columns: repeat(var(--mag-cols), minmax(0,1fr)); }
 .mag-card { display: grid; gap: 8px; align-content: start; }
 .mag-card-img { display: block; position: relative; aspect-ratio: 13/9; overflow: hidden; background: var(--card-bg); }
 .mag-card-head { font-family: var(--mag-display); font-weight: 500; margin: 0;
