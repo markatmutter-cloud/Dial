@@ -138,6 +138,7 @@ function pickFeature(items) {
 function MagSearch({ onSubmit, onLiveQuery, counts, recent, addRecent, big }) {
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
+  const [focus, setFocus] = useState(false);
   const wrap = useRef(null);
 
   useEffect(() => {
@@ -169,12 +170,13 @@ function MagSearch({ onSubmit, onLiveQuery, counts, recent, addRecent, big }) {
 
   return (
     <div className={`mag-searchwrap${big ? " mag-searchwrap--big" : ""}`} ref={wrap}>
-      <form className="mag-search" role="search" onSubmit={(e) => { e.preventDefault(); fire("all"); }}>
+      <form className={`mag-search${focus ? " is-focus" : ""}`} role="search" onSubmit={(e) => { e.preventDefault(); fire("all"); }}>
         <svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.5">
           <circle cx="7" cy="7" r="5" /><path d="M11 11l4 4" />
         </svg>
         <input type="search" value={q} onChange={(e) => change(e.target.value)}
-               onFocus={() => setOpen(q.trim().length > 0 || (recent || []).length > 0)}
+               onFocus={() => { setFocus(true); setOpen(q.trim().length > 0 || (recent || []).length > 0); }}
+               onBlur={() => setFocus(false)}
                placeholder="Brand, model, reference" aria-label="Search watches" />
         <button type="submit" className="mag-search-go">Search</button>
       </form>
@@ -342,7 +344,10 @@ export default function MagazineHome(props) {
             <circle cx="20" cy="20" r="15.2" fill="none" stroke="currentColor" strokeWidth="1.2" opacity=".55" />
             <path d="M20 4.8a15.2 15.2 0 0 0 0 30.4 11 15.2 0 0 1 0-30.4z" fill="currentColor" />
           </svg>
-          <h1 className="mag-wordmark">Watchlist</h1>
+          <div>
+            <h1 className="mag-wordmark">Watchlist</h1>
+            <p className="mag-strap">Aggregated watch listings</p>
+          </div>
         </div>
         {/* No heart or account circle here: the app's own persistent Home
             overlay already carries both, and rendering a second set was the
@@ -352,16 +357,6 @@ export default function MagazineHome(props) {
                    counts={homeSearchCounts} recent={homeRecentSearches} addRecent={homeAddRecentSearch} />
       </header>
 
-      <nav className="mag-nav" aria-label="Sections">
-        <div className="mag-tabs">
-          {(homeMastheadTabs || []).map((t) => (
-            <button key={t.key} type="button" onClick={t.onSelect} className={t.active ? "on" : ""}>
-              {isMobile && t.mobileLabel ? t.mobileLabel : t.label}
-            </button>
-          ))}
-        </div>
-        <p className="mag-strap">Aggregated watch listings</p>
-      </nav>
 
       {/* Persistent bar (Mark, 2026-09-07): once the masthead scrolls away the
           tabs and search should still be there. Sticky rather than fixed, so
@@ -485,7 +480,7 @@ const MAG_CSS = `
 .mag a { color: inherit; }
 
 .mag-flag { display: flex; align-items: flex-end; justify-content: space-between;
-            gap: 24px; padding: 22px 0 10px; }
+            gap: 24px; padding: 22px 0 14px; }
 .mag-mark { display: flex; align-items: center; gap: 14px; min-width: 0; }
 .mag-moon { width: clamp(30px,4vw,44px); height: clamp(30px,4vw,44px); flex: 0 0 auto; color: var(--brand-olive-text); }
 .mag-wordmark { font-family: var(--mag-display); font-weight: 500; margin: 0;
@@ -498,7 +493,10 @@ const MAG_CSS = `
 .mag-searchwrap--big { flex: 1 1 460px; max-width: 560px; }
 .mag-search { display: flex; align-items: center; gap: 10px; border: .5px solid var(--border);
               border-radius: 999px; padding: 6px 6px 6px 16px; background: var(--card-bg); }
-.mag-search.is-focus, .mag-searchwrap:focus-within .mag-search { border-color: var(--brand-olive-text); }
+/* Do NOT use :focus-within here. jsdom resolves it with contains(activeElement)
+   and throws when nothing is focused, which breaks every getByRole in this
+   component's tests. Focus is tracked in React state instead. */
+.mag-search.is-focus { border-color: var(--brand-olive-text); }
 .mag-search svg { width: 14px; height: 14px; flex: 0 0 auto; color: var(--text3); }
 .mag-search input { border: none; background: transparent; outline: none; width: 100%;
                     font-family: var(--mag-body); font-size: 14px; color: var(--text1); padding: 6px 0; }
@@ -540,14 +538,7 @@ const MAG_CSS = `
 .mag-hide:hover { background: rgba(8,10,6,.8); }
 .mag-hide--tile { width: 24px; height: 24px; font-size: 14px; }
 
-.mag-nav { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between;
-           gap: 8px 28px; padding: 4px 0 11px; border-bottom: 1.5px solid var(--text1); }
-.mag-tabs { display: flex; flex-wrap: wrap; gap: 4px 26px; }
-.mag-tabs button { font-family: var(--mag-data); font-size: 11px; letter-spacing: .16em;
-                   text-transform: uppercase; color: var(--text1); background: none; cursor: pointer;
-                   padding: 3px 0; border: none; border-bottom: 1.5px solid transparent; }
-.mag-tabs button:hover, .mag-tabs button.on { border-bottom-color: var(--brand-olive-text); color: var(--brand-olive-text); }
-.mag-strap { margin: 0; font-family: var(--mag-data); font-size: 10.5px; letter-spacing: .12em;
+.mag-strap { margin: 6px 0 0; font-family: var(--mag-data); font-size: 10.5px; letter-spacing: .12em;
              text-transform: uppercase; color: var(--text3); }
 
 .mag-sec { margin-top: clamp(40px,5.4vw,76px); }
