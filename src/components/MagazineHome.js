@@ -643,8 +643,8 @@ const MAG_CSS = `
    on a laptop the hero ran past the fold and the headline sat below it
    (Mark, 2026-09-07). The ratio still drives the shape; the cap stops it
    growing past what you can see, and object-fit crops rather than squashes. */
-.mag-cover { position: relative; aspect-ratio: 16/9; max-height: min(62vh, 620px);
-             overflow: hidden; background: var(--card-bg); }
+.mag-cover { position: relative; width: 100%; aspect-ratio: 16/9;
+             max-height: min(62vh, 620px); overflow: hidden; background: var(--card-bg); }
 .mag-cover::after { content: ""; position: absolute; inset: 0; pointer-events: none;
   background: linear-gradient(180deg, rgba(8,10,6,0) 45%, rgba(8,10,6,.30) 78%, rgba(8,10,6,.55) 100%); }
 .mag-cover-pic { position: absolute; inset: 0; display: block; }
