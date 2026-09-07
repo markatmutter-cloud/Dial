@@ -397,14 +397,17 @@ const MAG_CSS = `
 
 .mag-cover { position: relative; aspect-ratio: 16/9; overflow: hidden; background: var(--card-bg); }
 .mag-cover::after { content: ""; position: absolute; inset: 0; pointer-events: none;
-  background: linear-gradient(180deg, rgba(8,10,6,0) 18%, rgba(8,10,6,.42) 52%, rgba(8,10,6,.88) 100%); }
+  background: linear-gradient(180deg, rgba(8,10,6,0) 45%, rgba(8,10,6,.30) 78%, rgba(8,10,6,.55) 100%); }
 .mag-cover-pic { position: absolute; inset: 0; display: block; }
-.mag-cover-lines { position: absolute; inset: auto 0 0 0; z-index: 2; padding: clamp(20px,3.4vw,46px); display: grid; gap: 10px; }
+.mag-cover-lines { position: absolute; inset: auto 0 0 0; z-index: 2; padding: clamp(34px,5vw,64px) clamp(20px,3.4vw,46px) clamp(20px,3.4vw,46px);
+  display: grid; gap: 10px;
+  background: linear-gradient(180deg, rgba(8,10,6,0) 0%, rgba(8,10,6,.62) 34%, rgba(8,10,6,.88) 100%); }
 .mag-kicker { font-family: var(--mag-data); font-size: 11px; letter-spacing: .18em; text-transform: uppercase;
               color: #EFE9D4; margin: 0; }
 .mag-kicker--card { color: var(--brand-olive-text); font-size: 10.5px; letter-spacing: .16em; margin: 6px 0 0; }
 .mag-cover-head { font-family: var(--mag-display); font-weight: 400; margin: 0; color: #FBFAF3;
-                  font-size: clamp(24px,4.1vw,54px); line-height: 1; max-width: 21ch; }
+                  font-size: clamp(24px,4.1vw,54px); line-height: 1.02; max-width: 21ch;
+                  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .mag-cover-head a { text-decoration: none; }
 .mag-cover-stand { margin: 0; max-width: 52ch; color: #DAD7C6; font-size: clamp(14px,1.35vw,16.5px); line-height: 1.5;
                    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
@@ -477,7 +480,7 @@ const MAG_CSS = `
   .mag-cover { aspect-ratio: auto; overflow: visible; background: transparent; }
   .mag-cover::after { display: none; }
   .mag-cover-pic { position: relative; inset: auto; aspect-ratio: 4/3; overflow: hidden; background: var(--card-bg); display: block; }
-  .mag-cover-lines { position: static; padding: 14px 0 0; gap: 8px; }
+  .mag-cover-lines { position: static; padding: 14px 0 0; gap: 8px; background: none; }
   .mag-kicker { color: var(--brand-olive-text); }
   .mag-cover-head { color: var(--text1); font-size: 27px; max-width: none; }
   .mag-cover-stand { color: var(--text2); max-width: none; }
