@@ -37,6 +37,7 @@ function props(over = {}) {
     homeSearchSubmit: noop, homeSearchLiveQuery: noop, homeSearchCounts: null,
     homeRecentSearches: [], homeAddRecentSearch: noop, homeAuctionHeroes: {},
     toggleHide: null, isAdmin: false, openAbout: noop, signInWithGoogle: noop,
+    watchlist: {}, homeJumpToDealer: noop,
     ...over,
   };
 }
@@ -105,6 +106,40 @@ describe("MagazineHome", () => {
     expect(buttons.length).toBeGreaterThan(2);
     buttons[buttons.length - 1].click();
     expect(hidden.length).toBe(1);
+  });
+
+  it("ranks the dealer shortcuts by what the user has actually hearted", () => {
+    const jumped = [];
+    render(<MagazineHome {...props({
+      homeJumpToDealer: (n) => jumped.push(n),
+      watchlist: {
+        a: { source: "Phillips", url: "https://www.phillips.com/x" },
+        b: { source: "Phillips", url: "https://www.phillips.com/y" },
+        c: { source: "Phillips", url: "https://www.phillips.com/z" },
+        d: { source: "Wind Vintage", url: "https://www.windvintage.com/x" },
+        e: { source: "Wind Vintage", url: "https://www.windvintage.com/y" },
+        f: { source: "Somlo", url: "https://somlolondon.com/x" },
+      },
+    })} />);
+    const chips = screen.getAllByTitle(/saved from/);
+    expect(chips[0].textContent).toContain("Phillips");
+    expect(chips[1].textContent).toContain("Wind Vintage");
+    chips[0].click();
+    expect(jumped).toEqual(["Phillips"]);
+  });
+
+  it("falls back to who is listing when there are no hearts", () => {
+    render(<MagazineHome {...props()} />);
+    expect(screen.getAllByTitle(/saved from/).length).toBeGreaterThan(0);
+  });
+
+  it("rotates five stories, not three", () => {
+    const many = Array.from({ length: 7 }, (_, i) => ({
+      title: `Story ${i}`, url: `https://f/${i}`, image: `https://img/${i}.jpg`,
+      excerpt: "x", source: "fratello", published_at: "2026-08-26",
+    }));
+    render(<MagazineHome {...props({ homeRecentArticles: many })} />);
+    expect(screen.getAllByLabelText(/^Show story/).length).toBe(5);
   });
 
   it("gives article cards a preview, not just a headline", () => {
