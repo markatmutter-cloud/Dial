@@ -88,6 +88,14 @@ describe("MagazineHome", () => {
     expect(calls[0][0]).toBe("submariner");
   });
 
+  it("clamps the cover headline so it can't climb out of its scrim", () => {
+    // Real failure on live data: a four-line Fratello title rose off the dark
+    // band and sat unreadable on a bright dial.
+    render(<MagazineHome {...props()} />);
+    const style = document.querySelector(".mag style") || document.querySelector("style");
+    expect(style.textContent).toContain("-webkit-line-clamp: 3");
+  });
+
   it("renders nothing for a section with no data rather than an empty heading", () => {
     render(<MagazineHome {...props({ homeRecentArticles: [], homeAuctionSales: [] })} />);
     expect(screen.queryByRole("heading", { name: "Recent Articles" })).toBeNull();
