@@ -307,6 +307,7 @@ export default function MagazineHome(props) {
     goToRecentAdded, goToArticles, homeOpenCalendar, homeOpenSale,
     onClickListing, primaryCurrency, isMobile, user, dark, cols,
     homeMastheadTabs, homeSearchSubmit, watchlist, homeJumpToDealer, homeAuctionSources,
+    goToSavedHearts,
     homeSearchLiveQuery, homeSearchCounts, homeRecentSearches, homeAddRecentSearch,
     homeAuctionHeroes, toggleHide, isAdmin, openAbout, signInWithGoogle,
   } = props;
@@ -348,6 +349,10 @@ export default function MagazineHome(props) {
   // Up to three rows of stories and two of watches, always whole rows.
   const articleRows = useWholeRows(cardsRef, articles.length, 3);
   const listingRows = useWholeRows(catRef, grid.length, 2);
+
+  const savedCount = watchlist ? Object.keys(watchlist).length : 0;
+  const initial = String((user && ((user.user_metadata && user.user_metadata.full_name) || user.email)) || "")
+    .trim().charAt(0).toUpperCase() || "\u2022";
 
   const hideArticle = (a) => {
     const projected = articleAsListing(a);
@@ -391,18 +396,15 @@ export default function MagazineHome(props) {
 
       <header className="mag-flag">
         <div className="mag-mark">
-            <div className="mag-wordmark-row">
-              <h1 className="mag-wordmark">Watchlist</h1>
-              {/* The real moon-phase component, not a drawn crescent: it shows
-                  tonight's actual phase and updates every minute, which is what
-                  the original Home masthead did and what Mark built first. To
-                  the RIGHT of the wordmark at his sizing. */}
-              <MoonPhaseIndicator size={isMobile ? 74 : 96} dark={!!dark} />
-            </div>
+          <h1 className="mag-wordmark">Watchlist</h1>
         </div>
-        {/* No search here and no account controls. Search lives once, in the
-            persistent bar below, and the app's own Home overlay already
-            carries About, the heart and the account circle. */}
+        {/* The moon sits on the page's centre line, directly above the search
+            in the bar below, so the two share a vertical axis instead of the
+            moon hanging off the wordmark (Mark, 2026-09-07). */}
+        <div className="mag-moonslot">
+          <MoonPhaseIndicator size={isMobile ? 92 : 132} dark={!!dark} />
+        </div>
+        <div />
       </header>
 
 
@@ -410,7 +412,6 @@ export default function MagazineHome(props) {
           tabs and search should still be there. Sticky rather than fixed, so
           it never covers content and needs no scroll listener. */}
       <div className="mag-bar">
-        <span className="mag-bar-mark">Watchlist</span>
         <div className="mag-bar-tabs">
           {(homeMastheadTabs || []).map((t) => (
             <button key={t.key} type="button" onClick={t.onSelect} className={t.active ? "on" : ""}>
@@ -420,10 +421,28 @@ export default function MagazineHome(props) {
         </div>
         <MagSearch big onSubmit={homeSearchSubmit} onLiveQuery={homeSearchLiveQuery}
                    counts={homeSearchCounts} recent={homeRecentSearches} addRecent={homeAddRecentSearch} />
-        {/* Reserved lane for the app's own fixed top-right overlay (About,
-            heart, account). Without it the sticky bar slides under those
-            controls as soon as the page scrolls. */}
-        <span className="mag-bar-gap" aria-hidden="true" />
+        {/* About, saved and account live HERE rather than in the app's floating
+            overlay, so every control on the page persists together in one row
+            (Mark, 2026-09-07). App.js suppresses the overlay for this view, so
+            there is one set, not two. */}
+        <div className="mag-bar-util">
+          <button type="button" className="mag-bar-link" onClick={openAbout}>About</button>
+          {user ? (
+            <>
+              <button type="button" className="mag-icon" aria-label="Saved watches" onClick={goToSavedHearts}>
+                <svg viewBox="0 0 20 20" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.6">
+                  <path d="M10 17S3 12.6 3 7.9A3.9 3.9 0 0 1 10 5.6a3.9 3.9 0 0 1 7 2.3C17 12.6 10 17 10 17z" />
+                </svg>
+                {savedCount > 0 ? <span className="mag-badge">{savedCount}</span> : null}
+              </button>
+              <span className="mag-avatar" aria-hidden="true">{initial}</span>
+            </>
+          ) : (
+            signInWithGoogle ? (
+              <button type="button" className="mag-signin" onClick={signInWithGoogle}>Sign in</button>
+            ) : null
+          )}
+        </div>
       </div>
 
       {articles.length > 0 && (
@@ -564,15 +583,13 @@ const MAG_CSS = `
 .mag img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .mag a { color: inherit; }
 
-/* The app's own overlay (About / heart / account) is pinned 6px from the top.
-   A 22px pad here put the wordmark's optical top about 24px below it, which
-   read as two rows at different heights (Mark, 2026-09-07). Bodoni's cap sits
-   roughly 8px into a 0.88 line box, so a 4px pad lands the two within a few
-   pixels of each other. */
-.mag-flag { display: flex; align-items: flex-start; justify-content: space-between;
-            gap: 24px; padding: 4px 0 14px; }
-.mag-mark { display: flex; align-items: center; gap: 14px; min-width: 0; }
-.mag-wordmark-row { display: flex; align-items: center; gap: clamp(10px,1.4vw,20px); }
+/* Three zones: wordmark left, moon centred over the search below it, nothing
+   on the right (the account controls moved into the persistent bar, so this
+   row no longer has to leave a lane for them). */
+.mag-flag { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+            gap: 24px; padding: 22px 0 14px; }
+.mag-mark { display: flex; align-items: center; min-width: 0; }
+.mag-moonslot { display: flex; justify-content: center; }
 /* Olive wordmark (Mark, 2026-09-07). --brand-olive-ink is theme-aware: deep
    olive on paper, a lifted sage on the dark ground, so it holds contrast in
    both without needing a second colour. */
@@ -584,7 +601,7 @@ const MAG_CSS = `
 .mag { --mag-tile: 268px; }
 
 .mag-searchwrap { position: relative; flex: 0 0 auto; }
-.mag-searchwrap--big { flex: 1 1 520px; max-width: 720px; }
+.mag-searchwrap--big { flex: 1 1 420px; max-width: 560px; }
 .mag-search { display: flex; align-items: center; gap: 10px; border: .5px solid var(--border);
               border-radius: 999px; padding: 6px 6px 6px 16px; background: var(--card-bg); }
 /* Do NOT use :focus-within here. jsdom resolves it with contains(activeElement)
@@ -599,7 +616,7 @@ const MAG_CSS = `
                                   box-shadow: 0 1px 3px rgba(0,0,0,.06); }
 .mag-searchwrap--big .mag-search.is-focus { box-shadow: 0 2px 10px rgba(0,0,0,.10); }
 .mag-searchwrap--big .mag-search svg { width: 17px; height: 17px; color: var(--text2); }
-.mag-searchwrap--big .mag-search input { font-size: 17px; padding: 10px 0; }
+.mag-searchwrap--big .mag-search input { font-size: 15.5px; padding: 9px 0; }
 .mag-search-go { font-family: var(--mag-data); font-size: 11.5px; letter-spacing: .16em;
                  text-transform: uppercase; border: none; border-radius: 999px; cursor: pointer;
                  background: var(--brand-olive-text); color: var(--bg); padding: 12px 22px; flex: 0 0 auto; }
@@ -619,10 +636,8 @@ const MAG_CSS = `
 .mag-bar { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; gap: 22px;
            padding: 12px 0; margin-bottom: 4px; background: var(--bg);
            border-bottom: .5px solid var(--border); }
-.mag-bar-mark { font-family: var(--mag-display); font-size: 19px; font-weight: 500; letter-spacing: .02em;
-                color: var(--text1); flex: 0 0 auto; }
-.mag-bar-tabs { display: flex; flex-wrap: wrap; gap: 4px 18px; flex: 0 0 auto; }
-.mag-bar-tabs button { font-family: var(--mag-data); font-size: 10.5px; letter-spacing: .14em;
+.mag-bar-tabs { display: flex; flex-wrap: wrap; gap: 4px 22px; flex: 0 0 auto; }
+.mag-bar-tabs button { font-family: var(--mag-data); font-size: 12.5px; letter-spacing: .13em;
                        text-transform: uppercase; color: var(--text2); background: none; border: none;
                        cursor: pointer; padding: 2px 0; border-bottom: 1.5px solid transparent; }
 .mag-bar-tabs button:hover, .mag-bar-tabs button.on { color: var(--brand-olive-text); border-bottom-color: var(--brand-olive-text); }
@@ -632,14 +647,34 @@ const MAG_CSS = `
 .mag-bar .mag-searchwrap { flex: 1 1 auto; max-width: 620px; margin: 0 auto; }
 /* Width of the app's fixed overlay (About + heart + account) plus breathing
    room, so the sticky bar never slides under it on scroll. */
-.mag-bar-gap { flex: 0 0 228px; }
+.mag-bar-util { display: flex; align-items: center; gap: 12px; flex: 0 0 auto; }
+.mag-bar-link { font-family: var(--mag-data); font-size: 10.5px; letter-spacing: .14em;
+                text-transform: uppercase; color: var(--text2); background: none; border: none;
+                cursor: pointer; padding: 4px 0; }
+.mag-bar-link:hover { color: var(--brand-olive-text); }
+.mag-signin { font-family: var(--mag-data); font-size: 10.5px; letter-spacing: .14em;
+              text-transform: uppercase; color: var(--text1); background: none; cursor: pointer;
+              border: .5px solid var(--border); border-radius: 999px; padding: 8px 16px; }
+.mag-signin:hover { border-color: var(--brand-olive-text); color: var(--brand-olive-text); }
+.mag-icon { width: 34px; height: 34px; border-radius: 999px; border: .5px solid var(--border);
+            background: transparent; cursor: pointer; display: flex; align-items: center;
+            justify-content: center; color: var(--text1); position: relative; padding: 0; }
+.mag-icon:hover { border-color: var(--brand-olive-text); color: var(--brand-olive-text); }
+.mag-icon svg { width: 15px; height: 15px; }
+.mag-badge { position: absolute; top: -4px; right: -4px; min-width: 16px; height: 16px;
+             border-radius: 999px; background: var(--brand-olive-text); color: var(--bg);
+             font-family: var(--mag-data); font-size: 9px; line-height: 16px; text-align: center;
+             padding: 0 4px; font-variant-numeric: tabular-nums; }
+.mag-avatar { width: 34px; height: 34px; border-radius: 999px; background: var(--brand-olive-text);
+              color: var(--bg); font-family: var(--mag-display); font-size: 15px; font-weight: 500;
+              display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
 
 /* dealer shortcuts */
-/* A full-bleed band gives the chips a home instead of leaving them floating
-   between the section rule and the first watch. margin/padding pair is the
-   standard bleed: pull out to the viewport edge, pad back in. */
+/* Same band treatment and the same width as the featured-watch band below,
+   so the two read as one device rather than two (Mark, 2026-09-07). Inset to
+   the content column, not bled to the viewport. */
 .mag-dealers-band { background: var(--surface, rgba(0,0,0,.035));
-                    margin-inline: calc(50% - 50vw); padding: 16px calc(50vw - 50%);
+                    padding: 16px clamp(22px,3vw,40px);
                     margin-bottom: clamp(24px,3vw,36px); }
 .mag-dealers-inner { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; }
 .mag-sec--dealers { margin-top: clamp(30px,3.6vw,48px); }
@@ -799,6 +834,6 @@ const MAG_CSS = `
   .mag-cover-lines .mag-stamp { color: var(--text3); }
   .mag-dots { right: 12px; bottom: 12px; }
 }
-@media (max-width: 620px) { .mag-bar-mark { display: none; } .mag-bar-gap { display: none; } }
+@media (max-width: 620px) { .mag-bar-link { display: none; } }
 @media (prefers-reduced-motion: reduce) { .mag * { transition: none !important; } }
 `;
