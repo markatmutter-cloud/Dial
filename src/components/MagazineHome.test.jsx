@@ -99,7 +99,8 @@ describe("MagazineHome", () => {
     const head = container.querySelector(".mag-mhead");
     expect(head.className).not.toContain("is-compact");
     Object.defineProperty(window, "scrollY", { value: 400, configurable: true });
-    window.dispatchEvent(new Event("scroll"));
+    // fireEvent, not dispatchEvent: the handler sets state, which needs act().
+    fireEvent.scroll(window);
     expect(container.querySelector(".mag-mhead").className).toContain("is-compact");
     Object.defineProperty(window, "scrollY", { value: 0, configurable: true });
   });
