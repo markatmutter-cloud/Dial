@@ -133,6 +133,15 @@ describe("MagazineHome", () => {
     expect(screen.getAllByTitle(/saved from/).length).toBeGreaterThan(0);
   });
 
+  it("rotates five stories, not three", () => {
+    const many = Array.from({ length: 7 }, (_, i) => ({
+      title: `Story ${i}`, url: `https://f/${i}`, image: `https://img/${i}.jpg`,
+      excerpt: "x", source: "fratello", published_at: "2026-08-26",
+    }));
+    render(<MagazineHome {...props({ homeRecentArticles: many })} />);
+    expect(screen.getAllByLabelText(/^Show story/).length).toBe(5);
+  });
+
   it("gives article cards a preview, not just a headline", () => {
     render(<MagazineHome {...props()} />);
     expect(screen.getAllByText(/A few weeks ago/).length).toBeGreaterThan(0);

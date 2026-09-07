@@ -30,7 +30,7 @@ const FONTS = "https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wg
 // A lot closing further out than this isn't "next" in any useful sense.
 const CAL_HORIZON_DAYS = 60;
 const CAL_MAX = 8;
-const ROTATOR_COUNT = 3;
+const ROTATOR_COUNT = 5;
 const DEALER_MAX = 12;
 
 // Fill the row, don't leave a ragged tail. Mark: "I'd still like the width to
@@ -639,7 +639,12 @@ const MAG_CSS = `
 .mag-viewall:hover { color: var(--brand-olive-text); border-bottom-color: var(--brand-olive-text); }
 .mag-sec-foot { display: flex; justify-content: center; padding-top: clamp(24px,2.8vw,34px); }
 
-.mag-cover { position: relative; aspect-ratio: 16/9; overflow: hidden; background: var(--card-bg); }
+/* Fit the window, don't exceed it. At 1400px a 16:9 cover is 787px tall, so
+   on a laptop the hero ran past the fold and the headline sat below it
+   (Mark, 2026-09-07). The ratio still drives the shape; the cap stops it
+   growing past what you can see, and object-fit crops rather than squashes. */
+.mag-cover { position: relative; aspect-ratio: 16/9; max-height: min(62vh, 620px);
+             overflow: hidden; background: var(--card-bg); }
 .mag-cover::after { content: ""; position: absolute; inset: 0; pointer-events: none;
   background: linear-gradient(180deg, rgba(8,10,6,0) 45%, rgba(8,10,6,.30) 78%, rgba(8,10,6,.55) 100%); }
 .mag-cover-pic { position: absolute; inset: 0; display: block; }
@@ -658,10 +663,17 @@ const MAG_CSS = `
 .mag-stamp { font-family: var(--mag-data); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase;
              color: var(--text3); margin: 0; }
 .mag-cover-lines .mag-stamp { color: #B6B3A2; }
-.mag-dots { position: absolute; z-index: 3; right: clamp(20px,3.4vw,46px); bottom: clamp(22px,3.4vw,46px); display: flex; gap: 9px; }
-.mag-dot { width: 30px; height: 3px; padding: 0; border: none; cursor: pointer;
-           background: rgba(251,250,243,.45); box-shadow: 0 0 6px rgba(8,10,6,.55); }
-.mag-dot[aria-current="true"] { background: #FBFAF3; }
+.mag-dots { position: absolute; z-index: 3; right: clamp(14px,2.6vw,38px); bottom: clamp(12px,2.4vw,34px);
+            display: flex; gap: 2px; }
+/* The bar is 3px tall but the button is 26px, with the bar drawn by a child.
+   A 3px target was almost unclickable (Mark, 2026-09-07). */
+.mag-dot { width: 42px; height: 26px; padding: 0; border: none; cursor: pointer;
+           background: none; display: flex; align-items: center; justify-content: center; }
+.mag-dot::before { content: ""; display: block; width: 32px; height: 3px;
+                   background: rgba(251,250,243,.45); box-shadow: 0 0 6px rgba(8,10,6,.55);
+                   transition: background .2s ease, height .2s ease; }
+.mag-dot:hover::before { background: rgba(251,250,243,.8); }
+.mag-dot[aria-current="true"]::before { background: #FBFAF3; height: 4px; }
 
 .mag-cards { display: grid; gap: clamp(22px,2.6vw,34px) clamp(18px,2vw,26px);
              grid-template-columns: repeat(auto-fill, minmax(var(--mag-tile),1fr)); align-items: start;
@@ -705,25 +717,28 @@ const MAG_CSS = `
 .mag-lot-price { margin: 6px 0 0; font-family: var(--mag-data); font-size: 14px; font-weight: 500;
                  color: var(--brand-olive-text); font-variant-numeric: tabular-nums; }
 
-.mag-cal { border-top: .5px solid var(--border); }
-.mag-cal-row { display: grid; grid-template-columns: 150px 150px minmax(0,1fr) auto; gap: 8px 26px;
-               align-items: center; padding: 18px 0; border-bottom: .5px solid var(--border);
-               text-decoration: none; }
-.mag-cal-art { width: 150px; height: 150px; overflow: hidden; background: var(--card-bg);
-               display: flex; align-items: center; justify-content: center; }
-.mag-cal-mark { font-family: var(--mag-display); font-size: 38px; color: var(--text3); letter-spacing: .03em; }
+/* Auction sales are tiles now, on the same --mag-tile grid as stories and
+   watches, so their pictures are the same size as everything else on the page
+   (Mark, 2026-09-07). The ruled list read as a footnote next to them. */
+.mag-cal { display: grid; gap: clamp(22px,2.4vw,32px) clamp(18px,2vw,26px);
+           grid-template-columns: repeat(auto-fill, minmax(var(--mag-tile),1fr)); align-items: start; }
+.mag-cal-row { display: grid; gap: 5px; align-content: start; text-decoration: none; }
 .mag-cal-row:hover .mag-cal-title { color: var(--brand-olive-text); }
-.mag-cal-house { font-family: var(--mag-data); font-size: 11.5px; letter-spacing: .16em;
-                 text-transform: uppercase; color: var(--brand-olive-text); }
-.mag-cal-title { font-family: var(--mag-display); font-weight: 500; font-size: clamp(20px,2.3vw,27px); line-height: 1.12; display: block; }
-.mag-cal-place { font-size: 14.5px; color: var(--text2); margin-top: 5px; display: block; }
-.mag-cal-when { font-family: var(--mag-data); font-size: 14px; color: var(--text1); text-align: right;
-                white-space: nowrap; font-variant-numeric: tabular-nums; }
-.mag-live { display: inline-block; margin-left: 8px; font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase;
-            color: var(--brand-olive-text); border: .5px solid var(--brand-olive-text); border-radius: 999px; padding: 2px 7px; }
+.mag-cal-art { display: flex; align-items: center; justify-content: center;
+               aspect-ratio: 1; overflow: hidden; background: var(--card-bg); }
+.mag-cal-mark { font-family: var(--mag-display); font-size: 44px; color: var(--text3); letter-spacing: .03em; }
+.mag-cal-house { font-family: var(--mag-data); font-size: 10px; letter-spacing: .17em;
+                 text-transform: uppercase; color: var(--brand-olive-text); margin-top: 11px;
+                 padding-bottom: 6px; border-bottom: .5px solid var(--border); }
+.mag-cal-title { font-family: var(--mag-display); font-weight: 500; font-size: 18px;
+                 line-height: 1.12; display: block; margin-top: 4px; }
+.mag-cal-place { font-size: 13px; color: var(--text2); margin-top: 3px; display: block; }
+.mag-cal-when { font-family: var(--mag-data); font-size: 13px; color: var(--text1);
+                margin-top: 6px; font-variant-numeric: tabular-nums; }
+.mag-live { display: inline-block; margin-left: 8px; font-size: 10px; letter-spacing: .1em;
+            text-transform: uppercase; color: var(--brand-olive-text);
+            border: .5px solid var(--brand-olive-text); border-radius: 999px; padding: 2px 7px; }
 
-
-@media (max-width: 1100px) { .mag-bar-gap { flex-basis: 150px; } }
 @media (max-width: 900px) { .mag-bar .mag-searchwrap { max-width: none; } }
 @media (max-width: 860px) { .mag-pick { grid-template-columns: minmax(0,1fr); } }
 @media (max-width: 700px) {
@@ -736,10 +751,6 @@ const MAG_CSS = `
   .mag-cover-stand { color: var(--text2); max-width: none; }
   .mag-cover-lines .mag-stamp { color: var(--text3); }
   .mag-dots { right: 12px; bottom: 12px; }
-  .mag-cal-row { grid-template-columns: 96px minmax(0,1fr); align-items: start; gap: 4px 16px; padding: 16px 0; }
-  .mag-cal-art { width: 96px; height: 96px; grid-row: span 2; }
-  .mag-cal-house { grid-column: 2; }
-  .mag-cal-when { grid-column: 1 / -1; text-align: left; margin-top: 6px; }
 }
 @media (max-width: 620px) { .mag-bar-mark { display: none; } .mag-bar-gap { display: none; } }
 @media (prefers-reduced-motion: reduce) { .mag * { transition: none !important; } }
