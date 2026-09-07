@@ -4405,6 +4405,10 @@ export default function Watchlist() {
       // Magazine view extras: the auction top-lot artwork the calendar already
       // computes, so its rows can carry a picture rather than a bare line.
       homeAuctionHeroes={auctionHeroByUrl}
+      // Auction houses are excluded from the magazine's dealer chips: their
+      // listings sit behind the Auctions sub-tab, so a "For sale" filter by
+      // house returns nothing.
+      homeAuctionSources={AUCTION_SOURCES}
       // The magazine masthead's saved-watches button routes here. Watches >
       // (heart) Saved, matching the 2026-07-30 IA move.
       goToSavedHearts={() => { setTab("listings"); setListingsSubTab("saved"); setPage(1); }}

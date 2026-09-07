@@ -37,7 +37,7 @@ function props(over = {}) {
     homeSearchSubmit: noop, homeSearchLiveQuery: noop, homeSearchCounts: null,
     homeRecentSearches: [], homeAddRecentSearch: noop, homeAuctionHeroes: {},
     toggleHide: null, isAdmin: false, openAbout: noop, signInWithGoogle: noop,
-    watchlist: {}, homeJumpToDealer: noop,
+    watchlist: {}, homeJumpToDealer: noop, homeAuctionSources: [], dark: false,
     ...over,
   };
 }
@@ -126,6 +126,23 @@ describe("MagazineHome", () => {
     expect(chips[1].textContent).toContain("Wind Vintage");
     chips[0].click();
     expect(jumped).toEqual(["Phillips"]);
+  });
+
+  it("keeps auction houses out of the dealer chips", () => {
+    // Their listings live behind the Auctions sub-tab, so a chip filtering
+    // "For sale" by Phillips would return nothing.
+    render(<MagazineHome {...props({
+      homeAuctionSources: ["Phillips", "Sotheby's"],
+      watchlist: {
+        a: { source: "Phillips", url: "https://www.phillips.com/x" },
+        b: { source: "Phillips", url: "https://www.phillips.com/y" },
+        c: { source: "Wind Vintage", url: "https://www.windvintage.com/x" },
+        d: { source: "Somlo", url: "https://somlolondon.com/x" },
+      },
+    })} />);
+    const chips = screen.getAllByTitle(/saved from/).map((c) => c.textContent);
+    expect(chips.join(" ")).not.toContain("Phillips");
+    expect(chips.join(" ")).toContain("Wind Vintage");
   });
 
   it("falls back to who is listing when there are no hearts", () => {
