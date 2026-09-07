@@ -138,6 +138,7 @@ function pickFeature(items) {
 function MagSearch({ onSubmit, onLiveQuery, counts, recent, addRecent, big }) {
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
+  const [focus, setFocus] = useState(false);
   const wrap = useRef(null);
 
   useEffect(() => {
@@ -169,12 +170,13 @@ function MagSearch({ onSubmit, onLiveQuery, counts, recent, addRecent, big }) {
 
   return (
     <div className={`mag-searchwrap${big ? " mag-searchwrap--big" : ""}`} ref={wrap}>
-      <form className="mag-search" role="search" onSubmit={(e) => { e.preventDefault(); fire("all"); }}>
+      <form className={`mag-search${focus ? " is-focus" : ""}`} role="search" onSubmit={(e) => { e.preventDefault(); fire("all"); }}>
         <svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.5">
           <circle cx="7" cy="7" r="5" /><path d="M11 11l4 4" />
         </svg>
         <input type="search" value={q} onChange={(e) => change(e.target.value)}
-               onFocus={() => setOpen(q.trim().length > 0 || (recent || []).length > 0)}
+               onFocus={() => { setFocus(true); setOpen(q.trim().length > 0 || (recent || []).length > 0); }}
+               onBlur={() => setFocus(false)}
                placeholder="Brand, model, reference" aria-label="Search watches" />
         <button type="submit" className="mag-search-go">Search</button>
       </form>
@@ -491,7 +493,10 @@ const MAG_CSS = `
 .mag-searchwrap--big { flex: 1 1 460px; max-width: 560px; }
 .mag-search { display: flex; align-items: center; gap: 10px; border: .5px solid var(--border);
               border-radius: 999px; padding: 6px 6px 6px 16px; background: var(--card-bg); }
-.mag-search.is-focus, .mag-searchwrap:focus-within .mag-search { border-color: var(--brand-olive-text); }
+/* Do NOT use :focus-within here. jsdom resolves it with contains(activeElement)
+   and throws when nothing is focused, which breaks every getByRole in this
+   component's tests. Focus is tracked in React state instead. */
+.mag-search.is-focus { border-color: var(--brand-olive-text); }
 .mag-search svg { width: 14px; height: 14px; flex: 0 0 auto; color: var(--text3); }
 .mag-search input { border: none; background: transparent; outline: none; width: 100%;
                     font-family: var(--mag-body); font-size: 14px; color: var(--text1); padding: 6px 0; }
