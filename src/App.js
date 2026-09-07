@@ -4409,6 +4409,9 @@ export default function Watchlist() {
       // listings sit behind the Auctions sub-tab, so a "For sale" filter by
       // house returns nothing.
       homeAuctionSources={AUCTION_SOURCES}
+      // Resolved column count (Settings > Columns, Auto included) so the
+      // magazine grids agree with the rest of the site.
+      cols={cols}
       // The magazine masthead's saved-watches button routes here. Watches >
       // (heart) Saved, matching the 2026-07-30 IA move.
       goToSavedHearts={() => { setTab("listings"); setListingsSubTab("saved"); setPage(1); }}

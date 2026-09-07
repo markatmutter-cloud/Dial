@@ -37,7 +37,7 @@ function props(over = {}) {
     homeSearchSubmit: noop, homeSearchLiveQuery: noop, homeSearchCounts: null,
     homeRecentSearches: [], homeAddRecentSearch: noop, homeAuctionHeroes: {},
     toggleHide: null, isAdmin: false, openAbout: noop, signInWithGoogle: noop,
-    watchlist: {}, homeJumpToDealer: noop, homeAuctionSources: [], dark: false,
+    watchlist: {}, homeJumpToDealer: noop, homeAuctionSources: [], dark: false, cols: null,
     ...over,
   };
 }
@@ -165,6 +165,13 @@ describe("MagazineHome", () => {
     const out = screen.getByRole("button", { name: /View all articles/ });
     out.click();
     expect(jumps).toEqual(["articles"]);
+  });
+
+  it("uses the app's resolved column count when there is one", () => {
+    const { container, rerender } = render(<MagazineHome {...props()} />);
+    expect(container.querySelector(".mag").style.getPropertyValue("--mag-cols")).toBe("");
+    rerender(<MagazineHome {...props({ cols: 5 })} />);
+    expect(container.querySelector(".mag").style.getPropertyValue("--mag-cols")).toBe("5");
   });
 
   it("gives article cards a preview, not just a headline", () => {
