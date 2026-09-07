@@ -633,7 +633,8 @@ const MAG_CSS = `
 .mag-drop-n { font-family: var(--mag-data); font-size: 12px; color: var(--text3); font-variant-numeric: tabular-nums; }
 
 /* persistent bar */
-.mag-bar { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; gap: 22px;
+.mag-bar { position: sticky; top: 0; z-index: 30; display: flex; align-items: center;
+           justify-content: space-between; gap: 22px;
            padding: 12px 0; margin-bottom: 4px; background: var(--bg);
            border-bottom: .5px solid var(--border); }
 .mag-bar-tabs { display: flex; flex-wrap: wrap; gap: 4px 22px; flex: 0 0 auto; }
@@ -641,10 +642,17 @@ const MAG_CSS = `
                        text-transform: uppercase; color: var(--text2); background: none; border: none;
                        cursor: pointer; padding: 2px 0; border-bottom: 1.5px solid transparent; }
 .mag-bar-tabs button:hover, .mag-bar-tabs button.on { color: var(--brand-olive-text); border-bottom-color: var(--brand-olive-text); }
-/* The search sits in the space between the tabs and the app's own top-right
-   controls, so it reads as the bar's centre of gravity rather than something
-   tucked in a corner. */
-.mag-bar .mag-searchwrap { flex: 1 1 auto; max-width: 620px; margin: 0 auto; }
+/* Absolutely centred on the page rather than flex-centred between the tabs
+   and the account controls: the moon sits on the page's centre line, and the
+   two only share a vertical axis if the search does too. Flex-centring put
+   them 128px apart. Below 1180px the lanes get tight, so it falls back to
+   flowing in the row. */
+.mag-bar .mag-searchwrap { position: absolute; left: 50%; transform: translateX(-50%);
+                           width: min(560px, 46vw); }
+@media (max-width: 1180px) {
+  .mag-bar .mag-searchwrap { position: static; transform: none;
+                             flex: 1 1 auto; width: auto; max-width: 560px; margin: 0 auto; }
+}
 /* Width of the app's fixed overlay (About + heart + account) plus breathing
    room, so the sticky bar never slides under it on scroll. */
 .mag-bar-util { display: flex; align-items: center; gap: 12px; flex: 0 0 auto; }
