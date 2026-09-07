@@ -1,28 +1,26 @@
-// MagazineHome — the parallel landing page (Epic 9, 2026-09-07).
+// MagazineHome — the landing page.
 //
-// This is a SECOND Home, not a replacement. App.js builds `homeTabJSX` from
-// this component instead of <HomeTab> only when the magazine view is on
-// (`?view=magazine`), so the live landing page is untouched until Mark says
-// otherwise. Nothing else in the app changes: both shells still render one
-// `homeTabJSX`, so there is no shell-lockstep risk here.
+// Built as a parallel page behind `?view=magazine` on 2026-09-07 and promoted
+// to the default the same week, after Mark used it daily and signed it off.
+// HomeTab, the page it replaced, was retired at the same time; its footer
+// moved to SiteFooter.js so nothing here depends on a deleted component.
 //
-// It reads exactly the props HomeTab already receives. No new data plumbing,
-// no new fetch: the same listings, articles, auctions and counts.
+// It reads the props Home has always received: the same listings, articles,
+// auctions and counts, with no separate fetch.
 //
-// Deliberate departures from the rest of the app, all approved in the design
-// thread and all scoped to this component:
-//  - Three faces (Bodoni Moda / Archivo / IBM Plex Mono) loaded on mount and
-//    only on mount, so the default app's font payload is unchanged. This is
-//    the one place DESIGN_SYSTEM's "no new typefaces" rule is set aside, on
-//    purpose, for a view that is not yet reachable.
+// Two deliberate departures, both scoped to this component:
+//  - Three faces (Bodoni Moda / Archivo / IBM Plex Mono) loaded on mount, so
+//    the rest of the app's font payload is unchanged. This is the one place
+//    DESIGN_SYSTEM's "no new typefaces" rule is set aside, on purpose.
 //  - One <style> block rather than inline styles. Media queries, hover, the
 //    cover gradient and ::placeholder can't be expressed inline; CardStrip
 //    already sets the precedent for a component injecting its own rule.
-//    Everything is namespaced `mag-` so it cannot leak into the live app.
+//    Everything is namespaced `mag-` and every colour comes from the app's
+//    own :root tokens, so dark mode needs no second palette.
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { imgSrc, fmt, priceIn, CURRENCY_SYM, fmtSaleDateRange } from "../utils";
-import { FooterBand } from "./HomeTab";
+import { FooterBand } from "./SiteFooter";
 import { articleAsListing, sourceLabel } from "./EditorialView";
 import { MoonPhaseIndicator } from "./MoonPhaseIndicator";
 
