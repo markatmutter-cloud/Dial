@@ -168,8 +168,10 @@ function topDealers(watchlist, fallbackItems, exclude, known) {
   const hearted = watchlist ? Object.values(watchlist) : [];
   hearted.forEach((it) => add(it && it.source, it && it.url));
 
+  // Any hearts at all beat the seed: three saved dealers is still this
+  // person's taste, where the seed is only ever a stand-in for not knowing it.
   const ranked = [...tally.entries()].sort((a, b) => b[1] - a[1]);
-  if (ranked.length >= 4) {
+  if (ranked.length > 0) {
     return ranked.slice(0, DEALER_MAX)
       .map(([name, n]) => ({ name, n, icon: faviconFor(seenUrl.get(name)) }));
   }
