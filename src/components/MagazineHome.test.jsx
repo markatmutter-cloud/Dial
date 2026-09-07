@@ -159,6 +159,14 @@ describe("MagazineHome", () => {
     expect(screen.getAllByLabelText(/^Show story/).length).toBe(5);
   });
 
+  it("offers a way out at the foot of the articles grid too", () => {
+    const jumps = [];
+    render(<MagazineHome {...props({ goToArticles: () => jumps.push("articles") })} />);
+    const out = screen.getByRole("button", { name: /View all articles/ });
+    out.click();
+    expect(jumps).toEqual(["articles"]);
+  });
+
   it("gives article cards a preview, not just a headline", () => {
     render(<MagazineHome {...props()} />);
     expect(screen.getAllByText(/A few weeks ago/).length).toBeGreaterThan(0);
