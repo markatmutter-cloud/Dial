@@ -104,6 +104,32 @@ function edgeWhiteness(src) {
   });
 }
 
+// Mobile chrome compacts on scroll: the masthead row (wordmark, moon, saved,
+// account) drops away and the tabs and search stay pinned. The previous Home
+// earned that behaviour and the magazine had lost it (Mark, 2026-09-07).
+function useScrolled(threshold) {
+  const [past, setPast] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return undefined;
+    // The app scrolls an inner pane, not the window, so listen on both and
+    // take whichever is actually moving.
+    const read = () => {
+      const pane = document.querySelector(".wl-scroll, main, #root > div");
+      const y = Math.max(window.scrollY || 0, pane ? pane.scrollTop || 0 : 0);
+      setPast((prev) => (prev === y > threshold ? prev : y > threshold));
+    };
+    read();
+    const opts = { passive: true };
+    window.addEventListener("scroll", read, opts);
+    document.addEventListener("scroll", read, true);
+    return () => {
+      window.removeEventListener("scroll", read, opts);
+      document.removeEventListener("scroll", read, true);
+    };
+  }, [threshold]);
+  return past;
+}
+
 function useFonts() {
   useEffect(() => {
     if (document.getElementById("mag-fonts")) return;
@@ -409,6 +435,7 @@ export default function MagazineHome(props) {
   } = props;
 
   useFonts();
+  const scrolled = useScrolled(64);
   const counts = homeSectionCounts || {};
 
   const articles = useMemo(() => (homeRecentArticles || []).filter((a) => a && a.title && a.image), [homeRecentArticles]);
@@ -442,8 +469,11 @@ export default function MagazineHome(props) {
 
   const cardsRef = useRef(null);
   const catRef = useRef(null);
-  // Up to three rows of stories and two of watches, always whole rows.
-  const articleRows = useWholeRows(cardsRef, articles.length, 3);
+  // Two rows each, always whole (Mark, 2026-09-07). At two columns that is
+  // four stories under the rotator and four watches under the featured one;
+  // at three it is six and six. The count follows the Columns setting rather
+  // than being fixed, so the page stays the same shape at any width.
+  const articleRows = useWholeRows(cardsRef, articles.length, 2);
   const listingRows = useWholeRows(catRef, grid.length, 2);
 
   const savedCount = watchlist ? Object.keys(watchlist).length : 0;
@@ -490,56 +520,90 @@ export default function MagazineHome(props) {
     <div className="mag" style={gridCols ? { "--mag-cols": gridCols } : undefined}>
       <style>{MAG_CSS}</style>
 
-      <header className="mag-flag">
-        <div className="mag-mark">
-          <h1 className="mag-wordmark">Watchlist</h1>
+      {isMobile ? (
+        /* Mobile chrome, three rows that collapse to two on scroll: wordmark
+           with saved + account, then the tabs, then the search. All of it
+           pinned, so nothing important is a scroll away. */
+        <div className={`mag-mhead${scrolled ? " is-compact" : ""}`}>
+          <div className="mag-mhead-top">
+            <h1 className="mag-wordmark">Watchlist</h1>
+            <MoonPhaseIndicator size={64} dark={!!dark} />
+            <span className="mag-mhead-sp" />
+            {user ? (
+              <>
+                <button type="button" className="mag-icon" aria-label="Saved watches" onClick={goToSavedHearts}>
+                  <svg viewBox="0 0 20 20" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.6">
+                    <path d="M10 17S3 12.6 3 7.9A3.9 3.9 0 0 1 10 5.6a3.9 3.9 0 0 1 7 2.3C17 12.6 10 17 10 17z" />
+                  </svg>
+                  {savedCount > 0 ? <span className="mag-badge">{savedCount}</span> : null}
+                </button>
+                <span className="mag-avatar" aria-hidden="true">{initial}</span>
+              </>
+            ) : (
+              signInWithGoogle ? (
+                <button type="button" className="mag-signin" onClick={signInWithGoogle}>Sign in</button>
+              ) : null
+            )}
+          </div>
+          <div className="mag-mhead-row">
+            <div className="mag-bar-tabs">
+              {(homeMastheadTabs || []).map((t) => (
+                <button key={t.key} type="button" onClick={t.onSelect} className={t.active ? "on" : ""}>
+                  {t.mobileLabel || t.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="mag-mhead-row mag-mhead-search">
+            <MagSearch big onSubmit={homeSearchSubmit} onLiveQuery={homeSearchLiveQuery}
+                       counts={homeSearchCounts} recent={homeRecentSearches} addRecent={homeAddRecentSearch} />
+          </div>
         </div>
-        {/* The moon sits on the page's centre line, directly above the search
-            in the bar below, so the two share a vertical axis instead of the
-            moon hanging off the wordmark (Mark, 2026-09-07). */}
-        <div className="mag-moonslot">
-          <MoonPhaseIndicator size={isMobile ? 92 : 132} dark={!!dark} />
-        </div>
-        <div />
-      </header>
+      ) : (
+        <>
+          <header className="mag-flag">
+            <div className="mag-mark">
+              <h1 className="mag-wordmark">Watchlist</h1>
+            </div>
+            {/* The moon sits on the page's centre line, directly above the
+                search in the bar below, so the two share a vertical axis. */}
+            <div className="mag-moonslot">
+              <MoonPhaseIndicator size={132} dark={!!dark} />
+            </div>
+            <div />
+          </header>
 
-
-      {/* Persistent bar (Mark, 2026-09-07): once the masthead scrolls away the
-          tabs and search should still be there. Sticky rather than fixed, so
-          it never covers content and needs no scroll listener. */}
-      <div className="mag-bar">
-        <div className="mag-bar-tabs">
-          {(homeMastheadTabs || []).map((t) => (
-            <button key={t.key} type="button" onClick={t.onSelect} className={t.active ? "on" : ""}>
-              {isMobile && t.mobileLabel ? t.mobileLabel : t.label}
-            </button>
-          ))}
-        </div>
-        <MagSearch big onSubmit={homeSearchSubmit} onLiveQuery={homeSearchLiveQuery}
-                   counts={homeSearchCounts} recent={homeRecentSearches} addRecent={homeAddRecentSearch} />
-        {/* About, saved and account live HERE rather than in the app's floating
-            overlay, so every control on the page persists together in one row
-            (Mark, 2026-09-07). App.js suppresses the overlay for this view, so
-            there is one set, not two. */}
-        <div className="mag-bar-util">
-          <button type="button" className="mag-bar-link" onClick={openAbout}>About</button>
-          {user ? (
-            <>
-              <button type="button" className="mag-icon" aria-label="Saved watches" onClick={goToSavedHearts}>
-                <svg viewBox="0 0 20 20" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.6">
-                  <path d="M10 17S3 12.6 3 7.9A3.9 3.9 0 0 1 10 5.6a3.9 3.9 0 0 1 7 2.3C17 12.6 10 17 10 17z" />
-                </svg>
-                {savedCount > 0 ? <span className="mag-badge">{savedCount}</span> : null}
-              </button>
-              <span className="mag-avatar" aria-hidden="true">{initial}</span>
-            </>
-          ) : (
-            signInWithGoogle ? (
-              <button type="button" className="mag-signin" onClick={signInWithGoogle}>Sign in</button>
-            ) : null
-          )}
-        </div>
-      </div>
+          <div className="mag-bar">
+            <div className="mag-bar-tabs">
+              {(homeMastheadTabs || []).map((t) => (
+                <button key={t.key} type="button" onClick={t.onSelect} className={t.active ? "on" : ""}>
+                  {t.label}
+                </button>
+              ))}
+            </div>
+            <MagSearch big onSubmit={homeSearchSubmit} onLiveQuery={homeSearchLiveQuery}
+                       counts={homeSearchCounts} recent={homeRecentSearches} addRecent={homeAddRecentSearch} />
+            <div className="mag-bar-util">
+              <button type="button" className="mag-bar-link" onClick={openAbout}>About</button>
+            {user ? (
+              <>
+                <button type="button" className="mag-icon" aria-label="Saved watches" onClick={goToSavedHearts}>
+                  <svg viewBox="0 0 20 20" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.6">
+                    <path d="M10 17S3 12.6 3 7.9A3.9 3.9 0 0 1 10 5.6a3.9 3.9 0 0 1 7 2.3C17 12.6 10 17 10 17z" />
+                  </svg>
+                  {savedCount > 0 ? <span className="mag-badge">{savedCount}</span> : null}
+                </button>
+                <span className="mag-avatar" aria-hidden="true">{initial}</span>
+              </>
+            ) : (
+              signInWithGoogle ? (
+                <button type="button" className="mag-signin" onClick={signInWithGoogle}>Sign in</button>
+              ) : null
+            )}
+            </div>
+          </div>
+        </>
+      )}
 
       {articles.length > 0 && (
         <section className="mag-sec mag-sec--first">
@@ -773,6 +837,21 @@ const MAG_CSS = `
               color: var(--bg); font-family: var(--mag-display); font-size: 15px; font-weight: 500;
               display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
 
+/* ---------- mobile chrome ---------- */
+.mag-mhead { position: sticky; top: 0; z-index: 40; background: var(--bg);
+             border-bottom: .5px solid var(--border); padding-top: 6px; }
+.mag-mhead-top { display: flex; align-items: center; gap: 10px; padding-bottom: 4px; }
+.mag-mhead-sp { flex: 1 1 auto; }
+.mag-mhead-row { padding: 4px 0 8px; }
+.mag-mhead .mag-wordmark { font-size: 30px; line-height: 1; }
+.mag-mhead .mag-bar-tabs { gap: 4px 20px; }
+.mag-mhead .mag-searchwrap { position: static; transform: none; width: 100%; max-width: none; }
+/* Compact: the masthead row goes, tabs and search stay pinned. Height, not
+   display, so it collapses rather than jumping. */
+.mag-mhead.is-compact .mag-mhead-top { height: 0; overflow: hidden; padding: 0; opacity: 0; }
+.mag-mhead.is-compact .mag-mhead-search { padding-top: 0; }
+.mag-mhead-top, .mag-mhead-search { transition: height .18s ease, opacity .18s ease, padding .18s ease; }
+
 /* dealer shortcuts */
 /* Same band treatment and the same width as the featured-watch band below,
    so the two read as one device rather than two (Mark, 2026-09-07). Inset to
@@ -780,11 +859,17 @@ const MAG_CSS = `
 .mag-dealers-band { background: var(--surface, rgba(0,0,0,.035));
                     padding: 16px clamp(22px,3vw,40px);
                     margin-bottom: clamp(24px,3vw,36px); }
-.mag-dealers-inner { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; }
+.mag-dealers-inner { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.mag-dealers-inner > .mag-dealers { min-width: 0; flex: 1 1 auto; }
 .mag-sec--dealers { margin-top: clamp(30px,3.6vw,48px); }
 .mag-dealers-label { font-family: var(--mag-data); font-size: 10.5px; letter-spacing: .16em;
                      text-transform: uppercase; color: var(--text3); margin: 0; flex: 0 0 auto; }
-.mag-dealers { display: flex; flex-wrap: wrap; gap: 8px; }
+/* One row that scrolls sideways rather than a block four deep (Mark,
+   2026-09-07). Native scrollbar hidden; the cut-off chip is the affordance. */
+.mag-dealers { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px;
+               scrollbar-width: none; -ms-overflow-style: none; }
+.mag-dealers::-webkit-scrollbar { display: none; }
+.mag-dealer-chip { flex: 0 0 auto; }
 .mag-dealer-chip { display: inline-flex; align-items: center; gap: 9px; cursor: pointer;
                    border: .5px solid var(--border); border-radius: 999px; background: var(--bg);
                    padding: 7px 15px 7px 9px; font-family: var(--mag-body); font-size: 13.5px;
@@ -920,10 +1005,16 @@ const MAG_CSS = `
             border: .5px solid var(--brand-olive-text); border-radius: 999px; padding: 2px 7px; }
 
 @media (max-width: 820px) {
-  .mag-cal-row { grid-template-columns: 120px minmax(0,1fr); align-items: start; gap: 5px 18px; padding: 18px 0; }
-  .mag-cal-art { width: 120px; height: 120px; grid-row: span 2; }
-  .mag-cal-house { grid-column: 2; }
-  .mag-cal-when { grid-column: 1 / -1; text-align: left; margin-top: 8px; }
+  /* Everything to the RIGHT of the picture (Mark, 2026-09-07). The date used
+     to drop to a line of its own under the thumbnail, which read as a broken
+     row rather than a calendar entry. */
+  .mag-cal-row { grid-template-columns: 116px minmax(0,1fr); align-items: start;
+                 gap: 4px 16px; padding: 16px 0; }
+  .mag-cal-art { width: 116px; height: 116px; grid-row: span 3; }
+  .mag-cal-house, .mag-cal-when { grid-column: 2; }
+  .mag-cal-when { text-align: left; margin-top: 6px; }
+  .mag-cal-title { font-size: 19px; }
+  .mag-cal-place { font-size: 13px; margin-top: 3px; }
 }
 @media (max-width: 900px) { .mag-bar .mag-searchwrap { max-width: none; } }
 @media (max-width: 860px) { .mag-pick { grid-template-columns: minmax(0,1fr); } }
@@ -938,6 +1029,9 @@ const MAG_CSS = `
   .mag-cover-lines .mag-stamp { color: var(--text3); }
   .mag-dots { right: 12px; bottom: 12px; }
 }
-@media (max-width: 620px) { .mag-bar-link { display: none; } }
+@media (max-width: 620px) {
+  .mag-bar-link { display: none; }
+  .mag-mhead .mag-bar-tabs button { font-size: 11.5px; letter-spacing: .11em; }
+}
 @media (prefers-reduced-motion: reduce) { .mag * { transition: none !important; } }
 `;
