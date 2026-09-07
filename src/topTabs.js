@@ -13,11 +13,14 @@
 // deep links resolve exactly as before.
 export const TOP_TABS = [
   { key: "listings",  label: "Watches",  icon: "listings" },
+  // Order set by Mark 2026-09-07: Watches, Articles, Saved, Reference Guides.
+  // Reading comes second because it is the second thing people do here; Saved
+  // is a return visit, so it sits after the two browse surfaces.
+  { key: "articles",  label: "Articles", icon: "articles", tab: "references", sub: "editorial" },
   // "Saved" (2026-06-03, was "Lists") — the truthful umbrella: hearts,
   // lists and searches are all things you saved. Resolves the documented
   // Lists/Lists label collision from the #655 rename.
   { key: "watchlist", label: "Saved", icon: "watchlist" },
-  { key: "articles",  label: "Articles", icon: "articles", tab: "references", sub: "editorial" },
   // "Reference Guides" on desktop, "Guides" on mobile (Mark's call — bare
   // "Reference" reads as ref-numbers; the full label doesn't fit mobile).
   { key: "guides", label: "Reference Guides", mobileLabel: "Guides", icon: "references", tab: "references", sub: "references" },

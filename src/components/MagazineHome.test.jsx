@@ -38,6 +38,7 @@ function props(over = {}) {
     homeRecentSearches: [], homeAddRecentSearch: noop, homeAuctionHeroes: {},
     toggleHide: null, isAdmin: false, openAbout: noop, signInWithGoogle: noop,
     watchlist: {}, homeJumpToDealer: noop, homeAuctionSources: [], dark: false, cols: null,
+    homeDealerSources: ["Wind Vintage", "Analog Shift"],
     goToSavedHearts: noop,
     ...over,
   };
@@ -162,9 +163,23 @@ describe("MagazineHome", () => {
     expect(chips.join(" ")).toContain("Wind Vintage");
   });
 
-  it("falls back to who is listing when there are no hearts", () => {
+  it("seeds the signed-out dealer order from the curated list", () => {
+    // Signed out there are no hearts, and ranking on "who listed this week"
+    // is arbitrary, so a stranger gets the order the site actually rates.
     render(<MagazineHome {...props()} />);
-    expect(screen.getAllByTitle(/saved from/).length).toBeGreaterThan(0);
+    const chips = screen.getAllByTitle(/saved from/).map((c) => c.textContent);
+    expect(chips[0]).toContain("Wind Vintage");
+  });
+
+  it("prefers the publication's name over its corpus key", () => {
+    render(<MagazineHome {...props({
+      homeRecentArticles: [{
+        title: "A piece", url: "https://r/1", image: "https://img/r.jpg",
+        excerpt: "x", source: "rolex_magazine", published_at: "2026-08-26",
+      }],
+    })} />);
+    expect(screen.queryAllByText(/rolex_magazine/i).length).toBe(0);
+    expect(screen.getAllByText("Rolex Magazine").length).toBeGreaterThan(0);
   });
 
   it("rotates five stories, not three", () => {

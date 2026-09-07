@@ -23,7 +23,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { imgSrc, fmt, priceIn, CURRENCY_SYM, fmtSaleDateRange } from "../utils";
 import { FooterBand } from "./HomeTab";
-import { articleAsListing } from "./EditorialView";
+import { articleAsListing, sourceLabel } from "./EditorialView";
 import { MoonPhaseIndicator } from "./MoonPhaseIndicator";
 
 const FONTS = "https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500&family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap";
@@ -33,6 +33,19 @@ const CAL_HORIZON_DAYS = 60;
 const CAL_MAX = 8;
 const ROTATOR_COUNT = 5;
 const DEALER_MAX = 12;
+
+// Signed out there are no hearts to rank by, and ranking on "who happened to
+// list this week" is arbitrary. This is Mark's own order, taken from his 570
+// saved watches with the auction houses removed, so a stranger sees the
+// dealers the site actually rates rather than a scrape artefact. Any name
+// that isn't currently a source is skipped, so a retired dealer drops out on
+// its own (Mark, 2026-09-07).
+const SEEDED_DEALERS = [
+  "Wind Vintage", "Tropical Watch", "Hodinkee Shop", "Bulang & Sons",
+  "Moonphase", "Grey & Patina", "Falco Watches", "Collectors Corner NY",
+  "Oliver & Clarke", "Shuck the Oyster", "Watchfid", "Somlo",
+  "MVV Watches", "Menta Watches", "Analog Shift", "Craft & Tailored",
+];
 
 // Fill the row, don't leave a ragged tail. Mark: "I'd still like the width to
 // define the number of articles shown ... then if I hide an article the next
@@ -59,6 +72,38 @@ function useWholeRows(ref, total, maxRows) {
   if (!cols) return total;
   const rows = Math.max(1, Math.min(maxRows, Math.floor(total / cols)));
   return Math.min(total, rows * cols);
+}
+
+// A white cut-out on a near-white page has no edge, and most dealer product
+// shots are exactly that, so the featured slot kept landing on a watch that
+// floated (Mark, 2026-09-07). We can't know a photo's background without
+// looking at it, so look: pull a 24px thumbnail of the top candidates through
+// the same wsrv proxy the page already uses (it sends CORS headers, so the
+// canvas isn't tainted) and measure how white the border pixels are. Four
+// tiny requests, off the critical path, and the pick upgrades when they land.
+function edgeWhiteness(src) {
+  return new Promise((resolve) => {
+    if (typeof document === "undefined") { resolve(1); return; }
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      try {
+        const n = 24;
+        const c = document.createElement("canvas");
+        c.width = n; c.height = n;
+        const ctx = c.getContext("2d");
+        ctx.drawImage(img, 0, 0, n, n);
+        const d = ctx.getImageData(0, 0, n, n).data;
+        let white = 0, total = 0;
+        const at = (x, y) => { const i = (y * n + x) * 4; return d[i] > 232 && d[i + 1] > 232 && d[i + 2] > 232; };
+        for (let x = 0; x < n; x++) { [0, n - 1].forEach((y) => { total++; if (at(x, y)) white++; }); }
+        for (let y = 1; y < n - 1; y++) { [0, n - 1].forEach((x) => { total++; if (at(x, y)) white++; }); }
+        resolve(total ? white / total : 1);
+      } catch { resolve(1); }
+    };
+    img.onerror = () => resolve(1);
+    img.src = src;
+  });
 }
 
 function useFonts() {
@@ -108,7 +153,7 @@ function faviconFor(url) {
 // "are you able to see my most hearted items and which dealers they are from".
 // Signed out there are no hearts, so fall back to who is listing right now,
 // which is at least true rather than a guess at taste.
-function topDealers(watchlist, fallbackItems, exclude) {
+function topDealers(watchlist, fallbackItems, exclude, known) {
   const tally = new Map();
   const seenUrl = new Map();
   const skip = new Set(exclude || []);
@@ -122,11 +167,30 @@ function topDealers(watchlist, fallbackItems, exclude) {
   };
   const hearted = watchlist ? Object.values(watchlist) : [];
   hearted.forEach((it) => add(it && it.source, it && it.url));
-  if (tally.size < 4) (fallbackItems || []).forEach((i) => add(i && i.source, i && i.url));
-  return [...tally.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, DEALER_MAX)
-    .map(([name, n]) => ({ name, n, icon: faviconFor(seenUrl.get(name)) }));
+
+  const ranked = [...tally.entries()].sort((a, b) => b[1] - a[1]);
+  if (ranked.length >= 4) {
+    return ranked.slice(0, DEALER_MAX)
+      .map(([name, n]) => ({ name, n, icon: faviconFor(seenUrl.get(name)) }));
+  }
+
+  // No hearts: fall back to the seeded order, keeping only names that are
+  // still live sources, then top up from whoever is listing now.
+  const live = new Set((fallbackItems || []).map((i) => i && i.source).filter(Boolean));
+  const urlFor = new Map();
+  (fallbackItems || []).forEach((i) => { if (i && i.source && i.url && !urlFor.has(i.source)) urlFor.set(i.source, i.url); });
+  const sources = known && known.length ? new Set(known) : null;
+  const out = [];
+  const push = (name) => {
+    if (!name || skip.has(name) || out.some((d) => d.name === name)) return;
+    out.push({ name, n: 0, icon: faviconFor(urlFor.get(name) || seenUrl.get(name)) });
+  };
+  SEEDED_DEALERS.forEach((name) => {
+    if (out.length >= DEALER_MAX) return;
+    if (sources ? sources.has(name) : live.has(name)) push(name);
+  });
+  (fallbackItems || []).forEach((i) => { if (out.length < DEALER_MAX) push(i && i.source); });
+  return out;
 }
 
 function saleArt(sale, heroes) {
@@ -141,7 +205,8 @@ function initials(house) {
 }
 
 function articleSource(a) {
-  return (a && a._source && a._source.label) || (a && a.source) || "";
+  if (!a) return "";
+  return (a._source && (a._source.publication || a._source.label)) || sourceLabel(a.source);
 }
 
 function fmtDate(iso, opts) {
@@ -156,15 +221,41 @@ function fmtDate(iso, opts) {
 // not necessarily the very latest"). Reference intelligence is the thing
 // Watchlist knows that the dealer's own page doesn't say out loud, so an item
 // we can caption properly beats a bare one that landed an hour later.
-function pickFeature(items) {
-  const usable = (items || []).filter((i) => i && i.img && i.ref);
-  if (!usable.length) return null;
-  const score = (i) =>
-    (i.reference_id ? 2 : 0) +
+function featureScore(i) {
+  return (i.reference_id ? 2 : 0) +
     (i.model_line ? 2 : 0) +
     (i.brand && i.brand !== "Other" ? 1 : 0) +
     (i.priceUSD ? 1 : 0);
-  return usable.slice().sort((a, b) => score(b) - score(a) || (b.priceUSD || 0) - (a.priceUSD || 0))[0];
+}
+
+function featureCandidates(items) {
+  return (items || [])
+    .filter((i) => i && i.img && i.ref)
+    .slice()
+    .sort((a, b) => featureScore(b) - featureScore(a) || (b.priceUSD || 0) - (a.priceUSD || 0));
+}
+
+// Metadata picks the shortlist; the photograph picks the winner. A candidate
+// whose border is more than 70% white loses to one that isn't, and within
+// each group the metadata order stands.
+function useFeature(items) {
+  const candidates = useMemo(() => featureCandidates(items), [items]);
+  const [best, setBest] = useState(null);
+  useEffect(() => {
+    let dead = false;
+    setBest(null);
+    const shortlist = candidates.slice(0, 4);
+    if (!shortlist.length) return undefined;
+    Promise.all(shortlist.map((i) => edgeWhiteness(imgSrc(i.img, 24)).then((w) => ({ i, w }))))
+      .then((scored) => {
+        if (dead) return;
+        const good = scored.filter((s) => s.w <= 0.7);
+        setBest((good.length ? good : scored)[0].i);
+      })
+      .catch(() => {});
+    return () => { dead = true; };
+  }, [candidates]);
+  return best || candidates[0] || null;
 }
 
 // The search is the page's main control, so it gets width and a preview of
@@ -307,6 +398,7 @@ export default function MagazineHome(props) {
     goToRecentAdded, goToArticles, homeOpenCalendar, homeOpenSale,
     onClickListing, primaryCurrency, isMobile, user, dark, cols,
     homeMastheadTabs, homeSearchSubmit, watchlist, homeJumpToDealer, homeAuctionSources,
+    homeDealerSources,
     goToSavedHearts,
     homeSearchLiveQuery, homeSearchCounts, homeRecentSearches, homeAddRecentSearch,
     homeAuctionHeroes, toggleHide, isAdmin, openAbout, signInWithGoogle,
@@ -316,7 +408,7 @@ export default function MagazineHome(props) {
   const counts = homeSectionCounts || {};
 
   const articles = useMemo(() => (homeRecentArticles || []).filter((a) => a && a.title && a.image), [homeRecentArticles]);
-  const feature = useMemo(() => pickFeature(homeRecentAdded), [homeRecentAdded]);
+  const feature = useFeature(homeRecentAdded);
   const grid = useMemo(
     () => (homeRecentAdded || []).filter((i) => i && i.img && (!feature || i.id !== feature.id)).slice(0, 12),
     [homeRecentAdded, feature]
@@ -341,8 +433,8 @@ export default function MagazineHome(props) {
     return out;
   }, [homeAuctionSales]);
 
-  const dealers = useMemo(() => topDealers(watchlist, homeRecentAdded, homeAuctionSources),
-    [watchlist, homeRecentAdded, homeAuctionSources]);
+  const dealers = useMemo(() => topDealers(watchlist, homeRecentAdded, homeAuctionSources, homeDealerSources),
+    [watchlist, homeRecentAdded, homeAuctionSources, homeDealerSources]);
 
   const cardsRef = useRef(null);
   const catRef = useRef(null);

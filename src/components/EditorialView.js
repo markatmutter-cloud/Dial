@@ -14,6 +14,16 @@ import { HeartIcon } from "./icons";
 // Saved sub-tabs, the Saved-articles virtual row, future sold-state
 // inference) branch on. Listing-style toggling reuses the existing
 // `toggleWatchlist` path so we don't fork the heart primitive.
+// Publication label for a corpus key. SOURCES is the one place these names
+// live; without a lookup, surfaces fall back to the raw key and a reader sees
+// "ROLEX_MAGAZINE" on the page (Mark, 2026-09-07).
+export function sourceLabel(key) {
+  if (!key) return "";
+  const hit = SOURCES.find((s) => s.key === key);
+  if (hit) return hit.publication || hit.label || key;
+  return String(key).replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 export function articleAsListing(article) {
   if (!article || !article.url) return null;
   const sourceMeta = article._source || {};
