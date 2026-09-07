@@ -29,7 +29,6 @@ import { ActiveFiltersStrip } from "./components/ActiveFiltersStrip";
 // the new AuctionCalendar component (AuctionsTab.js deleted 2026-04-30).
 import { ReferencesTab } from "./components/ReferencesTab";
 import { CollectionsTab } from "./components/CollectionsTab";
-import { HomeTab } from "./components/HomeTab";
 import MagazineHome from "./components/MagazineHome";
 import { TrackNewItemModal } from "./components/TrackNewItemModal";
 import { FavSearchModal } from "./components/FavSearchModal";
@@ -3612,15 +3611,6 @@ export default function Watchlist() {
   // something large. Derived at render from the same sets the rows come from,
   // so nothing here can rot the way the hardcoded LiveCounts house number did.
   // Cheap: four length reads over arrays already in memory.
-  // Parallel landing page (Epic 9, 2026-09-07). `?view=magazine` swaps Home
-  // for MagazineHome and nothing else: same data, same shells, same routes.
-  // The live landing page is untouched until Mark says to flip the default,
-  // which is a one-line change here. Read once on mount rather than kept in
-  // sync with history, because this is a build-time switch, not navigation.
-  const magazineView = useMemo(() => {
-    try { return new URLSearchParams(window.location.search).get("view") === "magazine"; }
-    catch { return false; }
-  }, []);
   const homeSectionCounts = useMemo(() => {
     const visible = (i) => i && !hidden[i.id] && !adminHidden.has(i.id) && !homeHidden.has(i.id);
     const isSold = (i) => i.sold || i.status === "ended" || i.sold_price;
@@ -4387,12 +4377,12 @@ export default function Watchlist() {
   // the loading render and the post-load render. Only the JSX const
   // sits here. See the load-bearing comment up there for the full
   // explanation.
-  // Home is built ONCE and handed to whichever shell renders it. The magazine
-  // view swaps only the component, so both shells, every route and every
-  // other tab are untouched by the parallel page.
-  const HomeComponent = magazineView ? MagazineHome : HomeTab;
+  // Home is the magazine (Mark, 2026-09-07: "this page should be the new
+  // landing page ... retire the old landing page"). It ran behind
+  // ?view=magazine for a week of daily use first. Built ONCE and handed to
+  // whichever shell renders it.
   const homeTabJSX = (
-    <HomeComponent
+    <MagazineHome
       homeRecentAdded={homeRecentAdded}
       homeRecentSold={homeRecentSold}
       homeEndingNext={homeEndingNext}
@@ -5172,7 +5162,7 @@ export default function Watchlist() {
     // Collections style) computed by `savedContentJSX`.
     watchlistTabJSX: savedContentJSX,
     watchboxTabJSX,
-    adminTabJSX, referencesTabJSX, collectionsTabJSX, homeTabJSX, magazineView,
+    adminTabJSX, referencesTabJSX, collectionsTabJSX, homeTabJSX,
     lotMigrationBannerJSX,
     userLimitBannerJSX,
     // Unified header band (PR_Y, 2026-05-21). Colored slab beneath

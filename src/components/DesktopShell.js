@@ -55,10 +55,7 @@ export function DesktopShell(props) {
     authJSX, baseStyle,
     collectionEditModalJSX, collectionPickerModalJSX,
     favSearchModalJSX,
-    adminTabJSX, homeTabJSX, listingsGridJSX,
-    // Magazine view renders About / saved / account inside its own persistent
-    // bar, so the floating Home overlay would be a second copy of all three.
-    magazineView, listingsTabContentJSX, primaryCurrency, settingsModalJSX, shareReceiverJSX,
+    adminTabJSX, homeTabJSX, listingsGridJSX, listingsTabContentJSX, primaryCurrency, settingsModalJSX, shareReceiverJSX,
     challengeReceiverJSX,
     listReceiverJSX,
     catalogReceiverJSX,
@@ -550,7 +547,9 @@ export function DesktopShell(props) {
         // the M circle anchors in the same place as on every other
         // tab.
         const minimalTopBar = tab === "home" && !anyShareActive && !searchAllActive;
-        if (minimalTopBar && magazineView) return null;
+        // Home is the magazine, which carries About / saved / account in its
+        // own persistent bar, so this floating overlay would be a second copy.
+        if (minimalTopBar) return null;
         return (
         <div style={{ display: "flex", alignItems: "center", gap: 10,
                       padding: minimalTopBar ? "6px 20px" : "10px 20px",
