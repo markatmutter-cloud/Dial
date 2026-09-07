@@ -206,7 +206,11 @@ function initials(house) {
 
 function articleSource(a) {
   if (!a) return "";
-  return (a._source && (a._source.publication || a._source.label)) || sourceLabel(a.source);
+  // sourceLabel first: a caller may attach `_source.label` that is really the
+  // corpus key, which is exactly how "rolex_magazine" reached the page.
+  return sourceLabel(a.source)
+    || (a._source && (a._source.publication || a._source.label))
+    || "";
 }
 
 function fmtDate(iso, opts) {
