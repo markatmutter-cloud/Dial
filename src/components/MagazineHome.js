@@ -24,6 +24,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { imgSrc, fmt, priceIn, CURRENCY_SYM, fmtSaleDateRange } from "../utils";
 import { FooterBand } from "./HomeTab";
 import { articleAsListing } from "./EditorialView";
+import { MoonPhaseIndicator } from "./MoonPhaseIndicator";
 
 const FONTS = "https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500&family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap";
 
@@ -107,11 +108,15 @@ function faviconFor(url) {
 // "are you able to see my most hearted items and which dealers they are from".
 // Signed out there are no hearts, so fall back to who is listing right now,
 // which is at least true rather than a guess at taste.
-function topDealers(watchlist, fallbackItems) {
+function topDealers(watchlist, fallbackItems, exclude) {
   const tally = new Map();
   const seenUrl = new Map();
+  const skip = new Set(exclude || []);
   const add = (source, url) => {
-    if (!source) return;
+    // Auction houses are not dealers and their listings live behind the
+    // Auctions sub-tab, so a chip that filters "For sale" by Phillips returns
+    // nothing (Mark, 2026-09-07).
+    if (!source || skip.has(source)) return;
     tally.set(source, (tally.get(source) || 0) + 1);
     if (url && !seenUrl.has(source)) seenUrl.set(source, url);
   };
@@ -300,8 +305,8 @@ export default function MagazineHome(props) {
     homeRecentAdded, homeRecentArticles, homeEndingNext,
     homeAuctionSales, homeSectionCounts,
     goToRecentAdded, goToArticles, homeOpenCalendar, homeOpenSale,
-    onClickListing, primaryCurrency, isMobile, user,
-    homeMastheadTabs, homeSearchSubmit, watchlist, homeJumpToDealer,
+    onClickListing, primaryCurrency, isMobile, user, dark,
+    homeMastheadTabs, homeSearchSubmit, watchlist, homeJumpToDealer, homeAuctionSources,
     homeSearchLiveQuery, homeSearchCounts, homeRecentSearches, homeAddRecentSearch,
     homeAuctionHeroes, toggleHide, isAdmin, openAbout, signInWithGoogle,
   } = props;
@@ -335,7 +340,8 @@ export default function MagazineHome(props) {
     return out;
   }, [homeAuctionSales]);
 
-  const dealers = useMemo(() => topDealers(watchlist, homeRecentAdded), [watchlist, homeRecentAdded]);
+  const dealers = useMemo(() => topDealers(watchlist, homeRecentAdded, homeAuctionSources),
+    [watchlist, homeRecentAdded, homeAuctionSources]);
 
   const cardsRef = useRef(null);
   const catRef = useRef(null);
@@ -378,12 +384,15 @@ export default function MagazineHome(props) {
 
       <header className="mag-flag">
         <div className="mag-mark">
-          <svg className="mag-moon" viewBox="0 0 40 40" aria-hidden="true">
-            <circle cx="20" cy="20" r="15.2" fill="none" stroke="currentColor" strokeWidth="1.2" opacity=".55" />
-            <path d="M20 4.8a15.2 15.2 0 0 0 0 30.4 11 15.2 0 0 1 0-30.4z" fill="currentColor" />
-          </svg>
           <div>
-            <h1 className="mag-wordmark">Watchlist</h1>
+            <div className="mag-wordmark-row">
+              <h1 className="mag-wordmark">Watchlist</h1>
+              {/* The real moon-phase component, not a drawn crescent: it shows
+                  tonight's actual phase and updates every minute, which is what
+                  the original Home masthead did and what Mark built first. To
+                  the RIGHT of the wordmark at his sizing. */}
+              <MoonPhaseIndicator size={isMobile ? 74 : 96} dark={!!dark} />
+            </div>
             <p className="mag-strap">Aggregated watch listings</p>
           </div>
         </div>
@@ -441,27 +450,28 @@ export default function MagazineHome(props) {
         </section>
       )}
 
-      {dealers.length > 0 && homeJumpToDealer && (
-        <section className="mag-sec mag-sec--dealers">
-          <p className="mag-dealers-label">{user ? "Your dealers" : "Dealers we follow"}</p>
-          <div className="mag-dealers">
-            {dealers.map((d) => (
-              <button key={d.name} type="button" className="mag-dealer-chip"
-                      onClick={() => homeJumpToDealer(d.name)} title={`${d.n} saved from ${d.name}`}>
-                {d.icon ? (
-                  <img src={d.icon} alt="" loading="lazy"
-                       onError={(e) => { e.currentTarget.style.display = "none"; }} />
-                ) : null}
-                <span>{d.name}</span>
-              </button>
-            ))}
-          </div>
-        </section>
-      )}
-
       {(feature || grid.length > 0) && (
         <section className="mag-sec">
           <SectionHeadBtn title="New Listings This Week" onClick={goToRecentAdded} cta="All watches" />
+          {dealers.length > 0 && homeJumpToDealer && (
+            <div className="mag-dealers-band">
+              <div className="mag-dealers-inner">
+                <p className="mag-dealers-label">{user ? "Your dealers" : "Dealers we follow"}</p>
+                <div className="mag-dealers">
+                  {dealers.map((d) => (
+                    <button key={d.name} type="button" className="mag-dealer-chip"
+                            onClick={() => homeJumpToDealer(d.name)} title={`${d.n} saved from ${d.name}`}>
+                      {d.icon ? (
+                        <img src={d.icon} alt="" loading="lazy"
+                             onError={(e) => { e.currentTarget.style.display = "none"; }} />
+                      ) : null}
+                      <span>{d.name}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
           {/* A band behind the featured watch: dealer product shots are shot
               on white, so on a near-white page the watch floated with no edge
               (Mark, 2026-09-07). The band gives it a ground to sit on. */}
@@ -546,9 +556,14 @@ const MAG_CSS = `
 .mag-flag { display: flex; align-items: flex-end; justify-content: space-between;
             gap: 24px; padding: 22px 0 14px; }
 .mag-mark { display: flex; align-items: center; gap: 14px; min-width: 0; }
-.mag-moon { width: clamp(30px,4vw,44px); height: clamp(30px,4vw,44px); flex: 0 0 auto; color: var(--brand-olive-text); }
+.mag-mark > div { min-width: 0; }
+.mag-wordmark-row { display: flex; align-items: center; gap: clamp(10px,1.4vw,20px); }
+/* Olive wordmark (Mark, 2026-09-07). --brand-olive-ink is theme-aware: deep
+   olive on paper, a lifted sage on the dark ground, so it holds contrast in
+   both without needing a second colour. */
 .mag-wordmark { font-family: var(--mag-display); font-weight: 500; margin: 0;
-                font-size: clamp(28px,6vw,64px); line-height: .88; letter-spacing: .015em; color: var(--text1); }
+                font-size: clamp(28px,6vw,64px); line-height: .88; letter-spacing: .015em;
+                color: var(--brand-olive-ink); }
 /* One tile width for both grids, so a story and a watch are the same object
    on the page (Mark, 2026-09-07). Change it here and both grids move. */
 .mag { --mag-tile: 268px; }
@@ -605,12 +620,19 @@ const MAG_CSS = `
 .mag-bar-gap { flex: 0 0 228px; }
 
 /* dealer shortcuts */
+/* A full-bleed band gives the chips a home instead of leaving them floating
+   between the section rule and the first watch. margin/padding pair is the
+   standard bleed: pull out to the viewport edge, pad back in. */
+.mag-dealers-band { background: var(--surface, rgba(0,0,0,.035));
+                    margin-inline: calc(50% - 50vw); padding: 16px calc(50vw - 50%);
+                    margin-bottom: clamp(24px,3vw,36px); }
+.mag-dealers-inner { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; }
 .mag-sec--dealers { margin-top: clamp(30px,3.6vw,48px); }
 .mag-dealers-label { font-family: var(--mag-data); font-size: 10.5px; letter-spacing: .16em;
-                     text-transform: uppercase; color: var(--text3); margin: 0 0 12px; }
+                     text-transform: uppercase; color: var(--text3); margin: 0; flex: 0 0 auto; }
 .mag-dealers { display: flex; flex-wrap: wrap; gap: 8px; }
 .mag-dealer-chip { display: inline-flex; align-items: center; gap: 9px; cursor: pointer;
-                   border: .5px solid var(--border); border-radius: 999px; background: var(--card-bg);
+                   border: .5px solid var(--border); border-radius: 999px; background: var(--bg);
                    padding: 7px 15px 7px 9px; font-family: var(--mag-body); font-size: 13.5px;
                    color: var(--text1); }
 .mag-dealer-chip:hover { border-color: var(--brand-olive-text); color: var(--brand-olive-text); }
@@ -717,28 +739,35 @@ const MAG_CSS = `
 .mag-lot-price { margin: 6px 0 0; font-family: var(--mag-data); font-size: 14px; font-weight: 500;
                  color: var(--brand-olive-text); font-variant-numeric: tabular-nums; }
 
-/* Auction sales are tiles now, on the same --mag-tile grid as stories and
-   watches, so their pictures are the same size as everything else on the page
-   (Mark, 2026-09-07). The ruled list read as a footnote next to them. */
-.mag-cal { display: grid; gap: clamp(22px,2.4vw,32px) clamp(18px,2vw,26px);
-           grid-template-columns: repeat(auto-fill, minmax(var(--mag-tile),1fr)); align-items: start; }
-.mag-cal-row { display: grid; gap: 5px; align-content: start; text-decoration: none; }
+/* Chronological table, not tiles (Mark, 2026-09-07: "I liked the chronological
+   table that was there before rather than tiles, just it all looked too
+   small"). Rows keep the reading order a calendar needs; the artwork keeps
+   the size the tiles gave it. */
+.mag-cal { border-top: .5px solid var(--border); }
+.mag-cal-row { display: grid; grid-template-columns: 190px 170px minmax(0,1fr) auto;
+               gap: 10px 30px; align-items: center; padding: 22px 0;
+               border-bottom: .5px solid var(--border); text-decoration: none; }
 .mag-cal-row:hover .mag-cal-title { color: var(--brand-olive-text); }
-.mag-cal-art { display: flex; align-items: center; justify-content: center;
-               aspect-ratio: 1; overflow: hidden; background: var(--card-bg); }
-.mag-cal-mark { font-family: var(--mag-display); font-size: 44px; color: var(--text3); letter-spacing: .03em; }
-.mag-cal-house { font-family: var(--mag-data); font-size: 10px; letter-spacing: .17em;
-                 text-transform: uppercase; color: var(--brand-olive-text); margin-top: 11px;
-                 padding-bottom: 6px; border-bottom: .5px solid var(--border); }
-.mag-cal-title { font-family: var(--mag-display); font-weight: 500; font-size: 18px;
-                 line-height: 1.12; display: block; margin-top: 4px; }
-.mag-cal-place { font-size: 13px; color: var(--text2); margin-top: 3px; display: block; }
-.mag-cal-when { font-family: var(--mag-data); font-size: 13px; color: var(--text1);
-                margin-top: 6px; font-variant-numeric: tabular-nums; }
-.mag-live { display: inline-block; margin-left: 8px; font-size: 10px; letter-spacing: .1em;
+.mag-cal-art { width: 190px; height: 190px; overflow: hidden; background: var(--card-bg);
+               display: flex; align-items: center; justify-content: center; }
+.mag-cal-mark { font-family: var(--mag-display); font-size: 46px; color: var(--text3); letter-spacing: .03em; }
+.mag-cal-house { font-family: var(--mag-data); font-size: 11.5px; letter-spacing: .16em;
+                 text-transform: uppercase; color: var(--brand-olive-text); }
+.mag-cal-title { font-family: var(--mag-display); font-weight: 500;
+                 font-size: clamp(20px,2.3vw,27px); line-height: 1.12; display: block; }
+.mag-cal-place { font-size: 14.5px; color: var(--text2); margin-top: 5px; display: block; }
+.mag-cal-when { font-family: var(--mag-data); font-size: 14px; color: var(--text1);
+                text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.mag-live { display: inline-block; margin-left: 8px; font-size: 10.5px; letter-spacing: .1em;
             text-transform: uppercase; color: var(--brand-olive-text);
             border: .5px solid var(--brand-olive-text); border-radius: 999px; padding: 2px 7px; }
 
+@media (max-width: 820px) {
+  .mag-cal-row { grid-template-columns: 120px minmax(0,1fr); align-items: start; gap: 5px 18px; padding: 18px 0; }
+  .mag-cal-art { width: 120px; height: 120px; grid-row: span 2; }
+  .mag-cal-house { grid-column: 2; }
+  .mag-cal-when { grid-column: 1 / -1; text-align: left; margin-top: 8px; }
+}
 @media (max-width: 900px) { .mag-bar .mag-searchwrap { max-width: none; } }
 @media (max-width: 860px) { .mag-pick { grid-template-columns: minmax(0,1fr); } }
 @media (max-width: 700px) {
