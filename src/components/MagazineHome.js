@@ -435,7 +435,7 @@ export default function MagazineHome(props) {
     homeDealerSources,
     goToSavedHearts,
     homeSearchLiveQuery, homeSearchCounts, homeRecentSearches, homeAddRecentSearch,
-    homeAuctionHeroes, toggleHide, isAdmin, openAbout, signInWithGoogle,
+    homeAuctionHeroes, toggleHide, isAdmin, openAbout, signInWithGoogle, homeMastheadAuthJSX,
   } = props;
 
   useFonts();
@@ -533,21 +533,15 @@ export default function MagazineHome(props) {
             <h1 className="mag-wordmark">Watchlist</h1>
             <MoonPhaseIndicator size={64} dark={!!dark} />
             <span className="mag-mhead-sp" />
-            {user ? (
-              <>
-                <button type="button" className="mag-icon" aria-label="Saved watches" onClick={goToSavedHearts}>
-                  <svg viewBox="0 0 20 20" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.6">
-                    <path d="M10 17S3 12.6 3 7.9A3.9 3.9 0 0 1 10 5.6a3.9 3.9 0 0 1 7 2.3C17 12.6 10 17 10 17z" />
-                  </svg>
-                  {savedCount > 0 ? <span className="mag-badge">{savedCount}</span> : null}
-                </button>
-                <span className="mag-avatar" aria-hidden="true">{initial}</span>
-              </>
-            ) : (
-              signInWithGoogle ? (
-                <button type="button" className="mag-signin" onClick={signInWithGoogle}>Sign in</button>
-              ) : null
-            )}
+            {user && goToSavedHearts ? (
+              <button type="button" className="mag-icon" aria-label="Saved watches" onClick={goToSavedHearts}>
+                <svg viewBox="0 0 20 20" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.6">
+                  <path d="M10 17S3 12.6 3 7.9A3.9 3.9 0 0 1 10 5.6a3.9 3.9 0 0 1 7 2.3C17 12.6 10 17 10 17z" />
+                </svg>
+                {savedCount > 0 ? <span className="mag-badge">{savedCount}</span> : null}
+              </button>
+            ) : null}
+            {homeMastheadAuthJSX}
           </div>
           <div className="mag-mhead-row">
             <div className="mag-bar-tabs">
@@ -588,22 +582,15 @@ export default function MagazineHome(props) {
             <MagSearch big onSubmit={homeSearchSubmit} onLiveQuery={homeSearchLiveQuery}
                        counts={homeSearchCounts} recent={homeRecentSearches} addRecent={homeAddRecentSearch} />
             <div className="mag-bar-util">
-              <button type="button" className="mag-bar-link" onClick={openAbout}>About</button>
-            {user ? (
-              <>
-                <button type="button" className="mag-icon" aria-label="Saved watches" onClick={goToSavedHearts}>
-                  <svg viewBox="0 0 20 20" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.6">
-                    <path d="M10 17S3 12.6 3 7.9A3.9 3.9 0 0 1 10 5.6a3.9 3.9 0 0 1 7 2.3C17 12.6 10 17 10 17z" />
-                  </svg>
-                  {savedCount > 0 ? <span className="mag-badge">{savedCount}</span> : null}
-                </button>
-                <span className="mag-avatar" aria-hidden="true">{initial}</span>
-              </>
-            ) : (
-              signInWithGoogle ? (
-                <button type="button" className="mag-signin" onClick={signInWithGoogle}>Sign in</button>
-              ) : null
-            )}
+            {user && goToSavedHearts ? (
+              <button type="button" className="mag-icon" aria-label="Saved watches" onClick={goToSavedHearts}>
+                <svg viewBox="0 0 20 20" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.6">
+                  <path d="M10 17S3 12.6 3 7.9A3.9 3.9 0 0 1 10 5.6a3.9 3.9 0 0 1 7 2.3C17 12.6 10 17 10 17z" />
+                </svg>
+                {savedCount > 0 ? <span className="mag-badge">{savedCount}</span> : null}
+              </button>
+            ) : null}
+            {homeMastheadAuthJSX}
             </div>
           </div>
         </>
