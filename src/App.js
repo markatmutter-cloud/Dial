@@ -4402,6 +4402,9 @@ export default function Watchlist() {
       // Admin-removed articles drop from the Home strip (Mark 2026-06-06)
       homeRecentArticles={adminHidden.size ? homeArticles.filter(a => !adminHidden.has(shortHash(a.url))) : homeArticles}
       homeSectionCounts={homeSectionCounts}
+      // Magazine view extras: the auction top-lot artwork the calendar already
+      // computes, so its rows can carry a picture rather than a bare line.
+      homeAuctionHeroes={auctionHeroByUrl}
       // The magazine masthead's saved-watches button routes here. Watches >
       // (heart) Saved, matching the 2026-07-30 IA move.
       goToSavedHearts={() => { setTab("listings"); setListingsSubTab("saved"); setPage(1); }}

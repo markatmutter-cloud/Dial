@@ -34,7 +34,9 @@ function props(over = {}) {
     goToRecentAdded: noop, goToArticles: noop, homeOpenCalendar: noop, homeOpenSale: null,
     onClickListing: noop, primaryCurrency: "USD", isMobile: false, user: null,
     homeMastheadTabs: [{ key: "listings", label: "Watches", active: true, onSelect: noop }],
-    homeSearchSubmit: noop, goToSavedHearts: noop, watchlist: {},
+    homeSearchSubmit: noop, homeSearchLiveQuery: noop, homeSearchCounts: null,
+    homeRecentSearches: [], homeAddRecentSearch: noop, homeAuctionHeroes: {},
+    toggleHide: null, isAdmin: false, openAbout: noop, signInWithGoogle: noop,
     ...over,
   };
 }
@@ -61,25 +63,41 @@ describe("MagazineHome", () => {
     expect(screen.queryByText("Long past sale")).toBeNull();
   });
 
-  it("hides the saved and account controls when signed out", () => {
-    render(<MagazineHome {...props()} />);
+  it("renders no second saved or account control", () => {
+    // The app's own persistent Home overlay already carries both; a duplicate
+    // set in this masthead was the doubling Mark spotted on the live page.
+    render(<MagazineHome {...props({ user: { email: "mark@mutter.co.uk" } })} />);
     expect(screen.queryByLabelText("Saved watches")).toBeNull();
   });
 
-  it("shows the saved count and the account initial when signed in", () => {
+  it("keeps a search in the persistent bar as well as the masthead", () => {
+    render(<MagazineHome {...props()} />);
+    expect(screen.getAllByLabelText("Search watches").length).toBe(2);
+  });
+
+  it("previews what each destination holds as you type", () => {
+    const seen = [];
     render(<MagazineHome {...props({
-      user: { email: "mark@mutter.co.uk" },
-      watchlist: { one: {}, two: {} },
+      homeSearchLiveQuery: (q) => seen.push(q),
+      homeSearchCounts: { all: 90, live: 40, auctions: 30, sold: 20 },
     })} />);
-    expect(screen.getByLabelText("Saved watches")).toBeInTheDocument();
-    expect(screen.getByText("2")).toBeInTheDocument();
-    expect(screen.getByText("M")).toBeInTheDocument();
+    fireEvent.change(screen.getAllByLabelText("Search watches")[0], { target: { value: "submariner" } });
+    expect(seen).toContain("submariner");
+    expect(screen.getByText("For sale")).toBeInTheDocument();
+    expect(screen.getByText("40")).toBeInTheDocument();
+  });
+
+  it("offers an admin hide on articles, and only to admins", () => {
+    const { rerender } = render(<MagazineHome {...props()} />);
+    expect(screen.queryAllByTitle("Hide from Home").length).toBe(0);
+    rerender(<MagazineHome {...props({ isAdmin: true, toggleHide: () => {} })} />);
+    expect(screen.queryAllByTitle("Hide from Home").length).toBeGreaterThan(0);
   });
 
   it("submits the search through the existing Home handler", () => {
     const calls = [];
     render(<MagazineHome {...props({ homeSearchSubmit: (q, target) => calls.push([q, target]) })} />);
-    const input = screen.getByLabelText("Search watches");
+    const input = screen.getAllByLabelText("Search watches")[0];
     // fireEvent.change, not a raw input event: React tracks the value with its
     // own setter and ignores a value assigned directly.
     fireEvent.change(input, { target: { value: "submariner" } });

@@ -22,6 +22,8 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { imgSrc, fmt, priceIn, CURRENCY_SYM, fmtSaleDateRange } from "../utils";
+import { FooterBand } from "./HomeTab";
+import { articleAsListing } from "./EditorialView";
 
 const FONTS = "https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500&family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap";
 
@@ -29,6 +31,33 @@ const FONTS = "https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wg
 const CAL_HORIZON_DAYS = 60;
 const CAL_MAX = 8;
 const ROTATOR_COUNT = 3;
+
+// Fill the row, don't leave a ragged tail. Mark: "I'd still like the width to
+// define the number of articles shown ... then if I hide an article the next
+// oldest adds to the screen." CSS can't tell you how many columns auto-fill
+// produced, so measure the resolved template and round the slice down to a
+// whole number of rows. Re-measures on resize; when an item disappears the
+// next one moves up on its own because the list is just re-sliced.
+function useWholeRows(ref, total, maxRows) {
+  const [cols, setCols] = useState(0);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof window === "undefined") return undefined;
+    const measure = () => {
+      const t = window.getComputedStyle(el).gridTemplateColumns;
+      const n = t && t !== "none" ? t.split(" ").filter(Boolean).length : 0;
+      setCols((prev) => (prev === n ? prev : n));
+    };
+    measure();
+    const RO = window.ResizeObserver;
+    if (RO) { const ro = new RO(measure); ro.observe(el); return () => ro.disconnect(); }
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [ref, total]);
+  if (!cols) return total;
+  const rows = Math.max(1, Math.min(maxRows, Math.floor(total / cols)));
+  return Math.min(total, rows * cols);
+}
 
 function useFonts() {
   useEffect(() => {
@@ -62,6 +91,20 @@ function refLine(item) {
   return bits.join(" · ");
 }
 
+// Sale cover if the house publishes one, else the sale's top lot, else a
+// monogram. Never another sale's picture: a borrowed photo next to this
+// sale's date is a small lie.
+function saleArt(sale, heroes) {
+  if (!sale) return null;
+  return sale.image || (heroes && heroes[sale.url]) || null;
+}
+
+function initials(house) {
+  const parts = String(house || "").split(/[^A-Za-z]+/).filter((p) => p.length > 1);
+  if (!parts.length) return "?";
+  return (parts.length === 1 ? parts[0].slice(0, 2) : parts.slice(0, 2).map((p) => p[0]).join("")).toUpperCase();
+}
+
 function articleSource(a) {
   return (a && a._source && a._source.label) || (a && a.source) || "";
 }
@@ -89,7 +132,77 @@ function pickFeature(items) {
   return usable.slice().sort((a, b) => score(b) - score(a) || (b.priceUSD || 0) - (a.priceUSD || 0))[0];
 }
 
-function Rotator({ articles }) {
+// The search is the page's main control, so it gets width and a preview of
+// what each destination holds, matching the current site's behaviour rather
+// than being a decorative box in the masthead.
+function MagSearch({ onSubmit, onLiveQuery, counts, recent, addRecent, big }) {
+  const [q, setQ] = useState("");
+  const [open, setOpen] = useState(false);
+  const wrap = useRef(null);
+
+  useEffect(() => {
+    const away = (e) => { if (wrap.current && !wrap.current.contains(e.target)) setOpen(false); };
+    document.addEventListener("mousedown", away);
+    return () => document.removeEventListener("mousedown", away);
+  }, []);
+
+  const change = (v) => {
+    setQ(v);
+    setOpen(v.trim().length > 0);
+    if (onLiveQuery) onLiveQuery(v.trim().length >= 2 ? v.trim() : "");
+  };
+  const fire = (target) => {
+    const term = q.trim();
+    if (!term) return;
+    if (addRecent) addRecent(term);
+    if (onSubmit) onSubmit(term, target);
+    setQ(""); setOpen(false);
+    if (onLiveQuery) onLiveQuery("");
+  };
+
+  const rows = [
+    ["all", "Everything", counts && counts.all],
+    ["live", "For sale", counts && counts.live],
+    ["auctions", "At auction", counts && counts.auctions],
+    ["sold", "Sold", counts && counts.sold],
+  ];
+
+  return (
+    <div className={`mag-searchwrap${big ? " mag-searchwrap--big" : ""}`} ref={wrap}>
+      <form className="mag-search" role="search" onSubmit={(e) => { e.preventDefault(); fire("all"); }}>
+        <svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <circle cx="7" cy="7" r="5" /><path d="M11 11l4 4" />
+        </svg>
+        <input type="search" value={q} onChange={(e) => change(e.target.value)}
+               onFocus={() => setOpen(q.trim().length > 0 || (recent || []).length > 0)}
+               placeholder="Brand, model, reference" aria-label="Search watches" />
+        <button type="submit" className="mag-search-go">Search</button>
+      </form>
+      {open && (
+        <div className="mag-drop">
+          {q.trim().length > 0 && rows.map(([target, label, n]) => (
+            <button key={target} type="button" className="mag-drop-row" onClick={() => fire(target)}>
+              <span>{label}</span>
+              <span className="mag-drop-n">{n == null ? "" : n.toLocaleString()}</span>
+            </button>
+          ))}
+          {q.trim().length === 0 && (recent || []).length > 0 && (
+            <>
+              <p className="mag-drop-head">Recent</p>
+              {recent.slice(0, 5).map((r) => (
+                <button key={r} type="button" className="mag-drop-row" onClick={() => { setQ(r); change(r); }}>
+                  <span>{r}</span>
+                </button>
+              ))}
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Rotator({ articles, isAdmin, onHide }) {
   const [at, setAt] = useState(0);
   const timer = useRef(null);
   const slides = articles.slice(0, ROTATOR_COUNT);
@@ -122,6 +235,12 @@ function Rotator({ articles }) {
             </span>
           )}
         </span>
+        {isAdmin && onHide ? (
+          <button type="button" className="mag-hide" title="Hide from Home"
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); onHide(a); }}>
+            &times;
+          </button>
+        ) : null}
         <div className="mag-cover-lines">
           <p className="mag-kicker">{articleSource(a)}</p>
           <h3 className="mag-cover-head">
@@ -150,13 +269,13 @@ export default function MagazineHome(props) {
     homeAuctionSales, homeSectionCounts,
     goToRecentAdded, goToArticles, homeOpenCalendar, homeOpenSale,
     onClickListing, primaryCurrency, isMobile, user,
-    homeMastheadTabs, homeSearchSubmit, goToSavedHearts, watchlist,
+    homeMastheadTabs, homeSearchSubmit,
+    homeSearchLiveQuery, homeSearchCounts, homeRecentSearches, homeAddRecentSearch,
+    homeAuctionHeroes, toggleHide, isAdmin, openAbout, signInWithGoogle,
   } = props;
 
   useFonts();
   const counts = homeSectionCounts || {};
-  const [q, setQ] = useState("");
-  const [searchFocus, setSearchFocus] = useState(false);
 
   const articles = useMemo(() => (homeRecentArticles || []).filter((a) => a && a.title && a.image), [homeRecentArticles]);
   const feature = useMemo(() => pickFeature(homeRecentAdded), [homeRecentAdded]);
@@ -184,13 +303,15 @@ export default function MagazineHome(props) {
     return out;
   }, [homeAuctionSales]);
 
-  const savedCount = watchlist ? Object.keys(watchlist).length : 0;
-  const initial = (user && (user.user_metadata?.full_name || user.email) || "").trim().charAt(0).toUpperCase();
+  const cardsRef = useRef(null);
+  const catRef = useRef(null);
+  // Up to three rows of stories and two of watches, always whole rows.
+  const articleRows = useWholeRows(cardsRef, articles.length, 3);
+  const listingRows = useWholeRows(catRef, grid.length, 2);
 
-  const submitSearch = (e) => {
-    e.preventDefault();
-    const term = q.trim();
-    if (term && homeSearchSubmit) homeSearchSubmit(term, "all");
+  const hideArticle = (a) => {
+    const projected = articleAsListing(a);
+    if (projected && toggleHide) toggleHide(projected);
   };
 
   const tile = (i) => (
@@ -223,27 +344,12 @@ export default function MagazineHome(props) {
           </svg>
           <h1 className="mag-wordmark">Watchlist</h1>
         </div>
-        <div className="mag-util">
-          <form className={`mag-search${searchFocus ? " is-focus" : ""}`} role="search" onSubmit={submitSearch}>
-            <svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <circle cx="7" cy="7" r="5" /><path d="M11 11l4 4" />
-            </svg>
-            <input type="search" value={q} onChange={(e) => setQ(e.target.value)}
-                   onFocus={() => setSearchFocus(true)} onBlur={() => setSearchFocus(false)}
-                   placeholder="Brand, model, reference" aria-label="Search watches" />
-          </form>
-          {user ? (
-            <>
-              <button className="mag-icon" type="button" aria-label="Saved watches" onClick={goToSavedHearts}>
-                <svg viewBox="0 0 20 20" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.6">
-                  <path d="M10 17S3 12.6 3 7.9A3.9 3.9 0 0 1 10 5.6a3.9 3.9 0 0 1 7 2.3C17 12.6 10 17 10 17z" />
-                </svg>
-                {savedCount > 0 ? <span className="mag-badge">{savedCount}</span> : null}
-              </button>
-              <span className="mag-avatar" aria-hidden="true">{initial || "•"}</span>
-            </>
-          ) : null}
-        </div>
+        {/* No heart or account circle here: the app's own persistent Home
+            overlay already carries both, and rendering a second set was the
+            duplication Mark spotted. Search is the one control this masthead
+            owns, and it gets the width to look like the page's main input. */}
+        <MagSearch big onSubmit={homeSearchSubmit} onLiveQuery={homeSearchLiveQuery}
+                   counts={homeSearchCounts} recent={homeRecentSearches} addRecent={homeAddRecentSearch} />
       </header>
 
       <nav className="mag-nav" aria-label="Sections">
@@ -257,15 +363,37 @@ export default function MagazineHome(props) {
         <p className="mag-strap">Aggregated watch listings</p>
       </nav>
 
+      {/* Persistent bar (Mark, 2026-09-07): once the masthead scrolls away the
+          tabs and search should still be there. Sticky rather than fixed, so
+          it never covers content and needs no scroll listener. */}
+      <div className="mag-bar">
+        <span className="mag-bar-mark">Watchlist</span>
+        <div className="mag-bar-tabs">
+          {(homeMastheadTabs || []).map((t) => (
+            <button key={t.key} type="button" onClick={t.onSelect} className={t.active ? "on" : ""}>
+              {isMobile && t.mobileLabel ? t.mobileLabel : t.label}
+            </button>
+          ))}
+        </div>
+        <MagSearch onSubmit={homeSearchSubmit} onLiveQuery={homeSearchLiveQuery}
+                   counts={homeSearchCounts} recent={homeRecentSearches} addRecent={homeAddRecentSearch} />
+      </div>
+
       {articles.length > 0 && (
         <section className="mag-sec mag-sec--first">
           <SectionHeadBtn title="Recent Articles" onClick={goToArticles} cta="All articles" />
-          <Rotator articles={articles} />
-          <div className="mag-cards">
-            {articles.slice(0, 8).map((a) => (
+          <Rotator articles={articles} isAdmin={isAdmin} onHide={hideArticle} />
+          <div className="mag-cards" ref={cardsRef}>
+            {articles.slice(0, articleRows).map((a) => (
               <article className="mag-card" key={a.url}>
                 <a className="mag-card-img" href={a.url} target="_blank" rel="noopener noreferrer">
                   <img src={imgSrc(a.image, 520)} alt="" loading="lazy" />
+                  {isAdmin ? (
+                    <button type="button" className="mag-hide mag-hide--tile" title="Hide from Home"
+                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); hideArticle(a); }}>
+                      &times;
+                    </button>
+                  ) : null}
                 </a>
                 <p className="mag-kicker mag-kicker--card">{articleSource(a)}</p>
                 <h3 className="mag-card-head">
@@ -281,7 +409,11 @@ export default function MagazineHome(props) {
       {(feature || grid.length > 0) && (
         <section className="mag-sec">
           <SectionHeadBtn title="New Listings This Week" onClick={goToRecentAdded} cta="All watches" />
+          {/* A band behind the featured watch: dealer product shots are shot
+              on white, so on a near-white page the watch floated with no edge
+              (Mark, 2026-09-07). The band gives it a ground to sit on. */}
           {feature && (
+            <div className="mag-pick-band">
             <div className="mag-pick">
               <a className="mag-pick-img" href={feature.url} target="_blank" rel="noopener noreferrer"
                  onClick={() => onClickListing && onClickListing(feature)}>
@@ -297,8 +429,9 @@ export default function MagazineHome(props) {
                 <p className="mag-pick-price">{money(feature, primaryCurrency)}</p>
               </div>
             </div>
+            </div>
           )}
-          <div className="mag-cat">{grid.map(tile)}</div>
+          <div className="mag-cat" ref={catRef}>{grid.slice(0, listingRows).map(tile)}</div>
           <div className="mag-sec-foot">
             <button type="button" className="mag-viewall" onClick={goToRecentAdded}>
               See all new listings <span aria-hidden>&rarr;</span>
@@ -314,6 +447,11 @@ export default function MagazineHome(props) {
             {sales.map((s) => (
               <a className="mag-cal-row" key={s.id || s.url} href={s.url} target="_blank" rel="noopener noreferrer"
                  onClick={(e) => { if (homeOpenSale) { e.preventDefault(); homeOpenSale(s); } }}>
+                <span className="mag-cal-art">
+                  {saleArt(s, homeAuctionHeroes)
+                    ? <img src={imgSrc(saleArt(s, homeAuctionHeroes), 320)} alt="" loading="lazy" />
+                    : <span className="mag-cal-mark">{initials(s.house)}</span>}
+                </span>
                 <span className="mag-cal-house">{s.house}</span>
                 <span>
                   <span className="mag-cal-title">{s.title}</span>
@@ -329,9 +467,8 @@ export default function MagazineHome(props) {
         </section>
       )}
 
-      <p className="mag-colophon">
-        Watchlist &middot; {counts.live ? `${counts.live.toLocaleString()} watches for sale` : "aggregated watch listings"}
-      </p>
+      {/* The site's own footer, not a second one invented for this page. */}
+      <FooterBand openAbout={openAbout} signInWithGoogle={signInWithGoogle} user={user} />
     </div>
   );
 }
@@ -353,25 +490,55 @@ const MAG_CSS = `
 .mag-moon { width: clamp(30px,4vw,44px); height: clamp(30px,4vw,44px); flex: 0 0 auto; color: var(--brand-olive-text); }
 .mag-wordmark { font-family: var(--mag-display); font-weight: 500; margin: 0;
                 font-size: clamp(28px,6vw,64px); line-height: .88; letter-spacing: .015em; color: var(--text1); }
-.mag-util { display: flex; align-items: center; gap: 12px; flex: 0 0 auto; }
-.mag-search { display: flex; align-items: center; gap: 8px; border: .5px solid var(--border);
-              border-radius: 999px; padding: 8px 14px; min-width: 240px; background: var(--card-bg); }
-.mag-search.is-focus { border-color: var(--brand-olive-text); }
-.mag-search svg { width: 13px; height: 13px; flex: 0 0 auto; color: var(--text3); }
+/* One tile width for both grids, so a story and a watch are the same object
+   on the page (Mark, 2026-09-07). Change it here and both grids move. */
+.mag { --mag-tile: 210px; }
+
+.mag-searchwrap { position: relative; flex: 0 0 auto; }
+.mag-searchwrap--big { flex: 1 1 460px; max-width: 560px; }
+.mag-search { display: flex; align-items: center; gap: 10px; border: .5px solid var(--border);
+              border-radius: 999px; padding: 6px 6px 6px 16px; background: var(--card-bg); }
+.mag-search.is-focus, .mag-searchwrap:focus-within .mag-search { border-color: var(--brand-olive-text); }
+.mag-search svg { width: 14px; height: 14px; flex: 0 0 auto; color: var(--text3); }
 .mag-search input { border: none; background: transparent; outline: none; width: 100%;
-                    font-family: var(--mag-data); font-size: 11px; letter-spacing: .06em; color: var(--text1); }
-.mag-search input::placeholder { color: var(--text3); text-transform: uppercase; letter-spacing: .12em; }
-.mag-icon { width: 36px; height: 36px; border-radius: 999px; border: .5px solid var(--border);
-            background: transparent; cursor: pointer; display: flex; align-items: center;
-            justify-content: center; color: var(--text1); position: relative; padding: 0; }
-.mag-icon:hover { border-color: var(--brand-olive-text); color: var(--brand-olive-text); }
-.mag-icon svg { width: 15px; height: 15px; }
-.mag-badge { position: absolute; top: -3px; right: -3px; min-width: 16px; height: 16px; border-radius: 999px;
-             background: var(--brand-olive-text); color: var(--bg); font-family: var(--mag-data);
-             font-size: 9px; line-height: 16px; text-align: center; padding: 0 4px; }
-.mag-avatar { width: 36px; height: 36px; border-radius: 999px; background: var(--brand-olive-text);
-              color: var(--bg); font-family: var(--mag-display); font-size: 16px; font-weight: 500;
-              display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+                    font-family: var(--mag-body); font-size: 14px; color: var(--text1); padding: 6px 0; }
+.mag-search input::placeholder { color: var(--text3); }
+.mag-searchwrap--big .mag-search { padding: 8px 8px 8px 20px; }
+.mag-searchwrap--big .mag-search input { font-size: 16px; padding: 8px 0; }
+.mag-search-go { font-family: var(--mag-data); font-size: 10.5px; letter-spacing: .14em;
+                 text-transform: uppercase; border: none; border-radius: 999px; cursor: pointer;
+                 background: var(--brand-olive-text); color: var(--bg); padding: 9px 16px; flex: 0 0 auto; }
+.mag-searchwrap:not(.mag-searchwrap--big) .mag-search-go { display: none; }
+.mag-drop { position: absolute; z-index: 40; top: calc(100% + 6px); left: 0; right: 0;
+            background: var(--card-bg); border: .5px solid var(--border); border-radius: 14px;
+            box-shadow: 0 12px 34px rgba(0,0,0,.16); padding: 6px; display: grid; gap: 1px; }
+.mag-drop-head { font-family: var(--mag-data); font-size: 10px; letter-spacing: .16em; text-transform: uppercase;
+                 color: var(--text3); margin: 6px 10px 4px; }
+.mag-drop-row { display: flex; align-items: center; justify-content: space-between; gap: 14px;
+                background: none; border: none; cursor: pointer; text-align: left; width: 100%;
+                padding: 10px 12px; border-radius: 10px; font-family: var(--mag-body); font-size: 14px; color: var(--text1); }
+.mag-drop-row:hover { background: var(--surface, rgba(0,0,0,.05)); }
+.mag-drop-n { font-family: var(--mag-data); font-size: 12px; color: var(--text3); font-variant-numeric: tabular-nums; }
+
+/* persistent bar */
+.mag-bar { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; gap: 18px;
+           padding: 9px 0; margin-bottom: 4px; background: var(--bg);
+           border-bottom: .5px solid var(--border); }
+.mag-bar-mark { font-family: var(--mag-display); font-size: 19px; font-weight: 500; letter-spacing: .02em;
+                color: var(--text1); flex: 0 0 auto; }
+.mag-bar-tabs { display: flex; flex-wrap: wrap; gap: 4px 18px; flex: 1 1 auto; }
+.mag-bar-tabs button { font-family: var(--mag-data); font-size: 10.5px; letter-spacing: .14em;
+                       text-transform: uppercase; color: var(--text2); background: none; border: none;
+                       cursor: pointer; padding: 2px 0; border-bottom: 1.5px solid transparent; }
+.mag-bar-tabs button:hover, .mag-bar-tabs button.on { color: var(--brand-olive-text); border-bottom-color: var(--brand-olive-text); }
+.mag-bar .mag-searchwrap { width: 230px; }
+
+/* admin hide */
+.mag-hide { position: absolute; top: 10px; right: 10px; z-index: 4; width: 26px; height: 26px;
+            border-radius: 999px; border: none; cursor: pointer; background: rgba(8,10,6,.55);
+            color: #fff; font-size: 15px; line-height: 1; padding: 0; }
+.mag-hide:hover { background: rgba(8,10,6,.8); }
+.mag-hide--tile { width: 24px; height: 24px; font-size: 14px; }
 
 .mag-nav { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between;
            gap: 8px 28px; padding: 4px 0 11px; border-bottom: 1.5px solid var(--text1); }
@@ -420,15 +587,18 @@ const MAG_CSS = `
 .mag-dot[aria-current="true"] { background: #FBFAF3; }
 
 .mag-cards { display: grid; gap: clamp(22px,2.6vw,34px) clamp(18px,2vw,26px);
-             grid-template-columns: repeat(auto-fit, minmax(232px,1fr)); align-items: start;
+             grid-template-columns: repeat(auto-fill, minmax(var(--mag-tile),1fr)); align-items: start;
              margin-top: clamp(28px,3.2vw,42px); }
 .mag-card { display: grid; gap: 8px; align-content: start; }
-.mag-card-img { display: block; aspect-ratio: 13/9; overflow: hidden; background: var(--card-bg); }
+.mag-card-img { display: block; position: relative; aspect-ratio: 13/9; overflow: hidden; background: var(--card-bg); }
 .mag-card-head { font-family: var(--mag-display); font-weight: 500; margin: 0;
                  font-size: clamp(17px,2vw,23px); line-height: 1.12; }
 .mag-card-head a { text-decoration: none; }
 .mag-card-head a:hover { color: var(--brand-olive-text); }
 
+.mag-pick-band { background: var(--surface, rgba(0,0,0,.035)); padding: clamp(22px,3vw,40px);
+                 margin-bottom: clamp(26px,3vw,38px); }
+.mag-pick-band .mag-pick { padding-bottom: 0; margin-bottom: 0; border-bottom: none; }
 .mag-pick { display: grid; grid-template-columns: minmax(0,1.05fr) minmax(0,1fr); gap: clamp(20px,3vw,40px);
             align-items: center; padding-bottom: clamp(26px,3vw,38px); margin-bottom: clamp(26px,3vw,38px);
             border-bottom: .5px solid var(--border); }
@@ -442,7 +612,7 @@ const MAG_CSS = `
                   font-size: clamp(17px,1.8vw,20px); color: var(--brand-olive-text); font-variant-numeric: tabular-nums; }
 
 .mag-cat { display: grid; gap: clamp(22px,2.4vw,32px) clamp(18px,2vw,26px);
-           grid-template-columns: repeat(auto-fill, minmax(210px,1fr)); align-items: start; }
+           grid-template-columns: repeat(auto-fill, minmax(var(--mag-tile),1fr)); align-items: start; }
 .mag-lot { display: grid; align-content: start; }
 .mag-lot-img { display: block; aspect-ratio: 1; overflow: hidden; background: var(--card-bg); }
 .mag-lot-body { padding: 11px 0 0; display: grid; gap: 5px; }
@@ -457,9 +627,12 @@ const MAG_CSS = `
                  color: var(--brand-olive-text); font-variant-numeric: tabular-nums; }
 
 .mag-cal { border-top: .5px solid var(--border); }
-.mag-cal-row { display: grid; grid-template-columns: 132px minmax(0,1fr) auto; gap: 4px 20px;
-               align-items: baseline; padding: 13px 0; border-bottom: .5px solid var(--border);
+.mag-cal-row { display: grid; grid-template-columns: 104px 128px minmax(0,1fr) auto; gap: 6px 22px;
+               align-items: center; padding: 14px 0; border-bottom: .5px solid var(--border);
                text-decoration: none; }
+.mag-cal-art { width: 104px; height: 104px; overflow: hidden; background: var(--card-bg);
+               display: flex; align-items: center; justify-content: center; }
+.mag-cal-mark { font-family: var(--mag-display); font-size: 27px; color: var(--text3); letter-spacing: .03em; }
 .mag-cal-row:hover .mag-cal-title { color: var(--brand-olive-text); }
 .mag-cal-house { font-family: var(--mag-data); font-size: 10.5px; letter-spacing: .15em;
                  text-transform: uppercase; color: var(--brand-olive-text); }
@@ -470,11 +643,8 @@ const MAG_CSS = `
 .mag-live { display: inline-block; margin-left: 8px; font-size: 9.5px; letter-spacing: .1em; text-transform: uppercase;
             color: var(--brand-olive-text); border: .5px solid var(--brand-olive-text); border-radius: 999px; padding: 2px 7px; }
 
-.mag-colophon { margin: clamp(40px,5vw,70px) 0 0; padding: 18px 0 40px; border-top: 1.5px solid var(--text1);
-                font-family: var(--mag-data); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase;
-                color: var(--text3); }
 
-@media (max-width: 900px) { .mag-search { min-width: 0; width: 170px; } }
+@media (max-width: 900px) { .mag-bar .mag-searchwrap { width: 170px; } }
 @media (max-width: 860px) { .mag-pick { grid-template-columns: minmax(0,1fr); } }
 @media (max-width: 700px) {
   .mag-cover { aspect-ratio: auto; overflow: visible; background: transparent; }
@@ -486,10 +656,11 @@ const MAG_CSS = `
   .mag-cover-stand { color: var(--text2); max-width: none; }
   .mag-cover-lines .mag-stamp { color: var(--text3); }
   .mag-dots { right: 12px; bottom: 12px; }
-  .mag-cal-row { grid-template-columns: 52px minmax(0,1fr); align-items: start; gap: 3px 14px; padding: 14px 0; }
-  .mag-cal-house { grid-column: 1 / -1; }
+  .mag-cal-row { grid-template-columns: 72px minmax(0,1fr); align-items: start; gap: 4px 14px; padding: 14px 0; }
+  .mag-cal-art { width: 72px; height: 72px; grid-row: span 2; }
+  .mag-cal-house { grid-column: 2; }
   .mag-cal-when { grid-column: 1 / -1; text-align: left; margin-top: 6px; }
 }
-@media (max-width: 620px) { .mag-search { display: none; } .mag-flag { align-items: center; } }
+@media (max-width: 620px) { .mag-bar .mag-searchwrap { display: none; } .mag-bar-mark { display: none; } }
 @media (prefers-reduced-motion: reduce) { .mag * { transition: none !important; } }
 `;

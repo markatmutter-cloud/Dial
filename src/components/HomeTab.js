@@ -741,7 +741,7 @@ function SectionStrip({ heading, eyebrow, descriptor, count, items, onViewAll, i
 // Footer band — closes the page rather than trailing off. Hairline
 // rule above the link row, small centered text. About + Privacy +
 // Terms always; Sign in only when signed-out.
-function FooterBand({ openAbout, signInWithGoogle, user }) {
+export function FooterBand({ openAbout, signInWithGoogle, user }) {
   const linkStyle = {
     background: "none", border: "none", padding: 0,
     fontFamily: "inherit", fontSize: 12, color: "var(--text2)",
