@@ -30,6 +30,7 @@ import { ActiveFiltersStrip } from "./components/ActiveFiltersStrip";
 import { ReferencesTab } from "./components/ReferencesTab";
 import { CollectionsTab } from "./components/CollectionsTab";
 import MagazineHome from "./components/MagazineHome";
+import { sourceLabel } from "./components/EditorialView";
 import { TrackNewItemModal } from "./components/TrackNewItemModal";
 import { FavSearchModal } from "./components/FavSearchModal";
 import { AddSearchModal } from "./components/AddSearchModal";
@@ -938,7 +939,7 @@ export default function Watchlist() {
               const records = Array.isArray(data) ? data : Object.values(data || {});
               return records
                 .filter(rec => rec && rec.url && rec.title)
-                .map(a => ({ ...a, _source: { key, label: key } }));
+                .map(a => ({ ...a, _source: { key, label: sourceLabel(key) } }));
             } catch (e) {
               console.warn("editorial fetch failed", url, e);
               return [];
@@ -972,7 +973,7 @@ export default function Watchlist() {
               const records = Array.isArray(data) ? data : Object.values(data || {});
               return records
                 .filter((rec) => rec && rec.url && rec.title)
-                .map((a) => ({ ...a, _source: { key, label: key } }));
+                .map((a) => ({ ...a, _source: { key, label: sourceLabel(key) } }));
             } catch { return []; }
           })
         );
