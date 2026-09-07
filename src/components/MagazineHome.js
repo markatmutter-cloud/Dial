@@ -156,6 +156,7 @@ export default function MagazineHome(props) {
   useFonts();
   const counts = homeSectionCounts || {};
   const [q, setQ] = useState("");
+  const [searchFocus, setSearchFocus] = useState(false);
 
   const articles = useMemo(() => (homeRecentArticles || []).filter((a) => a && a.title && a.image), [homeRecentArticles]);
   const feature = useMemo(() => pickFeature(homeRecentAdded), [homeRecentAdded]);
@@ -223,11 +224,12 @@ export default function MagazineHome(props) {
           <h1 className="mag-wordmark">Watchlist</h1>
         </div>
         <div className="mag-util">
-          <form className="mag-search" role="search" onSubmit={submitSearch}>
+          <form className={`mag-search${searchFocus ? " is-focus" : ""}`} role="search" onSubmit={submitSearch}>
             <svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.5">
               <circle cx="7" cy="7" r="5" /><path d="M11 11l4 4" />
             </svg>
             <input type="search" value={q} onChange={(e) => setQ(e.target.value)}
+                   onFocus={() => setSearchFocus(true)} onBlur={() => setSearchFocus(false)}
                    placeholder="Brand, model, reference" aria-label="Search watches" />
           </form>
           {user ? (
@@ -354,7 +356,7 @@ const MAG_CSS = `
 .mag-util { display: flex; align-items: center; gap: 12px; flex: 0 0 auto; }
 .mag-search { display: flex; align-items: center; gap: 8px; border: .5px solid var(--border);
               border-radius: 999px; padding: 8px 14px; min-width: 240px; background: var(--card-bg); }
-.mag-search:focus-within { border-color: var(--brand-olive-text); }
+.mag-search.is-focus { border-color: var(--brand-olive-text); }
 .mag-search svg { width: 13px; height: 13px; flex: 0 0 auto; color: var(--text3); }
 .mag-search input { border: none; background: transparent; outline: none; width: 100%;
                     font-family: var(--mag-data); font-size: 11px; letter-spacing: .06em; color: var(--text1); }

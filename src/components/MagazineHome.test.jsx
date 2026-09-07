@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import MagazineHome from "./MagazineHome";
 
 // Direct render coverage (blind-edit rule): the shells' tests render mock
@@ -80,9 +80,10 @@ describe("MagazineHome", () => {
     const calls = [];
     render(<MagazineHome {...props({ homeSearchSubmit: (q, target) => calls.push([q, target]) })} />);
     const input = screen.getByLabelText("Search watches");
-    input.value = "submariner";
-    input.dispatchEvent(new Event("input", { bubbles: true }));
-    input.closest("form").dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+    // fireEvent.change, not a raw input event: React tracks the value with its
+    // own setter and ignores a value assigned directly.
+    fireEvent.change(input, { target: { value: "submariner" } });
+    fireEvent.submit(input.closest("form"));
     expect(calls.length).toBe(1);
     expect(calls[0][0]).toBe("submariner");
   });
