@@ -75,6 +75,13 @@ describe("MagazineHome", () => {
     expect(screen.getAllByLabelText("Search watches").length).toBe(2);
   });
 
+  it("renders the tabs once, in the persistent bar", () => {
+    // The masthead used to carry its own nav row, so the tabs appeared twice
+    // within eight pixels of each other on the live page.
+    render(<MagazineHome {...props()} />);
+    expect(screen.getAllByRole("button", { name: "Watches" }).length).toBe(1);
+  });
+
   it("previews what each destination holds as you type", () => {
     const seen = [];
     render(<MagazineHome {...props({
