@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
 import MagazineHome from "./MagazineHome";
 
 // Direct render coverage (blind-edit rule): the shells' tests render mock
@@ -69,19 +69,23 @@ describe("MagazineHome", () => {
     // They live here now rather than in the app's floating overlay, which
     // App.js suppresses for this view, so there is one set and it persists
     // with the tabs and the search.
-    render(<MagazineHome {...props({
+    // Scoped to the bar: the site footer carries its own About and Sign in,
+    // which is correct, so an unscoped query legitimately finds two.
+    const { container } = render(<MagazineHome {...props({
       user: { email: "mark@mutter.co.uk" }, watchlist: { a: {}, b: {} },
     })} />);
-    expect(screen.getByRole("button", { name: "About" })).toBeInTheDocument();
-    expect(screen.getByLabelText("Saved watches")).toBeInTheDocument();
-    expect(screen.getByText("2")).toBeInTheDocument();
-    expect(screen.getByText("M")).toBeInTheDocument();
+    const bar = within(container.querySelector(".mag-bar-util"));
+    expect(bar.getByRole("button", { name: "About" })).toBeInTheDocument();
+    expect(bar.getByLabelText("Saved watches")).toBeInTheDocument();
+    expect(bar.getByText("2")).toBeInTheDocument();
+    expect(bar.getByText("M")).toBeInTheDocument();
   });
 
   it("offers Sign in instead when signed out", () => {
-    render(<MagazineHome {...props()} />);
-    expect(screen.getByRole("button", { name: "Sign in" })).toBeInTheDocument();
-    expect(screen.queryByLabelText("Saved watches")).toBeNull();
+    const { container } = render(<MagazineHome {...props()} />);
+    const bar = within(container.querySelector(".mag-bar-util"));
+    expect(bar.getByRole("button", { name: "Sign in" })).toBeInTheDocument();
+    expect(bar.queryByLabelText("Saved watches")).toBeNull();
   });
 
   it("renders exactly one search", () => {
