@@ -4412,6 +4412,7 @@ export default function Watchlist() {
       // Resolved column count (Settings > Columns, Auto included) so the
       // magazine grids agree with the rest of the site.
       cols={cols}
+      goToSavedHearts={() => { setTab("listings"); setListingsSubTab("saved"); setPage(1); }}
       // The magazine masthead's saved-watches button routes here. Watches >
       // (heart) Saved, matching the 2026-07-30 IA move.
       goToSavedHearts={() => { setTab("listings"); setListingsSubTab("saved"); setPage(1); }}
@@ -4537,6 +4538,7 @@ export default function Watchlist() {
       subTab={referencesSubTab}
       setSubTab={setReferencesSubTab}
       cols={cols}
+      goToSavedHearts={() => { setTab("listings"); setListingsSubTab("saved"); setPage(1); }}
       compact={compact}
       gridStyle={gridStyle}
       isMobile={isMobile}
@@ -5170,7 +5172,7 @@ export default function Watchlist() {
     // Collections style) computed by `savedContentJSX`.
     watchlistTabJSX: savedContentJSX,
     watchboxTabJSX,
-    adminTabJSX, referencesTabJSX, collectionsTabJSX, homeTabJSX,
+    adminTabJSX, referencesTabJSX, collectionsTabJSX, homeTabJSX, magazineView,
     lotMigrationBannerJSX,
     userLimitBannerJSX,
     // Unified header band (PR_Y, 2026-05-21). Colored slab beneath

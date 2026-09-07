@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
 import MagazineHome from "./MagazineHome";
 
 // Direct render coverage (blind-edit rule): the shells' tests render mock
@@ -38,6 +38,7 @@ function props(over = {}) {
     homeRecentSearches: [], homeAddRecentSearch: noop, homeAuctionHeroes: {},
     toggleHide: null, isAdmin: false, openAbout: noop, signInWithGoogle: noop,
     watchlist: {}, homeJumpToDealer: noop, homeAuctionSources: [], dark: false, cols: null,
+    goToSavedHearts: noop,
     ...over,
   };
 }
@@ -64,11 +65,27 @@ describe("MagazineHome", () => {
     expect(screen.queryByText("Long past sale")).toBeNull();
   });
 
-  it("renders no second saved or account control", () => {
-    // The app's own persistent Home overlay already carries both; a duplicate
-    // set in this masthead was the doubling Mark spotted on the live page.
-    render(<MagazineHome {...props({ user: { email: "mark@mutter.co.uk" } })} />);
-    expect(screen.queryByLabelText("Saved watches")).toBeNull();
+  it("carries About, saved and account in the persistent bar", () => {
+    // They live here now rather than in the app's floating overlay, which
+    // App.js suppresses for this view, so there is one set and it persists
+    // with the tabs and the search.
+    // Scoped to the bar: the site footer carries its own About and Sign in,
+    // which is correct, so an unscoped query legitimately finds two.
+    const { container } = render(<MagazineHome {...props({
+      user: { email: "mark@mutter.co.uk" }, watchlist: { a: {}, b: {} },
+    })} />);
+    const bar = within(container.querySelector(".mag-bar-util"));
+    expect(bar.getByRole("button", { name: "About" })).toBeInTheDocument();
+    expect(bar.getByLabelText("Saved watches")).toBeInTheDocument();
+    expect(bar.getByText("2")).toBeInTheDocument();
+    expect(bar.getByText("M")).toBeInTheDocument();
+  });
+
+  it("offers Sign in instead when signed out", () => {
+    const { container } = render(<MagazineHome {...props()} />);
+    const bar = within(container.querySelector(".mag-bar-util"));
+    expect(bar.getByRole("button", { name: "Sign in" })).toBeInTheDocument();
+    expect(bar.queryByLabelText("Saved watches")).toBeNull();
   });
 
   it("renders exactly one search", () => {

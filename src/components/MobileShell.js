@@ -52,7 +52,11 @@ export function MobileShell(props) {
     authJSX, baseStyle,
     collectionEditModalJSX, collectionPickerModalJSX,
     favSearchModalJSX,
-    adminTabJSX, homeTabJSX, listingsGridJSX, listingsTabContentJSX, primaryCurrency, sectionHeadingStyle,
+    adminTabJSX, homeTabJSX, listingsGridJSX,
+    // Accepted for lockstep with DesktopShell. Mobile's Home chrome is the
+    // hamburger, not the floating About/account overlay, so nothing is
+    // suppressed here yet; the magazine's mobile pass is its own piece of work.
+    magazineView, listingsTabContentJSX, primaryCurrency, sectionHeadingStyle,
     // View settings (currency/theme/columns) moved to Display settings in the
     // avatar menu (SettingsModal); removed from the filter tray — Mark 2026-05-27.
     settingsModalJSX, shareReceiverJSX,
