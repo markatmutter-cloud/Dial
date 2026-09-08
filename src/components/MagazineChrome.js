@@ -362,11 +362,17 @@ export const MAG_CSS = `
 .mag-dealers-band { background: var(--surface, rgba(0,0,0,.035));
                     padding: 16px clamp(22px,3vw,40px);
                     margin-bottom: clamp(24px,3vw,36px); }
-.mag-dealers-inner { display: flex; align-items: center; gap: 14px; min-width: 0; }
-.mag-dealers-inner > .mag-dealers { min-width: 0; flex: 1 1 auto; }
+/* Label ABOVE the rail, not beside it (Mark, 2026-09-08). Inline, the label
+   plus its 14px gap took ~160px off a row that is already scrolling, so on a
+   phone you saw one pill and the edge of a second — and the rail read as a
+   dead end rather than something to swipe. Stacked, the pills get the whole
+   content width. */
+.mag-dealers-inner { display: flex; flex-direction: column; align-items: stretch;
+                     gap: 9px; min-width: 0; }
+.mag-dealers-inner > .mag-dealers { min-width: 0; }
 .mag-sec--dealers { margin-top: clamp(30px,3.6vw,48px); }
 .mag-dealers-label { font-family: var(--mag-data); font-size: 10.5px; letter-spacing: .16em;
-                     text-transform: uppercase; color: var(--text3); margin: 0; flex: 0 0 auto; }
+                     text-transform: uppercase; color: var(--text3); margin: 0; }
 /* One row that scrolls sideways rather than a block four deep (Mark,
    2026-09-07). Native scrollbar hidden; the cut-off chip is the affordance. */
 .mag-dealers { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px;
