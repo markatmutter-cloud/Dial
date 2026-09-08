@@ -81,6 +81,9 @@ the branch you'll create — branch before editing, never edit `main`.
   branch/PR; don't push follow-up commits onto an already-open PR — Mark
   merges fast, and a squash-merge orphans anything in flight (it cost two
   re-land PRs in one session). Fix-to-an-open-PR = its own new PR.
+  **Never reuse a branch name that has already been merged** — the new PR
+  conflicts against the squash and CI never attaches (three dead PRs in one
+  session). Always cut from a freshly fetched `origin/main`.
 - **Parallel sessions share one checkout.** If another session is active
   here, do code work from a git worktree (`git worktree add
   .claude/worktrees/<name> -b <branch> origin/main`) and never switch the

@@ -748,6 +748,21 @@ within each section roughly last.
 
 ## UI & chrome (cross-cutting)
 
+- **2026-09-07 — Magazine landing page, and HomeTab retired (#955–#977).** A magazine-format Home
+  built behind `?view=magazine`, used daily for a week, then promoted to the default; the old
+  HomeTab (1,048 lines) deleted and its footer extracted to `SiteFooter.js`.
+- **2026-09-07 — MagazineChrome extracted (#977).** Masthead, tabs, search and account row pulled
+  into one component that renders the app's own `authJSX` rather than a second set of controls.
+- **2026-09-07 — Dealer shortcuts from your own hearts (#962/#971).** Chips ranked from the user's
+  watchlist (auction houses excluded), seeded from a curated order when signed out, marks resolved
+  from each dealer's favicon so no logo files are needed.
+- **2026-09-07 — Tab order Watches · Articles · Saved · Reference Guides (#971).** Reading moves
+  second; Saved follows the two browse surfaces.
+- **2026-09-07 — Publication names, not corpus keys (#973).** `App` attached `_source.label = key`,
+  so every surface rendered "ROLEX_MAGAZINE"; `EditorialView` now exports `sourceLabel` and App uses it.
+- **2026-09-07 — `/ui-review` panel + the review that drove all of the above (#942).** Six expert
+  lenses over one measured evidence pack, then a synthesis that ranks a build sequence.
+
 - **2026-05-27 — Home "Articles" strip + reorder (#636).** Idle-loaded recent editorial; Home strips
   reordered added·articles·sold·hearted·ending.
 - **2026-05-27 — CardStrip scroll indicator (#635).** Slim desktop-only horizontal scroll indicator on every shared strip.

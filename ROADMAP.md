@@ -595,6 +595,24 @@ is repeatable (`walk.py`) for a before/after once it ships.
 - **Phase 3** — two-door planning + journey coach. The **RAG Q&A bot** and the
   **missed-it / discovery bot** are each their own dedicated session.
 
+**Magazine landing page — SHIPPED 2026-09-07 (#955–#977).** The magazine Home
+is live and is now the default; `HomeTab` is deleted. Built behind
+`?view=magazine`, used daily, then promoted. What shipped: a three-story
+rotator, an article grid, one featured watch chosen on how much we can say
+about it *and* whether its photograph has an edge, a listings grid, the auction
+calendar as a chronological table, dealer shortcuts ranked from the user's own
+hearts, and one persistent chrome carrying tabs, search and the app's own
+account control. Detail in SHIPPED; the review that drove it is `/ui-review`.
+
+**NEXT — restyle the Watches tab in the same chrome, in parallel.** Mark's ask
+2026-09-07: he likes how that tab *works* (hearted behaviour, the heart at top
+right, filters, sub-tabs, compact chrome on mobile) and wants it to *look* like
+the new UI. `MagazineChrome` was extracted (#977) precisely so a second surface
+can wear it without a second copy. The rule for that build: **restyle, do not
+rebuild.** The shells keep rendering sub-tabs, filters, sort, density and the
+grid; only the chrome above them is swapped, behind a flag, until Mark says
+switch. Start by reading how that tab actually works before touching it.
+
 **Home editorial pass (2026-08-30, Mark) — ✅ ALL SIX STEPS SHIPPED 2026-08-31
 (#944 · #945 · #946/#947 · #948 · #949 · #950/#951).** Sequence and rationale
 below, kept because it is the record of WHY the page looks like this. What

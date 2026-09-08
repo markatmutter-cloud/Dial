@@ -64,6 +64,14 @@ Sans carries everything functional — nav, tabs, section/list names, counts,
 filters, inputs, buttons. Serif reads as premium **because it's
 restricted**; the moment it leaks onto chrome it stops meaning anything.
 
+**The landing page is the one exception (2026-09-07).** `MagazineChrome`
+loads three Google faces — Bodoni Moda (display), Archivo (body), IBM Plex
+Mono (data) — on mount and only on mount, so the rest of the app's font
+payload is unchanged. Mark approved it for the magazine treatment
+specifically; it is not a licence to import faces elsewhere. Everything else
+in that page's stylesheet is namespaced `mag-` and takes colour from the
+app's own `:root` tokens, so dark mode needs no second palette.
+
 **The faces (tokens in `styles.js` — never inline a font string).**
 `FONT_SANS` is the interface (also the `public/index.html` body default,
 which 75% of UI inherits via `fontFamily: "inherit"`). `FONT_SERIF` /
