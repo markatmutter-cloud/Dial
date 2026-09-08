@@ -173,7 +173,15 @@ export function MobileShell(props) {
             takeover (Mark 2026-06-13) — the pinned green bar (catalogBarJSX,
             rendered as the first child of the sticky stack below) owns the top
             of the viewport there. */}
-        {!catalogFullPage && (
+        {/* Home is the magazine, and MagazineChrome carries the wordmark,
+            the saved heart and the account control in its own pinned
+            masthead. Rendering this row there put a SECOND hamburger /
+            account control above the masthead (Mark, 2026-09-08). Desktop
+            already suppressed its equivalent overlay bar (`minimalTopBar`
+            returns null); mobile had been missed. Share / search-all
+            surfaces keep tab="home" but are NOT the magazine, so they keep
+            the row. */}
+        {!catalogFullPage && !(tab === "home" && !anyShareActive && !searchAllActive) && (
         <div style={{
           padding: "8px 16px 8px",
           paddingTop: "calc(env(safe-area-inset-top, 0px) + 8px)",

@@ -106,7 +106,16 @@ jest.mock("./supabase", () => {
 // Mock the listings + auctions fetches so the loading spinner clears.
 beforeEach(() => {
   global.fetch = jest.fn((url) => {
-    if (typeof url === "string" && /listings\.json/.test(url)) {
+    const u = typeof url === "string" ? url : String(url && url.url ? url.url : url);
+    // The listings payload is `listings_live.json` (the live/sold split), NOT
+    // `listings.json` — the old pattern here matched neither, so every App
+    // test rendered the "Couldn't pull the listings" error screen and passed
+    // vacuously (2026-09-08). Any array-shaped feed gets an array; the
+    // manual-historical file gets its `{items}` envelope.
+    if (/manual_historical/.test(u)) {
+      return Promise.resolve({ ok: true, json: () => Promise.resolve({ items: [] }) });
+    }
+    if (/listings|auctions|tracked_lots|lots|articles|corpus/.test(u)) {
       return Promise.resolve({ ok: true, json: () => Promise.resolve([]) });
     }
     return Promise.resolve({
@@ -181,7 +190,27 @@ describe("App render-without-crash", () => {
       // The loading message disappears once `loading` flips false.
       expect(screen.queryByText(/Pulling the latest listings/i)).not.toBeInTheDocument();
     });
-    // Sanity: post-load chrome rendered.
-    expect(screen.getAllByText(/Listings/i).length).toBeGreaterThan(0);
+    // Sanity: post-load chrome rendered. Asserted against the masthead
+    // wordmark — the old /Listings/i matcher also matched the load-error
+    // screen's "Couldn't pull the listings", so it passed even when nothing
+    // rendered (2026-09-08, found when the fetch mock above was fixed).
+    expect(screen.getAllByText("Watchlist").length).toBeGreaterThan(0);
+  });
+
+  test("?view=watches mounts the parallel magazine Watches page", async () => {
+    // The flag swaps the shell for MagazineWatches at the App boundary
+    // (2026-09-08). Asserted here as well as in MagazineWatches.test.jsx
+    // because the wiring — not the component — is what a refactor breaks:
+    // this is the only test that proves the flag still reaches the page.
+    window.history.replaceState({}, "", "/?view=watches");
+    const { default: App } = require("./App");
+    render(<App />);
+    await waitFor(() => {
+      expect(screen.queryByText(/Pulling the latest listings/i)).not.toBeInTheDocument();
+    });
+    expect(screen.getByRole("tab", { name: "For sale" })).toBeInTheDocument();
+    // The home affordance Mark asked to keep.
+    expect(screen.getByRole("button", { name: "Home" })).toBeInTheDocument();
+    window.history.replaceState({}, "", "/");
   });
 });
