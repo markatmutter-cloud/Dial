@@ -12,10 +12,10 @@
     "rows": 19
   },
   "Bob's Watches": {
-    "fingerprint": "7c2e979741bb3417",
+    "fingerprint": "813aadfefd3ee795",
     "lastChanged": "2026-09-08",
     "lastSeen": "2026-09-08",
-    "rows": 45
+    "rows": 44
   },
   "Bulang & Sons": {
     "fingerprint": "653ae586bf1c8f0f",
@@ -42,16 +42,16 @@
     "rows": 117
   },
   "Collectors Corner NY": {
-    "fingerprint": "c44c509348aeaf94",
+    "fingerprint": "20c1081cffc3384d",
     "lastChanged": "2026-09-08",
     "lastSeen": "2026-09-08",
-    "rows": 88
+    "rows": 89
   },
   "Craft & Tailored": {
-    "fingerprint": "d08f41d72683d686",
+    "fingerprint": "965f2f5a14bae35d",
     "lastChanged": "2026-09-08",
     "lastSeen": "2026-09-08",
-    "rows": 109
+    "rows": 110
   },
   "DB1983": {
     "fingerprint": "77f2000ee307dfd8",
@@ -84,10 +84,10 @@
     "rows": 37
   },
   "Heuertime": {
-    "fingerprint": "743ffa656bd725d4",
-    "lastChanged": "2026-09-01",
+    "fingerprint": "3e91090650a3711f",
+    "lastChanged": "2026-09-08",
     "lastSeen": "2026-09-08",
-    "rows": 33
+    "rows": 32
   },
   "Huntington Company": {
     "fingerprint": "510d0fb30c47ce6a",
@@ -108,10 +108,10 @@
     "rows": 71
   },
   "Menta Watches": {
-    "fingerprint": "272db7f9b8e64831",
+    "fingerprint": "969b9f7ffd4df9c7",
     "lastChanged": "2026-09-08",
     "lastSeen": "2026-09-08",
-    "rows": 53
+    "rows": 57
   },
   "Moonphase": {
     "fingerprint": "d9ff32f487308302",
@@ -120,10 +120,10 @@
     "rows": 20
   },
   "Oliver & Clarke": {
-    "fingerprint": "bbdf4090670402bd",
+    "fingerprint": "9036d2ee45442793",
     "lastChanged": "2026-09-08",
     "lastSeen": "2026-09-08",
-    "rows": 118
+    "rows": 117
   },
   "Pascal Karp": {
     "fingerprint": "3851f8c63cbfc64e",
@@ -150,10 +150,10 @@
     "rows": 138
   },
   "Sierra Time Co": {
-    "fingerprint": "1a3cb064a978114e",
-    "lastChanged": "2026-09-02",
+    "fingerprint": "ccd23491b9ace3c2",
+    "lastChanged": "2026-09-08",
     "lastSeen": "2026-09-08",
-    "rows": 23
+    "rows": 20
   },
   "Somlo": {
     "fingerprint": "bc12aced788449ce",
@@ -180,22 +180,22 @@
     "rows": 30
   },
   "Tropical Watch": {
-    "fingerprint": "2a9f5f2964d940a8",
+    "fingerprint": "77bdac1f3f73c684",
     "lastChanged": "2026-09-08",
     "lastSeen": "2026-09-08",
-    "rows": 110
+    "rows": 120
   },
   "Vintage Watch Collective": {
-    "fingerprint": "58ffb885308e82fc",
+    "fingerprint": "cea32c6147e6b24d",
     "lastChanged": "2026-09-08",
     "lastSeen": "2026-09-08",
-    "rows": 34
+    "rows": 33
   },
   "Vintage Watch Fam": {
-    "fingerprint": "90f6b65d97ad9150",
+    "fingerprint": "08010e4236afa099",
     "lastChanged": "2026-09-08",
     "lastSeen": "2026-09-08",
-    "rows": 535
+    "rows": 545
   },
   "Vintage Watch Shop": {
     "fingerprint": "7713a339cf695e47",
@@ -252,10 +252,10 @@
     "rows": 4
   },
   "Wind Vintage": {
-    "fingerprint": "5953b623290a4735",
+    "fingerprint": "f4e570bee7f649d0",
     "lastChanged": "2026-09-08",
     "lastSeen": "2026-09-08",
-    "rows": 208
+    "rows": 212
   },
   "calendar:antiquorum": {
     "fingerprint": "c5d0ff73d32d020a",
@@ -414,9 +414,9 @@
     "rows": 96
   },
   "merged:listings": {
-    "fingerprint": "0bb8e939155888bf",
+    "fingerprint": "99750ca060562000",
     "lastChanged": "2026-09-08",
     "lastSeen": "2026-09-08",
-    "rows": 10156
+    "rows": 10186
   }
 }
