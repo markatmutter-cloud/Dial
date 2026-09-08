@@ -77,7 +77,9 @@ describe("MagazineHome", () => {
     })} />);
     const bar = within(container.querySelector(".mag-bar-util"));
     expect(bar.getByLabelText("Saved watches")).toBeInTheDocument();
-    expect(bar.getByText("2")).toBeInTheDocument();
+    // No count on the heart (Mark, 2026-09-08) — the number lives on the
+    // destination, not on the way in.
+    expect(bar.getByLabelText("Saved watches").textContent).toBe("");
     // About / Sign in / the account disc come from the app's shared control,
     // handed in as homeMastheadAuthJSX, so the bar renders what App built
     // rather than a second copy of its own.

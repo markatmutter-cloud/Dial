@@ -15,7 +15,7 @@ const tabs = [
 function props(over = {}) {
   return {
     isMobile: false, tabs, authJSX: <span data-testid="auth" />,
-    savedCount: 0, onSavedClick: noop, showSaved: false,
+    onSavedClick: noop, showSaved: false,
     onSearchSubmit: noop, onSearchLiveQuery: noop, searchCounts: null,
     recentSearches: [], addRecentSearch: noop,
     ...over,
@@ -45,12 +45,16 @@ describe("MagazineChrome", () => {
     expect(screen.getByRole("button", { name: "Guides" })).toBeInTheDocument();
   });
 
-  it("shows the saved heart with its count only when asked", () => {
+  it("shows the saved heart only when asked, and carries no count badge", () => {
+    // The badge was dropped 2026-09-08 (Mark): the saved count belongs on the
+    // destination, not on the way in, and it unbalanced the masthead row.
     const { rerender, container } = render(<MagazineChrome {...props()} />);
     expect(screen.queryByLabelText("Saved watches")).toBeNull();
-    rerender(<MagazineChrome {...props({ showSaved: true, savedCount: 7 })} />);
-    expect(within(container).getByLabelText("Saved watches")).toBeInTheDocument();
-    expect(screen.getByText("7")).toBeInTheDocument();
+    rerender(<MagazineChrome {...props({ showSaved: true })} />);
+    const heart = within(container).getByLabelText("Saved watches");
+    expect(heart).toBeInTheDocument();
+    expect(heart.textContent).toBe("");
+    expect(container.querySelector(".mag-badge")).toBeNull();
   });
 
   it("compacts the mobile chrome on scroll", () => {

@@ -363,7 +363,6 @@ export default function MagazineHome(props) {
   const articleRows = useWholeRows(cardsRef, articles.length, 2);
   const listingRows = useWholeRows(catRef, grid.length, 2);
 
-  const savedCount = watchlist ? Object.keys(watchlist).length : 0;
   const initial = String((user && ((user.user_metadata && user.user_metadata.full_name) || user.email)) || "")
     .trim().charAt(0).toUpperCase() || "\u2022";
 
@@ -412,7 +411,6 @@ export default function MagazineHome(props) {
         tabs={homeMastheadTabs}
         authJSX={homeMastheadAuthJSX}
         showSaved={!!user}
-        savedCount={savedCount}
         onSavedClick={goToSavedHearts}
         onSearchSubmit={homeSearchSubmit}
         onSearchLiveQuery={homeSearchLiveQuery}

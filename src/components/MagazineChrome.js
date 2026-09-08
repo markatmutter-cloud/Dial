@@ -134,7 +134,7 @@ function MagSearch({ onSubmit, onLiveQuery, counts, recent, addRecent, big }) {
 export { MagSearch };
 
 export default function MagazineChrome({
-  isMobile, tabs, authJSX, savedCount, onSavedClick, showSaved,
+  isMobile, tabs, authJSX, onSavedClick, showSaved,
   onSearchSubmit, onSearchLiveQuery, searchCounts, recentSearches, addRecentSearch,
   // Optional slots a second surface fills. `searchJSX` replaces the routing
   // MagSearch with the consumer's own field (Watches types straight into the
@@ -161,7 +161,6 @@ export default function MagazineChrome({
       <svg viewBox="0 0 20 20" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.6">
         <path d="M10 17S3 12.6 3 7.9A3.9 3.9 0 0 1 10 5.6a3.9 3.9 0 0 1 7 2.3C17 12.6 10 17 10 17z" />
       </svg>
-      {savedCount > 0 ? <span className="mag-badge">{savedCount}</span> : null}
     </button>
   ) : null;
   const tabList = (short) => (
@@ -327,15 +326,18 @@ export const MAG_CSS = `
               text-transform: uppercase; color: var(--text1); background: none; cursor: pointer;
               border: .5px solid var(--border); border-radius: 999px; padding: 8px 16px; }
 .mag-signin:hover { border-color: var(--brand-olive-text); color: var(--brand-olive-text); }
-.mag-icon { width: 34px; height: 34px; border-radius: 999px; border: .5px solid var(--border);
+/* Same disc as the account control beside it, on both breakpoints: App builds
+   that one at 36px on desktop and 40px on mobile, and a heart 6px smaller sat
+   noticeably low and light next to it (Mark, 2026-09-08). The saved COUNT
+   badge that used to ride the top-right corner is gone with it — the number
+   belongs on the destination, not on the way in. */
+.mag-icon { width: 36px; height: 36px; border-radius: 999px; border: .5px solid var(--border);
             background: transparent; cursor: pointer; display: flex; align-items: center;
             justify-content: center; color: var(--text1); position: relative; padding: 0; }
 .mag-icon:hover { border-color: var(--brand-olive-text); color: var(--brand-olive-text); }
-.mag-icon svg { width: 15px; height: 15px; }
-.mag-badge { position: absolute; top: -4px; right: -4px; min-width: 16px; height: 16px;
-             border-radius: 999px; background: var(--brand-olive-text); color: var(--bg);
-             font-family: var(--mag-data); font-size: 9px; line-height: 16px; text-align: center;
-             padding: 0 4px; font-variant-numeric: tabular-nums; }
+.mag-icon svg { width: 17px; height: 17px; }
+.mag-mhead .mag-icon { width: 40px; height: 40px; }
+.mag-mhead .mag-icon svg { width: 18px; height: 18px; }
 .mag-avatar { width: 34px; height: 34px; border-radius: 999px; background: var(--brand-olive-text);
               color: var(--bg); font-family: var(--mag-display); font-size: 15px; font-weight: 500;
               display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }

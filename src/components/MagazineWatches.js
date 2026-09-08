@@ -51,7 +51,7 @@ function MagChip({ label, active, onClick, quiet }) {
 
 export default function MagazineWatches(props) {
   const {
-    isMobile, baseStyle, tabs, authJSX, user, savedCount, onHome, goToSaved,
+    isMobile, baseStyle, tabs, authJSX, user, onHome, goToSaved,
     // sub-tabs
     listingsSubTab, setListingsSubTab, setPage, setDrawerOpen,
     // search
@@ -155,7 +155,6 @@ export default function MagazineWatches(props) {
           tabs={tabs}
           authJSX={authJSX}
           showSaved={!!user}
-          savedCount={savedCount}
           onSavedClick={goToSaved}
           onHome={onHome}
           searchJSX={searchJSX}
@@ -318,6 +317,33 @@ export default function MagazineWatches(props) {
 // Namespaced `magw-`, and it takes every colour from the app's :root tokens,
 // so dark mode needs no second palette (same contract as MAG_CSS).
 export const MAGW_CSS = `
+/* ---------------------------------------------------------------------
+   Typography: the app's own, not the magazine's (Mark, 2026-09-08 — "not
+   massively keen on the fonts … like the original interface but with
+   different colors and change the word mark").
+
+   So this page keeps the magazine's COLOUR and layout — olive ink on paper,
+   the underlined slice, the pill controls — and drops its three faces for the
+   system stack every other tab already uses. Scoped to .mag.magw (two
+   classes, so it beats MAG_CSS's .mag regardless of injection order): the
+   landing page is untouched and keeps Bodoni.
+
+   The wordmark changes with them: the app's original treatment — uppercase,
+   letterspaced, bold — set in olive rather than white on the olive bar. It
+   is the one place the two surfaces still differ in shape, so it stays
+   distinct without being a second typeface.
+   --------------------------------------------------------------------- */
+.mag.magw { --mag-display: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+            --mag-body: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+            --mag-data: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif; }
+.mag.magw .mag-wordmark { font-family: var(--mag-body); text-transform: uppercase;
+                          font-weight: 700; letter-spacing: .14em; line-height: 1.1;
+                          font-size: clamp(19px, 2.6vw, 27px); }
+/* The crescent is sized off the Bodoni cap-height; with a smaller wordmark it
+   over-balanced the row. */
+.mag.magw .mag-crescent svg { width: clamp(20px, 2.2vw, 26px); height: clamp(20px, 2.2vw, 26px); }
+.mag.magw .mag-mhead .mag-crescent svg { width: 21px; height: 21px; }
+
 .magw { min-height: 100vh; background: var(--bg); }
 .magw-page { max-width: 1600px; margin: 0 auto; padding: 0 clamp(14px, 2.4vw, 28px) 40px; }
 .magw-page .mag-flag { padding: 18px 0 10px; }
@@ -338,12 +364,16 @@ export const MAGW_CSS = `
 }
 .magw-deckrow { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
 .magw-subtabs { display: flex; gap: 4px 20px; flex-wrap: wrap; min-width: 0; }
-.magw-subtabs button { font-family: var(--mag-display); font-size: clamp(17px, 2.1vw, 25px);
-                       line-height: 1.1; letter-spacing: .01em; background: none; border: none;
-                       cursor: pointer; padding: 2px 0; color: var(--text3);
+/* Sans at 25px reads as a headline, which is what the serif was for. Sized
+   down to tab scale now the face is the app's own. */
+.magw-subtabs button { font-family: var(--mag-display); font-size: clamp(15.5px, 1.6vw, 19px);
+                       font-weight: 500; line-height: 1.2; letter-spacing: .01em;
+                       background: none; border: none;
+                       cursor: pointer; padding: 3px 0; color: var(--text3);
                        border-bottom: 1.5px solid transparent; }
 .magw-subtabs button:hover { color: var(--text1); }
-.magw-subtabs button.on { color: var(--brand-olive-ink); border-bottom-color: var(--brand-olive-text); }
+.magw-subtabs button.on { color: var(--brand-olive-ink); font-weight: 600;
+                          border-bottom-color: var(--brand-olive-text); }
 .magw-count { font-family: var(--mag-data); font-size: 11px; letter-spacing: .14em;
               text-transform: uppercase; color: var(--text3); margin: 0; white-space: nowrap;
               font-variant-numeric: tabular-nums; }
