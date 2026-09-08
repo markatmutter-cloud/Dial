@@ -30,6 +30,7 @@ import { ActiveFiltersStrip } from "./components/ActiveFiltersStrip";
 import { ReferencesTab } from "./components/ReferencesTab";
 import { CollectionsTab } from "./components/CollectionsTab";
 import MagazineHome from "./components/MagazineHome";
+import MagazineWatches from "./components/MagazineWatches";
 import { sourceLabel } from "./components/EditorialView";
 import { TrackNewItemModal } from "./components/TrackNewItemModal";
 import { FavSearchModal } from "./components/FavSearchModal";
@@ -603,6 +604,11 @@ export default function Watchlist() {
       // ?tab=collections (legacy) all map to internal values.
       if (URL_TAB_TO_INTERNAL[t]) return URL_TAB_TO_INTERNAL[t];
       if (TAB_VALUES.includes(t)) return t;
+      // `?view=watches` is the parallel magazine-styled Watches page
+      // (2026-09-08). It only renders on the Watches tab, so the flag on its
+      // own lands there — otherwise the link opens Home and the page Mark
+      // asked to test is a tab-tap away.
+      if (params.get("view") === "watches") return "listings";
     }
     // Default cold landing: home (2026-05-11). Was "listings" before
     // the editorial Home reached parity. Existing `?tab=listings`
@@ -3297,91 +3303,73 @@ export default function Watchlist() {
   const authJSX = !isAuthConfigured ? null : !authReady ? (
     <div style={{ width: 26, height: 26, borderRadius: "50%", background: "var(--surface)" }} />
   ) : !user ? (
-    // Signed-out chrome.
+    // Signed-out chrome — ONE control, both viewports (Mark, 2026-09-08).
     //
-    // Desktop: small About text link + Sign-in button (unchanged) so
-    //   the page surface stays self-explanatory at first glance.
-    //
-    // Mobile: single hamburger icon that opens the same menu the
-    //   signed-in M-circle uses, with About + Sign in inside. PR_Y3
-    //   consolidation (Mark spec 2026-05-21): keeps the brand row
-    //   compact and reduces the chrome-zone button count to one.
-    isMobile ? (
-      <div style={{ position: "relative" }}>
-        <button onClick={() => setShowUserMenu(o => !o)}
-          aria-label="Menu"
-          title="Menu"
-          style={{
-            width: 40, height: 40, borderRadius: "50%",
-            border: "0.5px solid var(--border)",
-            background: "var(--surface)",
-            color: "var(--text1)", cursor: "pointer", fontFamily: "inherit",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            flexShrink: 0,
-            padding: 0,
-          }}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" strokeWidth="2" strokeLinecap="round"
-            aria-hidden="true">
-            <line x1="4" y1="7" x2="20" y2="7"/>
-            <line x1="4" y1="12" x2="20" y2="12"/>
-            <line x1="4" y1="17" x2="20" y2="17"/>
-          </svg>
-        </button>
-        {showUserMenu && (
-          <div style={{
-            position: "absolute", right: 0, top: 46, zIndex: 50,
-            background: "var(--bg)", border: "0.5px solid var(--border)",
-            borderRadius: 12, padding: 10, minWidth: 220,
-            boxShadow: "0 6px 20px rgba(0,0,0,0.18)",
-          }}>
-            <button onClick={() => { setShowUserMenu(false); setAboutModalOpen(true); }}
-              style={{ display: "block", width: "100%", textAlign: "left",
-                      padding: "10px 12px", border: "none", background: "transparent",
-                      color: "var(--text1)", cursor: "pointer", fontFamily: "inherit",
-                      fontSize: 14, borderRadius: 6 }}>
-              About Watchlist
-            </button>
-            <button onClick={() => { setShowUserMenu(false); setSignInPromptOpen(true); }}
-              style={{ display: "flex", alignItems: "center", gap: 8,
-                      width: "100%", textAlign: "left",
-                      padding: "10px 12px", border: "none", background: "transparent",
-                      color: "var(--text1)", cursor: "pointer", fontFamily: "inherit",
-                      fontSize: 14, fontWeight: 600, borderRadius: 6 }}>
-              <svg width="14" height="14" viewBox="0 0 48 48" aria-hidden="true" style={{ flexShrink: 0 }}>
-                <path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.2l6.7-6.7C35.6 2.1 30.1 0 24 0 14.8 0 6.8 5.3 3 13l7.8 6C12.7 13.5 17.8 9.5 24 9.5z"/>
-                <path fill="#4285F4" d="M46.5 24.5c0-1.6-.2-3.1-.5-4.5H24v9h12.7c-.6 3-2.3 5.5-4.9 7.2l7.6 5.9c4.4-4.1 7.1-10.1 7.1-17.6z"/>
-                <path fill="#FBBC05" d="M10.8 28.7c-.5-1.5-.8-3.1-.8-4.7s.3-3.2.8-4.7l-7.8-6C1.1 16.3 0 20 0 24s1.1 7.7 3 11.2l7.8-6.5z"/>
-                <path fill="#34A853" d="M24 48c6.1 0 11.3-2 15.1-5.5l-7.6-5.9c-2.1 1.4-4.8 2.2-7.5 2.2-6.2 0-11.3-4-13.2-9.5l-7.8 6C6.8 42.7 14.8 48 24 48z"/>
-              </svg>
-              Sign in with Google
-            </button>
-          </div>
-        )}
-      </div>
-    ) : (
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        {/* (Desktop signed-out About removed 2026-06-01 — the shell already
-            renders an About link in this zone; two showed for signed-out users.) */}
-        {/* Sign in pill — 13/600 to read as a CTA (active-tab weight),
-            same letter-spacing as the rest of the chrome. */}
-        <button onClick={() => setSignInPromptOpen(true)} style={{
+    // The rule is: signed out it says "Sign in", signed in it shows the
+    // Google initial, and in BOTH cases the control opens the same menu.
+    // Before this, mobile showed a bare hamburger glyph (no "Sign in"
+    // anywhere) and desktop's pill fired the sign-in modal directly, so the
+    // signed-out user never met About / the rest of the menu.
+    <div style={{ position: "relative" }}>
+      <button onClick={() => setShowUserMenu(o => !o)}
+        aria-label="Menu" title="Menu"
+        style={{
           fontSize: 13, fontWeight: 600, letterSpacing: "0.01em",
-          padding: "4px 12px", borderRadius: 20,
+          padding: isMobile ? "7px 12px" : "4px 12px", borderRadius: 20,
           border: "0.5px solid var(--border)", background: "var(--surface)",
           color: "var(--text1)", cursor: "pointer", fontFamily: "inherit",
-          whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: 6,
+          whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: 7,
+          flexShrink: 0,
         }}>
-          <svg width="12" height="12" viewBox="0 0 48 48" aria-hidden="true">
-            <path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.2l6.7-6.7C35.6 2.1 30.1 0 24 0 14.8 0 6.8 5.3 3 13l7.8 6C12.7 13.5 17.8 9.5 24 9.5z"/>
-            <path fill="#4285F4" d="M46.5 24.5c0-1.6-.2-3.1-.5-4.5H24v9h12.7c-.6 3-2.3 5.5-4.9 7.2l7.6 5.9c4.4-4.1 7.1-10.1 7.1-17.6z"/>
-            <path fill="#FBBC05" d="M10.8 28.7c-.5-1.5-.8-3.1-.8-4.7s.3-3.2.8-4.7l-7.8-6C1.1 16.3 0 20 0 24s1.1 7.7 3 11.2l7.8-6.5z"/>
-            <path fill="#34A853" d="M24 48c6.1 0 11.3-2 15.1-5.5l-7.6-5.9c-2.1 1.4-4.8 2.2-7.5 2.2-6.2 0-11.3-4-13.2-9.5l-7.8 6C6.8 42.7 14.8 48 24 48z"/>
-          </svg>
-          Sign in
-        </button>
-      </div>
-    )
+        {/* The three rules keep the hamburger affordance Mark asked to
+            retain; the word carries the meaning. */}
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" strokeWidth="2" strokeLinecap="round"
+          aria-hidden="true">
+          <line x1="4" y1="7" x2="20" y2="7"/>
+          <line x1="4" y1="12" x2="20" y2="12"/>
+          <line x1="4" y1="17" x2="20" y2="17"/>
+        </svg>
+        Sign in
+      </button>
+      {showUserMenu && (
+        <div style={{
+          position: "absolute", right: 0, top: isMobile ? 46 : 42, zIndex: 50,
+          background: "var(--bg)", border: "0.5px solid var(--border)",
+          borderRadius: 12, padding: 10, minWidth: 220,
+          boxShadow: "0 6px 20px rgba(0,0,0,0.18)",
+        }}>
+          <button onClick={() => { setShowUserMenu(false); setSignInPromptOpen(true); }}
+            style={{ display: "flex", alignItems: "center", gap: 8,
+                    width: "100%", textAlign: "left",
+                    padding: "10px 12px", border: "none", background: "transparent",
+                    color: "var(--text1)", cursor: "pointer", fontFamily: "inherit",
+                    fontSize: 14, fontWeight: 600, borderRadius: 6 }}>
+            <svg width="14" height="14" viewBox="0 0 48 48" aria-hidden="true" style={{ flexShrink: 0 }}>
+              <path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.2l6.7-6.7C35.6 2.1 30.1 0 24 0 14.8 0 6.8 5.3 3 13l7.8 6C12.7 13.5 17.8 9.5 24 9.5z"/>
+              <path fill="#4285F4" d="M46.5 24.5c0-1.6-.2-3.1-.5-4.5H24v9h12.7c-.6 3-2.3 5.5-4.9 7.2l7.6 5.9c4.4-4.1 7.1-10.1 7.1-17.6z"/>
+              <path fill="#FBBC05" d="M10.8 28.7c-.5-1.5-.8-3.1-.8-4.7s.3-3.2.8-4.7l-7.8-6C1.1 16.3 0 20 0 24s1.1 7.7 3 11.2l7.8-6.5z"/>
+              <path fill="#34A853" d="M24 48c6.1 0 11.3-2 15.1-5.5l-7.6-5.9c-2.1 1.4-4.8 2.2-7.5 2.2-6.2 0-11.3-4-13.2-9.5l-7.8 6C6.8 42.7 14.8 48 24 48z"/>
+            </svg>
+            Sign in with Google
+          </button>
+          <button onClick={() => { setShowUserMenu(false); setAboutModalOpen(true); }}
+            style={{ display: "block", width: "100%", textAlign: "left",
+                    padding: "10px 12px", border: "none", background: "transparent",
+                    color: "var(--text1)", cursor: "pointer", fontFamily: "inherit",
+                    fontSize: 14, borderRadius: 6 }}>
+            About Watchlist
+          </button>
+          <button onClick={() => { setShowUserMenu(false); setSettingsModalOpen(true); }}
+            style={{ display: "block", width: "100%", textAlign: "left",
+                    padding: "10px 12px", border: "none", background: "transparent",
+                    color: "var(--text1)", cursor: "pointer", fontFamily: "inherit",
+                    fontSize: 14, borderRadius: 6 }}>
+            Display settings
+          </button>
+        </div>
+      )}
+    </div>
   ) : (
     <div style={{ position: "relative" }}>
       {/* Desktop: brand-tinted pill that wraps the avatar initial +
@@ -5072,6 +5060,117 @@ export default function Watchlist() {
     ? drillInCollectionCount
     : (tab === "watchlist" ? watchItems.length : allFiltered.length);
 
+  // ---------------------------------------------------------------------
+  // Watches in the magazine's clothes — a PARALLEL page at `?view=watches`
+  // (Mark, 2026-09-08). The live Watches tab is untouched; this is the same
+  // pattern the magazine landing page went through (`?view=magazine` for a
+  // week of daily use before it was promoted).
+  //
+  // `view` is not one of the params the nav-sync effect rewrites, and that
+  // effect preserves params it doesn't own, so the flag survives tab and
+  // sub-tab navigation without any extra plumbing.
+  //
+  // Read at render rather than through a useState initialiser: App.js has
+  // early returns below, and a new hook here would be exactly the React #310
+  // trap CLAUDE.md warns about.
+  const magWatchesFlagged = (() => {
+    try {
+      return typeof window !== "undefined"
+        && new URLSearchParams(window.location.search).get("view") === "watches";
+    } catch { return false; }
+  })();
+  // Only the Watches tab itself is restyled. Every takeover surface (share
+  // receivers, cross-tab search, the auction-catalog full page) keeps the
+  // shell, so nothing that isn't built yet can be reached through this page.
+  const magWatchesActive = magWatchesFlagged
+    && tab === "listings"
+    && !shareActive && !challengeShareActive && !listShareActive && !catalogShareActive
+    && !searchAllActive && !catalogFullPage;
+
+  const magWatchesJSX = !magWatchesActive ? null : (
+    <MagazineWatches
+      isMobile={isMobile}
+      baseStyle={baseStyle}
+      tabs={topTabs}
+      authJSX={authJSX}
+      user={user}
+      savedCount={Object.keys(watchlist || {}).length}
+      // The home affordance Mark asked to keep: the wordmark goes back to the
+      // landing page, same as the shells' Home icon.
+      onHome={() => { setTabWithReceiveEscape("home"); setPage(1); }}
+      goToSaved={() => { setListingsSubTab("saved"); setPage(1); }}
+      listingsSubTab={listingsSubTab}
+      setListingsSubTab={setListingsSubTab}
+      setPage={setPage}
+      setDrawerOpen={setDrawerOpen}
+      search={search}
+      setSearch={setSearch}
+      openFavPrompt={openFavPrompt}
+      currentIsSaved={currentIsSaved}
+      sort={sort}
+      setSort={setSort}
+      minPriceText={minPriceText}
+      setMinPriceText={setMinPriceText}
+      maxPriceText={maxPriceText}
+      setMaxPriceText={setMaxPriceText}
+      filterHearted={filterHearted}
+      setFilterHearted={setFilterHearted}
+      hasFilters={hasFilters}
+      resetFilters={resetFilters}
+      displayedCount={displayedCount}
+      activeFilterPop={activeFilterPop}
+      setActiveFilterPop={setActiveFilterPop}
+      filterSources={filterSources}
+      filterBrands={filterBrands}
+      filterModels={filterModels}
+      toggleSource={toggleSource}
+      toggleBrand={toggleBrand}
+      toggleModel={toggleModel}
+      visibleSources={visibleSources}
+      visibleBrands={visibleBrands}
+      visibleModels={visibleModels}
+      DEALER_SOURCES={DEALER_SOURCES}
+      AUCTION_SOURCES={AUCTION_SOURCES}
+      MODELS={MODELS}
+      SOURCES_SHOW={SOURCES_SHOW}
+      BRANDS_SHOW={BRANDS_SHOW}
+      MODELS_SHOW={MODELS_SHOW}
+      effectiveSourcesCount={effectiveSources.length}
+      effectiveBrandsCount={effectiveBrands.length}
+      effectiveModelsCount={effectiveModels.length}
+      sourcesExpanded={sourcesExpanded}
+      setSourcesExpanded={setSourcesExpanded}
+      brandsExpanded={brandsExpanded}
+      setBrandsExpanded={setBrandsExpanded}
+      modelsExpanded={modelsExpanded}
+      setModelsExpanded={setModelsExpanded}
+      onOpenCalendar={() => setCalendarModalOpen(true)}
+      // The grid, the cards and the calendar modal exactly as the shells get
+      // them — this page restyles the chrome, it does not rebuild the feed.
+      gridJSX={listingsTabContentJSX}
+      // The overlays the shells render at their own tail. Miss one and a
+      // control on this page (share, add-to-list, settings) opens nothing.
+      overlaysJSX={
+        <>
+          {trackNewItemModalJSX}
+          {addSearchModalJSX}
+          {collectionEditModalJSX}
+          {collectionPickerModalJSX}
+          {settingsModalJSX}
+          {favSearchModalJSX}
+          {lotMigrationBannerJSX}
+          {userLimitBannerJSX}
+        </>
+      }
+      aboutModalOpen={aboutModalOpen}
+      setAboutModalOpen={setAboutModalOpen}
+      signInPromptOpen={signInPromptOpen}
+      setSignInPromptOpen={setSignInPromptOpen}
+      signInWithGoogle={signInWithGoogle}
+      primaryCurrency={primaryCurrency}
+    />
+  );
+
   const shellProps = {
     // Auction calendar launcher (Phase 4) — both shells render a
     // "Calendar" pill on the filter row for the auction surfaces.
@@ -5192,7 +5291,13 @@ export default function Watchlist() {
 
   return (
     <ErrorBoundary>
-      {isMobile
+      {/* `?view=watches` swaps the shell for the magazine-styled Watches page.
+          The swap is at the shell boundary, not inside it, so the live tab's
+          chrome is untouched by this work — and ChatBubbleHost / ConfirmHost
+          below still mount either way. */}
+      {magWatchesActive
+        ? magWatchesJSX
+        : isMobile
         ? <MobileShell {...shellProps} />
         : <DesktopShell {...shellProps} />}
       <ConfirmHost />

@@ -20,6 +20,31 @@ describe("MobileShell", () => {
     expect(screen.getAllByRole("button", { name: /home/i }).length).toBeGreaterThanOrEqual(1);
   });
 
+  test("Home renders no chrome of its own — the magazine owns the masthead", () => {
+    // The magazine landing page carries wordmark, saved heart and account
+    // control in MagazineChrome. This shell used to render its brand row on
+    // Home as well, which put a SECOND account control (a hamburger, signed
+    // out) above the masthead — Mark, 2026-09-08. Desktop already suppressed
+    // its equivalent; mobile had been missed.
+    render(<MobileShell {...buildMockShellProps({
+      tab: "home",
+      authJSX: <button type="button" aria-label="Menu">Menu</button>,
+    })} />);
+    expect(screen.queryAllByRole("button", { name: "Menu" })).toHaveLength(0);
+    expect(screen.getByTestId("home-tab")).toBeInTheDocument();
+  });
+
+  test("a share-receive surface on Home keeps the brand row", () => {
+    // Share / search-all surfaces leave tab="home" but are NOT the magazine,
+    // so they still need the shell's own chrome.
+    render(<MobileShell {...buildMockShellProps({
+      tab: "home",
+      shareActive: true,
+      authJSX: <button type="button" aria-label="Menu">Menu</button>,
+    })} />);
+    expect(screen.getAllByRole("button", { name: "Menu" }).length).toBe(1);
+  });
+
   test("renders the Filters icon button on a filterable tab", () => {
     // 2026-05-21 (PR #440): search row + Filters icon hidden on the
     // entire Watchlists tab per Mark spec. Switched the assertion to

@@ -136,10 +136,15 @@ export { MagSearch };
 export default function MagazineChrome({
   isMobile, tabs, authJSX, savedCount, onSavedClick, showSaved,
   onSearchSubmit, onSearchLiveQuery, searchCounts, recentSearches, addRecentSearch,
+  // Optional slots a second surface fills. `searchJSX` replaces the routing
+  // MagSearch with the consumer's own field (Watches types straight into the
+  // tab's filter); `onHome` turns the wordmark into the way back to the
+  // landing page (Mark, 2026-09-08). Home passes neither, so it is unchanged.
+  searchJSX, onHome,
 }) {
   useFonts();
   const scrolled = useScrolled(64);
-  const search = (
+  const search = searchJSX || (
     <MagSearch big onSubmit={onSearchSubmit} onLiveQuery={onSearchLiveQuery}
                counts={searchCounts} recent={recentSearches} addRecent={addRecentSearch} />
   );
@@ -176,8 +181,18 @@ export default function MagazineChrome({
     return (
       <div className={`mag-mhead${scrolled ? " is-compact" : ""}`}>
         <div className="mag-mhead-top">
-          {crescent}
-          <h1 className="mag-wordmark">Watchlist</h1>
+          {onHome ? (
+            <button type="button" className="mag-home" onClick={onHome}
+                    aria-label="Home" title="Home">
+              {crescent}
+              <h1 className="mag-wordmark">Watchlist</h1>
+            </button>
+          ) : (
+            <>
+              {crescent}
+              <h1 className="mag-wordmark">Watchlist</h1>
+            </>
+          )}
           <span className="mag-mhead-sp" />
           {savedBtn}
           {authJSX}
@@ -191,10 +206,18 @@ export default function MagazineChrome({
   return (
     <>
       <header className="mag-flag">
-        <div className="mag-mark">
-          {crescent}
-          <h1 className="mag-wordmark">Watchlist</h1>
-        </div>
+        {onHome ? (
+          <button type="button" className="mag-mark mag-home" onClick={onHome}
+                  aria-label="Home" title="Home">
+            {crescent}
+            <h1 className="mag-wordmark">Watchlist</h1>
+          </button>
+        ) : (
+          <div className="mag-mark">
+            {crescent}
+            <h1 className="mag-wordmark">Watchlist</h1>
+          </div>
+        )}
       </header>
       <div className="mag-bar">
         {tabList(false)}
@@ -223,6 +246,11 @@ export const MAG_CSS = `
             gap: 24px; padding: 22px 0 14px; }
 .mag-mark { display: flex; align-items: center; gap: clamp(10px,1.3vw,18px); min-width: 0; }
 .mag-crescent { display: inline-flex; flex: 0 0 auto; color: var(--brand-olive-ink); }
+/* The wordmark as the way home, on surfaces that pass an onHome handler.
+   Identical to the static mark — it just becomes tappable. */
+.mag-home { display: flex; align-items: center; gap: clamp(10px,1.3vw,18px); min-width: 0;
+            background: none; border: none; padding: 0; cursor: pointer; text-align: left; }
+.mag-home:hover .mag-wordmark, .mag-home:hover .mag-crescent { opacity: .78; }
 .mag-crescent svg { width: clamp(26px,3.4vw,44px); height: clamp(26px,3.4vw,44px); }
 .mag-mhead .mag-crescent svg { width: 26px; height: 26px; }
 /* Olive wordmark (Mark, 2026-09-07). --brand-olive-ink is theme-aware: deep
@@ -334,11 +362,17 @@ export const MAG_CSS = `
 .mag-dealers-band { background: var(--surface, rgba(0,0,0,.035));
                     padding: 16px clamp(22px,3vw,40px);
                     margin-bottom: clamp(24px,3vw,36px); }
-.mag-dealers-inner { display: flex; align-items: center; gap: 14px; min-width: 0; }
-.mag-dealers-inner > .mag-dealers { min-width: 0; flex: 1 1 auto; }
+/* Label ABOVE the rail, not beside it (Mark, 2026-09-08). Inline, the label
+   plus its 14px gap took ~160px off a row that is already scrolling, so on a
+   phone you saw one pill and the edge of a second — and the rail read as a
+   dead end rather than something to swipe. Stacked, the pills get the whole
+   content width. */
+.mag-dealers-inner { display: flex; flex-direction: column; align-items: stretch;
+                     gap: 9px; min-width: 0; }
+.mag-dealers-inner > .mag-dealers { min-width: 0; }
 .mag-sec--dealers { margin-top: clamp(30px,3.6vw,48px); }
 .mag-dealers-label { font-family: var(--mag-data); font-size: 10.5px; letter-spacing: .16em;
-                     text-transform: uppercase; color: var(--text3); margin: 0; flex: 0 0 auto; }
+                     text-transform: uppercase; color: var(--text3); margin: 0; }
 /* One row that scrolls sideways rather than a block four deep (Mark,
    2026-09-07). Native scrollbar hidden; the cut-off chip is the affordance. */
 .mag-dealers { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px;
