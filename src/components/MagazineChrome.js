@@ -13,6 +13,10 @@
 
 import React, { useEffect, useRef, useState } from "react";
 
+// The three magazine faces, loaded on mount and only on mount, so the rest of
+// the app's font payload is unchanged.
+const FONTS = "https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500&family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap";
+
 // Mobile chrome compacts on scroll: the masthead row (wordmark, moon, saved,
 // account) drops away and the tabs and search stay pinned. The previous Home
 // earned that behaviour and the magazine had lost it (Mark, 2026-09-07).
