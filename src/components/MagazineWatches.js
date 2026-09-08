@@ -51,7 +51,7 @@ function MagChip({ label, active, onClick, quiet }) {
 
 export default function MagazineWatches(props) {
   const {
-    isMobile, baseStyle, tabs, authJSX, user, savedCount, onHome, goToSaved,
+    isMobile, baseStyle, tabs, authJSX, user, onHome, goToSaved,
     // sub-tabs
     listingsSubTab, setListingsSubTab, setPage, setDrawerOpen,
     // search
@@ -155,7 +155,6 @@ export default function MagazineWatches(props) {
           tabs={tabs}
           authJSX={authJSX}
           showSaved={!!user}
-          savedCount={savedCount}
           onSavedClick={goToSaved}
           onHome={onHome}
           searchJSX={searchJSX}

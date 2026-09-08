@@ -5094,7 +5094,6 @@ export default function Watchlist() {
       tabs={topTabs}
       authJSX={authJSX}
       user={user}
-      savedCount={Object.keys(watchlist || {}).length}
       // The home affordance Mark asked to keep: the wordmark goes back to the
       // landing page, same as the shells' Home icon.
       onHome={() => { setTabWithReceiveEscape("home"); setPage(1); }}

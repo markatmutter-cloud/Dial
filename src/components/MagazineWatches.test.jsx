@@ -24,7 +24,6 @@ function props(over = {}) {
     tabs,
     authJSX: <span data-testid="auth" />,
     user: { id: "u1" },
-    savedCount: 3,
     onHome: noop,
     goToSaved: noop,
     listingsSubTab: "live",
