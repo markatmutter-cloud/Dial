@@ -54,7 +54,20 @@ GATE_SOURCE = re.compile(r"^-\s*([A-Za-z0-9_.-]+)\s*(?:—|--|:)")
 CHALLENGE_MARKERS = (
     "just a moment", "cf_chl", "challenge-platform", "cf-mitigated",
     "attention required", "checking your browser", "__cf_bm",
+    # SiteGround's captcha, found on Maunder 2026-09-08: a 221-byte body
+    # that is nothing but a meta-refresh to the captcha path. None of the
+    # Cloudflare wording appears anywhere in it, so a body-text-only
+    # matcher reads it as a bare 202 and recommends TLS impersonation —
+    # advice that cannot possibly work against a captcha.
+    "sgcaptcha", "/.well-known/sgcaptcha",
 )
+
+# Some protections announce themselves in a header far more clearly than
+# in the body. Header name -> substring that means "challenge".
+CHALLENGE_HEADERS = {
+    "sg-captcha": "challenge",
+    "cf-mitigated": "challenge",
+}
 
 
 def _lines(log_text: str) -> list[str]:
@@ -152,9 +165,11 @@ def probe_target(scraper: str, repo: Path = REPO) -> str | None:
     return None
 
 
-def classify(status: int, body: str, error: str = "") -> tuple[str, bool, str]:
+def classify(status: int, body: str, error: str = "",
+             headers: dict[str, str] | None = None) -> tuple[str, bool, str]:
     """(what the probe saw, is-it-ours, what to do about it)."""
     lowered = body[:4000].lower()
+    head = {k.lower(): str(v).lower() for k, v in (headers or {}).items()}
     if error:
         return (f"the request itself failed ({error})",
                 False,
@@ -166,12 +181,17 @@ def classify(status: int, body: str, error: str = "") -> tuple[str, bool, str]:
                 "Their site is down, not our access to it. Nothing in this "
                 "repo can fix it — check it in a browser, and if it stays "
                 "down consider a dated snooze (the B-80 pattern).")
-    if any(m in lowered for m in CHALLENGE_MARKERS):
-        return (f"a JavaScript bot-challenge page (HTTP {status})",
+    flagged = next((f"{k}: {v}" for k, v in head.items()
+                    if k in CHALLENGE_HEADERS and CHALLENGE_HEADERS[k] in v), "")
+    if flagged or any(m in lowered for m in CHALLENGE_MARKERS):
+        why = f" (`{flagged}`)" if flagged else ""
+        return (f"a bot-challenge/captcha page, HTTP {status}{why}",
                 False,
-                "curl_cffi fixes TLS fingerprints, never JavaScript (B-81), "
-                "so relocating or impersonating will not get through. This "
-                "is the residential-agent path, or a snooze while it lasts.")
+                "curl_cffi fixes TLS fingerprints, never JavaScript or a "
+                "captcha (B-81), so impersonating will not get through and "
+                "relocating only moves the challenge somewhere quieter. "
+                "This is the residential-agent path, or a dated snooze "
+                "while it lasts.")
     if status == 202:
         return ("HTTP 202 with no data — the anti-bot 'accepted, come back "
                 "later' interstitial",
@@ -228,10 +248,10 @@ def triage(log_text: str, fetch, workflow_text: str = "",
                        "source calls, so it went unprobed.")
             continue
         try:
-            status, body, error = fetch(url)
+            status, body, error, headers = fetch(url)
         except Exception as e:  # a probe must never take the report down
-            status, body, error = 0, "", str(e)
-        seen, ours, advice = classify(status, body, error)
+            status, body, error, headers = 0, "", str(e), {}
+        seen, ours, advice = classify(status, body, error, headers)
         ours_any = ours_any or ours
         verdict = "**ours to fix**" if ours else "**not ours**"
         out.append(f"- **{key}** ({scraper}) → {verdict}. Probing `{url}` "
@@ -253,7 +273,7 @@ def _requests_fetch(url: str):
         "Accept": "application/json, text/html;q=0.9, */*;q=0.8",
     }
     r = requests.get(url, headers=headers, timeout=30)
-    return r.status_code, r.text[:8000], ""
+    return r.status_code, r.text[:8000], "", dict(r.headers)
 
 
 def main(argv: list[str]) -> int:

@@ -77,6 +77,50 @@ def test_probe_target_resolves_the_api_fstring_not_just_the_homepage():
     assert url == "https://www.maunderwatches.co.uk/wp-json/wc/store/v1/products"
 
 
+# The two REAL probe responses, captured from a CI runner 2026-09-08.
+# Maunder's is the whole body: 221 bytes, no Cloudflare wording anywhere,
+# which is why a body-text-only matcher called it a bare 202.
+MAUNDER_BODY = ('<html><head><link rel="icon" href="data:;">'
+                '<meta http-equiv="refresh" content="0;'
+                '/.well-known/sgcaptcha/?r=%2Fwp-json%2Fwc%2Fstore%2Fv1%2F'
+                'products&y=ipr:172.182.243.250:1788839562.048"></meta>'
+                "</head></html>")
+MAUNDER_HEADERS = {"Server": "nginx", "Content-Type": "text/html",
+                   "sg-captcha": "challenge", "x-robots-tag": "noindex"}
+
+WOK_BODY = '[{"id":15381,"name":"Jaeger-LeCoultre Atmos Clock Lapis Dial"}]'
+WOK_HEADERS = {"Server": "cloudflare", "Content-Type": "application/json",
+               "x-wp-total": "573", "cf-cache-status": "DYNAMIC"}
+
+
+def test_the_real_maunder_captcha_is_not_called_a_plain_202():
+    """A captcha cannot be impersonated past, so the advice must differ.
+
+    The live response is HTTP 202 whose body is a meta-refresh to
+    SiteGround's captcha and whose `sg-captcha: challenge` header says so
+    outright. Classified as a bare 202, the report recommends curl_cffi
+    Chrome impersonation, which cannot possibly work here and would cost
+    a day finding that out.
+    """
+    seen, ours, advice = classify(202, MAUNDER_BODY, "", MAUNDER_HEADERS)
+    assert ours is False
+    assert "captcha" in seen
+    assert "sg-captcha: challenge" in seen
+    assert "residential-agent path" in advice
+    assert "impersonating will not get through" in advice
+
+
+def test_the_real_knightsbridge_response_is_called_ours():
+    """WoK is NOT blocked: the API served 573 products to CI just now.
+
+    Which makes its three missed runs our own scraper's problem, and the
+    report has to say so rather than blaming the dealer.
+    """
+    seen, ours, advice = classify(200, WOK_BODY, "", WOK_HEADERS)
+    assert ours is True
+    assert "our parser" in advice
+
+
 def test_5xx_is_not_ours():
     seen, ours, advice = classify(503, "<html>Service Unavailable</html>")
     assert ours is False
@@ -119,8 +163,8 @@ def test_triage_reports_each_source_with_a_verdict():
     def fake_fetch(url):
         calls.append(url)
         if "maunder" in url:
-            return 202, "", ""
-        return 200, "<!doctype html><html>nope</html>", ""
+            return 202, MAUNDER_BODY, "", MAUNDER_HEADERS
+        return 200, WOK_BODY, "", WOK_HEADERS
 
     out = triage(GATE_LOG, fake_fetch, WORKFLOW_SNIPPET, REPO)
     assert len(calls) == 2
@@ -139,9 +183,17 @@ def test_a_probe_that_throws_does_not_take_the_report_down():
 
 
 def test_a_failure_naming_no_source_says_so_rather_than_guessing():
+    """No source named means nothing to probe, and it must say so.
+
+    Guessing a source here would send the reader to a dealer over what
+    is really a build or pipeline failure.
+    """
+    probed = []
     out = triage("scrape\tRun merge\t2026-09-07T00:00:00Z KeyError: 'brand'\n",
-                 lambda u: (200, "", ""), WORKFLOW_SNIPPET, REPO)
+                 lambda u: probed.append(u) or (200, "", "", {}),
+                 WORKFLOW_SNIPPET, REPO)
     assert "does not name any source" in out
+    assert probed == []
 
 
 def test_triage_never_claims_to_have_changed_anything():
@@ -150,5 +202,5 @@ def test_triage_never_claims_to_have_changed_anything():
     If that promise ever stops being true, this test is the thing that
     should have to be deleted first.
     """
-    out = triage(GATE_LOG, lambda u: (200, "[]", ""), WORKFLOW_SNIPPET, REPO)
+    out = triage(GATE_LOG, lambda u: (200, "[]", "", {}), WORKFLOW_SNIPPET, REPO)
     assert "read-only" in out
