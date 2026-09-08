@@ -29762,20 +29762,16 @@
     "model_line": null,
     "published_at": "2026-06-08",
     "reference_no": null,
-    "scraped_at": "2026-08-09T03:35:53Z",
+    "scraped_at": "2026-09-08T06:53:46Z",
     "slug": "nacre-fp-journe-chronometre-souverain",
     "sold_price_usd": 120000,
     "source": "hairspring_finds",
     "source_type": "editorial_finds",
     "sub_model": null,
-    "themes": [
-      "reference_profile",
-      "design"
-    ],
     "title": "'Nacre' FP Journe Chronomètre Souverain",
     "updated_at": "2026-06-09",
     "url": "https://hairspring.com/blogs/finds/nacre-fp-journe-chronometre-souverain",
-    "word_count": 422
+    "word_count": 424
   },
   "https://hairspring.com/blogs/finds/new-old-stock-1999-swatch-jelly-stag": {
     "author": "Erik Gustafson",
