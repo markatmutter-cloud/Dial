@@ -75,6 +75,9 @@ describe("standard-library chrome contract", () => {
     // Home's masthead consumes the same model via homeMastheadTabs. That is
     // MagazineHome since 2026-09-07, when it replaced HomeTab as the landing
     // page and HomeTab was retired.
+    // Home's chrome is MagazineChrome since 2026-09-07; it takes the model
+    // through `tabs` and MagazineHome hands it homeMastheadTabs.
     expect(readComponent("MagazineHome.js")).toContain("homeMastheadTabs");
+    expect(readComponent("MagazineChrome.js")).toContain("tabs");
   });
 });
