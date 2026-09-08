@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import MagazineWatches from "./MagazineWatches";
+import MagazineWatches, { MAGW_CSS } from "./MagazineWatches";
 
 // Direct coverage for the parallel Watches page (?view=watches). The shell
 // tests render MOCK grids and never execute this file, and a Vercel build
@@ -85,6 +85,25 @@ function props(over = {}) {
 }
 
 describe("MagazineWatches", () => {
+  it("ships a real stylesheet, not a broken template literal", () => {
+    // MAGW_CSS is a template literal, so a stray backtick inside one of its
+    // comments ends the string early and the rest becomes JS. It compiles —
+    // the page then throws at RENDER, which no build catches (it happened
+    // twice on 2026-09-08). Assert the shape of the thing, cheaply.
+    expect(typeof MAGW_CSS).toBe("string");
+    for (const sel of [".mag.magw", ".magw-deck", ".magw-subtabs", ".magw-pill", ".magw-search"]) {
+      expect(MAGW_CSS).toContain(sel);
+    }
+  });
+
+  it("sets its own type on top of the magazine's colour", () => {
+    // Mark, 2026-09-08: the app's fonts, not the magazine's, with the colour
+    // and layout kept. The override has to be two classes deep to beat
+    // MAG_CSS's own `.mag` rule whatever order the two blocks are injected.
+    expect(MAGW_CSS).toMatch(/\.mag\.magw\s*\{[^}]*--mag-body:\s*-apple-system/);
+    expect(MAGW_CSS).toMatch(/\.mag\.magw\s+\.mag-wordmark\s*\{[^}]*text-transform:\s*uppercase/);
+  });
+
   it("renders the chrome, the sub-tabs, the count and the real grid", () => {
     render(<MagazineWatches {...props()} />);
     expect(screen.getByTestId("auth")).toBeInTheDocument();
