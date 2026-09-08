@@ -92,6 +92,36 @@ def test_health_gate_names_the_quiet_sources():
     assert "visionvintagewatches" in out
 
 
+# The REAL failing-step log from run 34151928856 (2026-09-07), the first
+# production failure this classifier saw. It got it wrong: the runner
+# rewrites a script's `::error::` annotation to `##[error]` on the way
+# into the log, so the rule never matched and the alert told Mark
+# "not a failure shape this alert recognises yet".
+REAL_GATE_LOG = """scrape	Scrape-health gate (B-60, debounced B-66)	2026-09-07T19:14:18.7Z ##[notice]Scrape-health (snoozed, not paging): watchcenter — missed 63 consecutive run(s) (no CSV produced this run) — snoozed until 2026-09-13 (B-80 - dealer-side outage.)
+scrape	Scrape-health gate (B-60, debounced B-66)	2026-09-07T19:14:18.8Z ##[error]Scrape-health gate: 2 source(s) missing 3+ consecutive runs
+scrape	Scrape-health gate (B-60, debounced B-66)	2026-09-07T19:14:18.9Z - maunderwatches — missed 3 consecutive run(s) (no CSV produced this run)
+scrape	Scrape-health gate (B-60, debounced B-66)	2026-09-07T19:14:19.0Z - wok — missed 3 consecutive run(s) (no CSV produced this run)
+scrape	Scrape-health gate (B-60, debounced B-66)	2026-09-07T19:14:19.1Z ##[error]Process completed with exit code 1.
+"""
+
+
+def test_the_runners_hash_error_form_is_recognised():
+    """`::error::` never survives into a fetched log; `##[error]` does."""
+    out = explain(REAL_GATE_LOG)
+    assert "gone quiet" in out
+    assert "maunderwatches, wok" in out
+
+
+def test_a_snoozed_source_is_not_named_as_the_cause():
+    """watchcenter is a deliberately muted dealer outage (B-80).
+
+    It prints a `##[notice]` line in the very same step. Naming it would
+    send Mark after something we chose not to page on.
+    """
+    out = explain(REAL_GATE_LOG)
+    assert "watchcenter" not in out.split("<details>")[0]
+
+
 def test_canary_blames_the_page_shape():
     out = explain(CANARY_LOG)
     assert "zero sales" in out

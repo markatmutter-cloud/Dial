@@ -126,12 +126,45 @@ def _push_race(lines: list[str]) -> tuple[str, list[str]] | None:
     return head, [l for l in lines if "[rejected]" in l][:2]
 
 
+# A script printing `::error::x` shows up in the FETCHED log as
+# `##[error]x` — the runner rewrites its own annotation syntax on the way
+# out. Matching only the `::` form meant these two rules never fired on a
+# real log, which is how a health-gate failure reached Mark's inbox
+# labelled "not a failure shape this alert recognises yet". Accept both.
+ERROR_MARKERS = ("::error::", "##[error]")
+
+
+def _is_error(line: str, needle: str) -> bool:
+    return needle in line and any(m in line for m in ERROR_MARKERS)
+
+
+# The gate prints sources two ways: `- name: N consecutive` when recording
+# and `- name — missed N consecutive run(s)` when it pages. Only the second
+# ever appears in a failing run, but both are cheap to accept.
+SOURCE_NAME = re.compile(r"^([A-Za-z0-9_.-]+)\s*(?::|—|--)")
+
+
 def _health_gate(lines: list[str]) -> tuple[str, list[str]] | None:
-    hit = next((l for l in lines if "Scrape-health gate:" in l and "::error::" in l), "")
-    if not hit:
+    at = next((i for i, l in enumerate(lines)
+               if _is_error(l, "Scrape-health gate:")), -1)
+    if at < 0:
         return None
-    sources = [l.lstrip("- ").strip() for l in lines if l.startswith("- ") and "consecutive" in l]
-    named = ", ".join(s.split(":")[0] for s in sources) or "see the run"
+    # ONLY the sources listed after the gate's error line. The same log
+    # also carries the recording step's roster and a `##[notice]` line per
+    # SNOOZED source — naming a snoozed one (watchcenter, a known dealer
+    # outage) as the cause sends Mark after something deliberately muted.
+    sources, seen, names = [], set(), []
+    for line in lines[at + 1:]:
+        if not line.startswith("- ") or "consecutive" not in line:
+            break
+        entry = line.lstrip("- ").strip()
+        m = SOURCE_NAME.match(entry)
+        name = m.group(1) if m else entry
+        if name not in seen:
+            seen.add(name)
+            names.append(name)
+            sources.append(entry)
+    named = ", ".join(names) or "see the run"
     head = (f"A source has gone quiet: {named} produced no data for three runs "
             "in a row. The scrape itself finished — the health gate is "
             "flagging rot, not a crash.")
@@ -139,7 +172,7 @@ def _health_gate(lines: list[str]) -> tuple[str, list[str]] | None:
 
 
 def _canary(lines: list[str]) -> tuple[str, list[str]] | None:
-    hit = next((l for l in lines if "Calendar canary:" in l and "::error::" in l), "")
+    hit = next((l for l in lines if _is_error(l, "Calendar canary:")), "")
     if not hit:
         return None
     houses = [l.lstrip("- ").strip() for l in lines if l.startswith("- ")]
