@@ -12,8 +12,8 @@
     "rows": 19
   },
   "Bob's Watches": {
-    "fingerprint": "813aadfefd3ee795",
-    "lastChanged": "2026-09-08",
+    "fingerprint": "1a7881a75451f294",
+    "lastChanged": "2026-09-09",
     "lastSeen": "2026-09-09",
     "rows": 44
   },
@@ -42,10 +42,10 @@
     "rows": 117
   },
   "Collectors Corner NY": {
-    "fingerprint": "20c1081cffc3384d",
-    "lastChanged": "2026-09-08",
+    "fingerprint": "6b8183b1ff7af2c8",
+    "lastChanged": "2026-09-09",
     "lastSeen": "2026-09-09",
-    "rows": 89
+    "rows": 88
   },
   "Craft & Tailored": {
     "fingerprint": "965f2f5a14bae35d",
@@ -84,10 +84,10 @@
     "rows": 37
   },
   "Heuertime": {
-    "fingerprint": "3e91090650a3711f",
-    "lastChanged": "2026-09-08",
+    "fingerprint": "743ffa656bd725d4",
+    "lastChanged": "2026-09-09",
     "lastSeen": "2026-09-09",
-    "rows": 32
+    "rows": 33
   },
   "Huntington Company": {
     "fingerprint": "510d0fb30c47ce6a",
@@ -108,10 +108,10 @@
     "rows": 71
   },
   "Menta Watches": {
-    "fingerprint": "969b9f7ffd4df9c7",
-    "lastChanged": "2026-09-08",
+    "fingerprint": "7abdd63a784f7f1e",
+    "lastChanged": "2026-09-09",
     "lastSeen": "2026-09-09",
-    "rows": 57
+    "rows": 56
   },
   "Moonphase": {
     "fingerprint": "d9ff32f487308302",
@@ -120,10 +120,10 @@
     "rows": 20
   },
   "Oliver & Clarke": {
-    "fingerprint": "9036d2ee45442793",
-    "lastChanged": "2026-09-08",
+    "fingerprint": "89c562773108fc65",
+    "lastChanged": "2026-09-09",
     "lastSeen": "2026-09-09",
-    "rows": 117
+    "rows": 116
   },
   "Pascal Karp": {
     "fingerprint": "3851f8c63cbfc64e",
@@ -144,10 +144,10 @@
     "rows": 19
   },
   "Shuck the Oyster": {
-    "fingerprint": "bd3221ed79c36fbb",
-    "lastChanged": "2026-09-08",
+    "fingerprint": "aef0e910cb2c8b81",
+    "lastChanged": "2026-09-09",
     "lastSeen": "2026-09-09",
-    "rows": 138
+    "rows": 137
   },
   "Sierra Time Co": {
     "fingerprint": "ccd23491b9ace3c2",
@@ -180,20 +180,20 @@
     "rows": 30
   },
   "Tropical Watch": {
-    "fingerprint": "77bdac1f3f73c684",
-    "lastChanged": "2026-09-08",
+    "fingerprint": "89f9a844d60b48f8",
+    "lastChanged": "2026-09-09",
     "lastSeen": "2026-09-09",
-    "rows": 120
+    "rows": 121
   },
   "Vintage Watch Collective": {
-    "fingerprint": "cea32c6147e6b24d",
-    "lastChanged": "2026-09-08",
+    "fingerprint": "58ffb885308e82fc",
+    "lastChanged": "2026-09-09",
     "lastSeen": "2026-09-09",
-    "rows": 33
+    "rows": 34
   },
   "Vintage Watch Fam": {
-    "fingerprint": "08010e4236afa099",
-    "lastChanged": "2026-09-08",
+    "fingerprint": "5e4be38049b64861",
+    "lastChanged": "2026-09-09",
     "lastSeen": "2026-09-09",
     "rows": 545
   },
@@ -222,10 +222,10 @@
     "rows": 429
   },
   "Watch Club": {
-    "fingerprint": "f3f9f94288a3590b",
-    "lastChanged": "2026-09-07",
+    "fingerprint": "207781c2fb237e01",
+    "lastChanged": "2026-09-09",
     "lastSeen": "2026-09-09",
-    "rows": 67
+    "rows": 71
   },
   "Watches of Knightsbridge": {
     "fingerprint": "76787da234fe3335",
@@ -240,8 +240,8 @@
     "rows": 54
   },
   "Watchfid": {
-    "fingerprint": "895126db86cf4af4",
-    "lastChanged": "2026-09-08",
+    "fingerprint": "69fdbdf06fa93b2d",
+    "lastChanged": "2026-09-09",
     "lastSeen": "2026-09-09",
     "rows": 67
   },
@@ -252,10 +252,10 @@
     "rows": 4
   },
   "Wind Vintage": {
-    "fingerprint": "f4e570bee7f649d0",
-    "lastChanged": "2026-09-08",
+    "fingerprint": "a61a5db5a783f33c",
+    "lastChanged": "2026-09-09",
     "lastSeen": "2026-09-09",
-    "rows": 212
+    "rows": 214
   },
   "calendar:antiquorum": {
     "fingerprint": "c5d0ff73d32d020a",
@@ -300,8 +300,8 @@
     "rows": 2
   },
   "eBay": {
-    "fingerprint": "7e4e3e3f670f258b",
-    "lastChanged": "2026-09-09",
+    "fingerprint": "4e2a07bf41da007b",
+    "lastChanged": "2026-09-08",
     "lastSeen": "2026-09-09",
     "rows": 32
   },
@@ -414,9 +414,9 @@
     "rows": 96
   },
   "merged:listings": {
-    "fingerprint": "2286403aa83e67aa",
+    "fingerprint": "746c68446cbab201",
     "lastChanged": "2026-09-09",
     "lastSeen": "2026-09-09",
-    "rows": 10186
+    "rows": 10197
   }
 }
